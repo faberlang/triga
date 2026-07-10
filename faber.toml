@@ -1,0 +1,14 @@
+[package]
+name = "triga"
+version = "0.1.0"
+edition = "2026"
+
+[library]
+provider = "triga"
+
+[paths]
+source = "src"
+
+[build]
+kind = "lib"
+targets = ["rust"]

@@ -1,0 +1,18 @@
+# Triga as a cista source package.
+#
+# Install maps `interfaces = "src"` into the store as
+# `$CISTAE_HOME/triga/<version>/interfaces/`. Version is independent of the
+# faber crate. Apps declare triga in faber.toml when they need graphics types.
+
+[source]
+package = "triga"
+version = "0.1.0"
+faber_min = "0.38.0"
+kind = "source"
+interfaces = "src"
+
+[target]
+language = "rust"
+mode = "compile"
+binding_policy = "generated"
+crate = "triga"

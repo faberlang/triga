@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+RADIX="${RADIX_ROOT:-$ROOT/../radix}"
+FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
+if [[ ! -d "$RADIX/crates/radix" ]]; then
+  echo "check-compile: missing radix checkout at $RADIX" >&2
+  exit 1
+fi
+
+RADIX_BIN="$RADIX/target/debug/radix"
+if [[ ! -x "$RADIX_BIN" ]]; then
+  (cd "$RADIX" && cargo build -q -p radix --bin radix)
+fi
+
+export FABER_LIBRARY_HOME
+
+echo "check-compile: parsing src/triga.fab"
+"$RADIX_BIN" check "$ROOT/src/triga.fab"

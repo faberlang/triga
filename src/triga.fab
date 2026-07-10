@@ -1,0 +1,241 @@
+# src/triga.fab — Geometry, math, scene, and material types for Faber's GPU lane
+#
+# Shapes modeled closely after three.js abstractions for LLM familiarity
+# and migration ease. Not a binding to three.js — these are native Faber
+# types that define the data contract between compiled Faber output and
+# the GPU runtime host.
+#
+# NOTE: genus types live at file top level (the parser does not support
+# genus inside a modulus block). The modulus wraps only utility functions
+# such as geometry generators and transformation helpers.
+#
+# STYLE: numeric sugar (f32, u32) — all triga types are geometric/mathematical
+
+# =========================================================================
+# MATH TYPES
+#
+# Mirror THREE.Vector2, THREE.Vector3, THREE.Vector4,
+#       THREE.Matrix3, THREE.Matrix4,
+#       THREE.Quaternion, THREE.Euler, THREE.Color,
+#       THREE.Box3, THREE.Sphere, THREE.Plane, THREE.Ray
+# =========================================================================
+
+genus Vector2 {
+    f32 x
+    f32 y
+}
+
+genus Vector3 {
+    f32 x
+    f32 y
+    f32 z
+}
+
+genus Vector4 {
+    f32 x
+    f32 y
+    f32 z
+    f32 w
+}
+
+genus Matrix3 {
+    lista<f32> elements
+}
+
+genus Matrix4 {
+    lista<f32> elements
+}
+
+genus Quaternion {
+    f32 x
+    f32 y
+    f32 z
+    f32 w
+}
+
+genus Color {
+    f32 r
+    f32 g
+    f32 b
+}
+
+genus Euler {
+    f32 x
+    f32 y
+    f32 z
+    textus order = "XYZ"
+}
+
+genus Box3 {
+    Vector3 min
+    Vector3 max
+}
+
+genus Sphere {
+    Vector3 center
+    f32 radius
+}
+
+genus Plane {
+    Vector3 normal
+    f32 constant
+}
+
+genus Ray {
+    Vector3 origin
+    Vector3 direction
+}
+
+# =========================================================================
+# SCENE GRAPH
+#
+# Mirror THREE.Object3D, THREE.Scene,
+#       THREE.PerspectiveCamera, THREE.OrthographicCamera,
+#       THREE.Light, THREE.AmbientLight,
+#       THREE.DirectionalLight, THREE.PointLight
+# =========================================================================
+
+genus Object3D {
+    Vector3 position
+    Euler rotation
+    Quaternion quaternion
+    Vector3 scale
+    Matrix4 matrix
+    lista<Object3D> children
+    bivalens visible = verum
+    textus name
+}
+
+genus Scene {
+    Object3D base
+    Color background sponte
+}
+
+genus PerspectiveCamera {
+    Object3D base
+    f32 fov = 50.0
+    f32 aspect = 1.0
+    f32 near = 0.1
+    f32 far = 2000.0
+}
+
+genus OrthographicCamera {
+    Object3D base
+    f32 left
+    f32 right
+    f32 top
+    f32 bottom
+    f32 near = 0.1
+    f32 far = 2000.0
+}
+
+genus Light {
+    Object3D base
+    Color color
+    f32 intensity = 1.0
+}
+
+genus AmbientLight {
+    Light base
+}
+
+genus DirectionalLight {
+    Light base
+    Vector3 target_position
+}
+
+genus PointLight {
+    Light base
+    f32 distance = 0.0
+    f32 decay = 2.0
+}
+
+# =========================================================================
+# GEOMETRY
+#
+# Mirror THREE.BufferGeometry, THREE.BufferAttribute
+#
+# Structure-of-arrays layout: each attribute is a flat lista<f32>.
+# This maps directly to WGSL storage buffers and GPU buffer uploads.
+# =========================================================================
+
+genus BufferGeometry {
+    lista<f32> positions
+    lista<f32> normals sponte
+    lista<f32> uvs sponte
+    lista<f32> uvs2 sponte
+    lista<f32> colors sponte
+    lista<f32> tangents sponte
+    lista<u32> indices sponte
+    numerus<u32> draw_start = 0
+    numerus<u32> draw_count sponte
+}
+
+# =========================================================================
+# MATERIAL
+#
+# Mirror THREE.Material, THREE.MeshStandardMaterial (PBR),
+#       THREE.MeshBasicMaterial, THREE.MeshPhongMaterial
+# =========================================================================
+
+genus Material {
+    textus name
+    # side: 0=FrontSide 1=BackSide 2=DoubleSide
+    numerus<u32> side = 0
+    bivalens transparent = falsum
+    f32 opacity = 1.0
+    bivalens depth_write = verum
+    bivalens depth_test = verum
+    f32 alpha_test = 0.0
+}
+
+genus MeshStandardMaterial {
+    Material base
+    Color color
+    f32 roughness = 1.0
+    f32 metalness = 0.0
+    Color emissive
+    f32 emissive_intensity = 0.0
+}
+
+genus MeshBasicMaterial {
+    Material base
+    Color color
+}
+
+genus MeshPhongMaterial {
+    Material base
+    Color color
+    Color specular
+    f32 shininess = 30.0
+}
+
+# =========================================================================
+# MESH
+#
+# Mirror THREE.Mesh — the primary renderable object.
+# =========================================================================
+
+genus Mesh {
+    Object3D base
+    BufferGeometry geometry
+    MeshStandardMaterial ∪ MeshBasicMaterial ∪ MeshPhongMaterial material sponte
+}
+
+# =========================================================================
+# TEXTURE (minimal placeholder)
+#
+# Mirror THREE.Texture, THREE.DataTexture
+#
+# Placeholder definition for the shape contract. Will be expanded
+# when texture pipeline (samplers, mipmaps, render targets) is designed.
+# =========================================================================
+
+genus TextureDescriptor {
+    numerus<u32> width
+    numerus<u32> height
+    # Format string: e.g. "rgba8unorm", "depth32float"
+    textus format
+    lista<f32> data sponte
+    bivalens generate_mipmaps = verum
+}
