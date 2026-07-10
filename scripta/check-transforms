@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+RADIX="${RADIX_ROOT:-$ROOT/../radix}"
+RADIX_BIN="$RADIX/target/debug/radix"
+
+if [[ ! -x "$RADIX_BIN" ]]; then
+  echo "check-transforms: missing radix binary at $RADIX_BIN" >&2
+  exit 1
+fi
+
+combined="$(mktemp "${TMPDIR:-/tmp}/triga-transforms.XXXXXX.fab")"
+generated="$(mktemp "${TMPDIR:-/tmp}/triga-transforms.XXXXXX.rs")"
+trap 'rm -f "$combined" "$generated"' EXIT
+
+cp "$ROOT/src/triga.fab" "$combined"
+awk 'BEGIN { delimiters = 0 } /^+++$/ { delimiters += 1; next } delimiters >= 2' \
+  "$ROOT/exempla/triga-transforms.fab" \
+  | sed -e '/^importa ex "triga:triga" privata triga$/d' -e 's/triga\.//g' \
+  >> "$combined"
+
+echo "check-transforms: parsing combined library and transform workload"
+"$RADIX_BIN" check "$combined"
+echo "check-transforms: emitting generated Rust"
+"$RADIX_BIN" emit -t rust "$combined" > "$generated"

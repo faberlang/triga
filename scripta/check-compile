@@ -19,3 +19,5 @@ export FABER_LIBRARY_HOME
 
 echo "check-compile: parsing src/triga.fab"
 "$RADIX_BIN" check "$ROOT/src/triga.fab"
+
+"$ROOT/scripta/check-transforms"

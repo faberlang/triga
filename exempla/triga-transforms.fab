@@ -1,0 +1,40 @@
++++
+term = "triga-transforms"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Triga Vector3 and Matrix4 transform-chain policy and CPU proof."
++++
+
+importa ex "triga:triga" privata triga
+
+incipit {
+    fixum triga.Vector3 zero ← triga.vector3(0.0, 0.0, 0.0)
+    fixum triga.Vector3 normalized_zero ← triga.vector3_normalizata(zero)
+    adfirma normalized_zero.x ≡ (0.0 ∷ f32), "zero normalization is stable"
+
+    fixum triga.Matrix4 translation ← triga.matrix4_translatio(
+        triga.vector3(5.0 ∷ f32, -2.0 ∷ f32, 3.0 ∷ f32)
+    )
+    fixum triga.Matrix4 scale ← triga.matrix4_scala(
+        triga.vector3(2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32)
+    )
+    fixum triga.Matrix4 world ← triga.matrix4_multiplicata(translation, scale)
+    fixum triga.Vector3 local ← triga.vector3(1.0 ∷ f32, 2.0 ∷ f32, -1.0 ∷ f32)
+    fixum triga.Vector3 transformed ← triga.matrix4_applica_punctum(world, local)
+    adfirma (transformed.x - 7.0).absolutum() ≤ 0.0001, "scaled and translated x"
+    adfirma (transformed.y - 4.0).absolutum() ≤ 0.0001, "scaled and translated y"
+    adfirma (transformed.z + 1.0).absolutum() ≤ 0.0001, "scaled and translated z"
+
+    fixum triga.Matrix4 ∪ nihil inverse ← triga.matrix4_inversa_affinis(world)
+    fixum triga.Matrix4 inverse_value ← triga.Matrix4 { elements = inverse!.elements }
+    fixum triga.Vector3 round_trip ← triga.matrix4_applica_punctum(inverse_value, transformed)
+    adfirma (round_trip.x - local.x).absolutum() ≤ 0.0001, "inverse round-trip x"
+    adfirma (round_trip.y - local.y).absolutum() ≤ 0.0001, "inverse round-trip y"
+    adfirma (round_trip.z - local.z).absolutum() ≤ 0.0001, "inverse round-trip z"
+
+    fixum triga.Matrix4 singular ← triga.matrix4_scala(
+        triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    )
+    adfirma triga.matrix4_inversa_affinis(singular) est nihil, "singular inverse rejects"
+}

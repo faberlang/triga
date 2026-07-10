@@ -10,8 +10,10 @@ types that define the same structural domain.
 
 ## Status
 
-Initial type definitions only. Types compile; no geometry generators,
-transform methods, or render pipeline integration yet.
+Initial type definitions plus a first pure Vector3/Matrix4 transform family.
+The CPU workload typechecks and emits Rust; provider-import execution and
+MIR/GPU parity remain tracked compiler blockers. There is no render pipeline
+integration yet.
 
 ## Current Types
 
@@ -73,6 +75,7 @@ scripta/       source-library checks
 ./scripta/check-capabilities
 ./scripta/check-source
 ./scripta/check-compile
+./scripta/check-transforms
 ```
 
 The capability report is an honest campaign baseline: unsupported proofs score

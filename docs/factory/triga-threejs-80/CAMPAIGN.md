@@ -1,6 +1,6 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-10) — Stage 0 baseline complete
+**Status**: active (2026-07-10) — Stage 1 Triga proof implemented; compiler parity blocked
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
@@ -187,7 +187,7 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Initial 27-type shell; no operational math, scene, geometry, material, texture, or animation families | Stage 1 math and transforms |
+| Triga public API | Initial type shell plus Vector3 arithmetic and column-major Matrix4 translation, scale, composition, point application, and affine inverse | Complete remaining Stage 1 families after compiler seams unblock |
 | Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
 | Vector/tensor foundation | Source types and representative MIR GPU operations exist | Consume in Stage 1 and Stage 3; add only missing reusable facts |
 | Matrix foundation | Grammar/type surface exists; current package/probe exemplar records backend rejection | Stage 1 selects and proves an executable representation |
@@ -241,7 +241,7 @@ capstone family.
 
 ### Stage 1 — Core math and transform foundation
 
-**Status**: selected; ready for delivery
+**Status**: in progress — Triga CPU representation proof implemented; HIR import/generated-Rust and MIR parity needs open
 **Source**: [`goals/01-math-transform-foundation.md`](goals/01-math-transform-foundation.md)
 **Depends on**: Stage 0
 **Gate**: reusable vector, matrix, quaternion, Euler, color, and transform

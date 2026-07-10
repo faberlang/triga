@@ -239,3 +239,161 @@ genus TextureDescriptor {
     lista<f32> data sponte
     bivalens generate_mipmaps = verum
 }
+
+# =========================================================================
+# MATH OPERATIONS
+#
+# Triga records are domain/storage values. Compiler vector/matrix types are
+# register values; conversion between the two representations stays explicit.
+# Matrix4 elements are column-major and multiply column vectors.
+# =========================================================================
+
+functio vector3(f32 x, f32 y, f32 z) → Vector3 {
+    redde Vector3 { x = x, y = y, z = z }
+}
+
+functio vector3_addita(de Vector3 a, de Vector3 b) → Vector3 {
+    redde vector3(a.x + b.x, a.y + b.y, a.z + b.z)
+}
+
+functio vector3_subtracta(de Vector3 a, de Vector3 b) → Vector3 {
+    redde vector3(a.x - b.x, a.y - b.y, a.z - b.z)
+}
+
+functio vector3_multiplicata(de Vector3 v, f32 scalar) → Vector3 {
+    redde vector3(v.x * scalar, v.y * scalar, v.z * scalar)
+}
+
+functio vector3_dot(de Vector3 a, de Vector3 b) → f32 {
+    redde a.x * b.x + a.y * b.y + a.z * b.z
+}
+
+functio vector3_cross(de Vector3 a, de Vector3 b) → Vector3 {
+    redde vector3(
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    )
+}
+
+functio _radix_f32(f32 value) → f32 {
+    si value ≤ 0.0 ergo redde 0.0
+    varia f32 estimate ← value
+    varia numerus iteration ← 0
+    dum iteration < 12 {
+        estimate ← (estimate + value / estimate) * 0.5
+        iteration ← iteration + 1
+    }
+    redde estimate
+}
+
+functio vector3_longitudo(de Vector3 v) → f32 {
+    redde _radix_f32(v.x * v.x + v.y * v.y + v.z * v.z)
+}
+
+functio vector3_normalizata(de Vector3 v) → Vector3 {
+    fixum f32 length ← _radix_f32(v.x * v.x + v.y * v.y + v.z * v.z)
+    si length ≤ 0.000001 ergo redde vector3(0.0, 0.0, 0.0)
+    redde vector3(v.x / length, v.y / length, v.z / length)
+}
+
+functio matrix4_identitas() → Matrix4 {
+    redde Matrix4 { elements = [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    ] }
+}
+
+functio matrix4_translatio(de Vector3 offset) → Matrix4 {
+    redde Matrix4 { elements = [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        offset.x, offset.y, offset.z, 1.0,
+    ] }
+}
+
+functio matrix4_scala(de Vector3 scale) → Matrix4 {
+    redde Matrix4 { elements = [
+        scale.x, 0.0, 0.0, 0.0,
+        0.0, scale.y, 0.0, 0.0,
+        0.0, 0.0, scale.z, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    ] }
+}
+
+functio matrix4_multiplicata(de Matrix4 a, de Matrix4 b) → Matrix4 {
+    fixum lista<f32> ae ← a.elements
+    fixum lista<f32> be ← b.elements
+    varia lista<f32> result ← vacua
+    varia numerus column ← 0
+    dum column < 4 {
+        varia numerus row ← 0
+        dum row < 4 {
+            result.appende(
+                ae[0 * 4 + row] * be[column * 4 + 0] +
+                ae[1 * 4 + row] * be[column * 4 + 1] +
+                ae[2 * 4 + row] * be[column * 4 + 2] +
+                ae[3 * 4 + row] * be[column * 4 + 3]
+            )
+            row ← row + 1
+        }
+        column ← column + 1
+    }
+    redde Matrix4 { elements = result }
+}
+
+functio matrix4_applica_punctum(de Matrix4 matrix, de Vector3 point) → Vector3 {
+    fixum lista<f32> e ← matrix.elements
+    fixum f32 w ← e[3] * point.x + e[7] * point.y + e[11] * point.z + e[15]
+    varia f32 divisor ← w
+    si w.absolutum() ≤ 0.000001 ergo divisor ← 1.0
+    redde vector3(
+        (e[0] * point.x + e[4] * point.y + e[8] * point.z + e[12]) / divisor,
+        (e[1] * point.x + e[5] * point.y + e[9] * point.z + e[13]) / divisor,
+        (e[2] * point.x + e[6] * point.y + e[10] * point.z + e[14]) / divisor
+    )
+}
+
+functio matrix4_inversa_affinis(de Matrix4 matrix) → Matrix4 ∪ nihil {
+    fixum lista<f32> e ← matrix.elements
+    fixum f32 a00 ← e[0]
+    fixum f32 a01 ← e[4]
+    fixum f32 a02 ← e[8]
+    fixum f32 a10 ← e[1]
+    fixum f32 a11 ← e[5]
+    fixum f32 a12 ← e[9]
+    fixum f32 a20 ← e[2]
+    fixum f32 a21 ← e[6]
+    fixum f32 a22 ← e[10]
+    fixum f32 determinant ←
+        a00 * (a11 * a22 - a12 * a21) -
+        a01 * (a10 * a22 - a12 * a20) +
+        a02 * (a10 * a21 - a11 * a20)
+    si determinant.absolutum() ≤ 0.000001 ergo redde nihil
+
+    fixum f32 d ← 1.0 / determinant
+    fixum f32 i00 ← (a11 * a22 - a12 * a21) * d
+    fixum f32 i01 ← (a02 * a21 - a01 * a22) * d
+    fixum f32 i02 ← (a01 * a12 - a02 * a11) * d
+    fixum f32 i10 ← (a12 * a20 - a10 * a22) * d
+    fixum f32 i11 ← (a00 * a22 - a02 * a20) * d
+    fixum f32 i12 ← (a02 * a10 - a00 * a12) * d
+    fixum f32 i20 ← (a10 * a21 - a11 * a20) * d
+    fixum f32 i21 ← (a01 * a20 - a00 * a21) * d
+    fixum f32 i22 ← (a00 * a11 - a01 * a10) * d
+    fixum f32 tx ← e[12]
+    fixum f32 ty ← e[13]
+    fixum f32 tz ← e[14]
+    redde Matrix4 { elements = [
+        i00, i10, i20, 0.0,
+        i01, i11, i21, 0.0,
+        i02, i12, i22, 0.0,
+        -(i00 * tx + i01 * ty + i02 * tz),
+        -(i10 * tx + i11 * ty + i12 * tz),
+        -(i20 * tx + i21 * ty + i22 * tz),
+        1.0,
+    ] }
+}
