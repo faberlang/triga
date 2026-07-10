@@ -1,0 +1,1 @@
+{"schema_version":1,"id":"multipass-instancing","required_level":"host_graphics","workload":"examples/triga-capstones/multipass-instancing","fixtures":[],"expected":{"kind":"numeric_and_pixel","contract":"draw counts and deterministic multipass reference image"},"state":"unsupported","reason":"render targets, multipass rendering, and instancing are unavailable"}

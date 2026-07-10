@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: proposed (2026-07-10) — ready for delivery
+**Status**: active (2026-07-10) — Stage 0 baseline complete
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 0 — capability baseline and proof harness
+**Selected next stage**: Stage 1 — core math and transform foundation
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -187,7 +187,7 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Initial 27-type shell; no operational math, scene, geometry, material, texture, or animation families | Stage 0 inventory, then Stage 1 |
+| Triga public API | Initial 27-type shell; no operational math, scene, geometry, material, texture, or animation families | Stage 1 math and transforms |
 | Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
 | Vector/tensor foundation | Source types and representative MIR GPU operations exist | Consume in Stage 1 and Stage 3; add only missing reusable facts |
 | Matrix foundation | Grammar/type surface exists; current package/probe exemplar records backend rejection | Stage 1 selects and proves an executable representation |
@@ -196,7 +196,7 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 | Browser host | Direct WebGPU compute dispatch; visible scene still rendered by three.js | Stage 5 replaces the visible path with direct Faber artifacts |
 | Runtime/package artifacts | No scene/render artifact contract or graphics runtime representation | Route from Stages 4–6 based on evidence |
 | Assets and animation | Absent | Stages 8–9 |
-| End-to-end corpus | One type-construction exemplar; no GPU scene track | Stage 0 establishes the harness |
+| End-to-end corpus | Stage 0 ledger and five unsupported capstone manifests exist; no GPU scene track | Stage 1 begins earning executable evidence |
 
 ## Three.js 80 Capability Scorecard
 
@@ -230,7 +230,7 @@ campaign decision.
 
 ### Stage 0 — Capability baseline and proof harness
 
-**Status**: selected; ready for delivery
+**Status**: complete — ledger, capstone manifests, and report harness landed
 **Source**: [`goals/00-capability-baseline.md`](goals/00-capability-baseline.md)
 **Why now**: freezes the scorecard, workload corpus, evidence rules, and first
 cross-repo validation seam before implementation can game the target.
@@ -241,7 +241,7 @@ capstone family.
 
 ### Stage 1 — Core math and transform foundation
 
-**Status**: planned
+**Status**: selected; ready for delivery
 **Source**: [`goals/01-math-transform-foundation.md`](goals/01-math-transform-foundation.md)
 **Depends on**: Stage 0
 **Gate**: reusable vector, matrix, quaternion, Euler, color, and transform

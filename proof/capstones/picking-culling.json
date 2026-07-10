@@ -1,0 +1,1 @@
+{"schema_version":1,"id":"picking-culling","required_level":"host_graphics","workload":"examples/triga-capstones/picking-culling","fixtures":[],"expected":{"kind":"numeric","contract":"visible set and picked object identifiers"},"state":"unsupported","reason":"world bounds, culling, and picking are unavailable"}

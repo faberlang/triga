@@ -1,0 +1,1 @@
+{"schema_version":1,"id":"hierarchical-scene","required_level":"host_graphics","workload":"examples/triga-capstones/hierarchical-scene","fixtures":[],"expected":{"kind":"numeric_and_pixel","contract":"world transforms and deterministic reference image"},"state":"unsupported","reason":"heterogeneous scene graph and direct draw path are unavailable"}
