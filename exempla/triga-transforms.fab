@@ -59,6 +59,22 @@ incipit {
         identity_rotation, normalized_rotation
     )
     adfirma multiplied_rotation.w ≡ (1.0 ∷ f32), "quaternion identity composition"
+    fixum triga.Euler zero_euler ← triga.euler(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    fixum triga.Quaternion ∪ nihil zero_euler_quaternion ← triga.euler_ad_quaternionem(zero_euler)
+    adfirma zero_euler_quaternion!.w ≡ (1.0 ∷ f32), "Euler converts to identity quaternion"
+    fixum triga.Quaternion ∪ nihil composed_euler ← triga.euler_composita(zero_euler, zero_euler)
+    adfirma composed_euler!.w ≡ (1.0 ∷ f32), "Euler composition uses quaternions"
+    fixum triga.Euler quarter_turn ← triga.euler(0.0 ∷ f32, 0.0 ∷ f32, 1.57079633 ∷ f32)
+    fixum triga.Euler ∪ nihil midpoint_euler ← triga.euler_interpolata(
+        zero_euler, quarter_turn, 0.5 ∷ f32
+    )
+    adfirma (midpoint_euler!.z - 0.78539816).absolutum() ≤ 0.0001,
+        "Euler interpolation"
+    fixum triga.Euler unsupported_euler ← triga.Euler {
+        x = 0.0 ∷ f32, y = 0.0 ∷ f32, z = 0.0 ∷ f32, order = "ZYX"
+    }
+    adfirma triga.euler_ad_quaternionem(unsupported_euler) est nihil,
+        "unsupported Euler order rejects"
     fixum triga.Matrix4 composed ← triga.matrix4_composita(
         triga.vector3(5.0 ∷ f32, -2.0 ∷ f32, 3.0 ∷ f32),
         identity_rotation,
