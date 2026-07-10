@@ -70,9 +70,14 @@ scripta/       source-library checks
 ## Checks
 
 ```bash
+./scripta/check-capabilities
 ./scripta/check-source
 ./scripta/check-compile
 ```
+
+The capability report is an honest campaign baseline: unsupported proofs score
+zero, while browser availability and artifact freshness are reported
+separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 
 ## Next Steps
 

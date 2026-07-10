@@ -1,0 +1,1 @@
+{"schema_version":1,"id":"animated-gltf","required_level":"host_graphics","workload":"examples/triga-capstones/animated-gltf","fixtures":[],"expected":{"kind":"numeric_and_pixel","contract":"animation pose samples and deterministic reference image"},"state":"unsupported","reason":"glTF ingestion and animation execution are unavailable"}

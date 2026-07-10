@@ -1,0 +1,1 @@
+{"schema_version":1,"id":"pbr-textured-lighting","required_level":"host_graphics","workload":"examples/triga-capstones/pbr-textured-lighting","fixtures":[],"expected":{"kind":"pixel","contract":"deterministic material and lighting reference image"},"state":"unsupported","reason":"material, texture, lighting, and graphics-stage pipelines are unavailable"}
