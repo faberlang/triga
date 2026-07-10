@@ -67,3 +67,11 @@ File MIR needs through Vivi with the operation subset and acceptance evidence.
 
 - Which matrix operations Radix will admit to typed MIR for the first shared
   subset is owned by the MIR campaign and blocks integrated Stage 1 closure.
+
+## Revision: Extended CPU Batch
+
+The Triga-owned batch now also covers Vector3 distance/interpolation/projection,
+quaternion multiplication/normalization/interpolation, quaternion-based matrix
+composition, affine determinant, transpose, color interpolation, and essential
+Box/Sphere/Plane/Ray queries. A source-module split is deferred until provider
+interfaces can prove imports across the canonical `triga:triga` seam.

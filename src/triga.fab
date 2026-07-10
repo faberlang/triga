@@ -297,6 +297,93 @@ functio vector3_normalizata(de Vector3 v) → Vector3 {
     redde vector3(v.x / length, v.y / length, v.z / length)
 }
 
+functio vector3_distantia(de Vector3 a, de Vector3 b) → f32 {
+    fixum f32 x ← a.x - b.x
+    fixum f32 y ← a.y - b.y
+    fixum f32 z ← a.z - b.z
+    redde _radix_f32(x * x + y * y + z * z)
+}
+
+functio vector3_interpolata(de Vector3 a, de Vector3 b, f32 ratio) → Vector3 {
+    redde vector3(
+        a.x + (b.x - a.x) * ratio,
+        a.y + (b.y - a.y) * ratio,
+        a.z + (b.z - a.z) * ratio
+    )
+}
+
+functio vector3_projecta(de Vector3 v, de Vector3 axis) → Vector3 {
+    fixum f32 denominator ← vector3_dot(axis, axis)
+    si denominator ≤ 0.000001 ergo redde vector3(0.0, 0.0, 0.0)
+    redde vector3_multiplicata(axis, vector3_dot(v, axis) / denominator)
+}
+
+functio quaternion(f32 x, f32 y, f32 z, f32 w) → Quaternion {
+    redde Quaternion { x = x, y = y, z = z, w = w }
+}
+
+functio quaternion_multiplicata(de Quaternion a, de Quaternion b) → Quaternion {
+    redde quaternion(
+        a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+        a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+        a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+        a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z
+    )
+}
+
+functio quaternion_normalizata(de Quaternion q) → Quaternion {
+    fixum f32 length ← _radix_f32(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w)
+    si length ≤ 0.000001 ergo redde quaternion(0.0, 0.0, 0.0, 1.0)
+    redde quaternion(q.x / length, q.y / length, q.z / length, q.w / length)
+}
+
+functio quaternion_interpolata(de Quaternion a, de Quaternion b, f32 ratio) → Quaternion {
+    varia f32 bx ← b.x
+    varia f32 by ← b.y
+    varia f32 bz ← b.z
+    varia f32 bw ← b.w
+    fixum f32 alignment ← a.x * bx + a.y * by + a.z * bz + a.w * bw
+    si alignment < 0.0 {
+        bx ← -bx
+        by ← -by
+        bz ← -bz
+        bw ← -bw
+    }
+    fixum Quaternion mixed ← quaternion(
+        a.x + (bx - a.x) * ratio,
+        a.y + (by - a.y) * ratio,
+        a.z + (bz - a.z) * ratio,
+        a.w + (bw - a.w) * ratio
+    )
+    redde quaternion_normalizata(mixed)
+}
+
+functio color_interpolata(de Color a, de Color b, f32 ratio) → Color {
+    redde Color {
+        r = a.r + (b.r - a.r) * ratio,
+        g = a.g + (b.g - a.g) * ratio,
+        b = a.b + (b.b - a.b) * ratio
+    }
+}
+
+functio box3_continet(de Box3 bounds, de Vector3 point) → bivalens {
+    redde point.x ≥ bounds.min.x et point.x ≤ bounds.max.x et
+        point.y ≥ bounds.min.y et point.y ≤ bounds.max.y et
+        point.z ≥ bounds.min.z et point.z ≤ bounds.max.z
+}
+
+functio sphere_continet(de Sphere sphere, de Vector3 point) → bivalens {
+    redde vector3_distantia(sphere.center, point) ≤ sphere.radius
+}
+
+functio plane_distantia(de Plane plane, de Vector3 point) → f32 {
+    redde vector3_dot(plane.normal, point) + plane.constant
+}
+
+functio ray_punctum(de Ray ray, f32 distance) → Vector3 {
+    redde vector3_addita(ray.origin, vector3_multiplicata(ray.direction, distance))
+}
+
 functio matrix4_identitas() → Matrix4 {
     redde Matrix4 { elements = [
         1.0, 0.0, 0.0, 0.0,
@@ -321,6 +408,56 @@ functio matrix4_scala(de Vector3 scale) → Matrix4 {
         0.0, scale.y, 0.0, 0.0,
         0.0, 0.0, scale.z, 0.0,
         0.0, 0.0, 0.0, 1.0,
+    ] }
+}
+
+functio matrix4_composita(
+    de Vector3 position,
+    de Quaternion rotation,
+    de Vector3 scale
+) → Matrix4 {
+    fixum Quaternion q ← quaternion_normalizata(rotation)
+    fixum f32 xx ← q.x * q.x
+    fixum f32 yy ← q.y * q.y
+    fixum f32 zz ← q.z * q.z
+    fixum f32 xy ← q.x * q.y
+    fixum f32 xz ← q.x * q.z
+    fixum f32 yz ← q.y * q.z
+    fixum f32 wx ← q.w * q.x
+    fixum f32 wy ← q.w * q.y
+    fixum f32 wz ← q.w * q.z
+    redde Matrix4 { elements = [
+        (1.0 - 2.0 * (yy + zz)) * scale.x,
+        (2.0 * (xy + wz)) * scale.x,
+        (2.0 * (xz - wy)) * scale.x,
+        0.0,
+        (2.0 * (xy - wz)) * scale.y,
+        (1.0 - 2.0 * (xx + zz)) * scale.y,
+        (2.0 * (yz + wx)) * scale.y,
+        0.0,
+        (2.0 * (xz + wy)) * scale.z,
+        (2.0 * (yz - wx)) * scale.z,
+        (1.0 - 2.0 * (xx + yy)) * scale.z,
+        0.0,
+        position.x, position.y, position.z, 1.0,
+    ] }
+}
+
+functio matrix4_determinans_affinis(de Matrix4 matrix) → f32 {
+    fixum lista<f32> e ← matrix.elements
+    redde
+        e[0] * (e[5] * e[10] - e[9] * e[6]) -
+        e[4] * (e[1] * e[10] - e[9] * e[2]) +
+        e[8] * (e[1] * e[6] - e[5] * e[2])
+}
+
+functio matrix4_transposita(de Matrix4 matrix) → Matrix4 {
+    fixum lista<f32> e ← matrix.elements
+    redde Matrix4 { elements = [
+        e[0], e[4], e[8], e[12],
+        e[1], e[5], e[9], e[13],
+        e[2], e[6], e[10], e[14],
+        e[3], e[7], e[11], e[15],
     ] }
 }
 
@@ -368,10 +505,7 @@ functio matrix4_inversa_affinis(de Matrix4 matrix) → Matrix4 ∪ nihil {
     fixum f32 a20 ← e[2]
     fixum f32 a21 ← e[6]
     fixum f32 a22 ← e[10]
-    fixum f32 determinant ←
-        a00 * (a11 * a22 - a12 * a21) -
-        a01 * (a10 * a22 - a12 * a20) +
-        a02 * (a10 * a21 - a11 * a20)
+    fixum f32 determinant ← matrix4_determinans_affinis(matrix)
     si determinant.absolutum() ≤ 0.000001 ergo redde nihil
 
     fixum f32 d ← 1.0 / determinant
