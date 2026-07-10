@@ -1,0 +1,74 @@
++++
+term = "triga-transforms"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Triga Vector3 and Matrix4 transform-chain policy and CPU proof."
++++
+
+importa ex "triga:triga" privata triga
+
+incipit {
+    fixum triga.Vector3 zero ← triga.vector3(0.0, 0.0, 0.0)
+    fixum triga.Vector3 normalized_zero ← triga.vector3_normalizata(zero)
+    adfirma normalized_zero.x ≡ (0.0 ∷ f32), "zero normalization is stable"
+    fixum triga.Vector3 midpoint ← triga.vector3_interpolata(
+        zero,
+        triga.vector3(2.0 ∷ f32, 4.0 ∷ f32, 6.0 ∷ f32),
+        0.5 ∷ f32
+    )
+    adfirma midpoint.y ≡ (2.0 ∷ f32), "vector interpolation"
+
+    fixum triga.Matrix4 translation ← triga.matrix4_translatio(
+        triga.vector3(5.0 ∷ f32, -2.0 ∷ f32, 3.0 ∷ f32)
+    )
+    fixum triga.Matrix4 scale ← triga.matrix4_scala(
+        triga.vector3(2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32)
+    )
+    fixum triga.Matrix4 world ← triga.matrix4_multiplicata(translation, scale)
+    fixum triga.Vector3 local ← triga.vector3(1.0 ∷ f32, 2.0 ∷ f32, -1.0 ∷ f32)
+    fixum triga.Vector3 transformed ← triga.matrix4_applica_punctum(world, local)
+    adfirma (transformed.x - 7.0).absolutum() ≤ 0.0001, "scaled and translated x"
+    adfirma (transformed.y - 4.0).absolutum() ≤ 0.0001, "scaled and translated y"
+    adfirma (transformed.z + 1.0).absolutum() ≤ 0.0001, "scaled and translated z"
+
+    fixum triga.Matrix4 ∪ nihil inverse ← triga.matrix4_inversa_affinis(world)
+    fixum triga.Matrix4 inverse_value ← triga.Matrix4 { elements = inverse!.elements }
+    fixum triga.Vector3 round_trip ← triga.matrix4_applica_punctum(inverse_value, transformed)
+    adfirma (round_trip.x - local.x).absolutum() ≤ 0.0001, "inverse round-trip x"
+    adfirma (round_trip.y - local.y).absolutum() ≤ 0.0001, "inverse round-trip y"
+    adfirma (round_trip.z - local.z).absolutum() ≤ 0.0001, "inverse round-trip z"
+
+    fixum triga.Matrix4 singular ← triga.matrix4_scala(
+        triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    )
+    adfirma triga.matrix4_inversa_affinis(singular) est nihil, "singular inverse rejects"
+
+    fixum triga.Quaternion identity_rotation ← triga.quaternion(
+        0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32
+    )
+    fixum triga.Quaternion stable_rotation ← triga.quaternion_interpolata(
+        identity_rotation, identity_rotation, 0.5 ∷ f32
+    )
+    adfirma stable_rotation.w ≡ (1.0 ∷ f32), "quaternion interpolation is normalized"
+    fixum triga.Matrix4 composed ← triga.matrix4_composita(
+        triga.vector3(5.0 ∷ f32, -2.0 ∷ f32, 3.0 ∷ f32),
+        identity_rotation,
+        triga.vector3(2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32)
+    )
+    fixum triga.Vector3 composed_point ← triga.matrix4_applica_punctum(composed, local)
+    adfirma (composed_point.x - transformed.x).absolutum() ≤ 0.0001,
+        "quaternion composition matches identity rotation chain"
+
+    fixum triga.Box3 bounds ← triga.Box3 {
+        min = triga.vector3(-1.0 ∷ f32, -1.0 ∷ f32, -1.0 ∷ f32),
+        max = triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
+    }
+    adfirma triga.box3_continet(bounds, zero), "box contains origin"
+    fixum triga.Ray ray ← triga.Ray {
+        origin = zero,
+        direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    }
+    fixum triga.Vector3 ray_point ← triga.ray_punctum(ray, 3.0 ∷ f32)
+    adfirma ray_point.x ≡ (3.0 ∷ f32), "ray point at distance"
+}
