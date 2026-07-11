@@ -613,6 +613,59 @@ functio cone_geometry(f32 radius, f32 height) → BufferGeometry ∪ nihil {
     )
 }
 
+functio torus_geometry(f32 radius, f32 tube_radius) → BufferGeometry ∪ nihil {
+    si radius ≤ 0.0 aut tube_radius ≤ 0.0 aut tube_radius ≥ radius ergo redde nihil
+    fixum f32 diagonal ← 0.70710678
+    fixum lista<f32> ring_cos ← [
+        1.0, diagonal, 0.0, 0.0 - diagonal, 0.0 - 1.0,
+        0.0 - diagonal, 0.0, diagonal, 1.0,
+    ]
+    fixum lista<f32> ring_sin ← [
+        0.0, diagonal, 1.0, diagonal, 0.0,
+        0.0 - diagonal, 0.0 - 1.0, 0.0 - diagonal, 0.0,
+    ]
+    fixum lista<f32> tube_cos ← [1.0, 0.0, 0.0 - 1.0, 0.0, 1.0]
+    fixum lista<f32> tube_sin ← [0.0, 1.0, 0.0, 0.0 - 1.0, 0.0]
+    varia lista<f32> positions ← vacua
+    varia lista<f32> normals ← vacua
+    varia lista<f32> uvs ← vacua
+    varia numerus ring ← 0
+    dum ring < 9 {
+        varia numerus tube ← 0
+        dum tube < 5 {
+            fixum f32 radial ← radius + tube_radius * tube_cos[tube]
+            positions.appende(radial * ring_cos[ring])
+            positions.appende(tube_radius * tube_sin[tube])
+            positions.appende(radial * ring_sin[ring])
+            normals.appende(tube_cos[tube] * ring_cos[ring])
+            normals.appende(tube_sin[tube])
+            normals.appende(tube_cos[tube] * ring_sin[ring])
+            uvs.appende((ring ↦ f32) / 8.0)
+            uvs.appende((tube ↦ f32) / 4.0)
+            tube ← tube + 1
+        }
+        ring ← ring + 1
+    }
+    varia lista<u32> indices ← vacua
+    ring ← 0
+    dum ring < 8 {
+        varia numerus tube ← 0
+        dum tube < 4 {
+            fixum numerus a ← ring * 5 + tube
+            fixum numerus b ← (ring + 1) * 5 + tube
+            indices.appende(a ↦ u32)
+            indices.appende((b + 1) ↦ u32)
+            indices.appende(b ↦ u32)
+            indices.appende(a ↦ u32)
+            indices.appende((a + 1) ↦ u32)
+            indices.appende((b + 1) ↦ u32)
+            tube ← tube + 1
+        }
+        ring ← ring + 1
+    }
+    redde _primitive_geometry(45, positions, normals, uvs, indices)
+}
+
 functio box_geometry(f32 width, f32 height, f32 depth) → BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 aut depth ≤ 0.0 ergo redde nihil
     fixum f32 x ← width * 0.5

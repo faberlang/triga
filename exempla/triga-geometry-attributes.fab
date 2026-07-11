@@ -101,6 +101,15 @@ incipit {
         "cone primitive exposes a complete deterministic draw group"
     adfirma cone_result!.attributes.longitudo() ≡ 3,
         "cone primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil torus_result ← geometry.torus_geometry(3.0, 1.0)
+    adfirma torus_result non est nihil, "valid torus radii produce geometry"
+    adfirma torus_result!.indexed et torus_result!.vertex_count ≡ 45
+        et torus_result!.indices.longitudo() ≡ 192,
+        "torus primitive preserves ring and tube seams"
+    adfirma torus_result!.groups.longitudo() ≡ 1 et torus_result!.groups[0].count ≡ 192,
+        "torus primitive exposes a complete deterministic draw group"
+    adfirma torus_result!.attributes.longitudo() ≡ 3,
+        "torus primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
@@ -120,6 +129,8 @@ incipit {
         "cylinder primitive rejects non-positive dimensions"
     adfirma geometry.cone_geometry(0.0, 1.0) est nihil,
         "cone primitive rejects non-positive dimensions"
+    adfirma geometry.torus_geometry(1.0, 1.0) est nihil,
+        "torus primitive rejects a tube that reaches through its center"
     adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil,
         "box primitive rejects non-positive dimensions"
 
