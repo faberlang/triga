@@ -64,6 +64,16 @@ incipit {
     adfirma plane_result!.attributes.longitudo() ≡ 3,
         "plane primitive provides positions, normals, and UVs"
 
+    fixum geometry.BufferGeometry ∪ nihil circle_result ← geometry.circle_geometry(2.0)
+    adfirma circle_result non est nihil, "positive circle radius produces geometry"
+    adfirma circle_result!.indexed et circle_result!.vertex_count ≡ 9
+        et circle_result!.indices.longitudo() ≡ 24,
+        "circle primitive has deterministic segment and index counts"
+    adfirma circle_result!.groups.longitudo() ≡ 1 et circle_result!.groups[0].count ≡ 24,
+        "circle primitive exposes a complete deterministic draw group"
+    adfirma circle_result!.attributes.longitudo() ≡ 3,
+        "circle primitive provides positions, normals, and UVs"
+
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
@@ -75,6 +85,8 @@ incipit {
         "box primitive provides positions, normals, and UVs"
     adfirma geometry.plane_geometry(0.0, 1.0) est nihil,
         "plane primitive rejects non-positive dimensions"
+    adfirma geometry.circle_geometry(0.0) est nihil,
+        "circle primitive rejects non-positive radius"
     adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil,
         "box primitive rejects non-positive dimensions"
 
