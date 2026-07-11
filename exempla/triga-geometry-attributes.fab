@@ -41,6 +41,12 @@ incipit {
         "generated normals preserve explicit attribute layout facts"
     adfirma vertex_result!.element_count ≡ 3,
         "generated normals cover every vertex"
+    fixum _ uv_result ← geometry.geometry_planar_uvs(triangle)
+    adfirma uv_result non est nihil, "valid planar geometry produces UVs"
+    adfirma uv_result!.name ≡ "uv" et uv_result!.component_width ≡ 2,
+        "generated UVs preserve explicit attribute layout facts"
+    adfirma uv_result!.element_count ≡ 3,
+        "generated UV layout covers every vertex"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
@@ -58,6 +64,8 @@ incipit {
     )
     adfirma geometry.geometry_vertex_normals(degenerate) est nihil,
         "degenerate triangles reject instead of producing invalid normals"
+    adfirma geometry.geometry_planar_uvs(degenerate) est nihil,
+        "zero-height planar geometry rejects instead of dividing by zero"
 
     fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
         "position", 3, 3, [0.0, 0.0]
@@ -99,6 +107,8 @@ incipit {
         "invalid geometry cannot produce a bounding sphere"
     adfirma geometry.geometry_vertex_normals(positionless) est nihil,
         "invalid geometry cannot produce normals"
+    adfirma geometry.geometry_planar_uvs(positionless) est nihil,
+        "invalid geometry cannot produce UVs"
     fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
         3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua
     )

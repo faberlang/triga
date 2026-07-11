@@ -311,6 +311,25 @@ functio geometry_vertex_normals(de BufferGeometry geometry) → BufferAttribute 
     redde float32_attribute("normal", 3, geometry.vertex_count, normals)
 }
 
+functio geometry_planar_uvs(de BufferGeometry geometry) → BufferAttribute ∪ nihil {
+    fixum BoundingBox ∪ nihil bounds_result ← geometry_bounding_box(geometry)
+    si bounds_result est nihil ergo redde nihil
+    fixum f32 width ← bounds_result!.max_x - bounds_result!.min_x
+    fixum f32 height ← bounds_result!.max_y - bounds_result!.min_y
+    fixum f32 zero ← 0.0
+    si width ≡ zero aut height ≡ zero ergo redde nihil
+
+    fixum lista<f32> positions ← _geometry_position_values(geometry)
+    varia lista<f32> uvs ← vacua
+    varia numerus i ← 0
+    dum i < positions.longitudo() {
+        uvs.appende((positions[i] - bounds_result!.min_x) / width)
+        uvs.appende((positions[i + 1] - bounds_result!.min_y) / height)
+        i ← i + 3
+    }
+    redde float32_attribute("uv", 2, geometry.vertex_count, uvs)
+}
+
 functio _geometry_indices_valid(de BufferGeometry geometry) → bivalens {
     si geometry.indexed ≡ falsum ergo redde geometry.indices.longitudo() ≡ 0
     si geometry.indices.longitudo() ≡ 0 ergo redde falsum
