@@ -51,6 +51,30 @@ incipit {
         identity_rotation, identity_rotation, 0.5 ∷ f32
     )
     adfirma stable_rotation.w ≡ (1.0 ∷ f32), "quaternion interpolation is normalized"
+    fixum triga.Quaternion normalized_rotation ← triga.quaternion_normalizata(
+        triga.quaternion(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32, 2.0 ∷ f32)
+    )
+    adfirma normalized_rotation.w ≡ (1.0 ∷ f32), "quaternion normalization"
+    fixum triga.Quaternion multiplied_rotation ← triga.quaternion_multiplicata(
+        identity_rotation, normalized_rotation
+    )
+    adfirma multiplied_rotation.w ≡ (1.0 ∷ f32), "quaternion identity composition"
+    fixum triga.Euler zero_euler ← triga.euler(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    fixum triga.Quaternion ∪ nihil zero_euler_quaternion ← triga.euler_ad_quaternionem(zero_euler)
+    adfirma zero_euler_quaternion!.w ≡ (1.0 ∷ f32), "Euler converts to identity quaternion"
+    fixum triga.Quaternion ∪ nihil composed_euler ← triga.euler_composita(zero_euler, zero_euler)
+    adfirma composed_euler!.w ≡ (1.0 ∷ f32), "Euler composition uses quaternions"
+    fixum triga.Euler quarter_turn ← triga.euler(0.0 ∷ f32, 0.0 ∷ f32, 1.57079633 ∷ f32)
+    fixum triga.Euler ∪ nihil midpoint_euler ← triga.euler_interpolata(
+        zero_euler, quarter_turn, 0.5 ∷ f32
+    )
+    adfirma (midpoint_euler!.z - 0.78539816).absolutum() ≤ 0.0001,
+        "Euler interpolation"
+    fixum triga.Euler unsupported_euler ← triga.Euler {
+        x = 0.0 ∷ f32, y = 0.0 ∷ f32, z = 0.0 ∷ f32, order = "ZYX"
+    }
+    adfirma triga.euler_ad_quaternionem(unsupported_euler) est nihil,
+        "unsupported Euler order rejects"
     fixum triga.Matrix4 composed ← triga.matrix4_composita(
         triga.vector3(5.0 ∷ f32, -2.0 ∷ f32, 3.0 ∷ f32),
         identity_rotation,
@@ -65,10 +89,33 @@ incipit {
         max = triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
     }
     adfirma triga.box3_continet(bounds, zero), "box contains origin"
+    fixum triga.Sphere sphere ← triga.Sphere {
+        center = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
+        radius = 2.0 ∷ f32
+    }
+    adfirma triga.sphere_continet(sphere, triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)),
+        "sphere contains interior point"
+    fixum triga.Plane plane ← triga.Plane {
+        normal = triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32),
+        constant = -2.0 ∷ f32
+    }
+    adfirma triga.plane_distantia(plane, triga.vector3(0.0 ∷ f32, 5.0 ∷ f32, 0.0 ∷ f32))
+        ≡ (3.0 ∷ f32), "plane signed distance"
     fixum triga.Ray ray ← triga.Ray {
         origin = zero,
         direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
     }
     fixum triga.Vector3 ray_point ← triga.ray_punctum(ray, 3.0 ∷ f32)
     adfirma ray_point.x ≡ (3.0 ∷ f32), "ray point at distance"
+
+    fixum triga.Color midpoint_color ← triga.color_interpolata(
+        triga.Color { r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 },
+        triga.Color { r = 1.0 ∷ f32, g = 0.5 ∷ f32, b = 0.25 ∷ f32 },
+        0.5 ∷ f32
+    )
+    adfirma midpoint_color.r ≡ (0.5 ∷ f32), "color interpolation"
+    adfirma triga.matrix4_determinans_affinis(scale) ≡ (24.0 ∷ f32),
+        "affine determinant"
+    fixum triga.Matrix4 transposed_translation ← triga.matrix4_transposita(translation)
+    adfirma transposed_translation.elements[3] ≡ (5.0 ∷ f32), "matrix transpose x"
 }

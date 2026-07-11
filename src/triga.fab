@@ -358,6 +358,75 @@ functio quaternion_interpolata(de Quaternion a, de Quaternion b, f32 ratio) → 
     redde quaternion_normalizata(mixed)
 }
 
+functio euler(f32 x, f32 y, f32 z) → Euler {
+    redde Euler { x = x, y = y, z = z, order = "XYZ" }
+}
+
+functio _angulus_reductus(f32 angle) → f32 {
+    varia f32 reduced ← angle
+    dum reduced > 3.14159265 { reduced ← reduced - 6.28318530 }
+    dum reduced < -3.14159265 { reduced ← reduced + 6.28318530 }
+    redde reduced
+}
+
+functio _sinus_f32(f32 angle) → f32 {
+    fixum f32 x ← _angulus_reductus(angle)
+    fixum f32 x2 ← x * x
+    fixum f32 x4 ← x2 * x2
+    fixum f32 x6 ← x4 * x2
+    fixum f32 x8 ← x6 * x2
+    redde x * (1.0 - x2 / 6.0 + x4 / 120.0 - x6 / 5040.0 + x8 / 362880.0)
+}
+
+functio _cosinus_f32(f32 angle) → f32 {
+    fixum f32 x ← _angulus_reductus(angle)
+    fixum f32 x2 ← x * x
+    fixum f32 x4 ← x2 * x2
+    fixum f32 x6 ← x4 * x2
+    fixum f32 x8 ← x6 * x2
+    redde 1.0 - x2 / 2.0 + x4 / 24.0 - x6 / 720.0 + x8 / 40320.0
+}
+
+functio euler_ad_quaternionem(de Euler rotation) → Quaternion ∪ nihil {
+    si rotation.order ≠ "XYZ" ergo redde nihil
+    fixum f32 hx ← rotation.x * 0.5
+    fixum f32 hy ← rotation.y * 0.5
+    fixum f32 hz ← rotation.z * 0.5
+    fixum f32 sx ← _sinus_f32(hx)
+    fixum f32 cx ← _cosinus_f32(hx)
+    fixum f32 sy ← _sinus_f32(hy)
+    fixum f32 cy ← _cosinus_f32(hy)
+    fixum f32 sz ← _sinus_f32(hz)
+    fixum f32 cz ← _cosinus_f32(hz)
+    redde quaternion_normalizata(quaternion(
+        sx * cy * cz + cx * sy * sz,
+        cx * sy * cz - sx * cy * sz,
+        cx * cy * sz + sx * sy * cz,
+        cx * cy * cz - sx * sy * sz
+    ))
+}
+
+functio euler_composita(de Euler a, de Euler b) → Quaternion ∪ nihil {
+    fixum Quaternion ∪ nihil qa ← euler_ad_quaternionem(a)
+    si qa est nihil ergo redde nihil
+    fixum Quaternion ∪ nihil qb ← euler_ad_quaternionem(b)
+    si qb est nihil ergo redde nihil
+    fixum Quaternion av ← Quaternion { x = qa!.x, y = qa!.y, z = qa!.z, w = qa!.w }
+    fixum Quaternion bv ← Quaternion { x = qb!.x, y = qb!.y, z = qb!.z, w = qb!.w }
+    redde quaternion_normalizata(quaternion_multiplicata(av, bv))
+}
+
+functio euler_interpolata(de Euler a, de Euler b, f32 ratio) → Euler ∪ nihil {
+    si a.order ≠ b.order ergo redde nihil
+    si a.order ≠ "XYZ" ergo redde nihil
+    redde Euler {
+        x = a.x + (b.x - a.x) * ratio,
+        y = a.y + (b.y - a.y) * ratio,
+        z = a.z + (b.z - a.z) * ratio,
+        order = "XYZ"
+    }
+}
+
 functio color_interpolata(de Color a, de Color b, f32 ratio) → Color {
     redde Color {
         r = a.r + (b.r - a.r) * ratio,
