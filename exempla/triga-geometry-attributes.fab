@@ -32,7 +32,16 @@ functio primitive_layout_valid(geometry.BufferGeometry ∪ nihil candidate) → 
     }
     fixum lista<geometry.VertexAttributeLayout> ∪ nihil layouts ←
         geometry.geometry_vertex_layouts(primitive)
-    redde layouts non est nihil
+    redde layouts non est nihil et primitive.attributes.longitudo() ≡ 3
+        et primitive.attributes[0].name ≡ "position"
+        et primitive.attributes[0].shader_location ≡ 0
+        et primitive.attributes[0].component_width ≡ 3
+        et primitive.attributes[1].name ≡ "normal"
+        et primitive.attributes[1].shader_location ≡ 1
+        et primitive.attributes[1].component_width ≡ 3
+        et primitive.attributes[2].name ≡ "uv"
+        et primitive.attributes[2].shader_location ≡ 2
+        et primitive.attributes[2].component_width ≡ 2
 }
 
 incipit {
