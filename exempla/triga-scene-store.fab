@@ -31,10 +31,42 @@ incipit {
         children = mesh_result!.children
     }
     adfirma mesh.parent!.index ≡ root_step.handle.index, "stable parent identity"
+    fixum scene.SceneInsert group_step ← scene.scene_insert(
+        attached_store, scene.scene_group("group")
+    )
+    fixum scene.SceneStore ∪ nihil reparented ← scene.scene_attach(
+        group_step.store, mesh_step.handle, group_step.handle
+    )
+    adfirma reparented non est nihil, "reparent succeeds"
+    fixum scene.SceneStore reparented_store ← scene.SceneStore { slots = reparented!.slots }
+    fixum scene.SceneNode ∪ nihil old_root_result ← scene.scene_get(
+        reparented_store, root_step.handle
+    )
+    adfirma old_root_result!.children.longitudo() ≡ 0, "reparent removes old edge"
+    fixum scene.SceneNode ∪ nihil reparented_mesh_result ← scene.scene_get(
+        reparented_store, mesh_step.handle
+    )
+    adfirma reparented_mesh_result!.parent!.index ≡ group_step.handle.index,
+        "reparent preserves child identity"
+    adfirma scene.scene_attach(reparented_store, mesh_step.handle, group_step.handle) est nihil,
+        "duplicate attach rejects"
+    fixum scene.SceneStore ∪ nihil detached ← scene.scene_detach(
+        reparented_store, mesh_step.handle
+    )
+    adfirma detached non est nihil, "detach succeeds"
+    fixum scene.SceneStore detached_store ← scene.SceneStore { slots = detached!.slots }
+    fixum scene.SceneNode ∪ nihil detached_mesh_result ← scene.scene_get(
+        detached_store, mesh_step.handle
+    )
+    adfirma detached_mesh_result!.parent est nihil, "detach clears parent"
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     adfirma scene.scene_attach(cycle_store, root_step.handle, mesh_step.handle) est nihil,
         "cycle rejects"
-    fixum scene.SceneStore removed ← scene.scene_remove(attached_store, mesh_step.handle)
+    fixum scene.SceneStore ∪ nihil removed_result ← scene.scene_remove(
+        attached_store, mesh_step.handle
+    )
+    adfirma removed_result non est nihil, "remove succeeds"
+    fixum scene.SceneStore removed ← scene.SceneStore { slots = removed_result!.slots }
     adfirma scene.scene_contains(removed, mesh_step.handle) ≡ falsum, "stale handle rejects"
     adfirma scene.scene_get(removed, mesh_step.handle) est nihil, "stale lookup rejects"
 }
