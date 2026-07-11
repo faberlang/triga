@@ -463,7 +463,7 @@ incipit {
     adfirma geometry.geometry_valid(duplicate_location) ≡ falsum,
         "geometry requires unique shader locations"
     adfirma geometry.geometry_bounding_box(positionless) est nihil,
-        "invalid geometry cannot produce bounds"
+        "bounding boxes require valid position geometry"
     adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
         "invalid geometry cannot produce a bounding sphere"
     adfirma geometry.geometry_vertex_normals(positionless) est nihil,
