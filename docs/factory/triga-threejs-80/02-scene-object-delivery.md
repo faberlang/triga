@@ -45,6 +45,36 @@ objects or value-copy aliases.
 - Provider-imported generated Rust builds and runs the same assertions without
   a host-side graph or Triga-specific compiler branch.
 
+## World-Transform Unit
+
+Scene nodes now carry explicit local and derived world matrices. Updating a
+root walks children in stored order, composes parent-before-child transforms,
+and clears dirty state on the same stable handles. Local edits and graph edits
+dirty the affected subtree; stale roots, non-root entry points, malformed
+matrices, cycles, and removal of parents with live children reject explicitly.
+
+## Ordered-Traversal Unit
+
+`scene_traverse` exposes deterministic parent-before-child traversal in stored
+sibling order while preserving stable handles. Stale roots, stale child edges,
+cycles, and repeated identities reject explicitly instead of returning a
+partial or ambiguous traversal.
+
+## Heterogeneous-Resource Unit
+
+Group, mesh, camera, and light nodes now share one canonical scene store and
+ordered hierarchy. Mesh payload accessors expose geometry and material handles
+without copying resources, and the executable scene exemplar proves that two
+mesh nodes retain identical resource generations while coexisting with camera
+and light siblings.
+
+## Stable-Lookup Unit
+
+`scene_find_name` resolves the first matching node in deterministic preorder and
+returns its stable handle rather than a copied node or list position. Lookup
+validates the full traversal, rejects stale roots and malformed graph edges, and
+the executable scene exemplar proves lookup through a multilevel hierarchy.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes, copied `discretio` payload graphs,

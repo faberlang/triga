@@ -7,6 +7,7 @@ summary = "Stable heterogeneous Triga scene handles, stale rejection, and cycle 
 +++
 
 importa ex "triga:scene" privata scene
+importa ex "triga:triga" privata triga
 
 incipit {
     fixum scene.ResourceHandle geometry ← scene.ResourceHandle { index = 7, generation = 2 }
@@ -18,23 +19,192 @@ incipit {
         root_step.store,
         scene.scene_mesh("mesh", geometry, material)
     )
+    fixum scene.SceneInsert shared_mesh_step ← scene.scene_insert(
+        mesh_step.store,
+        scene.scene_mesh("shared-mesh", geometry, material)
+    )
+    fixum scene.SceneInsert camera_step ← scene.scene_insert(
+        shared_mesh_step.store, scene.scene_camera("camera")
+    )
+    fixum scene.SceneInsert light_step ← scene.scene_insert(
+        camera_step.store, scene.scene_light("light")
+    )
     fixum scene.SceneStore ∪ nihil attached ← scene.scene_attach(
-        mesh_step.store, mesh_step.handle, root_step.handle
+        light_step.store, mesh_step.handle, root_step.handle
     )
     adfirma attached non est nihil, "valid parent/child attach"
-    fixum scene.SceneStore attached_store ← scene.SceneStore { slots = attached!.slots }
+    fixum scene.SceneStore mesh_attached_store ← scene.SceneStore { slots = attached!.slots }
+    fixum scene.SceneStore ∪ nihil shared_attached ← scene.scene_attach(
+        mesh_attached_store, shared_mesh_step.handle, root_step.handle
+    )
+    fixum scene.SceneStore shared_attached_store ← scene.SceneStore {
+        slots = shared_attached!.slots
+    }
+    fixum scene.SceneStore ∪ nihil camera_attached ← scene.scene_attach(
+        shared_attached_store, camera_step.handle, root_step.handle
+    )
+    fixum scene.SceneStore camera_attached_store ← scene.SceneStore {
+        slots = camera_attached!.slots
+    }
+    fixum scene.SceneStore ∪ nihil light_attached ← scene.scene_attach(
+        camera_attached_store, light_step.handle, root_step.handle
+    )
+    adfirma light_attached non est nihil, "heterogeneous parent/child attach"
+    fixum scene.SceneStore attached_store ← scene.SceneStore { slots = light_attached!.slots }
+    fixum lista<scene.SceneHandle> ∪ nihil traversal ← scene.scene_traverse(
+        attached_store, root_step.handle
+    )
+    adfirma traversal non est nihil, "ordered traversal succeeds"
+    adfirma traversal![0].index ≡ root_step.handle.index, "ordered traversal starts at root"
+    adfirma traversal![1].index ≡ mesh_step.handle.index,
+        "ordered traversal preserves child order"
+    adfirma traversal![2].index ≡ shared_mesh_step.handle.index et
+        traversal![3].index ≡ camera_step.handle.index et
+        traversal![4].index ≡ light_step.handle.index,
+        "ordered traversal includes heterogeneous siblings"
     fixum scene.SceneNode ∪ nihil mesh_result ← scene.scene_get(attached_store, mesh_step.handle)
     fixum scene.SceneNode mesh ← scene.SceneNode {
         name = mesh_result!.name,
         kind = mesh_result!.kind,
         parent = mesh_result!.parent,
-        children = mesh_result!.children
+        children = mesh_result!.children,
+        local_matrix = mesh_result!.local_matrix,
+        world_matrix = mesh_result!.world_matrix,
+        world_dirty = mesh_result!.world_dirty
     }
     adfirma mesh.parent!.index ≡ root_step.handle.index, "stable parent identity"
+    fixum scene.SceneNode ∪ nihil shared_mesh_result ← scene.scene_get(
+        attached_store, shared_mesh_step.handle
+    )
+    fixum scene.SceneNode shared_mesh ← scene.SceneNode {
+        name = shared_mesh_result!.name,
+        kind = shared_mesh_result!.kind,
+        parent = shared_mesh_result!.parent,
+        children = shared_mesh_result!.children,
+        local_matrix = shared_mesh_result!.local_matrix,
+        world_matrix = shared_mesh_result!.world_matrix,
+        world_dirty = shared_mesh_result!.world_dirty
+    }
+    fixum scene.ResourceHandle ∪ nihil mesh_geometry ← scene.scene_mesh_geometry(mesh)
+    fixum scene.ResourceHandle ∪ nihil shared_geometry ← scene.scene_mesh_geometry(shared_mesh)
+    fixum scene.ResourceHandle ∪ nihil mesh_material ← scene.scene_mesh_material(mesh)
+    fixum scene.ResourceHandle ∪ nihil shared_material ← scene.scene_mesh_material(shared_mesh)
+    adfirma mesh_geometry!.index ≡ shared_geometry!.index et
+        mesh_geometry!.generation ≡ shared_geometry!.generation,
+        "meshes preserve shared geometry identity"
+    adfirma mesh_material!.index ≡ shared_material!.index et
+        mesh_material!.generation ≡ shared_material!.generation,
+        "meshes preserve shared material identity"
+    adfirma scene.scene_get(attached_store, camera_step.handle)!.name ≡ "camera",
+        "camera shares the heterogeneous scene store"
+    adfirma scene.scene_get(attached_store, light_step.handle)!.name ≡ "light",
+        "light shares the heterogeneous scene store"
+    fixum scene.SceneHandle ∪ nihil found_camera ← scene.scene_find_name(
+        attached_store, root_step.handle, "camera"
+    )
+    adfirma found_camera non est nihil et
+        found_camera!.index ≡ camera_step.handle.index et
+        found_camera!.generation ≡ camera_step.handle.generation,
+        "name lookup returns stable identity"
+    adfirma scene.scene_find_name(attached_store, root_step.handle, "missing") est nihil,
+        "name lookup reports absence"
+    fixum scene.SceneStore ∪ nihil root_local ← scene.scene_set_local_matrix(
+        attached_store, root_step.handle,
+        triga.matrix4_translatio(triga.Vector3 { x = 5.0, y = 0.0, z = 0.0 })
+    )
+    adfirma root_local non est nihil, "root local transform accepted"
+    fixum scene.SceneStore root_local_store ← scene.SceneStore { slots = root_local!.slots }
+    fixum scene.SceneStore ∪ nihil mesh_local ← scene.scene_set_local_matrix(
+        root_local_store, mesh_step.handle,
+        triga.matrix4_translatio(triga.Vector3 { x = 2.0, y = 0.0, z = 0.0 })
+    )
+    adfirma mesh_local non est nihil, "child local transform accepted"
+    fixum scene.SceneStore mesh_local_store ← scene.SceneStore { slots = mesh_local!.slots }
+    fixum scene.SceneStore ∪ nihil world_updated ← scene.scene_update_world(
+        mesh_local_store, root_step.handle
+    )
+    adfirma world_updated non est nihil, "world propagation succeeds"
+    fixum scene.SceneStore world_store ← scene.SceneStore { slots = world_updated!.slots }
+    fixum scene.SceneNode ∪ nihil world_mesh ← scene.scene_get(
+        world_store, mesh_step.handle
+    )
+    fixum triga.Vector3 world_origin ← triga.matrix4_applica_punctum(
+        world_mesh!.world_matrix, triga.Vector3 { x = 0.0, y = 0.0, z = 0.0 }
+    )
+    adfirma world_origin.x ≡ (7.0 ∷ f32), "parent-first world transform composes"
+    adfirma world_mesh!.world_dirty ≡ falsum, "world update clears dirty state"
+    adfirma scene.scene_update_world(world_store, mesh_step.handle) est nihil,
+        "non-root world update rejects"
+    adfirma scene.scene_remove(world_store, root_step.handle) est nihil,
+        "removing a parent rejects dangling children"
+    fixum scene.SceneInsert group_step ← scene.scene_insert(
+        world_store, scene.scene_group("group")
+    )
+    fixum scene.SceneStore ∪ nihil reparented ← scene.scene_attach(
+        group_step.store, mesh_step.handle, group_step.handle
+    )
+    adfirma reparented non est nihil, "reparent succeeds"
+    fixum scene.SceneStore reparented_store ← scene.SceneStore { slots = reparented!.slots }
+    fixum scene.SceneNode ∪ nihil old_root_result ← scene.scene_get(
+        reparented_store, root_step.handle
+    )
+    adfirma old_root_result!.children.longitudo() ≡ 0, "reparent removes old edge"
+    fixum scene.SceneNode ∪ nihil reparented_mesh_result ← scene.scene_get(
+        reparented_store, mesh_step.handle
+    )
+    adfirma reparented_mesh_result!.parent!.index ≡ group_step.handle.index,
+        "reparent preserves child identity"
+    adfirma scene.scene_attach(reparented_store, mesh_step.handle, group_step.handle) est nihil,
+        "duplicate attach rejects"
+    fixum scene.SceneStore ∪ nihil detached ← scene.scene_detach(
+        reparented_store, mesh_step.handle
+    )
+    adfirma detached non est nihil, "detach succeeds"
+    fixum scene.SceneStore detached_store ← scene.SceneStore { slots = detached!.slots }
+    fixum scene.SceneNode ∪ nihil detached_mesh_result ← scene.scene_get(
+        detached_store, mesh_step.handle
+    )
+    adfirma detached_mesh_result!.parent est nihil, "detach clears parent"
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     adfirma scene.scene_attach(cycle_store, root_step.handle, mesh_step.handle) est nihil,
         "cycle rejects"
-    fixum scene.SceneStore removed ← scene.scene_remove(attached_store, mesh_step.handle)
+    fixum scene.SceneStore ∪ nihil removed_result ← scene.scene_remove(
+        attached_store, mesh_step.handle
+    )
+    adfirma removed_result non est nihil, "remove succeeds"
+    fixum scene.SceneStore removed ← scene.SceneStore { slots = removed_result!.slots }
     adfirma scene.scene_contains(removed, mesh_step.handle) ≡ falsum, "stale handle rejects"
     adfirma scene.scene_get(removed, mesh_step.handle) est nihil, "stale lookup rejects"
+    adfirma scene.scene_traverse(removed, mesh_step.handle) est nihil,
+        "traversal rejects a stale root"
+    adfirma scene.scene_find_name(removed, mesh_step.handle, "mesh") est nihil,
+        "name lookup rejects a stale root"
+
+    fixum scene.SceneInsert nested_root ← scene.scene_insert(
+        scene.scene_store(), scene.scene_group("nested-root")
+    )
+    fixum scene.SceneInsert nested_group ← scene.scene_insert(
+        nested_root.store, scene.scene_group("nested-group")
+    )
+    fixum scene.SceneInsert nested_mesh ← scene.scene_insert(
+        nested_group.store, scene.scene_mesh("nested-mesh", geometry, material)
+    )
+    fixum scene.SceneStore ∪ nihil nested_group_attached ← scene.scene_attach(
+        nested_mesh.store, nested_group.handle, nested_root.handle
+    )
+    fixum scene.SceneStore nested_group_store ← scene.SceneStore {
+        slots = nested_group_attached!.slots
+    }
+    fixum scene.SceneStore ∪ nihil nested_mesh_attached ← scene.scene_attach(
+        nested_group_store, nested_mesh.handle, nested_group.handle
+    )
+    fixum scene.SceneStore nested_store ← scene.SceneStore {
+        slots = nested_mesh_attached!.slots
+    }
+    fixum scene.SceneHandle ∪ nihil found_nested_mesh ← scene.scene_find_name(
+        nested_store, nested_root.handle, "nested-mesh"
+    )
+    adfirma found_nested_mesh non est nihil et
+        found_nested_mesh!.index ≡ nested_mesh.handle.index,
+        "name lookup descends a multilevel hierarchy"
 }
