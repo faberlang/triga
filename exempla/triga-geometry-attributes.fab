@@ -8,6 +8,18 @@ summary = "Explicit Triga attribute shape, layout, indexing, draw range, and gro
 
 importa ex "triga:geometry" privata geometry
 
+functio primitive_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
+    si candidate est nihil ergo redde falsum
+    redde geometry.geometry_valid(geometry.BufferGeometry {
+        vertex_count = candidate!.vertex_count,
+        attributes = candidate!.attributes,
+        indexed = candidate!.indexed,
+        indices = candidate!.indices,
+        draw_range = candidate!.draw_range,
+        groups = candidate!.groups
+    })
+}
+
 incipit {
     fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
         "position", 0, 3, 3,
@@ -81,6 +93,8 @@ incipit {
 
     fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 4.0)
     adfirma plane_result non est nihil, "positive plane dimensions produce geometry"
+    adfirma primitive_valid(plane_result),
+        "plane primitive satisfies the public geometry invariants"
     adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4
         et plane_result!.indices.longitudo() ≡ 6,
         "plane primitive has deterministic vertex and index counts"
@@ -89,6 +103,8 @@ incipit {
 
     fixum geometry.BufferGeometry ∪ nihil circle_result ← geometry.circle_geometry(2.0)
     adfirma circle_result non est nihil, "positive circle radius produces geometry"
+    adfirma primitive_valid(circle_result),
+        "circle primitive satisfies the public geometry invariants"
     adfirma circle_result!.indexed et circle_result!.vertex_count ≡ 9
         et circle_result!.indices.longitudo() ≡ 24,
         "circle primitive has deterministic segment and index counts"
@@ -99,6 +115,8 @@ incipit {
 
     fixum geometry.BufferGeometry ∪ nihil sphere_primitive ← geometry.sphere_geometry(2.0)
     adfirma sphere_primitive non est nihil, "positive sphere radius produces geometry"
+    adfirma primitive_valid(sphere_primitive),
+        "sphere primitive satisfies the public geometry invariants"
     adfirma sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24
         et sphere_primitive!.indices.longitudo() ≡ 24,
         "sphere primitive preserves UV seams across eight deterministic faces"
@@ -108,6 +126,8 @@ incipit {
         "sphere primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil cylinder_result ← geometry.cylinder_geometry(2.0, 4.0)
     adfirma cylinder_result non est nihil, "positive cylinder dimensions produce geometry"
+    adfirma primitive_valid(cylinder_result),
+        "cylinder primitive satisfies the public geometry invariants"
     adfirma cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38
         et cylinder_result!.indices.longitudo() ≡ 96,
         "cylinder primitive preserves side and cap seams across eight segments"
@@ -117,6 +137,8 @@ incipit {
         "cylinder primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil cone_result ← geometry.cone_geometry(2.0, 4.0)
     adfirma cone_result non est nihil, "positive cone dimensions produce geometry"
+    adfirma primitive_valid(cone_result),
+        "cone primitive satisfies the public geometry invariants"
     adfirma cone_result!.indexed et cone_result!.vertex_count ≡ 28
         et cone_result!.indices.longitudo() ≡ 48,
         "cone primitive preserves side and cap seams across eight segments"
@@ -126,6 +148,8 @@ incipit {
         "cone primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil torus_result ← geometry.torus_geometry(3.0, 1.0)
     adfirma torus_result non est nihil, "valid torus radii produce geometry"
+    adfirma primitive_valid(torus_result),
+        "torus primitive satisfies the public geometry invariants"
     adfirma torus_result!.indexed et torus_result!.vertex_count ≡ 45
         et torus_result!.indices.longitudo() ≡ 192,
         "torus primitive preserves ring and tube seams"
@@ -135,6 +159,8 @@ incipit {
         "torus primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
+    adfirma primitive_valid(box_result),
+        "box primitive satisfies the public geometry invariants"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
         et box_result!.indices.longitudo() ≡ 36,
         "box primitive preserves per-face normals and UV seams"
