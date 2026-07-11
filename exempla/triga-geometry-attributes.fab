@@ -330,6 +330,8 @@ incipit {
         "primitive index validation rejects absent geometry"
     adfirma primitive_draw_valid(absent_geometry) ≡ falsum,
         "primitive draw validation rejects absent geometry"
+    adfirma primitive_layout_valid(absent_geometry) ≡ falsum,
+        "primitive layout validation rejects absent geometry"
 
     fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
         "position", 0, 3, 3, [0.0, 0.0]
