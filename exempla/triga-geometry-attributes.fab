@@ -83,8 +83,16 @@ functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) →
     si non (candidate!.indices.longitudo() % 3 ≡ 0) ergo redde falsum
     varia numerus i ← 0
     dum i < candidate!.indices.longitudo() {
-        si candidate!.indices[i] ≥ candidate!.vertex_count ergo redde falsum
-        i ← i + 1
+        fixum u32 index_a ← candidate!.indices[i]
+        fixum u32 index_b ← candidate!.indices[i + 1]
+        fixum u32 index_c ← candidate!.indices[i + 2]
+        si index_a ≥ candidate!.vertex_count ergo redde falsum
+        si index_b ≥ candidate!.vertex_count ergo redde falsum
+        si index_c ≥ candidate!.vertex_count ergo redde falsum
+        si index_a ≡ index_b ergo redde falsum
+        si index_b ≡ index_c ergo redde falsum
+        si index_c ≡ index_a ergo redde falsum
+        i ← i + 3
     }
     redde candidate!.topology ≡ finge geometry.TriangleList
 }
