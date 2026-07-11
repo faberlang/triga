@@ -414,7 +414,7 @@ incipit {
     adfirma primitive_valid(indexed_points),
         "primitive validation preserves indexed point topology"
     adfirma primitive_indices_valid(indexed_points) ≡ falsum,
-        "triangle primitive indices still reject indexed point geometry"
+        "triangle primitive indices reject indexed point geometry"
     adfirma primitive_indices_valid(nonindexed) ≡ falsum,
         "primitive index validation rejects non-indexed triangles"
     fixum geometry.BufferGeometry empty_indices ← geometry.indexed_triangle_geometry(
