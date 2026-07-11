@@ -45,6 +45,12 @@ one compilation unit and emit Rust. Provider-import and generated-Rust
 execution remain explicit HIR/codegen blockers. Stage 1 remains open until the
 same shared subset has selected MIR/stepper/GPU evidence.
 
+**Audit (2026-07-11):** Triga families+Euler on main `c3f2972` (`check-source` /
+`check-transforms` green). Selected MIR GPU: WGSL matrix register subset
+`f99b8fad7`; metal/llvm fail-closed `2f3e3ccb1`. **Do not** mark Stage 1 campaign
+closed — full multi-backend matrix emit and product GPU scene remain open. See
+`CAMPAIGN.md` Stage 1 status table.
+
 **Batching / Split Decision:** discovery then batch. This phase establishes the
 record representation in one batch. MIR semantics are a named ownership split
 to hunter-1.

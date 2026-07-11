@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-10) — Stage 1 Triga proof implemented; compiler parity blocked
+**Status**: active (2026-07-11) — Stage 1 **not closed**; Triga CPU+families green; selected MIR/GPU subset green or fail-closed; product GPU/scene still open
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 1 — core math and transform foundation
+**Selected next stage**: Stage 1 residual honesty / Stage 2 prep — do **not** promote Stage 1 complete until integrated gate below is met
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -187,11 +187,11 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Initial type shell plus Vector3 arithmetic and column-major Matrix4 translation, scale, composition, point application, and affine inverse | Complete remaining Stage 1 families after compiler seams unblock |
+| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972` | Stage 2 scene graph; keep transform exempla green |
 | Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
-| Vector/tensor foundation | Source types and representative MIR GPU operations exist | Consume in Stage 1 and Stage 3; add only missing reusable facts |
-| Matrix foundation | Grammar/type surface exists; current package/probe exemplar records backend rejection | Stage 1 selects and proves an executable representation |
-| MIR GPU compute | Stages 0–4 complete; scalar/vector math, control flow, builtins, and reflection partly complete | Reopen only from concrete Triga blockers |
+| Vector/tensor foundation | Source types + MIR vector elementwise/dot/cross on WGSL; CPU stepper matrix product | Consume in Stage 3; no metal/llvm matrix register emit yet |
+| Matrix foundation | MIR CPU matmul/applica/normalize/inversa green; **WGSL** register construct+cell emit (`f99b8fad7`); metal/llvm **fail-closed** stable shapes (`2f3e3ccb1`) | Kernel matrix params still ABI-reject; no multi-backend matrix register parity |
+| MIR GPU compute | Stages 0–4 complete; selected matrix register subset on WGSL only | Reopen only from concrete Triga blockers |
 | Graphics shader stages | Deferred in MIR GPU Stage 8 | Stage 4 lowers that goal with Triga workloads |
 | Browser host | Direct WebGPU compute dispatch; visible scene still rendered by three.js | Stage 5 replaces the visible path with direct Faber artifacts |
 | Runtime/package artifacts | No scene/render artifact contract or graphics runtime representation | Route from Stages 4–6 based on evidence |
@@ -241,7 +241,19 @@ capstone family.
 
 ### Stage 1 — Core math and transform foundation
 
-**Status**: in progress — Triga CPU representation proof implemented; HIR import/generated-Rust and MIR parity needs open
+**Status**: **in progress — not closed** (audit 2026-07-11)
+
+| Seam | Evidence | State |
+| --- | --- | --- |
+| Triga CPU families + Euler | main `c3f2972`; `./scripta/check-source` + `check-transforms` | **green** |
+| MIR CPU register matrix/vector | matmul/applica/normalize/inversa lower+stepper (prior kills; `f99b8fad7` era) | **green** |
+| Selected GPU: WGSL register matrix | radix `f99b8fad7` — construct+cells; elementwise/matmul nucleum tests | **green** (local construct → scalar return; not kernel matrix params) |
+| GPU fail-closed: metal/llvm | radix `2f3e3ccb1` — `kernel matrix construct` / `matrix construct` shapes + tests | **green fail-closed** (no metal/llvm matrix emit) |
+| Adjacent: faber Stage3 native lib link | faber `d9dd406` — run/test path-link sqlite-style crates (need `7ad9804`) | **green** (unblocks product SQLite; not Stage1 gate alone) |
+| Full Stage1 campaign gate | “execute consistently in required Rust **and** MIR/GPU paths” for all families | **open** — metal/llvm matrix emit, matrix kernel ABI, provider/product GPU scene not claimed |
+
+**Residuals closed this cycle (honest, bounded):** Vivi `87a44c3` / tasks `463bf6d` (WGSL subset), `ea89665` (metal/llvm fail-closed). Tracker need `71124e1` remains open until campaign gate above is met without overclaim.
+
 **Source**: [`goals/01-math-transform-foundation.md`](goals/01-math-transform-foundation.md)
 **Depends on**: Stage 0
 **Gate**: reusable vector, matrix, quaternion, Euler, color, and transform
