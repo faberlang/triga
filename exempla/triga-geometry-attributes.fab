@@ -42,6 +42,12 @@ functio primitive_layout_valid(geometry.BufferGeometry ∪ nihil candidate) → 
         et primitive.attributes[2].name ≡ "uv"
         et primitive.attributes[2].shader_location ≡ 2
         et primitive.attributes[2].component_width ≡ 2
+        et primitive.attributes[0].element_count ≡ primitive.vertex_count
+        et primitive.attributes[1].element_count ≡ primitive.vertex_count
+        et primitive.attributes[2].element_count ≡ primitive.vertex_count
+        et primitive.attributes[0].normalized ≡ falsum
+        et primitive.attributes[1].normalized ≡ falsum
+        et primitive.attributes[2].normalized ≡ falsum
 }
 
 incipit {
