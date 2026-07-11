@@ -362,6 +362,12 @@ incipit {
         "triangle primitive indices reject non-triangle topology"
     adfirma primitive_indices_valid(nonindexed) ≡ falsum,
         "primitive index validation rejects non-indexed triangles"
+    fixum geometry.BufferGeometry empty_indices ← geometry.indexed_triangle_geometry(
+        3, [positions], vacua,
+        geometry.DrawRange { start = 0, count = 0 }, vacua
+    )
+    adfirma primitive_indices_valid(empty_indices) ≡ falsum,
+        "primitive index validation rejects empty index buffers"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
