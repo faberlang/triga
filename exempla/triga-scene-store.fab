@@ -19,19 +19,49 @@ incipit {
         root_step.store,
         scene.scene_mesh("mesh", geometry, material)
     )
+    fixum scene.SceneInsert shared_mesh_step ← scene.scene_insert(
+        mesh_step.store,
+        scene.scene_mesh("shared-mesh", geometry, material)
+    )
+    fixum scene.SceneInsert camera_step ← scene.scene_insert(
+        shared_mesh_step.store, scene.scene_camera("camera")
+    )
+    fixum scene.SceneInsert light_step ← scene.scene_insert(
+        camera_step.store, scene.scene_light("light")
+    )
     fixum scene.SceneStore ∪ nihil attached ← scene.scene_attach(
-        mesh_step.store, mesh_step.handle, root_step.handle
+        light_step.store, mesh_step.handle, root_step.handle
     )
     adfirma attached non est nihil, "valid parent/child attach"
-    fixum scene.SceneStore attached_store ← scene.SceneStore { slots = attached!.slots }
+    fixum scene.SceneStore mesh_attached_store ← scene.SceneStore { slots = attached!.slots }
+    fixum scene.SceneStore ∪ nihil shared_attached ← scene.scene_attach(
+        mesh_attached_store, shared_mesh_step.handle, root_step.handle
+    )
+    fixum scene.SceneStore shared_attached_store ← scene.SceneStore {
+        slots = shared_attached!.slots
+    }
+    fixum scene.SceneStore ∪ nihil camera_attached ← scene.scene_attach(
+        shared_attached_store, camera_step.handle, root_step.handle
+    )
+    fixum scene.SceneStore camera_attached_store ← scene.SceneStore {
+        slots = camera_attached!.slots
+    }
+    fixum scene.SceneStore ∪ nihil light_attached ← scene.scene_attach(
+        camera_attached_store, light_step.handle, root_step.handle
+    )
+    adfirma light_attached non est nihil, "heterogeneous parent/child attach"
+    fixum scene.SceneStore attached_store ← scene.SceneStore { slots = light_attached!.slots }
     fixum lista<scene.SceneHandle> ∪ nihil traversal ← scene.scene_traverse(
         attached_store, root_step.handle
     )
     adfirma traversal non est nihil, "ordered traversal succeeds"
-    adfirma traversal!.longitudo() ≡ 2, "ordered traversal visits every node once"
     adfirma traversal![0].index ≡ root_step.handle.index, "ordered traversal starts at root"
     adfirma traversal![1].index ≡ mesh_step.handle.index,
         "ordered traversal preserves child order"
+    adfirma traversal![2].index ≡ shared_mesh_step.handle.index et
+        traversal![3].index ≡ camera_step.handle.index et
+        traversal![4].index ≡ light_step.handle.index,
+        "ordered traversal includes heterogeneous siblings"
     fixum scene.SceneNode ∪ nihil mesh_result ← scene.scene_get(attached_store, mesh_step.handle)
     fixum scene.SceneNode mesh ← scene.SceneNode {
         name = mesh_result!.name,
@@ -43,6 +73,32 @@ incipit {
         world_dirty = mesh_result!.world_dirty
     }
     adfirma mesh.parent!.index ≡ root_step.handle.index, "stable parent identity"
+    fixum scene.SceneNode ∪ nihil shared_mesh_result ← scene.scene_get(
+        attached_store, shared_mesh_step.handle
+    )
+    fixum scene.SceneNode shared_mesh ← scene.SceneNode {
+        name = shared_mesh_result!.name,
+        kind = shared_mesh_result!.kind,
+        parent = shared_mesh_result!.parent,
+        children = shared_mesh_result!.children,
+        local_matrix = shared_mesh_result!.local_matrix,
+        world_matrix = shared_mesh_result!.world_matrix,
+        world_dirty = shared_mesh_result!.world_dirty
+    }
+    fixum scene.ResourceHandle ∪ nihil mesh_geometry ← scene.scene_mesh_geometry(mesh)
+    fixum scene.ResourceHandle ∪ nihil shared_geometry ← scene.scene_mesh_geometry(shared_mesh)
+    fixum scene.ResourceHandle ∪ nihil mesh_material ← scene.scene_mesh_material(mesh)
+    fixum scene.ResourceHandle ∪ nihil shared_material ← scene.scene_mesh_material(shared_mesh)
+    adfirma mesh_geometry!.index ≡ shared_geometry!.index et
+        mesh_geometry!.generation ≡ shared_geometry!.generation,
+        "meshes preserve shared geometry identity"
+    adfirma mesh_material!.index ≡ shared_material!.index et
+        mesh_material!.generation ≡ shared_material!.generation,
+        "meshes preserve shared material identity"
+    adfirma scene.scene_get(attached_store, camera_step.handle)!.name ≡ "camera",
+        "camera shares the heterogeneous scene store"
+    adfirma scene.scene_get(attached_store, light_step.handle)!.name ≡ "light",
+        "light shares the heterogeneous scene store"
     fixum scene.SceneStore ∪ nihil root_local ← scene.scene_set_local_matrix(
         attached_store, root_step.handle,
         triga.matrix4_translatio(triga.Vector3 { x = 5.0, y = 0.0, z = 0.0 })

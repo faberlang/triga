@@ -60,6 +60,14 @@ sibling order while preserving stable handles. Stale roots, stale child edges,
 cycles, and repeated identities reject explicitly instead of returning a
 partial or ambiguous traversal.
 
+## Heterogeneous-Resource Unit
+
+Group, mesh, camera, and light nodes now share one canonical scene store and
+ordered hierarchy. Mesh payload accessors expose geometry and material handles
+without copying resources, and the executable scene exemplar proves that two
+mesh nodes retain identical resource generations while coexisting with camera
+and light siblings.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes, copied `discretio` payload graphs,

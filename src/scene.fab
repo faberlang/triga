@@ -13,10 +13,10 @@ genus ResourceHandle {
 }
 
 discretio SceneNodeKind {
-    Group { },
-    Mesh { ResourceHandle geometry, ResourceHandle material },
-    Camera { },
-    Light { },
+    SceneGroup { },
+    SceneMesh { ResourceHandle geometry, ResourceHandle material },
+    SceneCamera { },
+    SceneLight { },
 }
 
 genus SceneNode {
@@ -67,7 +67,7 @@ functio scene_node(textus name, SceneNodeKind kind) → SceneNode {
 }
 
 functio scene_group(textus name) → SceneNode {
-    redde scene_node(name, finge Group)
+    redde scene_node(name, finge SceneGroup)
 }
 
 functio scene_mesh(
@@ -75,10 +75,36 @@ functio scene_mesh(
     de ResourceHandle geometry,
     de ResourceHandle material
 ) → SceneNode {
-    redde scene_node(name, finge Mesh {
+    redde scene_node(name, finge SceneMesh {
         geometry = ResourceHandle { index = geometry.index, generation = geometry.generation },
         material = ResourceHandle { index = material.index, generation = material.generation }
     })
+}
+
+functio scene_camera(textus name) → SceneNode {
+    redde scene_node(name, finge SceneCamera)
+}
+
+functio scene_light(textus name) → SceneNode {
+    redde scene_node(name, finge SceneLight)
+}
+
+functio scene_mesh_geometry(de SceneNode node) → ResourceHandle ∪ nihil {
+    discerne node.kind {
+        casu SceneMesh fixum geometry, material { redde geometry }
+        casu SceneGroup { redde nihil }
+        casu SceneCamera { redde nihil }
+        casu SceneLight { redde nihil }
+    }
+}
+
+functio scene_mesh_material(de SceneNode node) → ResourceHandle ∪ nihil {
+    discerne node.kind {
+        casu SceneMesh fixum geometry, material { redde material }
+        casu SceneGroup { redde nihil }
+        casu SceneCamera { redde nihil }
+        casu SceneLight { redde nihil }
+    }
 }
 
 functio scene_insert(SceneStore store, SceneNode node) → SceneInsert {
