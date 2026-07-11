@@ -383,7 +383,7 @@ incipit {
     adfirma primitive_valid(indexed_lines),
         "primitive validation preserves indexed line topology"
     adfirma primitive_indices_valid(indexed_lines) ≡ falsum,
-        "triangle primitive indices reject valid non-triangle topology"
+        "triangle primitive indices reject indexed line geometry"
     fixum geometry.BufferAttribute line_positions ← geometry.float32_attribute(
         "position", 0, 3, 2,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
