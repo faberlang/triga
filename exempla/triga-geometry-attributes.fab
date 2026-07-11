@@ -368,6 +368,12 @@ incipit {
     )
     adfirma primitive_indices_valid(empty_indices) ≡ falsum,
         "primitive index validation rejects empty index buffers"
+    fixum geometry.BufferGeometry incomplete_triangle ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1],
+        geometry.DrawRange { start = 0, count = 2 }, vacua
+    )
+    adfirma primitive_indices_valid(incomplete_triangle) ≡ falsum,
+        "primitive index validation rejects incomplete triangles"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
