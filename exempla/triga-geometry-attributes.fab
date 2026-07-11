@@ -74,6 +74,15 @@ incipit {
     adfirma circle_result!.attributes.longitudo() ≡ 3,
         "circle primitive provides positions, normals, and UVs"
 
+    fixum geometry.BufferGeometry ∪ nihil sphere_primitive ← geometry.sphere_geometry(2.0)
+    adfirma sphere_primitive non est nihil, "positive sphere radius produces geometry"
+    adfirma sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24
+        et sphere_primitive!.indices.longitudo() ≡ 24,
+        "sphere primitive preserves UV seams across eight deterministic faces"
+    adfirma sphere_primitive!.groups.longitudo() ≡ 1 et sphere_primitive!.groups[0].count ≡ 24,
+        "sphere primitive exposes a complete deterministic draw group"
+    adfirma sphere_primitive!.attributes.longitudo() ≡ 3,
+        "sphere primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
@@ -87,6 +96,8 @@ incipit {
         "plane primitive rejects non-positive dimensions"
     adfirma geometry.circle_geometry(0.0) est nihil,
         "circle primitive rejects non-positive radius"
+    adfirma geometry.sphere_geometry(0.0) est nihil,
+        "sphere primitive rejects non-positive radius"
     adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil,
         "box primitive rejects non-positive dimensions"
 
