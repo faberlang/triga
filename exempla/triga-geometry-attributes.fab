@@ -346,6 +346,8 @@ incipit {
     )
     adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
         "out-of-range index rejects"
+    adfirma primitive_valid(out_of_range) ≡ falsum,
+        "primitive validation rejects invalid geometry"
     adfirma primitive_indices_valid(out_of_range) ≡ falsum,
         "primitive index validation rejects out-of-range indices"
     fixum geometry.BufferGeometry duplicate_triangle ← geometry.indexed_triangle_geometry(
