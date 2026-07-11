@@ -35,4 +35,7 @@ echo "check-compile: checking basic exemplar imports"
 echo "check-compile: checking geometry attribute exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
 
+echo "check-compile: checking scene store exemplar"
+"$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
+
 "$ROOT/scripta/check-transforms"
