@@ -3,7 +3,7 @@
 **Status**: Units 1–8 implemented on packet — attribute/layout contract,
 structural geometry validation, position-derived bounding boxes and spheres,
 fail-closed generated vertex normals, normalized planar UVs, and validated plane
-box, circle, and sphere primitives; reflection and the remaining primitive family remain
+box, circle, sphere, and cylinder primitives; reflection and the remaining primitive family remain
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix`, `faber-runtime` when generated storage needs it, `examples`
 **Depends on**: Goals 00–01; may overlap Goal 02 after identity policy is locked

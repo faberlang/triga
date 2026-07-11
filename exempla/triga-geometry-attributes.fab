@@ -83,6 +83,15 @@ incipit {
         "sphere primitive exposes a complete deterministic draw group"
     adfirma sphere_primitive!.attributes.longitudo() ≡ 3,
         "sphere primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil cylinder_result ← geometry.cylinder_geometry(2.0, 4.0)
+    adfirma cylinder_result non est nihil, "positive cylinder dimensions produce geometry"
+    adfirma cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38
+        et cylinder_result!.indices.longitudo() ≡ 96,
+        "cylinder primitive preserves side and cap seams across eight segments"
+    adfirma cylinder_result!.groups.longitudo() ≡ 1 et cylinder_result!.groups[0].count ≡ 96,
+        "cylinder primitive exposes a complete deterministic draw group"
+    adfirma cylinder_result!.attributes.longitudo() ≡ 3,
+        "cylinder primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
@@ -98,6 +107,8 @@ incipit {
         "circle primitive rejects non-positive radius"
     adfirma geometry.sphere_geometry(0.0) est nihil,
         "sphere primitive rejects non-positive radius"
+    adfirma geometry.cylinder_geometry(1.0, 0.0) est nihil,
+        "cylinder primitive rejects non-positive dimensions"
     adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil,
         "box primitive rejects non-positive dimensions"
 
