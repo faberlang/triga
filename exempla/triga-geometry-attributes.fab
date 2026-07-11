@@ -11,6 +11,7 @@ importa ex "triga:geometry" privata geometry
 functio primitive_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
     si candidate est nihil ergo redde falsum
     redde geometry.geometry_valid(geometry.BufferGeometry {
+        topology = candidate!.topology,
         vertex_count = candidate!.vertex_count,
         attributes = candidate!.attributes,
         indexed = candidate!.indexed,
@@ -24,6 +25,7 @@ functio primitive_layout_valid(geometry.BufferGeometry ∪ nihil candidate) → 
     si candidate est nihil ergo redde falsum
     si primitive_valid(candidate) ≡ falsum ergo redde falsum
     fixum geometry.BufferGeometry primitive ← geometry.BufferGeometry {
+        topology = candidate!.topology,
         vertex_count = candidate!.vertex_count,
         attributes = candidate!.attributes,
         indexed = candidate!.indexed,
@@ -380,6 +382,15 @@ incipit {
     }
     adfirma primitive_indices_valid(indexed_lines) ≡ falsum,
         "triangle primitive indices reject non-triangle topology"
+    fixum geometry.BufferGeometry valid_lines ← geometry.BufferGeometry {
+        topology = finge geometry.LineList, vertex_count = 3,
+        attributes = [positions], indexed = verum, indices = [0, 1],
+        draw_range = geometry.DrawRange { start = 0, count = 2 }, groups = vacua
+    }
+    adfirma primitive_valid(valid_lines),
+        "primitive validation preserves valid non-triangle topology"
+    adfirma primitive_indices_valid(valid_lines) ≡ falsum,
+        "triangle primitive indices still reject valid non-triangle geometry"
     adfirma primitive_indices_valid(nonindexed) ≡ falsum,
         "primitive index validation rejects non-indexed triangles"
     fixum geometry.BufferGeometry empty_indices ← geometry.indexed_triangle_geometry(
