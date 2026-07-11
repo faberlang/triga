@@ -44,6 +44,11 @@ genus SceneInsert {
     SceneHandle handle
 }
 
+genus SceneTraversal {
+    lista<SceneHandle> handles
+    numerus remaining
+}
+
 functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
 }
@@ -100,6 +105,66 @@ functio scene_contains(de SceneStore store, de SceneHandle handle) → bivalens 
 functio scene_get(de SceneStore store, de SceneHandle handle) → SceneNode ∪ nihil {
     si scene_contains(store, handle) ≡ falsum ergo redde nihil
     redde store.slots[handle.index].node
+}
+
+functio _scene_traversal_contains(
+    de lista<SceneHandle> handles,
+    de SceneHandle handle
+) → bivalens {
+    varia numerus i ← 0
+    dum i < handles.longitudo() {
+        fixum SceneHandle existing ← handles[i]
+        si scene_handle_equals(existing, handle) ≡ verum {
+            redde verum
+        }
+        i ← i + 1
+    }
+    redde falsum
+}
+
+functio _scene_traverse_preorder(
+    de SceneStore store,
+    de SceneHandle handle,
+    lista<SceneHandle> handles,
+    numerus remaining
+) → SceneTraversal ∪ nihil {
+    si remaining ≡ 0 ergo redde nihil
+    si _scene_traversal_contains(handles, handle) ergo redde nihil
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    handles.appende(SceneHandle { index = handle.index, generation = handle.generation })
+    varia SceneTraversal traversal ← SceneTraversal {
+        handles = handles, remaining = remaining - 1
+    }
+    varia numerus i ← 0
+    dum i < node.children.longitudo() {
+        fixum SceneTraversal ∪ nihil current ← _scene_traverse_preorder(
+            store, node.children[i], traversal.handles, traversal.remaining
+        )
+        si current est nihil ergo redde nihil
+        fixum SceneTraversal current_value ← SceneTraversal {
+            handles = current!.handles, remaining = current!.remaining
+        }
+        traversal ← SceneTraversal {
+            handles = current_value.handles, remaining = current_value.remaining
+        }
+        i ← i + 1
+    }
+    redde traversal
+}
+
+functio scene_traverse(de SceneStore store, de SceneHandle root) → lista<SceneHandle> ∪ nihil {
+    fixum SceneTraversal ∪ nihil traversal ← _scene_traverse_preorder(
+        store, root, vacua, store.slots.longitudo()
+    )
+    si traversal est nihil ergo redde nihil
+    redde traversal!.handles
 }
 
 functio _scene_replace(SceneStore store, de SceneHandle handle, SceneNode node) → SceneStore {

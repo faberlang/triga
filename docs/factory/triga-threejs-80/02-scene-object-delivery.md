@@ -53,6 +53,13 @@ and clears dirty state on the same stable handles. Local edits and graph edits
 dirty the affected subtree; stale roots, non-root entry points, malformed
 matrices, cycles, and removal of parents with live children reject explicitly.
 
+## Ordered-Traversal Unit
+
+`scene_traverse` exposes deterministic parent-before-child traversal in stored
+sibling order while preserving stable handles. Stale roots, stale child edges,
+cycles, and repeated identities reject explicitly instead of returning a
+partial or ambiguous traversal.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes, copied `discretio` payload graphs,

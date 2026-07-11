@@ -24,6 +24,14 @@ incipit {
     )
     adfirma attached non est nihil, "valid parent/child attach"
     fixum scene.SceneStore attached_store ← scene.SceneStore { slots = attached!.slots }
+    fixum lista<scene.SceneHandle> ∪ nihil traversal ← scene.scene_traverse(
+        attached_store, root_step.handle
+    )
+    adfirma traversal non est nihil, "ordered traversal succeeds"
+    adfirma traversal!.longitudo() ≡ 2, "ordered traversal visits every node once"
+    adfirma traversal![0].index ≡ root_step.handle.index, "ordered traversal starts at root"
+    adfirma traversal![1].index ≡ mesh_step.handle.index,
+        "ordered traversal preserves child order"
     fixum scene.SceneNode ∪ nihil mesh_result ← scene.scene_get(attached_store, mesh_step.handle)
     fixum scene.SceneNode mesh ← scene.SceneNode {
         name = mesh_result!.name,
@@ -102,4 +110,6 @@ incipit {
     fixum scene.SceneStore removed ← scene.SceneStore { slots = removed_result!.slots }
     adfirma scene.scene_contains(removed, mesh_step.handle) ≡ falsum, "stale handle rejects"
     adfirma scene.scene_get(removed, mesh_step.handle) est nihil, "stale lookup rejects"
+    adfirma scene.scene_traverse(removed, mesh_step.handle) est nihil,
+        "traversal rejects a stale root"
 }
