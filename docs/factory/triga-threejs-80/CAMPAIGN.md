@@ -277,9 +277,10 @@ family produce validated bounds, normals, UVs, groups, and GPU layout facts.
 
 ### Stage 4 — Graphics MIR and shader stages
 
-**Status**: in progress — first Triga CPU/reflection seam landed with explicit
-unique shader locations and complete ordered typed format/offset/stride/step layout facts; graphics
-MIR and reflection agreement remain open
+**Status**: in progress — Triga vertex/layout contract v1 is complete with
+explicit unique shader locations and ordered typed format/offset/stride/step
+reflection facts; handoff is now to Radix Stage 4 graphics MIR and reflection
+agreement
 **Source**: [`goals/04-graphics-mir-shader-stages.md`](goals/04-graphics-mir-shader-stages.md)
 **Depends on**: Stages 0–1; consumes Stage 3 attribute contract
 **Overlap rule**: reopens and updates MIR GPU Stage 8 instead of creating a
