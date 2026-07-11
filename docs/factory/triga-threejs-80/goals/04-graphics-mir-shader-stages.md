@@ -1,7 +1,7 @@
 # Goal 04: Graphics MIR And Shader Stages
 
 **Status**: in progress — Triga vertex attributes now declare unique shader
-locations and derive complete ordered CPU-side location/format/stride layout facts; Radix
+locations and derive complete ordered CPU-side location/format/offset/stride/step layout facts; Radix
 graphics MIR, reflection agreement, shader stages, and host consumption remain
 open
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
@@ -61,8 +61,8 @@ graph completeness, production web packaging, and a general shader DSL.
 - Triga's structure-of-arrays attribute contract carries an explicit shader
   location and rejects duplicate locations before reflection or upload.
 - `attribute_vertex_layout` exposes the declared location, typed scalar/vector
-  format, and derived byte stride as the CPU comparison seam for the first
-  Radix reflection fixture.
+  format, zero byte offset, derived byte stride, and per-vertex step mode as the
+  CPU comparison seam for the first Radix reflection fixture.
 - `geometry_vertex_layouts` exposes the complete ordered vertex-buffer contract
   only for valid geometry, without requiring reflection or the host to inspect
   attribute names.

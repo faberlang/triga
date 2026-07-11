@@ -28,6 +28,11 @@ discretio VertexFormat {
     Uint32x4 { }
 }
 
+discretio VertexStepMode {
+    VertexStep { }
+    InstanceStep { }
+}
+
 genus BufferAttribute {
     textus name
     numerus shader_location
@@ -41,7 +46,9 @@ genus BufferAttribute {
 genus VertexAttributeLayout {
     numerus shader_location
     VertexFormat vertex_format
+    numerus offset_bytes
     numerus stride_bytes
+    VertexStepMode step_mode
 }
 
 genus DrawRange {
@@ -168,7 +175,8 @@ functio attribute_vertex_layout(de BufferAttribute attribute) → VertexAttribut
     redde VertexAttributeLayout {
         shader_location = attribute.shader_location,
         vertex_format = _attribute_vertex_format(attribute),
-        stride_bytes = attribute_stride_bytes(attribute)
+        offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
+        step_mode = finge VertexStep
     }
 }
 
@@ -181,7 +189,8 @@ functio geometry_vertex_layouts(de BufferGeometry geometry) → lista<VertexAttr
         layouts.appende(VertexAttributeLayout {
             shader_location = attribute.shader_location,
             vertex_format = _attribute_vertex_format(attribute),
-            stride_bytes = attribute_stride_bytes(attribute)
+            offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
+            step_mode = finge VertexStep
         })
         i ← i + 1
     }
