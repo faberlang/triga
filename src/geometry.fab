@@ -161,18 +161,7 @@ functio _geometry_attributes_valid(de BufferGeometry geometry) → bivalens {
 
 functio geometry_bounding_box(de BufferGeometry geometry) → BoundingBox ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
-    varia lista<f32> positions ← vacua
-    varia numerus i ← 0
-    dum i < geometry.attributes.longitudo() {
-        fixum BufferAttribute attribute ← geometry.attributes[i]
-        si attribute.name ≡ "position" {
-            discerne attribute.data {
-                casu Float32Attribute fixum values { positions ← values }
-                casu Uint32Attribute fixum values { }
-            }
-        }
-        i ← i + 1
-    }
+    fixum lista<f32> positions ← _geometry_position_values(geometry)
 
     varia f32 min_x ← positions[0]
     varia f32 min_y ← positions[1]
@@ -180,7 +169,7 @@ functio geometry_bounding_box(de BufferGeometry geometry) → BoundingBox ∪ ni
     varia f32 max_x ← positions[0]
     varia f32 max_y ← positions[1]
     varia f32 max_z ← positions[2]
-    i ← 3
+    varia numerus i ← 3
     dum i < positions.longitudo() {
         fixum f32 x ← positions[i]
         fixum f32 y ← positions[i + 1]
@@ -222,21 +211,10 @@ functio geometry_bounding_sphere(de BufferGeometry geometry) → BoundingSphere 
     fixum f32 center_y ← (bounds.min_y + bounds.max_y) * 0.5
     fixum f32 center_z ← (bounds.min_z + bounds.max_z) * 0.5
 
-    varia lista<f32> positions ← vacua
-    varia numerus i ← 0
-    dum i < geometry.attributes.longitudo() {
-        fixum BufferAttribute attribute ← geometry.attributes[i]
-        si attribute.name ≡ "position" {
-            discerne attribute.data {
-                casu Float32Attribute fixum values { positions ← values }
-                casu Uint32Attribute fixum values { }
-            }
-        }
-        i ← i + 1
-    }
+    fixum lista<f32> positions ← _geometry_position_values(geometry)
 
     varia f32 radius_squared ← 0.0
-    i ← 0
+    varia numerus i ← 0
     dum i < positions.longitudo() {
         fixum f32 dx ← positions[i] - center_x
         fixum f32 dy ← positions[i + 1] - center_y
@@ -249,6 +227,88 @@ functio geometry_bounding_sphere(de BufferGeometry geometry) → BoundingSphere 
         center_x = center_x, center_y = center_y, center_z = center_z,
         radius = _geometry_radix_f32(radius_squared)
     }
+}
+
+functio _geometry_position_values(de BufferGeometry geometry) → lista<f32> {
+    varia lista<f32> positions ← vacua
+    varia numerus i ← 0
+    dum i < geometry.attributes.longitudo() {
+        fixum BufferAttribute attribute ← geometry.attributes[i]
+        si attribute.name ≡ "position" {
+            discerne attribute.data {
+                casu Float32Attribute fixum values { positions ← values }
+                casu Uint32Attribute fixum values { }
+            }
+        }
+        i ← i + 1
+    }
+    redde positions
+}
+
+functio geometry_vertex_normals(de BufferGeometry geometry) → BufferAttribute ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    discerne geometry.topology {
+        casu TriangleList { }
+        casu LineList { redde nihil }
+        casu PointList { redde nihil }
+    }
+
+    fixum lista<f32> positions ← _geometry_position_values(geometry)
+    varia lista<f32> normals ← vacua
+    varia numerus i ← 0
+    dum i < positions.longitudo() {
+        normals.appende(0.0)
+        i ← i + 1
+    }
+
+    i ← 0
+    dum i < geometry_element_count(geometry) {
+        varia numerus a ← i
+        varia numerus b ← i + 1
+        varia numerus c ← i + 2
+        si geometry.indexed {
+            a ← geometry.indices[i] ↦ numerus
+            b ← geometry.indices[i + 1] ↦ numerus
+            c ← geometry.indices[i + 2] ↦ numerus
+        }
+        fixum numerus ai ← a * 3
+        fixum numerus bi ← b * 3
+        fixum numerus ci ← c * 3
+        fixum f32 ab_x ← positions[bi] - positions[ai]
+        fixum f32 ab_y ← positions[bi + 1] - positions[ai + 1]
+        fixum f32 ab_z ← positions[bi + 2] - positions[ai + 2]
+        fixum f32 ac_x ← positions[ci] - positions[ai]
+        fixum f32 ac_y ← positions[ci + 1] - positions[ai + 1]
+        fixum f32 ac_z ← positions[ci + 2] - positions[ai + 2]
+        fixum f32 nx ← ab_y * ac_z - ab_z * ac_y
+        fixum f32 ny ← ab_z * ac_x - ab_x * ac_z
+        fixum f32 nz ← ab_x * ac_y - ab_y * ac_x
+        normals[ai] ← normals[ai] + nx
+        normals[ai + 1] ← normals[ai + 1] + ny
+        normals[ai + 2] ← normals[ai + 2] + nz
+        normals[bi] ← normals[bi] + nx
+        normals[bi + 1] ← normals[bi + 1] + ny
+        normals[bi + 2] ← normals[bi + 2] + nz
+        normals[ci] ← normals[ci] + nx
+        normals[ci + 1] ← normals[ci + 1] + ny
+        normals[ci + 2] ← normals[ci + 2] + nz
+        i ← i + 3
+    }
+
+    i ← 0
+    fixum f32 zero ← 0.0
+    dum i < normals.longitudo() {
+        fixum f32 normal_scale ← _geometry_radix_f32(
+            normals[i] * normals[i] + normals[i + 1] * normals[i + 1]
+                + normals[i + 2] * normals[i + 2]
+        )
+        si normal_scale ≡ zero { redde nihil }
+        normals[i] ← normals[i] / normal_scale
+        normals[i + 1] ← normals[i + 1] / normal_scale
+        normals[i + 2] ← normals[i + 2] / normal_scale
+        i ← i + 3
+    }
+    redde float32_attribute("normal", 3, geometry.vertex_count, normals)
 }
 
 functio _geometry_indices_valid(de BufferGeometry geometry) → bivalens {

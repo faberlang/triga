@@ -35,12 +35,29 @@ incipit {
         "bounding-sphere center derives from the position bounds"
     adfirma sphere_result!.radius > 0.7 et sphere_result!.radius < 0.8,
         "bounding-sphere radius encloses every position"
+    fixum _ vertex_result ← geometry.geometry_vertex_normals(triangle)
+    adfirma vertex_result non est nihil, "valid triangles produce vertex normals"
+    adfirma vertex_result!.name ≡ "normal" et vertex_result!.component_width ≡ 3,
+        "generated normals preserve explicit attribute layout facts"
+    adfirma vertex_result!.element_count ≡ 3,
+        "generated normals cover every vertex"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
     adfirma geometry.geometry_valid(nonindexed), "explicit non-indexed geometry validates"
+    adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
+        "non-indexed triangles produce vertex normals"
+
+    fixum geometry.BufferAttribute flat_positions ← geometry.float32_attribute(
+        "position", 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0]
+    )
+    fixum geometry.BufferGeometry degenerate ← geometry.triangle_geometry(
+        3, [flat_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_vertex_normals(degenerate) est nihil,
+        "degenerate triangles reject instead of producing invalid normals"
 
     fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
         "position", 3, 3, [0.0, 0.0]
@@ -80,6 +97,8 @@ incipit {
         "invalid geometry cannot produce bounds"
     adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
         "invalid geometry cannot produce a bounding sphere"
+    adfirma geometry.geometry_vertex_normals(positionless) est nihil,
+        "invalid geometry cannot produce normals"
     fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
         3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
