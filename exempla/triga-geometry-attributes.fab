@@ -10,7 +10,7 @@ importa ex "triga:geometry" privata geometry
 
 incipit {
     fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
-        "position", 3, 3,
+        "position", 0, 3, 3,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
     )
     fixum geometry.BufferGeometry triangle ← geometry.indexed_triangle_geometry(
@@ -49,6 +49,14 @@ incipit {
         "generated UV layout covers every vertex"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
+    fixum geometry.VertexAttributeLayout ∪ nihil position_layout ←
+        geometry.attribute_vertex_layout(positions)
+    adfirma position_layout non est nihil,
+        "valid attributes produce explicit vertex layout facts"
+    adfirma position_layout!.shader_location ≡ 0,
+        "vertex layout preserves the declared shader location"
+    adfirma position_layout!.stride_bytes ≡ 12,
+        "vertex layout preserves the derived byte stride"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
@@ -135,7 +143,7 @@ incipit {
         "box primitive rejects non-positive dimensions"
 
     fixum geometry.BufferAttribute flat_positions ← geometry.float32_attribute(
-        "position", 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0]
+        "position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0]
     )
     fixum geometry.BufferGeometry degenerate ← geometry.triangle_geometry(
         3, [flat_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
@@ -146,7 +154,7 @@ incipit {
         "zero-height planar geometry rejects instead of dividing by zero"
 
     fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
-        "position", 3, 3, [0.0, 0.0]
+        "position", 0, 3, 3, [0.0, 0.0]
     )
     adfirma geometry.attribute_valid(malformed) ≡ falsum,
         "malformed attribute length rejects"
@@ -167,10 +175,10 @@ incipit {
     adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
         "overlapping groups reject"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
-        "position", 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+        "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
     fixum geometry.BufferAttribute normals ← geometry.float32_attribute(
-        "normal", 3, 3,
+        "normal", 0, 3, 3,
         [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
     fixum geometry.BufferGeometry positionless ← geometry.triangle_geometry(
@@ -179,6 +187,12 @@ incipit {
     )
     adfirma geometry.geometry_valid(positionless) ≡ falsum,
         "geometry without an explicit position attribute rejects"
+    fixum geometry.BufferGeometry duplicate_location ← geometry.triangle_geometry(
+        3, [positions, normals],
+        geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(duplicate_location) ≡ falsum,
+        "duplicate shader locations reject before reflection or upload"
     adfirma geometry.geometry_bounding_box(positionless) est nihil,
         "invalid geometry cannot produce bounds"
     adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
