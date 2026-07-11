@@ -391,6 +391,15 @@ incipit {
         "primitive validation preserves valid non-triangle topology"
     adfirma primitive_indices_valid(valid_lines) ≡ falsum,
         "triangle primitive indices still reject valid non-triangle geometry"
+    fixum geometry.BufferGeometry nonindexed_lines ← geometry.BufferGeometry {
+        topology = finge geometry.LineList, vertex_count = 3,
+        attributes = [positions], indexed = falsum, indices = vacua,
+        draw_range = geometry.DrawRange { start = 0, count = 2 }, groups = vacua
+    }
+    adfirma primitive_valid(nonindexed_lines),
+        "primitive validation preserves non-indexed line topology"
+    adfirma primitive_indices_valid(nonindexed_lines) ≡ falsum,
+        "triangle primitive indices still reject non-indexed line geometry"
     fixum geometry.BufferGeometry valid_points ← geometry.BufferGeometry {
         topology = finge geometry.PointList, vertex_count = 3,
         attributes = [positions], indexed = falsum, indices = vacua,
