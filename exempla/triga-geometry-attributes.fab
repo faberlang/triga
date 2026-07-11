@@ -78,6 +78,7 @@ functio primitive_draw_valid(geometry.BufferGeometry ∪ nihil candidate) → bi
 
 functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
     si candidate est nihil ergo redde falsum
+    si non (candidate!.topology ≡ finge geometry.TriangleList) ergo redde falsum
     si candidate!.indexed ≡ falsum ergo redde falsum
     si candidate!.indices.longitudo() ≡ 0 ergo redde falsum
     si non (candidate!.indices.longitudo() % 3 ≡ 0) ergo redde falsum
@@ -106,7 +107,7 @@ functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) →
         }
         i ← i + 3
     }
-    redde candidate!.topology ≡ finge geometry.TriangleList
+    redde verum
 }
 
 incipit {
@@ -352,6 +353,13 @@ incipit {
     )
     adfirma primitive_indices_valid(adjacent_triangles),
         "distinct triangle faces may share an edge"
+    fixum geometry.BufferGeometry indexed_lines ← geometry.BufferGeometry {
+        topology = finge geometry.LineList, vertex_count = 3,
+        attributes = [positions], indexed = verum, indices = [0, 1, 2],
+        draw_range = geometry.DrawRange { start = 0, count = 3 }, groups = vacua
+    }
+    adfirma primitive_indices_valid(indexed_lines) ≡ falsum,
+        "triangle primitive indices reject non-triangle topology"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
