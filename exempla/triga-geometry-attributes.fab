@@ -19,6 +19,14 @@ incipit {
         [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
     )
     adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
+    fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
+    adfirma bounds_result non est nihil, "valid position data produces bounds"
+    fixum f32 zero ← 0.0
+    fixum f32 one ← 1.0
+    adfirma bounds_result!.min_x ≡ zero et bounds_result!.min_y ≡ zero et bounds_result!.min_z ≡ zero,
+        "bounding-box minimum derives from position data"
+    adfirma bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one et bounds_result!.max_z ≡ zero,
+        "bounding-box maximum derives from position data"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
@@ -47,4 +55,24 @@ incipit {
     )
     adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
         "overlapping groups reject"
+    fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
+        "position", 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+    )
+    fixum geometry.BufferAttribute normals ← geometry.float32_attribute(
+        "normal", 3, 3,
+        [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+    )
+    fixum geometry.BufferGeometry positionless ← geometry.triangle_geometry(
+        3, [normals],
+        geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(positionless) ≡ falsum,
+        "geometry without an explicit position attribute rejects"
+    adfirma geometry.geometry_bounding_box(positionless) est nihil,
+        "invalid geometry cannot produce bounds"
+    fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
+        3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(wrong_position) ≡ falsum,
+        "position attributes require three float components"
 }

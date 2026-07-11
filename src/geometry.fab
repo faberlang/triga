@@ -37,6 +37,15 @@ genus GeometryGroup {
     numerus material_index
 }
 
+genus BoundingBox {
+    f32 min_x
+    f32 min_y
+    f32 min_z
+    f32 max_x
+    f32 max_y
+    f32 max_z
+}
+
 genus BufferGeometry {
     PrimitiveTopology topology
     numerus vertex_count
@@ -119,11 +128,19 @@ functio geometry_element_count(de BufferGeometry geometry) → numerus {
 }
 
 functio _geometry_attributes_valid(de BufferGeometry geometry) → bivalens {
+    varia bivalens has_position ← falsum
     varia numerus i ← 0
     dum i < geometry.attributes.longitudo() {
         fixum BufferAttribute attribute ← geometry.attributes[i]
         si attribute_valid(attribute) ≡ falsum ergo redde falsum
         si attribute.element_count ≠ geometry.vertex_count ergo redde falsum
+        si attribute.name ≡ "position" {
+            si attribute.component_width ≠ 3 ergo redde falsum
+            discerne attribute.data {
+                casu Float32Attribute fixum values { has_position ← verum }
+                casu Uint32Attribute fixum values { redde falsum }
+            }
+        }
         varia numerus j ← 0
         dum j < i {
             fixum BufferAttribute previous ← geometry.attributes[j]
@@ -132,7 +149,47 @@ functio _geometry_attributes_valid(de BufferGeometry geometry) → bivalens {
         }
         i ← i + 1
     }
-    redde geometry.attributes.longitudo() > 0
+    redde has_position
+}
+
+functio geometry_bounding_box(de BufferGeometry geometry) → BoundingBox ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    varia lista<f32> positions ← vacua
+    varia numerus i ← 0
+    dum i < geometry.attributes.longitudo() {
+        fixum BufferAttribute attribute ← geometry.attributes[i]
+        si attribute.name ≡ "position" {
+            discerne attribute.data {
+                casu Float32Attribute fixum values { positions ← values }
+                casu Uint32Attribute fixum values { }
+            }
+        }
+        i ← i + 1
+    }
+
+    varia f32 min_x ← positions[0]
+    varia f32 min_y ← positions[1]
+    varia f32 min_z ← positions[2]
+    varia f32 max_x ← positions[0]
+    varia f32 max_y ← positions[1]
+    varia f32 max_z ← positions[2]
+    i ← 3
+    dum i < positions.longitudo() {
+        fixum f32 x ← positions[i]
+        fixum f32 y ← positions[i + 1]
+        fixum f32 z ← positions[i + 2]
+        si x < min_x { min_x ← x }
+        si y < min_y { min_y ← y }
+        si z < min_z { min_z ← z }
+        si x > max_x { max_x ← x }
+        si y > max_y { max_y ← y }
+        si z > max_z { max_z ← z }
+        i ← i + 3
+    }
+    redde BoundingBox {
+        min_x = min_x, min_y = min_y, min_z = min_z,
+        max_x = max_x, max_y = max_y, max_z = max_z
+    }
 }
 
 functio _geometry_indices_valid(de BufferGeometry geometry) → bivalens {

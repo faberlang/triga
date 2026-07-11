@@ -1,8 +1,8 @@
 # Goal 03: Geometry, Attributes, And Primitives
 
-**Status**: Unit 1 implemented on packet — attribute/layout contract and
-structural geometry validation; bounds, generated normals/UVs, reflection, and
-primitive families remain
+**Status**: Units 1–2 implemented on packet — attribute/layout contract,
+structural geometry validation, and position-derived bounding boxes; bounding
+spheres, generated normals/UVs, reflection, and primitive families remain
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix`, `faber-runtime` when generated storage needs it, `examples`
 **Depends on**: Goals 00–01; may overlap Goal 02 after identity policy is locked
