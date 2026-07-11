@@ -3,7 +3,7 @@ term = "triga"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Triga geometry and scene types: Vector3, Matrix4, Mesh, Camera, Scene, etc."
+summary = "Triga math types: Vector3 and Matrix4 construction and field access."
 syntax = "importa ex \"triga:triga\" privata triga"
 related = ["genus", "vector", "lista", "numerus"]
 +++
@@ -17,7 +17,7 @@ related = ["genus", "vector", "lista", "numerus"]
 #   importa ex "triga:triga" privata triga
 #
 # EXPECTED OUTPUT:
-#   constructed field values from Vector3, PerspectiveCamera, and Mesh types.
+#   constructed field values from Vector3 and Matrix4 types.
 
 importa ex "triga:triga" privata triga
 
@@ -47,117 +47,4 @@ incipit {
     }
 
     nota matrix.elements.longitudo()
-
-    fixum triga.PerspectiveCamera camera ← triga.PerspectiveCamera {
-        base = triga.Object3D {
-            position = origin,
-            rotation = triga.Euler {
-                x = 0.0,
-                y = 0.0,
-                z = 0.0
-            },
-            quaternion = triga.Quaternion {
-                x = 0.0,
-                y = 0.0,
-                z = 0.0,
-                w = 1.0
-            },
-            scale = triga.Vector3 {
-                x = 1.0,
-                y = 1.0,
-                z = 1.0
-            },
-            matrix = matrix,
-            children = vacua,
-            visible = verum,
-            name = "camera-base"
-        },
-        fov = 60.0,
-        aspect = 1.6,
-        near = 0.1,
-        far = 1000.0
-    }
-
-    nota camera.fov
-    nota camera.base.position.y
-
-    fixum triga.BufferGeometry box ← triga.BufferGeometry {
-        positions = [
-            -1.0, -1.0,  1.0,
-             1.0, -1.0,  1.0,
-             1.0,  1.0,  1.0,
-            -1.0,  1.0,  1.0,
-        ],
-        normals = [
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-        ],
-        indices = [
-            0, 1, 2,
-            0, 2, 3,
-        ],
-        draw_start = 0
-    }
-
-    fixum triga.Color green ← triga.Color {
-        r = 0.18,
-        g = 0.44,
-        b = 0.37
-    }
-
-    fixum triga.MeshStandardMaterial material ← triga.MeshStandardMaterial {
-        base = triga.Material {
-            name = "green-tile",
-            side = 0,
-            transparent = falsum,
-            opacity = 1.0,
-            depth_write = verum,
-            depth_test = verum,
-            alpha_test = 0.0
-        },
-        color = green,
-        roughness = 0.45,
-        metalness = 0.08,
-        emissive = triga.Color {
-            r = 0.0,
-            g = 0.0,
-            b = 0.0
-        },
-        emissive_intensity = 0.0
-    }
-
-    fixum triga.Mesh mesh ← triga.Mesh {
-        base = triga.Object3D {
-            position = origin,
-            rotation = triga.Euler {
-                x = 0.0,
-                y = 0.0,
-                z = 0.0
-            },
-            quaternion = triga.Quaternion {
-                x = 0.0,
-                y = 0.0,
-                z = 0.0,
-                w = 1.0
-            },
-            scale = triga.Vector3 {
-                x = 1.0,
-                y = 1.0,
-                z = 1.0
-            },
-            matrix = matrix,
-            children = vacua,
-            visible = verum,
-            name = "box-mesh"
-        },
-        geometry = box,
-        material = material
-    }
-
-    nota mesh.base.position.x
-    nota mesh.geometry.positions.longitudo()
-    nota mesh.geometry.indices.longitudo()
-    nota mesh.geometry.normals.longitudo()
 }
