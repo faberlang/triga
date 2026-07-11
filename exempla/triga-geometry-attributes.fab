@@ -396,7 +396,7 @@ incipit {
     adfirma primitive_valid(nonindexed_lines),
         "primitive validation preserves non-indexed line topology"
     adfirma primitive_indices_valid(nonindexed_lines) ≡ falsum,
-        "triangle primitive indices still reject non-indexed line geometry"
+        "triangle primitive indices reject non-indexed line geometry"
     fixum geometry.BufferGeometry nonindexed_points ← geometry.BufferGeometry {
         topology = finge geometry.PointList, vertex_count = 3,
         attributes = [positions], indexed = falsum, indices = vacua,
