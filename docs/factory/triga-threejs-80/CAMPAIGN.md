@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-10) — Stage 1 Triga proof implemented; compiler parity blocked
+**Status**: active (2026-07-10) — Stage 1 CPU/HIR proof green; GPU parity open; Stage 2 identity discovery blocked
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 1 — core math and transform foundation
+**Selected next stage**: Stage 2 — scene graph identity discovery (waiting on reusable handle contract)
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -187,10 +187,10 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Initial type shell plus Vector3 arithmetic and column-major Matrix4 translation, scale, composition, point application, and affine inverse | Complete remaining Stage 1 families after compiler seams unblock |
-| Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
+| Triga public API | Core Vector3, Matrix4, quaternion, Euler, color, and spatial-query CPU families landed on main at `c3f2972` | Hold Stage 1 closure for GPU parity; begin Stage 2 only after identity semantics land |
+| Library import/build | Provider-imported transform exemplar checks, emits Rust, builds with `faber-runtime`, and runs its assertions | Keep provider check/emit/build/run in every source-library gate |
 | Vector/tensor foundation | Source types and representative MIR GPU operations exist | Consume in Stage 1 and Stage 3; add only missing reusable facts |
-| Matrix foundation | Grammar/type surface exists; current package/probe exemplar records backend rejection | Stage 1 selects and proves an executable representation |
+| Matrix foundation | Column-major record representation and transform-chain execution are green on CPU/generated Rust | Close only the selected MIR/GPU parity residual; keep storage/register conversion explicit |
 | MIR GPU compute | Stages 0–4 complete; scalar/vector math, control flow, builtins, and reflection partly complete | Reopen only from concrete Triga blockers |
 | Graphics shader stages | Deferred in MIR GPU Stage 8 | Stage 4 lowers that goal with Triga workloads |
 | Browser host | Direct WebGPU compute dispatch; visible scene still rendered by three.js | Stage 5 replaces the visible path with direct Faber artifacts |
@@ -241,7 +241,7 @@ capstone family.
 
 ### Stage 1 — Core math and transform foundation
 
-**Status**: in progress — Triga CPU representation proof implemented; HIR import/generated-Rust and MIR parity needs open
+**Status**: in progress — CPU families and Euler landed at `c3f2972`; provider HIR/emit/build/run green; GPU parity residual `ea89665` open
 **Source**: [`goals/01-math-transform-foundation.md`](goals/01-math-transform-foundation.md)
 **Depends on**: Stage 0
 **Gate**: reusable vector, matrix, quaternion, Euler, color, and transform
@@ -251,7 +251,7 @@ operations execute consistently in required Rust and MIR/GPU paths.
 
 ### Stage 2 — Scene graph and object model
 
-**Status**: planned
+**Status**: discovery charted; source work waiting on reusable stable-reference/handle contract `7719fbb`
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve

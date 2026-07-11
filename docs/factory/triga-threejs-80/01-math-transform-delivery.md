@@ -40,10 +40,10 @@ unfinished. The packet may write only Triga.
 
 ## Checkpoints And Gates
 
-The Triga checkpoint passes when source and the transform workload typecheck as
-one compilation unit and emit Rust. Provider-import and generated-Rust
-execution remain explicit HIR/codegen blockers. Stage 1 remains open until the
-same shared subset has selected MIR/stepper/GPU evidence.
+The Triga CPU/HIR checkpoint is green on main `c3f2972`: the provider-imported
+transform workload typechecks, emits Rust, builds with the `faber-runtime`
+dependency, and runs its assertions. Stage 1 remains open until GPU residual
+`ea89665` proves the selected shared subset on the required MIR/GPU path.
 
 **Batching / Split Decision:** discovery then batch. This phase establishes the
 record representation in one batch. MIR semantics are a named ownership split
@@ -75,3 +75,20 @@ quaternion multiplication/normalization/interpolation, quaternion-based matrix
 composition, affine determinant, transpose, color interpolation, and essential
 Box/Sphere/Plane/Ray queries. A source-module split is deferred until provider
 interfaces can prove imports across the canonical `triga:triga` seam.
+
+## Revision: Provider Execution And Euler
+
+The provider proof now covers quaternion normalization/interpolation/composition,
+Euler XYZ conversion/composition/interpolation with fail-closed unsupported
+orders, color interpolation, Box3/Sphere containment, plane distance, ray point,
+affine determinant/inverse, and transpose. The admitted proof sequence is:
+
+```bash
+FABER_LIBRARY_HOME=<faberlang-root> radix check exempla/triga-transforms.fab
+FABER_LIBRARY_HOME=<faberlang-root> radix emit -t rust exempla/triga-transforms.fab
+# Build emitted Rust with the local faber-runtime package, then run assertions.
+```
+
+This is CPU/generated-Rust evidence, not GPU product evidence. It closes the
+former HIR/provider blockers but does not close Stage 1 while `ea89665` remains
+open.
