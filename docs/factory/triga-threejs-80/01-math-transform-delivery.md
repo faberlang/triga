@@ -45,11 +45,11 @@ one compilation unit and emit Rust. Provider-import and generated-Rust
 execution remain explicit HIR/codegen blockers. Stage 1 remains open until the
 same shared subset has selected MIR/stepper/GPU evidence.
 
-**Audit (2026-07-11):** Triga families+Euler on main `c3f2972` (`check-source` /
-`check-transforms` green). Selected MIR GPU: WGSL matrix register subset
-`f99b8fad7`; metal/llvm fail-closed `2f3e3ccb1`. **Do not** mark Stage 1 campaign
-closed — full multi-backend matrix emit and product GPU scene remain open. See
-`CAMPAIGN.md` Stage 1 status table.
+**Audit (2026-07-11 re-poker-face):** Stage 1 **foundation CLEARED** after Color
+call-arg fix `cbb87cc3f`. Provider check + `faber run --compile` green; WGSL
+subset + metal/llvm fail-closed green. Metal/llvm matrix **emit** and full
+Matrix4-on-device remain non-goals of this stage. See
+`stage1-poker-face-recheck-2026-07-11.md`.
 
 **Batching / Split Decision:** discovery then batch. This phase establishes the
 record representation in one batch. MIR semantics are a named ownership split

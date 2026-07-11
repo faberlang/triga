@@ -1,6 +1,6 @@
 # Goal 01: Core Math And Transform Foundation
 
-**Status**: in progress — foundation green slices; **poker-face NOT CLEARED** (2026-07-11); see [`../stage1-poker-face-2026-07-11.md`](../stage1-poker-face-2026-07-11.md)
+**Status**: complete (foundation) — re-poker-face CLEARED 2026-07-11 after Color call-arg fix; see [`../stage1-poker-face-recheck-2026-07-11.md`](../stage1-poker-face-recheck-2026-07-11.md)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix`, `faber-runtime`, `examples`
 **Depends on**: Goal 00

@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-11) — Stage 1 **NOT CLEARED** (poker-face `5f68f68`); foundation green slices; package Color call-arg residual HIGH
+**Status**: active (2026-07-11) — Stage 1 **foundation CLEARED** (re-poker-face `03b22b7` after Color fix `cbb87cc3f`); Stage 2 next
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 1 residual (library call-arg genus emit) / Stage 2 prep — **do not** promote Stage 1 complete
+**Selected next stage**: Stage 2 — scene graph and object model (arena-handle on main `38be94a` + contract docs)
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -241,21 +241,20 @@ capstone family.
 
 ### Stage 1 — Core math and transform foundation
 
-**Status**: **NOT CLEARED** — poker-face 2026-07-11 ([`stage1-poker-face-2026-07-11.md`](stage1-poker-face-2026-07-11.md))
+**Status**: **complete (foundation)** — re-poker-face 2026-07-11 ([`stage1-poker-face-recheck-2026-07-11.md`](stage1-poker-face-recheck-2026-07-11.md))
 
 | Seam | Evidence | State |
 | --- | --- | --- |
-| Triga CPU families + Euler | main `c3f2972`+; `./scripta/check-source` + `check-transforms` | **green** |
+| Triga CPU families + Euler | main families merge + exempla; `check-source` / `check-transforms` | **green** |
 | Provider path typecheck | `faber check exempla/triga-transforms.fab` | **green** |
-| Generated-Rust compile+run (compiled) | `faber run --compile exempla/triga-transforms.fab` after Color local bind workaround | **green with residual** |
-| MIR CPU register matrix/vector | lower+stepper matmul/applica/inversa + triga chain match | **green** |
-| Selected GPU: WGSL register matrix | radix `f99b8fad7` — construct+cells; elementwise/matmul nucleum tests | **green** (bounded) |
-| GPU fail-closed: metal/llvm | radix `2f3e3ccb1` | **green fail-closed** |
-| Library Color/genus record as **call-arg** emit | package path emits `Euler` for `Color { r,g,b }` args | **HIGH residual** |
-| Full Stage1 campaign gate | consistent Rust + MIR/GPU for required ops | **NOT CLEARED** |
+| Generated-Rust compile+run | `faber run --compile`; Color call-args emit `crate::triga::Color` (`cbb87cc3f`) | **green** |
+| MIR CPU register matrix/vector | lower+stepper suites + triga chain match | **green** |
+| Selected GPU: WGSL register matrix | `f99b8fad7` + `wgsl_text_matrix_*` | **green** (bounded mat2x2) |
+| GPU fail-closed: metal/llvm | `2f3e3ccb1` | **green fail-closed** (by design) |
+| Library Color call-arg | `cbb87cc3f` + faber regression; need `6add590` closed | **green** |
 
-**Residuals closed (bounded):** `87a44c3`/`463bf6d` WGSL; `ea89665` metal/llvm fail-closed.  
-**Tracker:** `71124e1` stays open. **Do not** mark Stage 1 complete.
+**Non-goals / deferred (not Stage 1 foundation blockers):** metal/llvm matrix **emit**; full Matrix4 on device; Stage 2 scene graph.  
+**Prior NOT CLEARED:** [`stage1-poker-face-2026-07-11.md`](stage1-poker-face-2026-07-11.md) (HIGH Color) — superseded by recheck after fix.
 
 **Source**: [`goals/01-math-transform-foundation.md`](goals/01-math-transform-foundation.md)
 **Depends on**: Stage 0
