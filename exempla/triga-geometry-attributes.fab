@@ -461,7 +461,7 @@ incipit {
         geometry.DrawRange { start = 0, count = 3 }, vacua
     )
     adfirma geometry.geometry_valid(duplicate_location) ≡ falsum,
-        "duplicate shader locations reject before reflection or upload"
+        "geometry requires unique shader locations"
     adfirma geometry.geometry_bounding_box(positionless) est nihil,
         "invalid geometry cannot produce bounds"
     adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
