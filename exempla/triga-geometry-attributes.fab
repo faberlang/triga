@@ -57,6 +57,44 @@ incipit {
     adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
         "non-indexed triangles produce vertex normals"
 
+    fixum geometry.BufferAttribute large_positions ← geometry.float32_attribute(
+        "position", 0, 3, 3,
+        [0.0, 0.0, 0.0, 10000000000.0, 0.0, 0.0, 0.0, 10000000000.0, 0.0]
+    )
+    fixum geometry.BufferGeometry large_triangle ← geometry.triangle_geometry(
+        3, [large_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    fixum geometry.BoundingSphere ∪ nihil large_sphere ← geometry.geometry_bounding_sphere(
+        large_triangle
+    )
+    adfirma large_sphere non est nihil et large_sphere!.radius > 7000000000.0
+        et large_sphere!.radius < 8000000000.0,
+        "bounding-sphere radius remains stable at large finite scale"
+    fixum geometry.BufferAttribute ∪ nihil large_normals ← geometry.geometry_vertex_normals(
+        large_triangle
+    )
+    adfirma large_normals non est nihil,
+        "large finite triangles produce unit vertex normals"
+
+    fixum geometry.BufferAttribute small_positions ← geometry.float32_attribute(
+        "position", 0, 3, 3,
+        [0.0, 0.0, 0.0, 0.0000000001, 0.0, 0.0, 0.0, 0.0000000001, 0.0]
+    )
+    fixum geometry.BufferGeometry small_triangle ← geometry.triangle_geometry(
+        3, [small_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    fixum geometry.BoundingSphere ∪ nihil small_sphere ← geometry.geometry_bounding_sphere(
+        small_triangle
+    )
+    adfirma small_sphere non est nihil et small_sphere!.radius > 0.00000000007
+        et small_sphere!.radius < 0.00000000008,
+        "bounding-sphere radius remains stable at small finite scale"
+    fixum geometry.BufferAttribute ∪ nihil small_normals ← geometry.geometry_vertex_normals(
+        small_triangle
+    )
+    adfirma small_normals non est nihil,
+        "small finite triangles produce unit vertex normals"
+
     fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 4.0)
     adfirma plane_result non est nihil, "positive plane dimensions produce geometry"
     adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4

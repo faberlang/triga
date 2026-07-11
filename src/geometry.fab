@@ -268,13 +268,23 @@ functio geometry_bounding_box(de BufferGeometry geometry) → BoundingBox ∪ ni
 
 functio _geometry_radix_f32(f32 value) → f32 {
     si value ≤ 0.0 ergo redde 0.0
-    varia f32 estimate ← value
+    varia f32 scaled ← value
+    varia f32 scale ← 1.0
+    dum scaled > 4.0 {
+        scaled ← scaled * 0.25
+        scale ← scale * 2.0
+    }
+    dum scaled < 0.25 {
+        scaled ← scaled * 4.0
+        scale ← scale * 0.5
+    }
+    varia f32 estimate ← 1.0
     varia numerus iteration ← 0
-    dum iteration < 12 {
-        estimate ← (estimate + value / estimate) * 0.5
+    dum iteration < 8 {
+        estimate ← (estimate + scaled / estimate) * 0.5
         iteration ← iteration + 1
     }
-    redde estimate
+    redde estimate * scale
 }
 
 functio geometry_bounding_sphere(de BufferGeometry geometry) → BoundingSphere ∪ nihil {
