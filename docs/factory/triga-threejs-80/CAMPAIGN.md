@@ -261,10 +261,13 @@ shared geometry/material identity without copying the graph into backend code.
 
 ### Stage 3 — Geometry, attributes, and primitives
 
-**Status**: Units 1–9 implemented on packet — explicit attribute/layout facts,
-indexed and non-indexed triangle contracts, draw ranges/groups, fail-closed
-structural validation, position-derived bounding volumes, and generated vertex
-normals, planar UVs, and validated plane/box/circle/sphere/cylinder/cone/torus primitives in `src/geometry.fab`
+**Status**: Triga-owned source batch complete on packet after Units 1–9 —
+explicit attribute/layout facts, indexed and non-indexed triangle contracts,
+draw ranges/groups, fail-closed structural validation, position-derived
+bounding volumes, generated vertex normals, planar UVs, and validated
+plane/box/circle/sphere/cylinder/cone/torus primitives in `src/geometry.fab`.
+The Stage 3 integration gate remains open for the first graphics shader/host
+proof and CPU/GPU layout agreement through compiler reflection.
 **Source**: [`goals/03-geometry-attributes-primitives.md`](goals/03-geometry-attributes-primitives.md)
 **Depends on**: Stages 0–1; may overlap Stage 2 after identity policy is locked
 **Gate**: indexed and non-indexed custom geometry plus a batched core primitive
