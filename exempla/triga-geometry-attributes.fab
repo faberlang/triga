@@ -92,6 +92,18 @@ functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) →
         si index_a ≡ index_b ergo redde falsum
         si index_b ≡ index_c ergo redde falsum
         si index_c ≡ index_a ergo redde falsum
+        varia numerus offset ← 0
+        dum offset < i {
+            fixum u32 triangle_a ← candidate!.indices[offset]
+            fixum u32 triangle_b ← candidate!.indices[offset + 1]
+            fixum u32 triangle_c ← candidate!.indices[offset + 2]
+            varia numerus matches ← 0
+            si index_a ≡ triangle_a aut index_a ≡ triangle_b aut index_a ≡ triangle_c ergo matches ← matches + 1
+            si index_b ≡ triangle_a aut index_b ≡ triangle_b aut index_b ≡ triangle_c ergo matches ← matches + 1
+            si index_c ≡ triangle_a aut index_c ≡ triangle_b aut index_c ≡ triangle_c ergo matches ← matches + 1
+            si matches ≡ 3 ergo redde falsum
+            offset ← offset + 3
+        }
         i ← i + 3
     }
     redde candidate!.topology ≡ finge geometry.TriangleList
@@ -324,6 +336,12 @@ incipit {
     )
     adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
         "out-of-range index rejects"
+    fixum geometry.BufferGeometry duplicate_triangle ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2, 2, 1, 0],
+        geometry.DrawRange { start = 0, count = 6 }, vacua
+    )
+    adfirma primitive_indices_valid(duplicate_triangle) ≡ falsum,
+        "duplicate triangle faces reject regardless of winding"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
