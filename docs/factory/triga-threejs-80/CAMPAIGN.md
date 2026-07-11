@@ -278,8 +278,8 @@ family produce validated bounds, normals, UVs, groups, and GPU layout facts.
 ### Stage 4 — Graphics MIR and shader stages
 
 **Status**: in progress — first Triga CPU/reflection seam landed with explicit
-unique shader locations and derived vertex layout facts; graphics MIR and
-reflection agreement remain open
+unique shader locations and derived typed format/stride layout facts; graphics
+MIR and reflection agreement remain open
 **Source**: [`goals/04-graphics-mir-shader-stages.md`](goals/04-graphics-mir-shader-stages.md)
 **Depends on**: Stages 0–1; consumes Stage 3 attribute contract
 **Overlap rule**: reopens and updates MIR GPU Stage 8 instead of creating a

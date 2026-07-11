@@ -57,6 +57,8 @@ incipit {
         "vertex layout preserves the declared shader location"
     adfirma position_layout!.stride_bytes ≡ 12,
         "vertex layout preserves the derived byte stride"
+    adfirma geometry.attribute_vertex_format(positions) non est nihil,
+        "position layout exposes a typed GPU format"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )

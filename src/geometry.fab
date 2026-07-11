@@ -17,6 +17,17 @@ discretio AttributeData {
     Uint32Attribute { lista<u32> values }
 }
 
+discretio VertexFormat {
+    Float32 { }
+    Float32x2 { }
+    Float32x3 { }
+    Float32x4 { }
+    Uint32 { }
+    Uint32x2 { }
+    Uint32x3 { }
+    Uint32x4 { }
+}
+
 genus BufferAttribute {
     textus name
     numerus shader_location
@@ -29,6 +40,7 @@ genus BufferAttribute {
 
 genus VertexAttributeLayout {
     numerus shader_location
+    VertexFormat vertex_format
     numerus stride_bytes
 }
 
@@ -129,16 +141,40 @@ functio attribute_stride_bytes(de BufferAttribute attribute) → numerus {
     redde attribute.component_width * attribute_scalar_bytes(attribute)
 }
 
+functio _attribute_vertex_format(de BufferAttribute attribute) → VertexFormat {
+    discerne attribute.data {
+        casu Float32Attribute fixum values {
+            si attribute.component_width ≡ 1 ergo redde finge Float32
+            si attribute.component_width ≡ 2 ergo redde finge Float32x2
+            si attribute.component_width ≡ 3 ergo redde finge Float32x3
+            redde finge Float32x4
+        }
+        casu Uint32Attribute fixum values {
+            si attribute.component_width ≡ 1 ergo redde finge Uint32
+            si attribute.component_width ≡ 2 ergo redde finge Uint32x2
+            si attribute.component_width ≡ 3 ergo redde finge Uint32x3
+            redde finge Uint32x4
+        }
+    }
+}
+
+functio attribute_vertex_format(de BufferAttribute attribute) → VertexFormat ∪ nihil {
+    si attribute_valid(attribute) ≡ falsum ergo redde nihil
+    redde _attribute_vertex_format(attribute)
+}
+
 functio attribute_vertex_layout(de BufferAttribute attribute) → VertexAttributeLayout ∪ nihil {
     si attribute_valid(attribute) ≡ falsum ergo redde nihil
     redde VertexAttributeLayout {
         shader_location = attribute.shader_location,
+        vertex_format = _attribute_vertex_format(attribute),
         stride_bytes = attribute_stride_bytes(attribute)
     }
 }
 
 functio attribute_valid(de BufferAttribute attribute) → bivalens {
     si attribute.name ≡ "" ergo redde falsum
+    si attribute.normalized ergo redde falsum
     si attribute.component_width < 1 aut attribute.component_width > 4 ergo redde falsum
     si attribute.element_count ≡ 0 ergo redde falsum
     redde attribute_scalar_count(attribute) ≡
