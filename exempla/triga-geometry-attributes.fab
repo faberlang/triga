@@ -79,6 +79,8 @@ functio primitive_draw_valid(geometry.BufferGeometry ∪ nihil candidate) → bi
 functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
     si candidate est nihil ergo redde falsum
     si candidate!.indexed ≡ falsum ergo redde falsum
+    si candidate!.indices.longitudo() ≡ 0 ergo redde falsum
+    si non (candidate!.indices.longitudo() % 3 ≡ 0) ergo redde falsum
     varia numerus i ← 0
     dum i < candidate!.indices.longitudo() {
         si candidate!.indices[i] ≥ candidate!.vertex_count ergo redde falsum
