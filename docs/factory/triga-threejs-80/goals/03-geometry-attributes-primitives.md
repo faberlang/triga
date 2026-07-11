@@ -1,11 +1,11 @@
 # Goal 03: Geometry, Attributes, And Primitives
 
-**Status**: Triga-owned source batch complete on packet after Units 1–9 —
+**Status**: accepted on main at `969b7cb` after Units 1–9 —
 attribute/layout contract, structural geometry validation, position-derived
 bounding boxes and spheres, fail-closed generated vertex normals, normalized
 planar UVs, and validated plane, box, circle, sphere, cylinder, cone, and torus
-primitives. The Stage 3 integration gate remains open pending the first graphics
-shader/host proof and CPU/GPU layout agreement through compiler reflection.
+primitives. The first graphics shader/host proof and CPU/GPU layout agreement
+through compiler reflection remain planned downstream work for Stage 4.
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix`, `faber-runtime` when generated storage needs it, `examples`
 **Depends on**: Goals 00–01; may overlap Goal 02 after identity policy is locked

@@ -275,13 +275,13 @@ shared geometry/material identity without copying the graph into backend code.
 
 ### Stage 3 — Geometry, attributes, and primitives
 
-**Status**: Triga-owned source batch complete on packet after Units 1–9 —
+**Status**: accepted on main at `969b7cb` after Units 1–9 —
 explicit attribute/layout facts, indexed and non-indexed triangle contracts,
 draw ranges/groups, fail-closed structural validation, position-derived
 bounding volumes, generated vertex normals, planar UVs, and validated
 plane/box/circle/sphere/cylinder/cone/torus primitives in `src/geometry.fab`.
-The Stage 3 integration gate remains open for the first graphics shader/host
-proof and CPU/GPU layout agreement through compiler reflection.
+The first graphics shader/host proof and CPU/GPU layout agreement through
+compiler reflection remain planned downstream work for Stage 4.
 **Source**: [`goals/03-geometry-attributes-primitives.md`](goals/03-geometry-attributes-primitives.md)
 **Depends on**: Stages 0–1; may overlap Stage 2 after identity policy is locked
 **Gate**: indexed and non-indexed custom geometry plus a batched core primitive
@@ -291,7 +291,10 @@ family produce validated bounds, normals, UVs, groups, and GPU layout facts.
 
 ### Stage 4 — Graphics MIR and shader stages
 
-**Status**: planned; deferred until Stage 1 representation facts and the Stage 3 attribute contract
+**Status**: in progress — Triga vertex/layout contract v1 is complete with
+explicit unique shader locations and ordered typed format/offset/stride/step
+reflection facts; handoff is now to Radix Stage 4 graphics MIR and reflection
+agreement
 **Source**: [`goals/04-graphics-mir-shader-stages.md`](goals/04-graphics-mir-shader-stages.md)
 **Depends on**: Stages 0–1; consumes Stage 3 attribute contract
 **Overlap rule**: reopens and updates MIR GPU Stage 8 instead of creating a

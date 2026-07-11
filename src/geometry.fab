@@ -17,13 +17,38 @@ discretio AttributeData {
     Uint32Attribute { lista<u32> values }
 }
 
+discretio VertexFormat {
+    Float32 { }
+    Float32x2 { }
+    Float32x3 { }
+    Float32x4 { }
+    Uint32 { }
+    Uint32x2 { }
+    Uint32x3 { }
+    Uint32x4 { }
+}
+
+discretio VertexStepMode {
+    VertexStep { }
+    InstanceStep { }
+}
+
 genus BufferAttribute {
     textus name
+    numerus shader_location
     numerus component_width
     numerus element_count
     bivalens normalized
     AttributeUsage usage
     AttributeData data
+}
+
+genus VertexAttributeLayout {
+    numerus shader_location
+    VertexFormat vertex_format
+    numerus offset_bytes
+    numerus stride_bytes
+    VertexStepMode step_mode
 }
 
 genus DrawRange {
@@ -65,12 +90,14 @@ genus BufferGeometry {
 
 functio float32_attribute(
     textus name,
+    numerus shader_location,
     numerus component_width,
     numerus element_count,
     lista<f32> values
 ) → BufferAttribute {
     redde BufferAttribute {
-        name = name, component_width = component_width, element_count = element_count,
+        name = name, shader_location = shader_location,
+        component_width = component_width, element_count = element_count,
         normalized = falsum, usage = finge StaticAttribute,
         data = finge Float32Attribute { values = values }
     }
@@ -121,8 +148,58 @@ functio attribute_stride_bytes(de BufferAttribute attribute) → numerus {
     redde attribute.component_width * attribute_scalar_bytes(attribute)
 }
 
+functio _attribute_vertex_format(de BufferAttribute attribute) → VertexFormat {
+    discerne attribute.data {
+        casu Float32Attribute fixum values {
+            si attribute.component_width ≡ 1 ergo redde finge Float32
+            si attribute.component_width ≡ 2 ergo redde finge Float32x2
+            si attribute.component_width ≡ 3 ergo redde finge Float32x3
+            redde finge Float32x4
+        }
+        casu Uint32Attribute fixum values {
+            si attribute.component_width ≡ 1 ergo redde finge Uint32
+            si attribute.component_width ≡ 2 ergo redde finge Uint32x2
+            si attribute.component_width ≡ 3 ergo redde finge Uint32x3
+            redde finge Uint32x4
+        }
+    }
+}
+
+functio attribute_vertex_format(de BufferAttribute attribute) → VertexFormat ∪ nihil {
+    si attribute_valid(attribute) ≡ falsum ergo redde nihil
+    redde _attribute_vertex_format(attribute)
+}
+
+functio attribute_vertex_layout(de BufferAttribute attribute) → VertexAttributeLayout ∪ nihil {
+    si attribute_valid(attribute) ≡ falsum ergo redde nihil
+    redde VertexAttributeLayout {
+        shader_location = attribute.shader_location,
+        vertex_format = _attribute_vertex_format(attribute),
+        offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
+        step_mode = finge VertexStep
+    }
+}
+
+functio geometry_vertex_layouts(de BufferGeometry geometry) → lista<VertexAttributeLayout> ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    varia lista<VertexAttributeLayout> layouts ← vacua
+    varia numerus i ← 0
+    dum i < geometry.attributes.longitudo() {
+        fixum BufferAttribute attribute ← geometry.attributes[i]
+        layouts.appende(VertexAttributeLayout {
+            shader_location = attribute.shader_location,
+            vertex_format = _attribute_vertex_format(attribute),
+            offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
+            step_mode = finge VertexStep
+        })
+        i ← i + 1
+    }
+    redde layouts
+}
+
 functio attribute_valid(de BufferAttribute attribute) → bivalens {
     si attribute.name ≡ "" ergo redde falsum
+    si attribute.normalized ergo redde falsum
     si attribute.component_width < 1 aut attribute.component_width > 4 ergo redde falsum
     si attribute.element_count ≡ 0 ergo redde falsum
     redde attribute_scalar_count(attribute) ≡
@@ -152,6 +229,7 @@ functio _geometry_attributes_valid(de BufferGeometry geometry) → bivalens {
         dum j < i {
             fixum BufferAttribute previous ← geometry.attributes[j]
             si previous.name ≡ attribute.name { redde falsum }
+            si previous.shader_location ≡ attribute.shader_location { redde falsum }
             j ← j + 1
         }
         i ← i + 1
@@ -308,7 +386,7 @@ functio geometry_vertex_normals(de BufferGeometry geometry) → BufferAttribute 
         normals[i + 2] ← normals[i + 2] / normal_scale
         i ← i + 3
     }
-    redde float32_attribute("normal", 3, geometry.vertex_count, normals)
+    redde float32_attribute("normal", 1, 3, geometry.vertex_count, normals)
 }
 
 functio geometry_planar_uvs(de BufferGeometry geometry) → BufferAttribute ∪ nihil {
@@ -327,7 +405,7 @@ functio geometry_planar_uvs(de BufferGeometry geometry) → BufferAttribute ∪ 
         uvs.appende((positions[i + 1] - bounds_result!.min_y) / height)
         i ← i + 3
     }
-    redde float32_attribute("uv", 2, geometry.vertex_count, uvs)
+    redde float32_attribute("uv", 2, 2, geometry.vertex_count, uvs)
 }
 
 functio _primitive_geometry(
@@ -340,9 +418,9 @@ functio _primitive_geometry(
     redde indexed_triangle_geometry(
         vertex_count,
         [
-            float32_attribute("position", 3, vertex_count, positions),
-            float32_attribute("normal", 3, vertex_count, normals),
-            float32_attribute("uv", 2, vertex_count, uvs),
+            float32_attribute("position", 0, 3, vertex_count, positions),
+            float32_attribute("normal", 1, 3, vertex_count, normals),
+            float32_attribute("uv", 2, 2, vertex_count, uvs),
         ],
         indices,
         DrawRange { start = 0, count = indices.longitudo() },

@@ -1,6 +1,9 @@
 # Goal 04: Graphics MIR And Shader Stages
 
-**Status**: planned — waits for Goal 01 representation facts and the Goal 03 vertex attribute contract
+**Status**: in progress — Triga vertex/layout contract v1 is complete with
+unique shader locations and ordered CPU-side location/format/offset/stride/step
+reflection facts; handoff is now to Radix Stage 4 graphics MIR, reflection
+agreement, shader stages, and host consumption
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repo**: `radix`; `triga` and `examples` provide the forcing workloads
 **Depends on**: Goals 00–01 and the Goal 03 vertex attribute contract
@@ -52,6 +55,21 @@ graph completeness, production web packaging, and a general shader DSL.
   explicitly recorded contract change.
 - The MIR GPU Stage 8 artifact and progress ledger reflect the implementation
   state and next blocker.
+
+## Progress
+
+- Triga's structure-of-arrays attribute contract carries an explicit shader
+  location and rejects duplicate locations before reflection or upload.
+- `attribute_vertex_layout` exposes the declared location, typed scalar/vector
+  format, zero byte offset, derived byte stride, and per-vertex step mode as the
+  CPU comparison seam for the first Radix reflection fixture.
+- `geometry_vertex_layouts` exposes the complete ordered vertex-buffer contract
+  only for valid geometry, without requiring reflection or the host to inspect
+  attribute names.
+- Triga vertex/layout contract v1 is complete; the remaining Stage 4 work is
+  owned by the Radix graphics MIR handoff.
+- Next residual: lower one matching vertex input through graphics MIR and prove
+  emitted reflection agrees with these facts without inspecting attribute names.
 
 ## Stop Conditions
 
