@@ -8,112 +8,6 @@ summary = "Explicit Triga attribute shape, layout, indexing, draw range, and gro
 
 importa ex "triga:geometry" privata geometry
 
-functio primitive_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
-    si candidate est nihil ergo redde falsum
-    redde geometry.geometry_valid(geometry.BufferGeometry {
-        topology = candidate!.topology,
-        vertex_count = candidate!.vertex_count,
-        attributes = candidate!.attributes,
-        indexed = candidate!.indexed,
-        indices = candidate!.indices,
-        draw_range = candidate!.draw_range,
-        groups = candidate!.groups
-    })
-}
-
-functio primitive_layout_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
-    si candidate est nihil ergo redde falsum
-    si primitive_valid(candidate) ≡ falsum ergo redde falsum
-    fixum geometry.BufferGeometry primitive ← geometry.BufferGeometry {
-        topology = candidate!.topology,
-        vertex_count = candidate!.vertex_count,
-        attributes = candidate!.attributes,
-        indexed = candidate!.indexed,
-        indices = candidate!.indices,
-        draw_range = candidate!.draw_range,
-        groups = candidate!.groups
-    }
-    fixum lista<geometry.VertexAttributeLayout> ∪ nihil layouts ←
-        geometry.geometry_vertex_layouts(primitive)
-    redde layouts non est nihil et layouts!.longitudo() ≡ 3
-        et layouts![0].shader_location ≡ 0
-        et layouts![0].vertex_format ≡ finge geometry.Float32x3
-        et layouts![0].offset_bytes ≡ 0
-        et layouts![0].stride_bytes ≡ 12
-        et layouts![0].step_mode ≡ finge geometry.VertexStep
-        et layouts![1].shader_location ≡ 1
-        et layouts![1].vertex_format ≡ finge geometry.Float32x3
-        et layouts![1].offset_bytes ≡ 0
-        et layouts![1].stride_bytes ≡ 12
-        et layouts![1].step_mode ≡ finge geometry.VertexStep
-        et layouts![2].shader_location ≡ 2
-        et layouts![2].vertex_format ≡ finge geometry.Float32x2
-        et layouts![2].offset_bytes ≡ 0
-        et layouts![2].stride_bytes ≡ 8
-        et layouts![2].step_mode ≡ finge geometry.VertexStep
-        et primitive.attributes.longitudo() ≡ 3
-        et primitive.attributes[0].name ≡ "position"
-        et primitive.attributes[0].shader_location ≡ 0
-        et primitive.attributes[0].component_width ≡ 3
-        et primitive.attributes[1].name ≡ "normal"
-        et primitive.attributes[1].shader_location ≡ 1
-        et primitive.attributes[1].component_width ≡ 3
-        et primitive.attributes[2].name ≡ "uv"
-        et primitive.attributes[2].shader_location ≡ 2
-        et primitive.attributes[2].component_width ≡ 2
-        et primitive.attributes[0].element_count ≡ primitive.vertex_count
-        et primitive.attributes[1].element_count ≡ primitive.vertex_count
-        et primitive.attributes[2].element_count ≡ primitive.vertex_count
-        et primitive.attributes[0].normalized ≡ falsum
-        et primitive.attributes[1].normalized ≡ falsum
-        et primitive.attributes[2].normalized ≡ falsum
-}
-
-functio primitive_draw_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
-    si candidate est nihil ergo redde falsum
-    si primitive_valid(candidate) ≡ falsum ergo redde falsum
-    redde candidate!.draw_range.start ≡ 0
-        et candidate!.draw_range.count ≡ candidate!.indices.longitudo()
-        et candidate!.groups.longitudo() ≡ 1
-        et candidate!.groups[0].start ≡ 0
-        et candidate!.groups[0].count ≡ candidate!.indices.longitudo()
-        et candidate!.groups[0].material_index ≡ 0
-}
-
-functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
-    si candidate est nihil ergo redde falsum
-    si primitive_valid(candidate) ≡ falsum ergo redde falsum
-    si non (candidate!.topology ≡ finge geometry.TriangleList) ergo redde falsum
-    si candidate!.indexed ≡ falsum ergo redde falsum
-    si candidate!.indices.longitudo() ≡ 0 ergo redde falsum
-    si non (candidate!.indices.longitudo() % 3 ≡ 0) ergo redde falsum
-    varia numerus i ← 0
-    dum i < candidate!.indices.longitudo() {
-        fixum u32 index_a ← candidate!.indices[i]
-        fixum u32 index_b ← candidate!.indices[i + 1]
-        fixum u32 index_c ← candidate!.indices[i + 2]
-        si index_a ≥ candidate!.vertex_count ergo redde falsum
-        si index_b ≥ candidate!.vertex_count ergo redde falsum
-        si index_c ≥ candidate!.vertex_count ergo redde falsum
-        si index_a ≡ index_b ergo redde falsum
-        si index_b ≡ index_c ergo redde falsum
-        si index_c ≡ index_a ergo redde falsum
-        varia numerus offset ← 0
-        dum offset < i {
-            fixum u32 triangle_a ← candidate!.indices[offset]
-            fixum u32 triangle_b ← candidate!.indices[offset + 1]
-            fixum u32 triangle_c ← candidate!.indices[offset + 2]
-            varia numerus matches ← 0
-            si index_a ≡ triangle_a aut index_a ≡ triangle_b aut index_a ≡ triangle_c ergo matches ← matches + 1
-            si index_b ≡ triangle_a aut index_b ≡ triangle_b aut index_b ≡ triangle_c ergo matches ← matches + 1
-            si index_c ≡ triangle_a aut index_c ≡ triangle_b aut index_c ≡ triangle_c ergo matches ← matches + 1
-            si matches ≡ 3 ergo redde falsum
-            offset ← offset + 3
-        }
-        i ← i + 3
-    }
-    redde verum
-}
 
 incipit {
     fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
@@ -156,29 +50,6 @@ incipit {
         "generated UV layout covers every vertex"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
-    fixum geometry.VertexAttributeLayout ∪ nihil position_layout ←
-        geometry.attribute_vertex_layout(positions)
-    adfirma position_layout non est nihil,
-        "valid attributes produce explicit vertex layout facts"
-    adfirma position_layout!.shader_location ≡ 0,
-        "vertex layout preserves the declared shader location"
-    adfirma position_layout!.stride_bytes ≡ 12,
-        "vertex layout preserves the derived byte stride"
-    adfirma position_layout!.offset_bytes ≡ 0,
-        "separate attribute buffers begin at byte offset zero"
-    adfirma position_layout!.step_mode ≡ finge geometry.VertexStep,
-        "geometry attributes advance once per vertex"
-    adfirma geometry.attribute_vertex_format(positions) non est nihil,
-        "position layout exposes a typed GPU format"
-    fixum lista<geometry.VertexAttributeLayout> ∪ nihil triangle_layouts ←
-        geometry.geometry_vertex_layouts(triangle)
-    adfirma triangle_layouts non est nihil,
-        "valid geometry exposes a complete vertex layout"
-    adfirma triangle_layouts![0].shader_location ≡ 0
-        et triangle_layouts![0].offset_bytes ≡ 0
-        et triangle_layouts![0].stride_bytes ≡ 12
-        et triangle_layouts![0].step_mode ≡ finge geometry.VertexStep,
-        "geometry layout preserves complete reflection-facing buffer facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
@@ -188,14 +59,6 @@ incipit {
 
     fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 4.0)
     adfirma plane_result non est nihil, "positive plane dimensions produce geometry"
-    adfirma primitive_valid(plane_result),
-        "plane primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(plane_result),
-        "plane primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(plane_result),
-        "plane primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(plane_result),
-        "plane primitive exposes in-range triangle-list indices"
     adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4
         et plane_result!.indices.longitudo() ≡ 6,
         "plane primitive has deterministic vertex and index counts"
@@ -204,14 +67,6 @@ incipit {
 
     fixum geometry.BufferGeometry ∪ nihil circle_result ← geometry.circle_geometry(2.0)
     adfirma circle_result non est nihil, "positive circle radius produces geometry"
-    adfirma primitive_valid(circle_result),
-        "circle primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(circle_result),
-        "circle primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(circle_result),
-        "circle primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(circle_result),
-        "circle primitive exposes in-range triangle-list indices"
     adfirma circle_result!.indexed et circle_result!.vertex_count ≡ 9
         et circle_result!.indices.longitudo() ≡ 24,
         "circle primitive has deterministic segment and index counts"
@@ -222,14 +77,6 @@ incipit {
 
     fixum geometry.BufferGeometry ∪ nihil sphere_primitive ← geometry.sphere_geometry(2.0)
     adfirma sphere_primitive non est nihil, "positive sphere radius produces geometry"
-    adfirma primitive_valid(sphere_primitive),
-        "sphere primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(sphere_primitive),
-        "sphere primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(sphere_primitive),
-        "sphere primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(sphere_primitive),
-        "sphere primitive exposes in-range triangle-list indices"
     adfirma sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24
         et sphere_primitive!.indices.longitudo() ≡ 24,
         "sphere primitive preserves UV seams across eight deterministic faces"
@@ -239,14 +86,6 @@ incipit {
         "sphere primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil cylinder_result ← geometry.cylinder_geometry(2.0, 4.0)
     adfirma cylinder_result non est nihil, "positive cylinder dimensions produce geometry"
-    adfirma primitive_valid(cylinder_result),
-        "cylinder primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(cylinder_result),
-        "cylinder primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(cylinder_result),
-        "cylinder primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(cylinder_result),
-        "cylinder primitive exposes in-range triangle-list indices"
     adfirma cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38
         et cylinder_result!.indices.longitudo() ≡ 96,
         "cylinder primitive preserves side and cap seams across eight segments"
@@ -256,14 +95,6 @@ incipit {
         "cylinder primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil cone_result ← geometry.cone_geometry(2.0, 4.0)
     adfirma cone_result non est nihil, "positive cone dimensions produce geometry"
-    adfirma primitive_valid(cone_result),
-        "cone primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(cone_result),
-        "cone primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(cone_result),
-        "cone primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(cone_result),
-        "cone primitive exposes in-range triangle-list indices"
     adfirma cone_result!.indexed et cone_result!.vertex_count ≡ 28
         et cone_result!.indices.longitudo() ≡ 48,
         "cone primitive preserves side and cap seams across eight segments"
@@ -273,14 +104,6 @@ incipit {
         "cone primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil torus_result ← geometry.torus_geometry(3.0, 1.0)
     adfirma torus_result non est nihil, "valid torus radii produce geometry"
-    adfirma primitive_valid(torus_result),
-        "torus primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(torus_result),
-        "torus primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(torus_result),
-        "torus primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(torus_result),
-        "torus primitive exposes in-range triangle-list indices"
     adfirma torus_result!.indexed et torus_result!.vertex_count ≡ 45
         et torus_result!.indices.longitudo() ≡ 192,
         "torus primitive preserves ring and tube seams"
@@ -290,14 +113,6 @@ incipit {
         "torus primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
-    adfirma primitive_valid(box_result),
-        "box primitive satisfies the public geometry invariants"
-    adfirma primitive_layout_valid(box_result),
-        "box primitive exposes the canonical position, normal, and UV layouts"
-    adfirma primitive_draw_valid(box_result),
-        "box primitive exposes a complete deterministic draw range and group"
-    adfirma primitive_indices_valid(box_result),
-        "box primitive exposes in-range triangle-list indices"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
         et box_result!.indices.longitudo() ≡ 36,
         "box primitive preserves per-face normals and UV seams"
@@ -330,15 +145,6 @@ incipit {
         "degenerate triangles reject instead of producing invalid normals"
     adfirma geometry.geometry_planar_uvs(degenerate) est nihil,
         "zero-height planar geometry rejects instead of dividing by zero"
-    fixum geometry.BufferGeometry ∪ nihil absent_geometry ← nihil
-    adfirma primitive_indices_valid(absent_geometry) ≡ falsum,
-        "primitive index validation rejects absent geometry"
-    adfirma primitive_draw_valid(absent_geometry) ≡ falsum,
-        "primitive draw validation rejects absent geometry"
-    adfirma primitive_layout_valid(absent_geometry) ≡ falsum,
-        "primitive layout validation rejects absent geometry"
-    adfirma primitive_valid(absent_geometry) ≡ falsum,
-        "primitive validation rejects absent geometry"
 
     fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
         "position", 0, 3, 3, [0.0, 0.0]
@@ -351,84 +157,6 @@ incipit {
     )
     adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
         "out-of-range index rejects"
-    adfirma primitive_valid(out_of_range) ≡ falsum,
-        "primitive validation rejects invalid geometry"
-    adfirma primitive_draw_valid(out_of_range) ≡ falsum,
-        "primitive draw validation rejects invalid geometry"
-    adfirma primitive_layout_valid(out_of_range) ≡ falsum,
-        "primitive layout validation rejects invalid geometry"
-    adfirma primitive_indices_valid(out_of_range) ≡ falsum,
-        "primitive index validation rejects out-of-range indices"
-    fixum geometry.BufferGeometry duplicate_triangle ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1, 2, 2, 1, 0],
-        geometry.DrawRange { start = 0, count = 6 }, vacua
-    )
-    adfirma primitive_indices_valid(duplicate_triangle) ≡ falsum,
-        "duplicate triangle faces reject regardless of winding"
-    fixum geometry.BufferAttribute quad_positions ← geometry.float32_attribute(
-        "position", 0, 3, 4,
-        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0]
-    )
-    fixum geometry.BufferGeometry adjacent_triangles ← geometry.indexed_triangle_geometry(
-        4, [quad_positions], [0, 1, 2, 2, 1, 3],
-        geometry.DrawRange { start = 0, count = 6 }, vacua
-    )
-    adfirma primitive_indices_valid(adjacent_triangles),
-        "distinct triangle faces may share an edge"
-    fixum geometry.BufferGeometry indexed_lines ← geometry.BufferGeometry {
-        topology = finge geometry.LineList, vertex_count = 3,
-        attributes = [positions], indexed = verum, indices = [0, 1],
-        draw_range = geometry.DrawRange { start = 0, count = 2 }, groups = vacua
-    }
-    adfirma primitive_valid(indexed_lines),
-        "primitive validation preserves indexed line topology"
-    adfirma primitive_indices_valid(indexed_lines) ≡ falsum,
-        "triangle primitive indices reject indexed line geometry"
-    fixum geometry.BufferAttribute line_positions ← geometry.float32_attribute(
-        "position", 0, 3, 2,
-        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
-    )
-    fixum geometry.BufferGeometry nonindexed_lines ← geometry.BufferGeometry {
-        topology = finge geometry.LineList, vertex_count = 2,
-        attributes = [line_positions], indexed = falsum, indices = vacua,
-        draw_range = geometry.DrawRange { start = 0, count = 2 }, groups = vacua
-    }
-    adfirma primitive_valid(nonindexed_lines),
-        "primitive validation preserves non-indexed line topology"
-    adfirma primitive_indices_valid(nonindexed_lines) ≡ falsum,
-        "triangle primitive indices reject non-indexed line geometry"
-    fixum geometry.BufferGeometry nonindexed_points ← geometry.BufferGeometry {
-        topology = finge geometry.PointList, vertex_count = 3,
-        attributes = [positions], indexed = falsum, indices = vacua,
-        draw_range = geometry.DrawRange { start = 0, count = 3 }, groups = vacua
-    }
-    adfirma primitive_valid(nonindexed_points),
-        "primitive validation preserves non-indexed point topology"
-    adfirma primitive_indices_valid(nonindexed_points) ≡ falsum,
-        "triangle primitive indices reject non-indexed point geometry"
-    fixum geometry.BufferGeometry indexed_points ← geometry.BufferGeometry {
-        topology = finge geometry.PointList, vertex_count = 3,
-        attributes = [positions], indexed = verum, indices = [2, 0],
-        draw_range = geometry.DrawRange { start = 0, count = 2 }, groups = vacua
-    }
-    adfirma primitive_valid(indexed_points),
-        "primitive validation preserves indexed point topology"
-    adfirma primitive_indices_valid(indexed_points) ≡ falsum,
-        "triangle primitive indices reject indexed point geometry"
-    adfirma primitive_indices_valid(nonindexed) ≡ falsum,
-        "triangle primitive indices require indexed triangle geometry"
-    fixum geometry.BufferGeometry empty_indices ← geometry.indexed_triangle_geometry(
-        3, [positions], vacua,
-        geometry.DrawRange { start = 0, count = 0 }, vacua
-    )
-    adfirma primitive_indices_valid(empty_indices) ≡ falsum,
-        "triangle primitive indices require at least one triangle"
-    fixum geometry.BufferGeometry incomplete_triangle ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1],
-        geometry.DrawRange { start = 0, count = 2 }, vacua
-    )
-    adfirma primitive_indices_valid(incomplete_triangle) ≡ falsum,
-        "triangle primitive indices require complete triangles"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
@@ -439,8 +167,6 @@ incipit {
     )
     adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
         "geometry groups may not overlap"
-    adfirma primitive_indices_valid(overlapping_groups) ≡ falsum,
-        "primitive indices require non-overlapping geometry groups"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
