@@ -1,0 +1,195 @@
++++
+term = "triga-geometry-attributes"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Explicit Triga attribute shape, layout, indexing, draw range, and group validation."
++++
+
+importa ex "triga:geometry" privata geometry
+
+incipit {
+    fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
+        "position", 3, 3,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+    )
+    fixum geometry.BufferGeometry triangle ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2],
+        geometry.DrawRange { start = 0, count = 3 },
+        [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
+    )
+    adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
+    fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
+    adfirma bounds_result non est nihil, "valid position data produces bounds"
+    fixum f32 zero ← 0.0
+    fixum f32 one ← 1.0
+    adfirma bounds_result!.min_x ≡ zero et bounds_result!.min_y ≡ zero et bounds_result!.min_z ≡ zero,
+        "bounding-box minimum derives from position data"
+    adfirma bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one et bounds_result!.max_z ≡ zero,
+        "bounding-box maximum derives from position data"
+    fixum geometry.BoundingSphere ∪ nihil sphere_result ← geometry.geometry_bounding_sphere(triangle)
+    adfirma sphere_result non est nihil, "valid position data produces a bounding sphere"
+    fixum f32 half ← 0.5
+    adfirma sphere_result!.center_x ≡ half et sphere_result!.center_y ≡ half
+        et sphere_result!.center_z ≡ zero,
+        "bounding-sphere center derives from the position bounds"
+    adfirma sphere_result!.radius > 0.7 et sphere_result!.radius < 0.8,
+        "bounding-sphere radius encloses every position"
+    fixum _ vertex_result ← geometry.geometry_vertex_normals(triangle)
+    adfirma vertex_result non est nihil, "valid triangles produce vertex normals"
+    adfirma vertex_result!.name ≡ "normal" et vertex_result!.component_width ≡ 3,
+        "generated normals preserve explicit attribute layout facts"
+    adfirma vertex_result!.element_count ≡ 3,
+        "generated normals cover every vertex"
+    fixum _ uv_result ← geometry.geometry_planar_uvs(triangle)
+    adfirma uv_result non est nihil, "valid planar geometry produces UVs"
+    adfirma uv_result!.name ≡ "uv" et uv_result!.component_width ≡ 2,
+        "generated UVs preserve explicit attribute layout facts"
+    adfirma uv_result!.element_count ≡ 3,
+        "generated UV layout covers every vertex"
+    adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
+        "layout stride derives from explicit component facts"
+    fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
+        3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(nonindexed), "explicit non-indexed geometry validates"
+    adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
+        "non-indexed triangles produce vertex normals"
+
+    fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 4.0)
+    adfirma plane_result non est nihil, "positive plane dimensions produce geometry"
+    adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4
+        et plane_result!.indices.longitudo() ≡ 6,
+        "plane primitive has deterministic vertex and index counts"
+    adfirma plane_result!.attributes.longitudo() ≡ 3,
+        "plane primitive provides positions, normals, and UVs"
+
+    fixum geometry.BufferGeometry ∪ nihil circle_result ← geometry.circle_geometry(2.0)
+    adfirma circle_result non est nihil, "positive circle radius produces geometry"
+    adfirma circle_result!.indexed et circle_result!.vertex_count ≡ 9
+        et circle_result!.indices.longitudo() ≡ 24,
+        "circle primitive has deterministic segment and index counts"
+    adfirma circle_result!.groups.longitudo() ≡ 1 et circle_result!.groups[0].count ≡ 24,
+        "circle primitive exposes a complete deterministic draw group"
+    adfirma circle_result!.attributes.longitudo() ≡ 3,
+        "circle primitive provides positions, normals, and UVs"
+
+    fixum geometry.BufferGeometry ∪ nihil sphere_primitive ← geometry.sphere_geometry(2.0)
+    adfirma sphere_primitive non est nihil, "positive sphere radius produces geometry"
+    adfirma sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24
+        et sphere_primitive!.indices.longitudo() ≡ 24,
+        "sphere primitive preserves UV seams across eight deterministic faces"
+    adfirma sphere_primitive!.groups.longitudo() ≡ 1 et sphere_primitive!.groups[0].count ≡ 24,
+        "sphere primitive exposes a complete deterministic draw group"
+    adfirma sphere_primitive!.attributes.longitudo() ≡ 3,
+        "sphere primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil cylinder_result ← geometry.cylinder_geometry(2.0, 4.0)
+    adfirma cylinder_result non est nihil, "positive cylinder dimensions produce geometry"
+    adfirma cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38
+        et cylinder_result!.indices.longitudo() ≡ 96,
+        "cylinder primitive preserves side and cap seams across eight segments"
+    adfirma cylinder_result!.groups.longitudo() ≡ 1 et cylinder_result!.groups[0].count ≡ 96,
+        "cylinder primitive exposes a complete deterministic draw group"
+    adfirma cylinder_result!.attributes.longitudo() ≡ 3,
+        "cylinder primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil cone_result ← geometry.cone_geometry(2.0, 4.0)
+    adfirma cone_result non est nihil, "positive cone dimensions produce geometry"
+    adfirma cone_result!.indexed et cone_result!.vertex_count ≡ 28
+        et cone_result!.indices.longitudo() ≡ 48,
+        "cone primitive preserves side and cap seams across eight segments"
+    adfirma cone_result!.groups.longitudo() ≡ 1 et cone_result!.groups[0].count ≡ 48,
+        "cone primitive exposes a complete deterministic draw group"
+    adfirma cone_result!.attributes.longitudo() ≡ 3,
+        "cone primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil torus_result ← geometry.torus_geometry(3.0, 1.0)
+    adfirma torus_result non est nihil, "valid torus radii produce geometry"
+    adfirma torus_result!.indexed et torus_result!.vertex_count ≡ 45
+        et torus_result!.indices.longitudo() ≡ 192,
+        "torus primitive preserves ring and tube seams"
+    adfirma torus_result!.groups.longitudo() ≡ 1 et torus_result!.groups[0].count ≡ 192,
+        "torus primitive exposes a complete deterministic draw group"
+    adfirma torus_result!.attributes.longitudo() ≡ 3,
+        "torus primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
+    adfirma box_result non est nihil, "positive box dimensions produce geometry"
+    adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
+        et box_result!.indices.longitudo() ≡ 36,
+        "box primitive preserves per-face normals and UV seams"
+    adfirma box_result!.groups.longitudo() ≡ 1 et box_result!.groups[0].count ≡ 36,
+        "box primitive exposes a complete deterministic draw group"
+    adfirma box_result!.attributes.longitudo() ≡ 3,
+        "box primitive provides positions, normals, and UVs"
+    adfirma geometry.plane_geometry(0.0, 1.0) est nihil,
+        "plane primitive rejects non-positive dimensions"
+    adfirma geometry.circle_geometry(0.0) est nihil,
+        "circle primitive rejects non-positive radius"
+    adfirma geometry.sphere_geometry(0.0) est nihil,
+        "sphere primitive rejects non-positive radius"
+    adfirma geometry.cylinder_geometry(1.0, 0.0) est nihil,
+        "cylinder primitive rejects non-positive dimensions"
+    adfirma geometry.cone_geometry(0.0, 1.0) est nihil,
+        "cone primitive rejects non-positive dimensions"
+    adfirma geometry.torus_geometry(1.0, 1.0) est nihil,
+        "torus primitive rejects a tube that reaches through its center"
+    adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil,
+        "box primitive rejects non-positive dimensions"
+
+    fixum geometry.BufferAttribute flat_positions ← geometry.float32_attribute(
+        "position", 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0]
+    )
+    fixum geometry.BufferGeometry degenerate ← geometry.triangle_geometry(
+        3, [flat_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_vertex_normals(degenerate) est nihil,
+        "degenerate triangles reject instead of producing invalid normals"
+    adfirma geometry.geometry_planar_uvs(degenerate) est nihil,
+        "zero-height planar geometry rejects instead of dividing by zero"
+
+    fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
+        "position", 3, 3, [0.0, 0.0]
+    )
+    adfirma geometry.attribute_valid(malformed) ≡ falsum,
+        "malformed attribute length rejects"
+    fixum geometry.BufferGeometry out_of_range ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 3],
+        geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
+        "out-of-range index rejects"
+    fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2],
+        geometry.DrawRange { start = 0, count = 3 },
+        [
+            geometry.GeometryGroup { start = 0, count = 2, material_index = 0 },
+            geometry.GeometryGroup { start = 1, count = 2, material_index = 1 },
+        ]
+    )
+    adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
+        "overlapping groups reject"
+    fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
+        "position", 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+    )
+    fixum geometry.BufferAttribute normals ← geometry.float32_attribute(
+        "normal", 3, 3,
+        [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+    )
+    fixum geometry.BufferGeometry positionless ← geometry.triangle_geometry(
+        3, [normals],
+        geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(positionless) ≡ falsum,
+        "geometry without an explicit position attribute rejects"
+    adfirma geometry.geometry_bounding_box(positionless) est nihil,
+        "invalid geometry cannot produce bounds"
+    adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
+        "invalid geometry cannot produce a bounding sphere"
+    adfirma geometry.geometry_vertex_normals(positionless) est nihil,
+        "invalid geometry cannot produce normals"
+    adfirma geometry.geometry_planar_uvs(positionless) est nihil,
+        "invalid geometry cannot produce UVs"
+    fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
+        3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(wrong_position) ≡ falsum,
+        "position attributes require three float components"
+}
