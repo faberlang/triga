@@ -80,6 +80,7 @@ functio primitive_draw_valid(geometry.BufferGeometry ∪ nihil candidate) → bi
 
 functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
     si candidate est nihil ergo redde falsum
+    si primitive_valid(candidate) ≡ falsum ergo redde falsum
     si non (candidate!.topology ≡ finge geometry.TriangleList) ergo redde falsum
     si candidate!.indexed ≡ falsum ergo redde falsum
     si candidate!.indices.longitudo() ≡ 0 ergo redde falsum
@@ -403,6 +404,8 @@ incipit {
     )
     adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
         "overlapping groups reject"
+    adfirma primitive_indices_valid(overlapping_groups) ≡ falsum,
+        "primitive index validation rejects invalid geometry"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
