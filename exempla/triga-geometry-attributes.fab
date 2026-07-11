@@ -76,6 +76,17 @@ functio primitive_draw_valid(geometry.BufferGeometry ∪ nihil candidate) → bi
         et candidate!.groups[0].material_index ≡ 0
 }
 
+functio primitive_indices_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
+    si candidate est nihil ergo redde falsum
+    si candidate!.indexed ≡ falsum ergo redde falsum
+    varia numerus i ← 0
+    dum i < candidate!.indices.longitudo() {
+        si candidate!.indices[i] ≥ candidate!.vertex_count ergo redde falsum
+        i ← i + 1
+    }
+    redde candidate!.topology ≡ finge geometry.TriangleList
+}
+
 incipit {
     fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
         "position", 0, 3, 3,
@@ -155,6 +166,8 @@ incipit {
         "plane primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(plane_result),
         "plane primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(plane_result),
+        "plane primitive exposes in-range triangle-list indices"
     adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4
         et plane_result!.indices.longitudo() ≡ 6,
         "plane primitive has deterministic vertex and index counts"
@@ -169,6 +182,8 @@ incipit {
         "circle primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(circle_result),
         "circle primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(circle_result),
+        "circle primitive exposes in-range triangle-list indices"
     adfirma circle_result!.indexed et circle_result!.vertex_count ≡ 9
         et circle_result!.indices.longitudo() ≡ 24,
         "circle primitive has deterministic segment and index counts"
@@ -185,6 +200,8 @@ incipit {
         "sphere primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(sphere_primitive),
         "sphere primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(sphere_primitive),
+        "sphere primitive exposes in-range triangle-list indices"
     adfirma sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24
         et sphere_primitive!.indices.longitudo() ≡ 24,
         "sphere primitive preserves UV seams across eight deterministic faces"
@@ -200,6 +217,8 @@ incipit {
         "cylinder primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(cylinder_result),
         "cylinder primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(cylinder_result),
+        "cylinder primitive exposes in-range triangle-list indices"
     adfirma cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38
         et cylinder_result!.indices.longitudo() ≡ 96,
         "cylinder primitive preserves side and cap seams across eight segments"
@@ -215,6 +234,8 @@ incipit {
         "cone primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(cone_result),
         "cone primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(cone_result),
+        "cone primitive exposes in-range triangle-list indices"
     adfirma cone_result!.indexed et cone_result!.vertex_count ≡ 28
         et cone_result!.indices.longitudo() ≡ 48,
         "cone primitive preserves side and cap seams across eight segments"
@@ -230,6 +251,8 @@ incipit {
         "torus primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(torus_result),
         "torus primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(torus_result),
+        "torus primitive exposes in-range triangle-list indices"
     adfirma torus_result!.indexed et torus_result!.vertex_count ≡ 45
         et torus_result!.indices.longitudo() ≡ 192,
         "torus primitive preserves ring and tube seams"
@@ -245,6 +268,8 @@ incipit {
         "box primitive exposes the canonical position, normal, and UV layouts"
     adfirma primitive_draw_valid(box_result),
         "box primitive exposes a complete deterministic draw range and group"
+    adfirma primitive_indices_valid(box_result),
+        "box primitive exposes in-range triangle-list indices"
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
         et box_result!.indices.longitudo() ≡ 36,
         "box primitive preserves per-face normals and UV seams"
