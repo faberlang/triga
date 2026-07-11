@@ -9,8 +9,10 @@ dictionary under sibling `examples/corpus/`.
 
 ```text
 exempla/
-  triga-basics.fab      # Vector3, camera, mesh, and BufferGeometry instantiation
-  triga-scene-store.fab # Stable handles, graph edits, and parent-first world transforms
+  triga-basics.fab              # Vector3 and Matrix4 construction and field access
+  triga-geometry-attributes.fab # Geometry generation and vertex-layout reflection
+  triga-scene-store.fab         # Stable handles, graph edits, and world transforms
+  triga-transforms.fab          # Vector, quaternion, and matrix operations
 ```
 
 Language keyword exempla: sibling `examples/corpus/`.
