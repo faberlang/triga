@@ -467,7 +467,7 @@ incipit {
     adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
         "bounding spheres require valid position geometry"
     adfirma geometry.geometry_vertex_normals(positionless) est nihil,
-        "invalid geometry cannot produce normals"
+        "vertex normals require valid position geometry"
     adfirma geometry.geometry_planar_uvs(positionless) est nihil,
         "invalid geometry cannot produce UVs"
     fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
