@@ -453,7 +453,7 @@ incipit {
         geometry.DrawRange { start = 0, count = 3 }, vacua
     )
     adfirma geometry.geometry_valid(positionless) ≡ falsum,
-        "geometry without an explicit position attribute rejects"
+        "geometry requires an explicit position attribute"
     adfirma geometry.geometry_vertex_layouts(positionless) est nihil,
         "invalid geometry cannot expose a partial vertex layout"
     fixum geometry.BufferGeometry duplicate_location ← geometry.triangle_geometry(
