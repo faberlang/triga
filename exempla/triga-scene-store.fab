@@ -1,0 +1,40 @@
++++
+term = "triga-scene-store"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Stable heterogeneous Triga scene handles, stale rejection, and cycle rejection."
++++
+
+importa ex "triga:scene" privata scene
+
+incipit {
+    fixum scene.ResourceHandle geometry ← scene.ResourceHandle { index = 7, generation = 2 }
+    fixum scene.ResourceHandle material ← scene.ResourceHandle { index = 3, generation = 1 }
+    fixum scene.SceneInsert root_step ← scene.scene_insert(
+        scene.scene_store(), scene.scene_group("root")
+    )
+    fixum scene.SceneInsert mesh_step ← scene.scene_insert(
+        root_step.store,
+        scene.scene_mesh("mesh", geometry, material)
+    )
+    fixum scene.SceneStore ∪ nihil attached ← scene.scene_attach(
+        mesh_step.store, mesh_step.handle, root_step.handle
+    )
+    adfirma attached non est nihil, "valid parent/child attach"
+    fixum scene.SceneStore attached_store ← scene.SceneStore { slots = attached!.slots }
+    fixum scene.SceneNode ∪ nihil mesh_result ← scene.scene_get(attached_store, mesh_step.handle)
+    fixum scene.SceneNode mesh ← scene.SceneNode {
+        name = mesh_result!.name,
+        kind = mesh_result!.kind,
+        parent = mesh_result!.parent,
+        children = mesh_result!.children
+    }
+    adfirma mesh.parent!.index ≡ root_step.handle.index, "stable parent identity"
+    fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
+    adfirma scene.scene_attach(cycle_store, root_step.handle, mesh_step.handle) est nihil,
+        "cycle rejects"
+    fixum scene.SceneStore removed ← scene.scene_remove(attached_store, mesh_step.handle)
+    adfirma scene.scene_contains(removed, mesh_step.handle) ≡ falsum, "stale handle rejects"
+    adfirma scene.scene_get(removed, mesh_step.handle) est nihil, "stale lookup rejects"
+}

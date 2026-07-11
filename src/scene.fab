@@ -1,0 +1,187 @@
+# Stable, backend-agnostic scene identity and heterogeneous node storage.
+
+genus SceneHandle {
+    numerus index
+    numerus generation
+}
+
+genus ResourceHandle {
+    numerus index
+    numerus generation
+}
+
+discretio SceneNodeKind {
+    Group { },
+    Mesh { ResourceHandle geometry, ResourceHandle material },
+    Camera { },
+    Light { },
+}
+
+genus SceneNode {
+    textus name
+    SceneNodeKind kind
+    SceneHandle parent sponte
+    lista<SceneHandle> children
+}
+
+genus SceneSlot {
+    numerus generation
+    bivalens alive
+    SceneNode node
+}
+
+genus SceneStore {
+    lista<SceneSlot> slots
+}
+
+genus SceneInsert {
+    SceneStore store
+    SceneHandle handle
+}
+
+functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
+    redde a.index ≡ b.index et a.generation ≡ b.generation
+}
+
+functio scene_store() → SceneStore {
+    redde SceneStore { slots = vacua }
+}
+
+functio scene_node(textus name, SceneNodeKind kind) → SceneNode {
+    redde SceneNode { name = name, kind = kind, children = vacua }
+}
+
+functio scene_group(textus name) → SceneNode {
+    redde scene_node(name, finge Group)
+}
+
+functio scene_mesh(
+    textus name,
+    de ResourceHandle geometry,
+    de ResourceHandle material
+) → SceneNode {
+    redde scene_node(name, finge Mesh {
+        geometry = ResourceHandle { index = geometry.index, generation = geometry.generation },
+        material = ResourceHandle { index = material.index, generation = material.generation }
+    })
+}
+
+functio scene_insert(SceneStore store, SceneNode node) → SceneInsert {
+    varia lista<SceneSlot> slots ← vacua
+    varia numerus i ← 0
+    dum i < store.slots.longitudo() {
+        slots.appende(store.slots[i])
+        i ← i + 1
+    }
+    fixum numerus index ← slots.longitudo()
+    slots.appende(SceneSlot { generation = 0, alive = verum, node = node })
+    redde SceneInsert {
+        store = SceneStore { slots = slots },
+        handle = SceneHandle { index = index, generation = 0 }
+    }
+}
+
+functio scene_contains(de SceneStore store, de SceneHandle handle) → bivalens {
+    si handle.index ≥ store.slots.longitudo() ergo redde falsum
+    fixum SceneSlot slot ← store.slots[handle.index]
+    redde slot.alive et slot.generation ≡ handle.generation
+}
+
+functio scene_get(de SceneStore store, de SceneHandle handle) → SceneNode ∪ nihil {
+    si scene_contains(store, handle) ≡ falsum ergo redde nihil
+    redde store.slots[handle.index].node
+}
+
+functio _scene_replace(SceneStore store, de SceneHandle handle, SceneNode node) → SceneStore {
+    varia lista<SceneSlot> slots ← vacua
+    varia numerus i ← 0
+    dum i < store.slots.longitudo() {
+        fixum SceneSlot slot ← store.slots[i]
+        si i ≡ handle.index et slot.alive et slot.generation ≡ handle.generation {
+            slots.appende(SceneSlot { generation = slot.generation, alive = verum, node = node })
+        }
+        secus { slots.appende(slot) }
+        i ← i + 1
+    }
+    redde SceneStore { slots = slots }
+}
+
+functio scene_remove(SceneStore store, de SceneHandle handle) → SceneStore {
+    varia lista<SceneSlot> slots ← vacua
+    varia numerus i ← 0
+    dum i < store.slots.longitudo() {
+        fixum SceneSlot slot ← store.slots[i]
+        si i ≡ handle.index et slot.alive et slot.generation ≡ handle.generation {
+            slots.appende(SceneSlot {
+                generation = slot.generation + 1, alive = falsum, node = slot.node
+            })
+        }
+        secus { slots.appende(slot) }
+        i ← i + 1
+    }
+    redde SceneStore { slots = slots }
+}
+
+functio _scene_would_cycle(de SceneStore store, de SceneHandle child, de SceneHandle parent) → bivalens {
+    varia SceneHandle cursor ← SceneHandle { index = parent.index, generation = parent.generation }
+    varia numerus remaining ← store.slots.longitudo() + 1
+    dum remaining > 0 {
+        si scene_handle_equals(cursor, child) ergo redde verum
+        fixum SceneNode ∪ nihil current ← scene_get(store, cursor)
+        si current est nihil ergo redde falsum
+        fixum SceneNode current_node ← SceneNode {
+            name = current!.name, kind = current!.kind,
+            parent = current!.parent, children = current!.children
+        }
+        si current_node.parent est nihil ergo redde falsum
+        fixum SceneHandle current_parent ← SceneHandle {
+            index = current_node.parent!.index,
+            generation = current_node.parent!.generation
+        }
+        cursor ← SceneHandle {
+            index = current_parent.index,
+            generation = current_parent.generation
+        }
+        remaining ← remaining - 1
+    }
+    redde verum
+}
+
+functio scene_attach(
+    SceneStore store,
+    de SceneHandle child,
+    de SceneHandle parent
+) → SceneStore ∪ nihil {
+    si scene_contains(store, child) ≡ falsum ergo redde nihil
+    si scene_contains(store, parent) ≡ falsum ergo redde nihil
+    si _scene_would_cycle(store, child, parent) ergo redde nihil
+    fixum SceneNode ∪ nihil child_result ← scene_get(store, child)
+    fixum SceneNode ∪ nihil parent_result ← scene_get(store, parent)
+    fixum SceneNode child_node ← SceneNode {
+        name = child_result!.name, kind = child_result!.kind,
+        parent = child_result!.parent, children = child_result!.children
+    }
+    fixum SceneNode parent_node ← SceneNode {
+        name = parent_result!.name, kind = parent_result!.kind,
+        parent = parent_result!.parent, children = parent_result!.children
+    }
+    varia lista<SceneHandle> children ← vacua
+    varia numerus i ← 0
+    dum i < parent_node.children.longitudo() {
+        fixum SceneHandle existing ← parent_node.children[i]
+        children.appende(SceneHandle { index = existing.index, generation = existing.generation })
+        i ← i + 1
+    }
+    children.appende(SceneHandle { index = child.index, generation = child.generation })
+    fixum SceneNode updated_parent ← SceneNode {
+        name = parent_node.name, kind = parent_node.kind,
+        parent = parent_node.parent, children = children
+    }
+    fixum SceneNode updated_child ← SceneNode {
+        name = child_node.name, kind = child_node.kind,
+        parent = SceneHandle { index = parent.index, generation = parent.generation },
+        children = child_node.children
+    }
+    fixum SceneStore with_parent ← _scene_replace(store, parent, updated_parent)
+    redde _scene_replace(with_parent, child, updated_child)
+}
