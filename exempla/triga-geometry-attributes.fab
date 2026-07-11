@@ -27,6 +27,14 @@ incipit {
         "bounding-box minimum derives from position data"
     adfirma bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one et bounds_result!.max_z ≡ zero,
         "bounding-box maximum derives from position data"
+    fixum geometry.BoundingSphere ∪ nihil sphere_result ← geometry.geometry_bounding_sphere(triangle)
+    adfirma sphere_result non est nihil, "valid position data produces a bounding sphere"
+    fixum f32 half ← 0.5
+    adfirma sphere_result!.center_x ≡ half et sphere_result!.center_y ≡ half
+        et sphere_result!.center_z ≡ zero,
+        "bounding-sphere center derives from the position bounds"
+    adfirma sphere_result!.radius > 0.7 et sphere_result!.radius < 0.8,
+        "bounding-sphere radius encloses every position"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
@@ -70,6 +78,8 @@ incipit {
         "geometry without an explicit position attribute rejects"
     adfirma geometry.geometry_bounding_box(positionless) est nihil,
         "invalid geometry cannot produce bounds"
+    adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
+        "invalid geometry cannot produce a bounding sphere"
     fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
         3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
