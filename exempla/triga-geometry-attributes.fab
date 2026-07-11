@@ -325,6 +325,9 @@ incipit {
         "degenerate triangles reject instead of producing invalid normals"
     adfirma geometry.geometry_planar_uvs(degenerate) est nihil,
         "zero-height planar geometry rejects instead of dividing by zero"
+    fixum geometry.BufferGeometry ∪ nihil absent_geometry ← nihil
+    adfirma primitive_indices_valid(absent_geometry) ≡ falsum,
+        "primitive index validation rejects absent geometry"
 
     fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
         "position", 0, 3, 3, [0.0, 0.0]
