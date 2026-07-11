@@ -377,20 +377,13 @@ incipit {
         "distinct triangle faces may share an edge"
     fixum geometry.BufferGeometry indexed_lines ← geometry.BufferGeometry {
         topology = finge geometry.LineList, vertex_count = 3,
-        attributes = [positions], indexed = verum, indices = [0, 1, 2],
-        draw_range = geometry.DrawRange { start = 0, count = 3 }, groups = vacua
-    }
-    adfirma primitive_indices_valid(indexed_lines) ≡ falsum,
-        "triangle primitive indices reject non-triangle topology"
-    fixum geometry.BufferGeometry valid_lines ← geometry.BufferGeometry {
-        topology = finge geometry.LineList, vertex_count = 3,
         attributes = [positions], indexed = verum, indices = [0, 1],
         draw_range = geometry.DrawRange { start = 0, count = 2 }, groups = vacua
     }
-    adfirma primitive_valid(valid_lines),
-        "primitive validation preserves valid non-triangle topology"
-    adfirma primitive_indices_valid(valid_lines) ≡ falsum,
-        "triangle primitive indices still reject valid non-triangle geometry"
+    adfirma primitive_valid(indexed_lines),
+        "primitive validation preserves indexed line topology"
+    adfirma primitive_indices_valid(indexed_lines) ≡ falsum,
+        "triangle primitive indices reject valid non-triangle topology"
     fixum geometry.BufferAttribute line_positions ← geometry.float32_attribute(
         "position", 0, 3, 2,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
