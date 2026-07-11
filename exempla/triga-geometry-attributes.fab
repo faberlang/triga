@@ -438,7 +438,7 @@ incipit {
         ]
     )
     adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
-        "overlapping groups reject"
+        "geometry groups may not overlap"
     adfirma primitive_indices_valid(overlapping_groups) ≡ falsum,
         "primitive index validation rejects invalid geometry"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
