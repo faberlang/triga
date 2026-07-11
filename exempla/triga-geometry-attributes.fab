@@ -1,0 +1,50 @@
++++
+term = "triga-geometry-attributes"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Explicit Triga attribute shape, layout, indexing, draw range, and group validation."
++++
+
+importa ex "triga:geometry" privata geometry
+
+incipit {
+    fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
+        "position", 3, 3,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+    )
+    fixum geometry.BufferGeometry triangle ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2],
+        geometry.DrawRange { start = 0, count = 3 },
+        [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
+    )
+    adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
+    adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
+        "layout stride derives from explicit component facts"
+    fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
+        3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(nonindexed), "explicit non-indexed geometry validates"
+
+    fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
+        "position", 3, 3, [0.0, 0.0]
+    )
+    adfirma geometry.attribute_valid(malformed) ≡ falsum,
+        "malformed attribute length rejects"
+    fixum geometry.BufferGeometry out_of_range ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 3],
+        geometry.DrawRange { start = 0, count = 3 }, vacua
+    )
+    adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
+        "out-of-range index rejects"
+    fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2],
+        geometry.DrawRange { start = 0, count = 3 },
+        [
+            geometry.GeometryGroup { start = 0, count = 2, material_index = 0 },
+            geometry.GeometryGroup { start = 1, count = 2, material_index = 1 },
+        ]
+    )
+    adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
+        "overlapping groups reject"
+}

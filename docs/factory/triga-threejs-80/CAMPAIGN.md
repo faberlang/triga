@@ -261,7 +261,9 @@ shared geometry/material identity without copying the graph into backend code.
 
 ### Stage 3 — Geometry, attributes, and primitives
 
-**Status**: planned
+**Status**: Unit 1 implemented on packet — explicit attribute/layout facts,
+indexed and non-indexed triangle contracts, draw ranges/groups, and fail-closed
+structural validation in `src/geometry.fab`
 **Source**: [`goals/03-geometry-attributes-primitives.md`](goals/03-geometry-attributes-primitives.md)
 **Depends on**: Stages 0–1; may overlap Stage 2 after identity policy is locked
 **Gate**: indexed and non-indexed custom geometry plus a batched core primitive

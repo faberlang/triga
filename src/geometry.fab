@@ -1,0 +1,190 @@
+# Backend-agnostic geometry attributes and validation.
+
+discretio PrimitiveTopology {
+    TriangleList { }
+    LineList { }
+    PointList { }
+}
+
+discretio AttributeUsage {
+    StaticAttribute { }
+    DynamicAttribute { }
+    StreamAttribute { }
+}
+
+discretio AttributeData {
+    Float32Attribute { lista<f32> values }
+    Uint32Attribute { lista<u32> values }
+}
+
+genus BufferAttribute {
+    textus name
+    numerus component_width
+    numerus element_count
+    bivalens normalized
+    AttributeUsage usage
+    AttributeData data
+}
+
+genus DrawRange {
+    numerus start
+    numerus count
+}
+
+genus GeometryGroup {
+    numerus start
+    numerus count
+    numerus material_index
+}
+
+genus BufferGeometry {
+    PrimitiveTopology topology
+    numerus vertex_count
+    lista<BufferAttribute> attributes
+    bivalens indexed
+    lista<u32> indices
+    DrawRange draw_range
+    lista<GeometryGroup> groups
+}
+
+functio float32_attribute(
+    textus name,
+    numerus component_width,
+    numerus element_count,
+    lista<f32> values
+) → BufferAttribute {
+    redde BufferAttribute {
+        name = name, component_width = component_width, element_count = element_count,
+        normalized = falsum, usage = finge StaticAttribute,
+        data = finge Float32Attribute { values = values }
+    }
+}
+
+functio indexed_triangle_geometry(
+    numerus vertex_count,
+    lista<BufferAttribute> attributes,
+    lista<u32> indices,
+    DrawRange draw_range,
+    lista<GeometryGroup> groups
+) → BufferGeometry {
+    redde BufferGeometry {
+        topology = finge TriangleList, vertex_count = vertex_count,
+        attributes = attributes, indexed = verum, indices = indices,
+        draw_range = draw_range, groups = groups
+    }
+}
+
+functio triangle_geometry(
+    numerus vertex_count,
+    lista<BufferAttribute> attributes,
+    DrawRange draw_range,
+    lista<GeometryGroup> groups
+) → BufferGeometry {
+    redde BufferGeometry {
+        topology = finge TriangleList, vertex_count = vertex_count,
+        attributes = attributes, indexed = falsum, indices = vacua,
+        draw_range = draw_range, groups = groups
+    }
+}
+
+functio attribute_scalar_count(de BufferAttribute attribute) → numerus {
+    discerne attribute.data {
+        casu Float32Attribute fixum values { redde values.longitudo() }
+        casu Uint32Attribute fixum values { redde values.longitudo() }
+    }
+}
+
+functio attribute_scalar_bytes(de BufferAttribute attribute) → numerus {
+    discerne attribute.data {
+        casu Float32Attribute fixum values { redde 4 }
+        casu Uint32Attribute fixum values { redde 4 }
+    }
+}
+
+functio attribute_stride_bytes(de BufferAttribute attribute) → numerus {
+    redde attribute.component_width * attribute_scalar_bytes(attribute)
+}
+
+functio attribute_valid(de BufferAttribute attribute) → bivalens {
+    si attribute.name ≡ "" ergo redde falsum
+    si attribute.component_width < 1 aut attribute.component_width > 4 ergo redde falsum
+    si attribute.element_count ≡ 0 ergo redde falsum
+    redde attribute_scalar_count(attribute) ≡
+        attribute.component_width * attribute.element_count
+}
+
+functio geometry_element_count(de BufferGeometry geometry) → numerus {
+    si geometry.indexed ≡ falsum ergo redde geometry.vertex_count
+    redde geometry.indices.longitudo()
+}
+
+functio _geometry_attributes_valid(de BufferGeometry geometry) → bivalens {
+    varia numerus i ← 0
+    dum i < geometry.attributes.longitudo() {
+        fixum BufferAttribute attribute ← geometry.attributes[i]
+        si attribute_valid(attribute) ≡ falsum ergo redde falsum
+        si attribute.element_count ≠ geometry.vertex_count ergo redde falsum
+        varia numerus j ← 0
+        dum j < i {
+            fixum BufferAttribute previous ← geometry.attributes[j]
+            si previous.name ≡ attribute.name { redde falsum }
+            j ← j + 1
+        }
+        i ← i + 1
+    }
+    redde geometry.attributes.longitudo() > 0
+}
+
+functio _geometry_indices_valid(de BufferGeometry geometry) → bivalens {
+    si geometry.indexed ≡ falsum ergo redde geometry.indices.longitudo() ≡ 0
+    si geometry.indices.longitudo() ≡ 0 ergo redde falsum
+    varia numerus i ← 0
+    dum i < geometry.indices.longitudo() {
+        fixum u32 index ← geometry.indices[i]
+        si index ≥ geometry.vertex_count { redde falsum }
+        i ← i + 1
+    }
+    redde verum
+}
+
+functio _geometry_groups_valid(de BufferGeometry geometry) → bivalens {
+    fixum numerus element_count ← geometry_element_count(geometry)
+    varia numerus previous_end ← 0
+    varia numerus i ← 0
+    dum i < geometry.groups.longitudo() {
+        fixum GeometryGroup group ← geometry.groups[i]
+        si group.count ≡ 0 ergo redde falsum
+        si group.start < previous_end ergo redde falsum
+        fixum numerus group_end ← group.start + group.count
+        si group_end > element_count { redde falsum }
+        previous_end ← group_end
+        i ← i + 1
+    }
+    redde verum
+}
+
+functio _element_count_divisible(numerus element_count, numerus divisor) → bivalens {
+    varia numerus remaining ← element_count
+    dum remaining ≥ divisor { remaining ← remaining - divisor }
+    redde remaining ≡ 0
+}
+
+functio _geometry_topology_valid(de BufferGeometry geometry) → bivalens {
+    fixum numerus element_count ← geometry_element_count(geometry)
+    discerne geometry.topology {
+        casu TriangleList { redde _element_count_divisible(element_count, 3) }
+        casu LineList { redde _element_count_divisible(element_count, 2) }
+        casu PointList { redde element_count > 0 }
+    }
+}
+
+functio geometry_valid(de BufferGeometry geometry) → bivalens {
+    si geometry.vertex_count ≡ 0 ergo redde falsum
+    si _geometry_attributes_valid(geometry) ≡ falsum ergo redde falsum
+    si _geometry_indices_valid(geometry) ≡ falsum ergo redde falsum
+    fixum numerus element_count ← geometry_element_count(geometry)
+    si geometry.draw_range.count ≡ 0 ergo redde falsum
+    si geometry.draw_range.start + geometry.draw_range.count > element_count ergo redde falsum
+    si _geometry_topology_valid(geometry) ≡ falsum ergo redde falsum
+    redde _geometry_groups_valid(geometry)
+}

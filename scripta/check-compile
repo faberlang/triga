@@ -20,4 +20,10 @@ export FABER_LIBRARY_HOME
 echo "check-compile: parsing src/triga.fab"
 "$RADIX_BIN" check "$ROOT/src/triga.fab"
 
+echo "check-compile: parsing src/geometry.fab"
+"$RADIX_BIN" check "$ROOT/src/geometry.fab"
+
+echo "check-compile: checking geometry attribute exemplar"
+"$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
+
 "$ROOT/scripta/check-transforms"
