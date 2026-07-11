@@ -422,7 +422,7 @@ incipit {
         geometry.DrawRange { start = 0, count = 0 }, vacua
     )
     adfirma primitive_indices_valid(empty_indices) ≡ falsum,
-        "primitive index validation rejects empty index buffers"
+        "triangle primitive indices require at least one triangle"
     fixum geometry.BufferGeometry incomplete_triangle ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1],
         geometry.DrawRange { start = 0, count = 2 }, vacua
