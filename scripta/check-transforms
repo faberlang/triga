@@ -2,7 +2,15 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RADIX="${RADIX_ROOT:-$ROOT/../radix}"
+
+if [[ -n "${RADIX_ROOT:-}" ]]; then
+  RADIX="$RADIX_ROOT"
+elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
+  RADIX="$ROOT/../radix"
+else
+  RADIX="$ROOT/../../../radix"
+fi
+
 RADIX_BIN="$RADIX/target/debug/radix"
 
 if [[ ! -x "$RADIX_BIN" ]]; then
