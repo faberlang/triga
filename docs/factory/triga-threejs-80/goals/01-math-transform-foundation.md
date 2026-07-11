@@ -1,6 +1,8 @@
 # Goal 01: Core Math And Transform Foundation
 
-**Status**: planned
+**Status**: in progress — CPU/provider-generated Rust proof is green on main at
+`c3f2972`; integrated closure remains blocked on MIR/GPU parity residual
+`ea89665`
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix`, `faber-runtime`, `examples`
 **Depends on**: Goal 00
