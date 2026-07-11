@@ -108,11 +108,11 @@ incipit {
     fixum triga.Vector3 ray_point ← triga.ray_punctum(ray, 3.0 ∷ f32)
     adfirma ray_point.x ≡ (3.0 ∷ f32), "ray point at distance"
 
-    fixum triga.Color midpoint_color ← triga.color_interpolata(
-        triga.Color { r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 },
-        triga.Color { r = 1.0 ∷ f32, g = 0.5 ∷ f32, b = 0.25 ∷ f32 },
-        0.5 ∷ f32
-    )
+    # Bind Color locals before the call: library genus record literals as direct
+    # call arguments currently mis-emit as Euler on the package Rust path.
+    fixum triga.Color color_a ← triga.Color { r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 }
+    fixum triga.Color color_b ← triga.Color { r = 1.0 ∷ f32, g = 0.5 ∷ f32, b = 0.25 ∷ f32 }
+    fixum triga.Color midpoint_color ← triga.color_interpolata(color_a, color_b, 0.5 ∷ f32)
     adfirma midpoint_color.r ≡ (0.5 ∷ f32), "color interpolation"
     adfirma triga.matrix4_determinans_affinis(scale) ≡ (24.0 ∷ f32),
         "affine determinant"

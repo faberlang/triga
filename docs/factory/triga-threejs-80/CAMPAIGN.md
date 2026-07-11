@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-11) — Stage 1 **not closed**; Triga CPU+families green; selected MIR/GPU subset green or fail-closed; product GPU/scene still open
+**Status**: active (2026-07-11) — Stage 1 **NOT CLEARED** (poker-face `5f68f68`); foundation green slices; package Color call-arg residual HIGH
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 1 residual honesty / Stage 2 prep — do **not** promote Stage 1 complete until integrated gate below is met
+**Selected next stage**: Stage 1 residual (library call-arg genus emit) / Stage 2 prep — **do not** promote Stage 1 complete
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -241,18 +241,21 @@ capstone family.
 
 ### Stage 1 — Core math and transform foundation
 
-**Status**: **in progress — not closed** (audit 2026-07-11)
+**Status**: **NOT CLEARED** — poker-face 2026-07-11 ([`stage1-poker-face-2026-07-11.md`](stage1-poker-face-2026-07-11.md))
 
 | Seam | Evidence | State |
 | --- | --- | --- |
-| Triga CPU families + Euler | main `c3f2972`; `./scripta/check-source` + `check-transforms` | **green** |
-| MIR CPU register matrix/vector | matmul/applica/normalize/inversa lower+stepper (prior kills; `f99b8fad7` era) | **green** |
-| Selected GPU: WGSL register matrix | radix `f99b8fad7` — construct+cells; elementwise/matmul nucleum tests | **green** (local construct → scalar return; not kernel matrix params) |
-| GPU fail-closed: metal/llvm | radix `2f3e3ccb1` — `kernel matrix construct` / `matrix construct` shapes + tests | **green fail-closed** (no metal/llvm matrix emit) |
-| Adjacent: faber Stage3 native lib link | faber `d9dd406` — run/test path-link sqlite-style crates (need `7ad9804`) | **green** (unblocks product SQLite; not Stage1 gate alone) |
-| Full Stage1 campaign gate | “execute consistently in required Rust **and** MIR/GPU paths” for all families | **open** — metal/llvm matrix emit, matrix kernel ABI, provider/product GPU scene not claimed |
+| Triga CPU families + Euler | main `c3f2972`+; `./scripta/check-source` + `check-transforms` | **green** |
+| Provider path typecheck | `faber check exempla/triga-transforms.fab` | **green** |
+| Generated-Rust compile+run (compiled) | `faber run --compile exempla/triga-transforms.fab` after Color local bind workaround | **green with residual** |
+| MIR CPU register matrix/vector | lower+stepper matmul/applica/inversa + triga chain match | **green** |
+| Selected GPU: WGSL register matrix | radix `f99b8fad7` — construct+cells; elementwise/matmul nucleum tests | **green** (bounded) |
+| GPU fail-closed: metal/llvm | radix `2f3e3ccb1` | **green fail-closed** |
+| Library Color/genus record as **call-arg** emit | package path emits `Euler` for `Color { r,g,b }` args | **HIGH residual** |
+| Full Stage1 campaign gate | consistent Rust + MIR/GPU for required ops | **NOT CLEARED** |
 
-**Residuals closed this cycle (honest, bounded):** Vivi `87a44c3` / tasks `463bf6d` (WGSL subset), `ea89665` (metal/llvm fail-closed). Tracker need `71124e1` remains open until campaign gate above is met without overclaim.
+**Residuals closed (bounded):** `87a44c3`/`463bf6d` WGSL; `ea89665` metal/llvm fail-closed.  
+**Tracker:** `71124e1` stays open. **Do not** mark Stage 1 complete.
 
 **Source**: [`goals/01-math-transform-foundation.md`](goals/01-math-transform-foundation.md)
 **Depends on**: Stage 0
