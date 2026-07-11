@@ -2,8 +2,15 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RADIX="${RADIX_ROOT:-$ROOT/../radix}"
 FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
+if [[ -n "${RADIX_ROOT:-}" ]]; then
+  RADIX="$RADIX_ROOT"
+elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
+  RADIX="$ROOT/../radix"
+else
+  RADIX="$ROOT/../../../radix"
+fi
 
 if [[ ! -d "$RADIX/crates/radix" ]]; then
   echo "check-compile: missing radix checkout at $RADIX" >&2
@@ -16,6 +23,7 @@ if [[ ! -x "$RADIX_BIN" ]]; then
 fi
 
 export FABER_LIBRARY_HOME
+export RADIX_ROOT="$RADIX"
 
 checked=0
 while IFS= read -r file; do
