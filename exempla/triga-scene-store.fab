@@ -7,6 +7,7 @@ summary = "Stable heterogeneous Triga scene handles, stale rejection, and cycle 
 +++
 
 importa ex "triga:scene" privata scene
+importa ex "triga:triga" privata triga
 
 incipit {
     fixum scene.ResourceHandle geometry ← scene.ResourceHandle { index = 7, generation = 2 }
@@ -28,11 +29,43 @@ incipit {
         name = mesh_result!.name,
         kind = mesh_result!.kind,
         parent = mesh_result!.parent,
-        children = mesh_result!.children
+        children = mesh_result!.children,
+        local_matrix = mesh_result!.local_matrix,
+        world_matrix = mesh_result!.world_matrix,
+        world_dirty = mesh_result!.world_dirty
     }
     adfirma mesh.parent!.index ≡ root_step.handle.index, "stable parent identity"
+    fixum scene.SceneStore ∪ nihil root_local ← scene.scene_set_local_matrix(
+        attached_store, root_step.handle,
+        triga.matrix4_translatio(triga.Vector3 { x = 5.0, y = 0.0, z = 0.0 })
+    )
+    adfirma root_local non est nihil, "root local transform accepted"
+    fixum scene.SceneStore root_local_store ← scene.SceneStore { slots = root_local!.slots }
+    fixum scene.SceneStore ∪ nihil mesh_local ← scene.scene_set_local_matrix(
+        root_local_store, mesh_step.handle,
+        triga.matrix4_translatio(triga.Vector3 { x = 2.0, y = 0.0, z = 0.0 })
+    )
+    adfirma mesh_local non est nihil, "child local transform accepted"
+    fixum scene.SceneStore mesh_local_store ← scene.SceneStore { slots = mesh_local!.slots }
+    fixum scene.SceneStore ∪ nihil world_updated ← scene.scene_update_world(
+        mesh_local_store, root_step.handle
+    )
+    adfirma world_updated non est nihil, "world propagation succeeds"
+    fixum scene.SceneStore world_store ← scene.SceneStore { slots = world_updated!.slots }
+    fixum scene.SceneNode ∪ nihil world_mesh ← scene.scene_get(
+        world_store, mesh_step.handle
+    )
+    fixum triga.Vector3 world_origin ← triga.matrix4_applica_punctum(
+        world_mesh!.world_matrix, triga.Vector3 { x = 0.0, y = 0.0, z = 0.0 }
+    )
+    adfirma world_origin.x ≡ (7.0 ∷ f32), "parent-first world transform composes"
+    adfirma world_mesh!.world_dirty ≡ falsum, "world update clears dirty state"
+    adfirma scene.scene_update_world(world_store, mesh_step.handle) est nihil,
+        "non-root world update rejects"
+    adfirma scene.scene_remove(world_store, root_step.handle) est nihil,
+        "removing a parent rejects dangling children"
     fixum scene.SceneInsert group_step ← scene.scene_insert(
-        attached_store, scene.scene_group("group")
+        world_store, scene.scene_group("group")
     )
     fixum scene.SceneStore ∪ nihil reparented ← scene.scene_attach(
         group_step.store, mesh_step.handle, group_step.handle

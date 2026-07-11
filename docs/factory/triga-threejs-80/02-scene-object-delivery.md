@@ -45,6 +45,14 @@ objects or value-copy aliases.
 - Provider-imported generated Rust builds and runs the same assertions without
   a host-side graph or Triga-specific compiler branch.
 
+## World-Transform Unit
+
+Scene nodes now carry explicit local and derived world matrices. Updating a
+root walks children in stored order, composes parent-before-child transforms,
+and clears dirty state on the same stable handles. Local edits and graph edits
+dirty the affected subtree; stale roots, non-root entry points, malformed
+matrices, cycles, and removal of parents with live children reject explicitly.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes, copied `discretio` payload graphs,
