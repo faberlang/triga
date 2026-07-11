@@ -172,6 +172,22 @@ functio attribute_vertex_layout(de BufferAttribute attribute) → VertexAttribut
     }
 }
 
+functio geometry_vertex_layouts(de BufferGeometry geometry) → lista<VertexAttributeLayout> ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    varia lista<VertexAttributeLayout> layouts ← vacua
+    varia numerus i ← 0
+    dum i < geometry.attributes.longitudo() {
+        fixum BufferAttribute attribute ← geometry.attributes[i]
+        layouts.appende(VertexAttributeLayout {
+            shader_location = attribute.shader_location,
+            vertex_format = _attribute_vertex_format(attribute),
+            stride_bytes = attribute_stride_bytes(attribute)
+        })
+        i ← i + 1
+    }
+    redde layouts
+}
+
 functio attribute_valid(de BufferAttribute attribute) → bivalens {
     si attribute.name ≡ "" ergo redde falsum
     si attribute.normalized ergo redde falsum

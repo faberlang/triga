@@ -59,6 +59,13 @@ incipit {
         "vertex layout preserves the derived byte stride"
     adfirma geometry.attribute_vertex_format(positions) non est nihil,
         "position layout exposes a typed GPU format"
+    fixum lista<geometry.VertexAttributeLayout> ∪ nihil triangle_layouts ←
+        geometry.geometry_vertex_layouts(triangle)
+    adfirma triangle_layouts non est nihil,
+        "valid geometry exposes a complete vertex layout"
+    adfirma triangle_layouts![0].shader_location ≡ 0
+        et triangle_layouts![0].stride_bytes ≡ 12,
+        "geometry layout preserves reflection-facing location and stride facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
@@ -189,6 +196,8 @@ incipit {
     )
     adfirma geometry.geometry_valid(positionless) ≡ falsum,
         "geometry without an explicit position attribute rejects"
+    adfirma geometry.geometry_vertex_layouts(positionless) est nihil,
+        "invalid geometry cannot expose a partial vertex layout"
     fixum geometry.BufferGeometry duplicate_location ← geometry.triangle_geometry(
         3, [positions, normals],
         geometry.DrawRange { start = 0, count = 3 }, vacua
