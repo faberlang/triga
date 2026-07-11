@@ -342,6 +342,16 @@ incipit {
     )
     adfirma primitive_indices_valid(duplicate_triangle) ≡ falsum,
         "duplicate triangle faces reject regardless of winding"
+    fixum geometry.BufferAttribute quad_positions ← geometry.float32_attribute(
+        "position", 0, 3, 4,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0]
+    )
+    fixum geometry.BufferGeometry adjacent_triangles ← geometry.indexed_triangle_geometry(
+        4, [quad_positions], [0, 1, 2, 2, 1, 3],
+        geometry.DrawRange { start = 0, count = 6 }, vacua
+    )
+    adfirma primitive_indices_valid(adjacent_triangles),
+        "distinct triangle faces may share an edge"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
