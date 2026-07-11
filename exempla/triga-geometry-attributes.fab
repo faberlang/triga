@@ -465,7 +465,7 @@ incipit {
     adfirma geometry.geometry_bounding_box(positionless) est nihil,
         "bounding boxes require valid position geometry"
     adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
-        "invalid geometry cannot produce a bounding sphere"
+        "bounding spheres require valid position geometry"
     adfirma geometry.geometry_vertex_normals(positionless) est nihil,
         "invalid geometry cannot produce normals"
     adfirma geometry.geometry_planar_uvs(positionless) est nihil,
