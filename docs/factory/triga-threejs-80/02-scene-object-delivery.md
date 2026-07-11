@@ -45,6 +45,14 @@ objects or value-copy aliases.
 - Provider-imported generated Rust builds and runs the same assertions without
   a host-side graph or Triga-specific compiler branch.
 
+## Current Status
+
+Triga-owned source is complete on the packet through `15edfbf`: the public
+scene store and executable exemplar cover the graph, identity, traversal,
+transform, resource-sharing, and rejection behavior above. Acceptance remains
+open until the provider-imported generated Rust builds and runs those assertions
+without a host-side graph or Triga-specific compiler branch.
+
 ## World-Transform Unit
 
 Scene nodes now carry explicit local and derived world matrices. Updating a
@@ -77,7 +85,7 @@ the executable scene exemplar proves lookup through a multilevel hierarchy.
 
 ## Stop Condition
 
-Do not introduce numeric list indexes, copied `discretio` payload graphs,
-backend handles, or compatibility wrappers around `Object3D.children` as an
-interim identity model. The next Triga source change waits on the reusable
-identity contract.
+Do not introduce numeric list indexes as identity, copied `discretio` payload
+graphs, backend handles, or compatibility wrappers around `Object3D.children`.
+Do not claim Stage 2 accepted until the generated-Rust execution evidence proves
+the identity contract at the reusable language/runtime seam.

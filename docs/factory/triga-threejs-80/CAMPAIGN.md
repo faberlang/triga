@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-10) — Stage 1 CPU/HIR proof green; GPU parity open; Stage 2 identity discovery blocked
+**Status**: active (2026-07-11) — Stage 1 CPU/HIR proof green; GPU parity open; Stage 2 Triga source complete with generated-Rust acceptance open
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 2 — scene graph identity discovery (waiting on reusable handle contract)
+**Selected next stage**: Stage 2 — generated-Rust scene identity acceptance
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -251,7 +251,12 @@ operations execute consistently in required Rust and MIR/GPU paths.
 
 ### Stage 2 — Scene graph and object model
 
-**Status**: discovery charted; source work waiting on reusable stable-reference/handle contract `7719fbb`
+**Status**: Triga-owned source complete on packet through `15edfbf` — the
+generational scene store now proves heterogeneous group/mesh/camera/light nodes,
+shared resource handles, parent edits, ordered traversal, world transforms,
+stale/cycle rejection, and stable name lookup. The integration gate remains
+open for provider-imported generated-Rust execution and confirmation that the
+identity contract is reusable rather than a Triga-specific compiler seam.
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve

@@ -1,6 +1,7 @@
 # Goal 02: Scene Graph And Object Model
 
-**Status**: planned
+**Status**: Triga source complete on packet through `15edfbf`; generated-Rust
+identity and execution acceptance remains open
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix` when language ownership/identity facts are missing, `faber-runtime`, `examples`
 **Depends on**: Goals 00–01
