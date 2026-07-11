@@ -68,6 +68,7 @@ functio primitive_layout_valid(geometry.BufferGeometry ∪ nihil candidate) → 
 
 functio primitive_draw_valid(geometry.BufferGeometry ∪ nihil candidate) → bivalens {
     si candidate est nihil ergo redde falsum
+    si primitive_valid(candidate) ≡ falsum ergo redde falsum
     redde candidate!.draw_range.start ≡ 0
         et candidate!.draw_range.count ≡ candidate!.indices.longitudo()
         et candidate!.groups.longitudo() ≡ 1
@@ -348,6 +349,8 @@ incipit {
         "out-of-range index rejects"
     adfirma primitive_valid(out_of_range) ≡ falsum,
         "primitive validation rejects invalid geometry"
+    adfirma primitive_draw_valid(out_of_range) ≡ falsum,
+        "primitive draw validation rejects invalid geometry"
     adfirma primitive_indices_valid(out_of_range) ≡ falsum,
         "primitive index validation rejects out-of-range indices"
     fixum geometry.BufferGeometry duplicate_triangle ← geometry.indexed_triangle_geometry(
