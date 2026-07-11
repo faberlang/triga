@@ -193,6 +193,31 @@ functio scene_traverse(de SceneStore store, de SceneHandle root) → lista<Scene
     redde traversal!.handles
 }
 
+functio scene_find_name(
+    de SceneStore store,
+    de SceneHandle root,
+    textus name
+) → SceneHandle ∪ nihil {
+    fixum SceneTraversal ∪ nihil result ← _scene_traverse_preorder(
+        store, root, vacua, store.slots.longitudo()
+    )
+    si result est nihil ergo redde nihil
+    fixum SceneTraversal traversal ← SceneTraversal {
+        handles = result!.handles, remaining = result!.remaining
+    }
+    varia numerus i ← 0
+    dum i < traversal.handles.longitudo() {
+        fixum SceneHandle handle ← traversal.handles[i]
+        fixum SceneNode ∪ nihil node ← scene_get(store, handle)
+        si node est nihil ergo redde nihil
+        si node!.name ≡ name {
+            redde SceneHandle { index = handle.index, generation = handle.generation }
+        }
+        i ← i + 1
+    }
+    redde nihil
+}
+
 functio _scene_replace(SceneStore store, de SceneHandle handle, SceneNode node) → SceneStore {
     varia lista<SceneSlot> slots ← vacua
     varia numerus i ← 0

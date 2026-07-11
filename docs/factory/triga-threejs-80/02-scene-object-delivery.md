@@ -68,6 +68,13 @@ without copying resources, and the executable scene exemplar proves that two
 mesh nodes retain identical resource generations while coexisting with camera
 and light siblings.
 
+## Stable-Lookup Unit
+
+`scene_find_name` resolves the first matching node in deterministic preorder and
+returns its stable handle rather than a copied node or list position. Lookup
+validates the full traversal, rejects stale roots and malformed graph edges, and
+the executable scene exemplar proves lookup through a multilevel hierarchy.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes, copied `discretio` payload graphs,

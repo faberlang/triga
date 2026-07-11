@@ -99,6 +99,15 @@ incipit {
         "camera shares the heterogeneous scene store"
     adfirma scene.scene_get(attached_store, light_step.handle)!.name ≡ "light",
         "light shares the heterogeneous scene store"
+    fixum scene.SceneHandle ∪ nihil found_camera ← scene.scene_find_name(
+        attached_store, root_step.handle, "camera"
+    )
+    adfirma found_camera non est nihil et
+        found_camera!.index ≡ camera_step.handle.index et
+        found_camera!.generation ≡ camera_step.handle.generation,
+        "name lookup returns stable identity"
+    adfirma scene.scene_find_name(attached_store, root_step.handle, "missing") est nihil,
+        "name lookup reports absence"
     fixum scene.SceneStore ∪ nihil root_local ← scene.scene_set_local_matrix(
         attached_store, root_step.handle,
         triga.matrix4_translatio(triga.Vector3 { x = 5.0, y = 0.0, z = 0.0 })
@@ -168,4 +177,34 @@ incipit {
     adfirma scene.scene_get(removed, mesh_step.handle) est nihil, "stale lookup rejects"
     adfirma scene.scene_traverse(removed, mesh_step.handle) est nihil,
         "traversal rejects a stale root"
+    adfirma scene.scene_find_name(removed, mesh_step.handle, "mesh") est nihil,
+        "name lookup rejects a stale root"
+
+    fixum scene.SceneInsert nested_root ← scene.scene_insert(
+        scene.scene_store(), scene.scene_group("nested-root")
+    )
+    fixum scene.SceneInsert nested_group ← scene.scene_insert(
+        nested_root.store, scene.scene_group("nested-group")
+    )
+    fixum scene.SceneInsert nested_mesh ← scene.scene_insert(
+        nested_group.store, scene.scene_mesh("nested-mesh", geometry, material)
+    )
+    fixum scene.SceneStore ∪ nihil nested_group_attached ← scene.scene_attach(
+        nested_mesh.store, nested_group.handle, nested_root.handle
+    )
+    fixum scene.SceneStore nested_group_store ← scene.SceneStore {
+        slots = nested_group_attached!.slots
+    }
+    fixum scene.SceneStore ∪ nihil nested_mesh_attached ← scene.scene_attach(
+        nested_group_store, nested_mesh.handle, nested_group.handle
+    )
+    fixum scene.SceneStore nested_store ← scene.SceneStore {
+        slots = nested_mesh_attached!.slots
+    }
+    fixum scene.SceneHandle ∪ nihil found_nested_mesh ← scene.scene_find_name(
+        nested_store, nested_root.handle, "nested-mesh"
+    )
+    adfirma found_nested_mesh non est nihil et
+        found_nested_mesh!.index ≡ nested_mesh.handle.index,
+        "name lookup descends a multilevel hierarchy"
 }
