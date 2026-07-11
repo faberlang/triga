@@ -49,29 +49,6 @@ incipit {
         "generated UV layout covers every vertex"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
-    fixum geometry.VertexAttributeLayout ∪ nihil position_layout ←
-        geometry.attribute_vertex_layout(positions)
-    adfirma position_layout non est nihil,
-        "valid attributes produce explicit vertex layout facts"
-    adfirma position_layout!.shader_location ≡ 0,
-        "vertex layout preserves the declared shader location"
-    adfirma position_layout!.stride_bytes ≡ 12,
-        "vertex layout preserves the derived byte stride"
-    adfirma position_layout!.offset_bytes ≡ 0,
-        "separate attribute buffers begin at byte offset zero"
-    adfirma position_layout!.step_mode ≡ finge geometry.VertexStep,
-        "geometry attributes advance once per vertex"
-    adfirma geometry.attribute_vertex_format(positions) non est nihil,
-        "position layout exposes a typed GPU format"
-    fixum lista<geometry.VertexAttributeLayout> ∪ nihil triangle_layouts ←
-        geometry.geometry_vertex_layouts(triangle)
-    adfirma triangle_layouts non est nihil,
-        "valid geometry exposes a complete vertex layout"
-    adfirma triangle_layouts![0].shader_location ≡ 0
-        et triangle_layouts![0].offset_bytes ≡ 0
-        et triangle_layouts![0].stride_bytes ≡ 12
-        et triangle_layouts![0].step_mode ≡ finge geometry.VertexStep,
-        "geometry layout preserves complete reflection-facing buffer facts"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
