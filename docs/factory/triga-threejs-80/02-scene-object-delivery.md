@@ -83,6 +83,17 @@ returns its stable handle rather than a copied node or list position. Lookup
 validates the full traversal, rejects stale roots and malformed graph edges, and
 the executable scene exemplar proves lookup through a multilevel hierarchy.
 
+## Provider-Interface Validation Residual
+
+The public scene source and its exemplar remain a distinct upstream validation
+residual. `scripta/check-compile` intentionally covers the passing Triga math
+and geometry targets while excluding `exempla/triga-scene-store.fab`: the
+provider-imported check currently reports `SEM004`/`SEM010` diagnostics for
+scene-node fields and Matrix4-backed calls. This is tracked by upstream Vivi
+need `bac61aa`; the exclusion is not a passing claim, and Stage 2 acceptance
+remains open until the scene exemplar compiles and runs through the provider
+path.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes as identity, copied `discretio` payload
