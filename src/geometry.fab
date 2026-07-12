@@ -148,6 +148,7 @@ functio attribute_stride_bytes(de BufferAttribute attribute) → numerus {
     redde attribute.component_width * attribute_scalar_bytes(attribute)
 }
 
+@ privata
 functio _attribute_vertex_format(de BufferAttribute attribute) → VertexFormat {
     discerne attribute.data {
         casu Float32Attribute fixum values {
@@ -165,6 +166,9 @@ functio _attribute_vertex_format(de BufferAttribute attribute) → VertexFormat 
     }
 }
 
+# Vertex format is exported through attribute_vertex_layout; standalone enum
+# results are not file-interface carriers.
+@ privata
 functio attribute_vertex_format(de BufferAttribute attribute) → VertexFormat ∪ nihil {
     si attribute_valid(attribute) ≡ falsum ergo redde nihil
     redde _attribute_vertex_format(attribute)
