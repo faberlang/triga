@@ -10,10 +10,11 @@ types that define the same structural domain.
 
 ## Status
 
-Initial type definitions plus a first pure Vector3/Matrix4 transform family.
-The CPU workload typechecks and emits Rust; provider-import execution and
-MIR/GPU parity remain tracked compiler blockers. There is no render pipeline
-integration yet.
+Math transforms, stable scene storage, deterministic geometry generators, and
+typed vertex-layout reflection are implemented as native Faber source. The CPU
+workloads typecheck and emit Rust; generated-Rust scene identity acceptance and
+MIR/GPU graphics-stage parity remain tracked compiler blockers. There is no
+render pipeline integration yet.
 
 ## Current Types
 
@@ -84,8 +85,9 @@ separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 
 ## Next Steps
 
-- Implement geometry generators (`BoxGeometry`, `SphereGeometry`, …) as native
-  Faber functions
-- Add transform methods (`transforma`, `norma`, `collide`, …)
-- Integrate with `radix/hosts/webgpu-browser` as the first render-pipeline consumer
-- Design the Texture type family
+- Complete generated-Rust acceptance for stable scene identity and mutation.
+- Lower Triga's typed vertex-layout contract through Radix graphics MIR and
+  prove compiler reflection agrees with the source facts.
+- Integrate the admitted graphics pipeline with a direct WebGPU host.
+- Add the material, texture, and lighting families after the graphics-stage
+  contract is proven end to end.

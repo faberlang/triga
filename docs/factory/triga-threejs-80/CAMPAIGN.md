@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-11) — Stage 1 **foundation CLEARED**; Stage 2 Unit 1 scene store on main (`30fdf0a`)
+**Status**: active (2026-07-11) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source complete through `15edfbf`, with generated-Rust/provider acceptance still open
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 2 — scene graph and object model (continue after Unit 1 scene store)
+**Selected next stage**: Stage 2 — generated-Rust scene identity acceptance
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -265,7 +265,12 @@ operations execute consistently in required Rust and MIR/GPU paths.
 
 ### Stage 2 — Scene graph and object model
 
-**Status**: **Unit 1 in progress on main** — scene store source + exempla (`30fdf0a`); delivery [`02-scene-object-delivery.md`](02-scene-object-delivery.md); arena-handle on faber-runtime (`38be94a`)
+**Status**: Triga-owned source complete on packet through `15edfbf` — the
+generational scene store now proves heterogeneous group/mesh/camera/light nodes,
+shared resource handles, parent edits, ordered traversal, world transforms,
+stale/cycle rejection, and stable name lookup. The integration gate remains
+open for provider-imported generated-Rust execution and confirmation that the
+identity contract is reusable rather than a Triga-specific compiler seam.
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve
