@@ -23,7 +23,7 @@ generated="$(mktemp "${TMPDIR:-/tmp}/triga-transforms.XXXXXX.rs")"
 trap 'rm -f "$combined" "$generated"' EXIT
 
 cp "$ROOT/src/triga.fab" "$combined"
-awk 'BEGIN { delimiters = 0 } /^+++$/ { delimiters += 1; next } delimiters >= 2' \
+awk 'BEGIN { delimiters = 0 } $0 == "+++" { delimiters += 1; next } delimiters >= 2' \
   "$ROOT/exempla/triga-transforms.fab" \
   | sed -e '/^importa ex "triga:triga" privata triga$/d' -e 's/triga\.//g' \
   >> "$combined"
