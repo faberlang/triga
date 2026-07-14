@@ -149,6 +149,107 @@ functio attribute_stride_bytes(de BufferAttribute attribute) → numerus {
 }
 
 @ privata
+functio _vertex_format_code(de VertexFormat format) → numerus {
+    discerne format {
+        casu Float32 { redde 1 }
+        casu Float32x2 { redde 2 }
+        casu Float32x3 { redde 3 }
+        casu Float32x4 { redde 4 }
+        casu Uint32 { redde 5 }
+        casu Uint32x2 { redde 6 }
+        casu Uint32x3 { redde 7 }
+        casu Uint32x4 { redde 8 }
+    }
+}
+
+@ privata
+functio _vertex_layout_format_code(de VertexAttributeLayout layout) → numerus {
+    redde _vertex_format_code(layout.vertex_format)
+}
+
+@ privata
+functio _geometry_vertex_layout_at(
+    de BufferGeometry geometry,
+    numerus index
+) → VertexAttributeLayout ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si index ≥ geometry.attributes.longitudo() ergo redde nihil
+    fixum BufferAttribute attribute ← geometry.attributes[index]
+    redde VertexAttributeLayout {
+        shader_location = attribute.shader_location,
+        vertex_format = _attribute_vertex_format(attribute),
+        offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
+        step_mode = finge VertexStep
+    }
+}
+
+functio geometry_vertex_layout_location(
+    de BufferGeometry geometry,
+    numerus index
+) → numerus ∪ nihil {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde nihil
+    redde layout_result!.shader_location
+}
+
+functio geometry_vertex_layout_format_code(
+    de BufferGeometry geometry,
+    numerus index
+) → numerus ∪ nihil {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde nihil
+    fixum VertexAttributeLayout layout ← VertexAttributeLayout {
+        shader_location = layout_result!.shader_location,
+        vertex_format = layout_result!.vertex_format,
+        offset_bytes = layout_result!.offset_bytes,
+        stride_bytes = layout_result!.stride_bytes,
+        step_mode = layout_result!.step_mode
+    }
+    redde _vertex_layout_format_code(layout)
+}
+
+functio geometry_vertex_layout_offset_bytes(
+    de BufferGeometry geometry,
+    numerus index
+) → numerus ∪ nihil {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde nihil
+    redde layout_result!.offset_bytes
+}
+
+functio geometry_vertex_layout_stride_bytes(
+    de BufferGeometry geometry,
+    numerus index
+) → numerus ∪ nihil {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde nihil
+    redde layout_result!.stride_bytes
+}
+
+functio geometry_vertex_layout_matches(
+    de BufferGeometry geometry,
+    numerus index,
+    numerus shader_location,
+    numerus format_code,
+    numerus offset_bytes,
+    numerus stride_bytes
+) → bivalens {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde falsum
+    fixum VertexAttributeLayout layout ← VertexAttributeLayout {
+        shader_location = layout_result!.shader_location,
+        vertex_format = layout_result!.vertex_format,
+        offset_bytes = layout_result!.offset_bytes,
+        stride_bytes = layout_result!.stride_bytes,
+        step_mode = layout_result!.step_mode
+    }
+    redde layout.shader_location ≡ shader_location
+        et _vertex_layout_format_code(layout) ≡ format_code
+        et layout.offset_bytes ≡ offset_bytes
+        et layout.stride_bytes ≡ stride_bytes
+}
+
+@ privata
 functio _attribute_vertex_format(de BufferAttribute attribute) → VertexFormat {
     discerne attribute.data {
         casu Float32Attribute fixum values {

@@ -1,0 +1,49 @@
++++
+term = "triga-stage4-source-facts"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Stage 4 source-owned vertex-layout facts for the graphics MIR handoff."
++++
+
+importa ex "triga:geometry" privata geometry
+
+incipit {
+    fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 2.0)
+    adfirma plane_result non est nihil, "Stage 4 source facts require valid plane geometry"
+    fixum geometry.BufferGeometry plane ← geometry.BufferGeometry {
+        topology = plane_result!.topology,
+        vertex_count = plane_result!.vertex_count,
+        attributes = plane_result!.attributes,
+        indexed = plane_result!.indexed,
+        indices = plane_result!.indices,
+        draw_range = plane_result!.draw_range,
+        groups = plane_result!.groups
+    }
+    adfirma geometry.geometry_vertex_layouts(plane) non est nihil,
+        "valid geometry exposes source-owned layouts"
+    adfirma geometry.geometry_vertex_layout_location(plane, 3) est nihil,
+        "Stage 4 source fixture exposes position, normal, and uv layouts"
+
+    adfirma geometry.geometry_vertex_layout_matches(plane, 0, 0, 3, 0, 12),
+        "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
+
+    adfirma geometry.geometry_vertex_layout_matches(plane, 1, 1, 3, 0, 12),
+        "normal layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
+
+    adfirma geometry.geometry_vertex_layout_matches(plane, 2, 2, 2, 0, 8),
+        "uv layout fixes location 2, Float32x2, zero offset, and 8-byte stride"
+
+    fixum geometry.BufferAttribute duplicate_position ← geometry.float32_attribute(
+        "other_position", 0, 3, 4,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+    )
+    fixum geometry.BufferGeometry duplicate_location ← geometry.triangle_geometry(
+        4,
+        [plane.attributes[0], duplicate_position, plane.attributes[2]],
+        geometry.DrawRange { start = 0, count = 3 },
+        vacua
+    )
+    adfirma geometry.geometry_vertex_layouts(duplicate_location) est nihil,
+        "duplicate shader locations fail closed before Radix reflection"
+}

@@ -56,6 +56,10 @@ Ready:
 - Triga has native source for math, scenes, and geometry/layout facts.
 - `attribute_vertex_layout` and `geometry_vertex_layouts` provide the comparison
   seam for reflection without requiring a host to inspect attribute names.
+- `geometry_vertex_layout_*` scalar accessors and
+  `exempla/triga-stage4-source-facts.fab` now pin the source-owned
+  position/normal/uv layout rows that the first Radix reflection fixture must
+  match.
 - The campaign already names the overlap rule: update the existing MIR GPU
   shader-stage goal instead of designing a second shader-stage path.
 

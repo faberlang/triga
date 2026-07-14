@@ -68,6 +68,19 @@ graph completeness, production web packaging, and a general shader DSL.
   attribute names.
 - Triga vertex/layout contract v1 is complete; the remaining Stage 4 work is
   owned by the Radix graphics MIR handoff.
+- `geometry_vertex_layout_location`, `geometry_vertex_layout_format_code`,
+  `geometry_vertex_layout_offset_bytes`, and
+  `geometry_vertex_layout_stride_bytes` provide provider-friendly scalar access
+  to source-owned layout facts without exposing `VertexFormat` as a direct
+  provider-interface parameter; `geometry_vertex_layout_matches` packages the
+  same facts as an executable Triga-side acceptance predicate.
+- `exempla/triga-stage4-source-facts.fab` is the Triga-owned Stage 4 handoff
+  fixture: it fixes the source-side position/normal/uv locations, format codes,
+  offsets, and strides that Radix reflection must match.
+- Current material source facts remain in `src/triga.fab`: material side,
+  transparency, opacity, alpha test, depth test/write, base color, roughness,
+  metalness, emissive color, and emissive intensity. These are Stage 6 shader
+  inputs, not Stage 4 shader-lowering claims.
 - Next residual: lower one matching vertex input through graphics MIR and prove
   emitted reflection agrees with these facts without inspecting attribute names.
 
