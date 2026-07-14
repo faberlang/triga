@@ -44,6 +44,7 @@ genus BufferAttribute {
 }
 
 genus VertexAttributeLayout {
+    textus source_name
     numerus shader_location
     VertexFormat vertex_format
     numerus offset_bytes
@@ -176,6 +177,7 @@ functio _geometry_vertex_layout_at(
     si index ≥ geometry.attributes.longitudo() ergo redde nihil
     fixum BufferAttribute attribute ← geometry.attributes[index]
     redde VertexAttributeLayout {
+        source_name = attribute.name,
         shader_location = attribute.shader_location,
         vertex_format = _attribute_vertex_format(attribute),
         offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
@@ -199,6 +201,7 @@ functio geometry_vertex_layout_format_code(
     fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
     si layout_result est nihil ergo redde nihil
     fixum VertexAttributeLayout layout ← VertexAttributeLayout {
+        source_name = layout_result!.source_name,
         shader_location = layout_result!.shader_location,
         vertex_format = layout_result!.vertex_format,
         offset_bytes = layout_result!.offset_bytes,
@@ -229,6 +232,7 @@ functio geometry_vertex_layout_stride_bytes(
 functio geometry_vertex_layout_matches(
     de BufferGeometry geometry,
     numerus index,
+    textus source_name,
     numerus shader_location,
     numerus format_code,
     numerus offset_bytes,
@@ -237,13 +241,15 @@ functio geometry_vertex_layout_matches(
     fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
     si layout_result est nihil ergo redde falsum
     fixum VertexAttributeLayout layout ← VertexAttributeLayout {
+        source_name = layout_result!.source_name,
         shader_location = layout_result!.shader_location,
         vertex_format = layout_result!.vertex_format,
         offset_bytes = layout_result!.offset_bytes,
         stride_bytes = layout_result!.stride_bytes,
         step_mode = layout_result!.step_mode
     }
-    redde layout.shader_location ≡ shader_location
+    redde layout.source_name ≡ source_name
+        et layout.shader_location ≡ shader_location
         et _vertex_layout_format_code(layout) ≡ format_code
         et layout.offset_bytes ≡ offset_bytes
         et layout.stride_bytes ≡ stride_bytes
@@ -278,6 +284,7 @@ functio attribute_vertex_format(de BufferAttribute attribute) → VertexFormat �
 functio attribute_vertex_layout(de BufferAttribute attribute) → VertexAttributeLayout ∪ nihil {
     si attribute_valid(attribute) ≡ falsum ergo redde nihil
     redde VertexAttributeLayout {
+        source_name = attribute.name,
         shader_location = attribute.shader_location,
         vertex_format = _attribute_vertex_format(attribute),
         offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
@@ -292,6 +299,7 @@ functio geometry_vertex_layouts(de BufferGeometry geometry) → lista<VertexAttr
     dum i < geometry.attributes.longitudo() {
         fixum BufferAttribute attribute ← geometry.attributes[i]
         layouts.appende(VertexAttributeLayout {
+            source_name = attribute.name,
             shader_location = attribute.shader_location,
             vertex_format = _attribute_vertex_format(attribute),
             offset_bytes = 0, stride_bytes = attribute_stride_bytes(attribute),
