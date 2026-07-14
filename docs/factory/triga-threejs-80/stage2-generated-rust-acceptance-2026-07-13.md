@@ -43,7 +43,7 @@ FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
   `SEM004.unknown_field` on `SceneNode` fields and `SEM010` mismatches around
   `Matrix4`-backed calls.
 
-## 2026-07-14 Reduced Blocker
+## 2026-07-14 Reduced Blocker Before Triga Review
 
 Follow-up handoff evidence from Vivi task `8448830`:
 
@@ -60,9 +60,9 @@ FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
   run --compile exempla/triga-scene-store.fab
 ```
 
-no longer reports unresolved `Matrix4` types and no longer reports missing
-`Some(...)` nullable returns. The remaining Cargo blocker is reduced to seven
-Rust ownership/mutability errors:
+no longer reported unresolved `Matrix4` types and no longer reported missing
+`Some(...)` nullable returns. Before Triga source/fixture review, the remaining
+Cargo blocker was reduced to seven Rust ownership/mutability errors:
 
 - `src/main.rs:1659`: generated intra-library call to
   `crate::triga::matrix4_multiplicata((*parent_world),
@@ -128,6 +128,28 @@ Radix/Faber-owned next unit:
 - Keep the direct provider-interface diagnostic set (`WARN014`/`SEM004`/`SEM010`)
   as a separate Radix/Faber provider interface task unless a Triga source error
   is proven by direct source inspection.
+
+Current queue-ready backlog packet:
+
+- **Owner**: Radix/Faber, not Triga.
+- **Preconditions**: none from Triga; Stage 2 source/fixture ownership review is
+  complete through `e26aabd`.
+- **Repro**:
+
+```bash
+FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
+  cargo run -q --manifest-path /home/ianzepp/work/faberlang/faber/Cargo.toml -- \
+  run --compile exempla/triga-scene-store.fab
+```
+
+- **Expected current result**: provider check passes, generated Rust reaches
+  Cargo, and the Stage 2 blocker is down to two generated-Rust lowering defects:
+  the intra-library `matrix4_multiplicata` call emits owned `Matrix4` arguments
+  for `de Matrix4` params, and `scene_set_local_matrix` moves out of borrowed
+  `local_matrix`.
+- **Separate residual**: direct Radix provider check still owns
+  `WARN014.file_interface_export_skipped:scene.scene_node` plus downstream
+  `SEM004`/`SEM010` diagnostics.
 
 ## Minimal Repros
 

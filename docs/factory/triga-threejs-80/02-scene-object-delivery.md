@@ -47,11 +47,12 @@ objects or value-copy aliases.
 
 ## Current Status
 
-Triga-owned source is complete on the packet through `15edfbf`: the public
+Triga-owned source and fixture review is complete through `e26aabd`: the public
 scene store and executable exemplar cover the graph, identity, traversal,
-transform, resource-sharing, and rejection behavior above. Acceptance remains
-open until the provider-imported generated Rust builds and runs those assertions
-without a host-side graph or Triga-specific compiler branch.
+transform, resource-sharing, rejection behavior, and fixture-owned ownership
+shape above. Acceptance remains open until the provider-imported generated Rust
+builds and runs those assertions without a host-side graph or Triga-specific
+compiler branch.
 
 ## World-Transform Unit
 

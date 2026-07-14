@@ -187,7 +187,7 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972`; **scene store** Unit 1 (`30fdf0a`) with source-complete identity exemplar | Keep transform + scene source green; route Stage 2 generated-Rust blocker |
+| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972`; **scene store** source/fixture ownership review complete through `e26aabd` | Keep transform + scene source green; route Stage 2 generated-Rust blocker |
 | Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
 | Vector/tensor foundation | Source types + MIR vector elementwise/dot/cross on WGSL; CPU stepper matrix product | Consume in Stage 3; no metal/llvm matrix register emit yet |
 | Matrix foundation | MIR CPU matmul/applica/normalize/inversa green; **WGSL** register construct+cell emit (`f99b8fad7`); metal/llvm **fail-closed** stable shapes (`2f3e3ccb1`) | Kernel matrix params still ABI-reject; no multi-backend matrix register parity |
@@ -265,9 +265,9 @@ operations execute consistently in required Rust and MIR/GPU paths.
 
 ### Stage 2 — Scene graph and object model
 
-**Status**: Triga-owned source complete on packet through `15edfbf`; generated-Rust
-acceptance attempted 2026-07-13 and reduced on 2026-07-14 after reusable
-provider/codegen fixes
+**Status**: Triga-owned source/fixture ownership review complete through
+`e26aabd`; generated-Rust acceptance attempted 2026-07-13 and reduced on
+2026-07-14 after reusable provider/codegen fixes
 ([`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md)).
 The generational scene store proves heterogeneous group/mesh/camera/light nodes,
 shared resource handles, parent edits, ordered traversal, world transforms,

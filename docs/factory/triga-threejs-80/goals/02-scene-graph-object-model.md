@@ -1,8 +1,9 @@
 # Goal 02: Scene Graph And Object Model
 
-**Status**: Triga source/fixture review complete after 2026-07-14 ownership
-packet; generated-Rust identity and execution acceptance remains open on
-Radix/Faber lowering and direct provider-interface residuals documented in
+**Status**: Triga source/fixture review complete through `e26aabd` after the
+2026-07-14 ownership packet; generated-Rust identity and execution acceptance
+remains open on Radix/Faber lowering and direct provider-interface residuals
+documented in
 [`stage2-generated-rust-acceptance-2026-07-13.md`](../stage2-generated-rust-acceptance-2026-07-13.md)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix` when language ownership/identity facts are missing, `faber-runtime`, `examples`
