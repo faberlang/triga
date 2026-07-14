@@ -12,9 +12,11 @@ types that define the same structural domain.
 
 Math transforms, stable scene storage, deterministic geometry generators, and
 typed vertex-layout reflection are implemented as native Faber source. The CPU
-workloads typecheck and emit Rust; generated-Rust scene identity acceptance and
-MIR/GPU graphics-stage parity remain tracked compiler blockers. There is no
-render pipeline integration yet.
+workloads typecheck and emit Rust, and Stage 2 generated-Rust scene identity
+acceptance is green. The remaining Stage 2 residual is direct Radix
+provider-interface diagnostics (`WARN014` plus downstream `SEM004`/`SEM010`),
+tracked upstream rather than as a Triga acceptance blocker. MIR/GPU
+graphics-stage parity and render pipeline integration remain future work.
 
 ## Current Types
 
@@ -85,7 +87,8 @@ separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 
 ## Next Steps
 
-- Complete generated-Rust acceptance for stable scene identity and mutation.
+- Keep the stable scene identity generated-Rust acceptance green while routing
+  the direct Radix provider-interface residual upstream.
 - Lower Triga's typed vertex-layout contract through Radix graphics MIR and
   prove compiler reflection agrees with the source facts.
 - Integrate the admitted graphics pipeline with a direct WebGPU host.
