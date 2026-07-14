@@ -17,6 +17,19 @@ if [[ ! -d "$RADIX/crates/radix" ]]; then
   exit 1
 fi
 
+if [[ -n "${FABER_ROOT:-}" ]]; then
+  FABER="$FABER_ROOT"
+elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
+  FABER="$ROOT/../faber"
+else
+  FABER="$ROOT/../../../faber"
+fi
+
+if [[ ! -f "$FABER/Cargo.toml" ]]; then
+  echo "check-compile: missing faber checkout at $FABER" >&2
+  exit 1
+fi
+
 RADIX_BIN="$RADIX/target/debug/radix"
 if [[ ! -x "$RADIX_BIN" ]]; then
   (cd "$RADIX" && cargo build -q -p radix --bin radix)
@@ -39,5 +52,11 @@ echo "check-compile: checking Stage 4 source-owned facts exemplar"
 
 echo "check-compile: checking scene-store exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
+
+echo "check-compile: checking scene-store exemplar through Faber provider path"
+(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check exempla/triga-scene-store.fab)
+
+echo "check-compile: running scene-store generated-Rust acceptance"
+(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- run --compile exempla/triga-scene-store.fab)
 
 "$ROOT/scripta/check-transforms"
