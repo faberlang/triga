@@ -37,9 +37,7 @@ echo "check-compile: checking geometry attribute exemplar"
 echo "check-compile: checking Stage 4 source-owned facts exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-stage4-source-facts.fab"
 
-# The scene-store exemplar remains outside this passing gate while upstream
-# Radix need bac61aa resolves imported-interface diagnostics. Its exclusion is
-# intentional and documented in docs/factory/triga-threejs-80/02-scene-object-delivery.md;
-# Stage 2 acceptance remains open until that exemplar compiles and runs.
+echo "check-compile: checking scene-store exemplar"
+"$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
 
 "$ROOT/scripta/check-transforms"

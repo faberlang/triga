@@ -2,7 +2,7 @@
 
 **Status**: generated-Rust identity and execution acceptance green after the
 2026-07-14 producer fixes and Triga reparent assertion correction; direct
-provider-interface residuals remain separately routed to Radix/Faber as
+Radix scene-store check is green and covered by `scripta/check-compile` as
 documented in
 [`stage2-generated-rust-acceptance-2026-07-13.md`](../stage2-generated-rust-acceptance-2026-07-13.md)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
@@ -38,8 +38,8 @@ it.
   facts to Radix rather than building a host-only object system.
 - For the reduced generated-Rust blocker, Triga corrected acceptance
   fixture/source shape for post-move store reuse, traversal mutability, and the
-  residual reparent assertion. Keep direct provider-interface diagnostics owned
-  by Radix/Faber unless a new Triga source defect is proven.
+  residual reparent assertion. Keep the direct scene-store Radix source check
+  in Triga's compile gate.
 
 Out of scope: renderer scheduling, full event dispatch, editor undo/redo, and
 network replication.

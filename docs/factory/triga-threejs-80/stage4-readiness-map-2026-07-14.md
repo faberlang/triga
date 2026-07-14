@@ -14,25 +14,20 @@ compiler, provider, host, or proof-ledger changes.
 - Stage 2 generated-Rust scene identity acceptance is green after Radix/Faber
   producer fixes and the Triga reparent fixture correction. The accepted
   executable gate is `exempla/triga-scene-store.fab` through the Faber
-  provider-imported generated-Rust path.
+  provider-imported generated-Rust path, and the direct Radix scene-store check
+  is green for the same exemplar.
 - Stage 3 Triga geometry source is accepted on main at `969b7cb`: the public
   attribute/layout contract exposes explicit shader locations plus ordered
   format, offset, stride, and step-mode facts for CPU comparison.
 - Stage 2 status was synced in Triga at `4be7f5b`; no Triga source-owned
   blocker remains for generated-Rust scene identity acceptance.
 
-## Residual Diagnostics
+## Direct Check Status
 
-The remaining direct check residual is not a Triga Stage 2 acceptance blocker:
-
-```text
-WARN014.file_interface_export_skipped:scene.scene_node
-SEM004.unknown_field
-SEM010.expression_type_mismatch / initializer_annotation_mismatch
-```
-
-Ownership: Radix/Faber provider-interface handling. Keep this routed separately
-unless direct source inspection proves a new Triga source defect.
+The earlier direct Radix provider-interface residual for
+`exempla/triga-scene-store.fab` is no longer active in the current local
+workspace. The Stage 2 evidence boundary now includes the named direct Radix
+check alongside the Faber provider check and generated-Rust run.
 
 ## Selected Next Stage
 
@@ -44,8 +39,8 @@ The nearest honest decision is therefore:
 
 - Start a Stage 4 delivery/factory packet against Radix graphics MIR and
   reflection, with Triga supplying the forcing workload and CPU layout facts.
-- Keep the direct Radix provider-interface residual as an upstream issue in
-  parallel; it should not block the Stage 4 readiness decision.
+- Keep the scene-store direct Radix check in the Triga source gate while Stage 4
+  lowers graphics MIR/reflection work in Radix.
 - Do not promote any capstone or scorecard state until a real graphics proof
   runs at the required level.
 
@@ -83,7 +78,7 @@ Needed from the Stage 4 delivery:
 | --- | --- | --- |
 | Triga vertex/layout contract v1 | `triga` | Ready input; keep source checks green |
 | Stage 2 generated-Rust scene identity gate | `triga` + `faber` path | Green; monitor only |
-| Direct provider-interface residual | `radix` / `faber` | Upstream parallel residual, not a Triga blocker |
+| Direct scene-store Radix check | `triga` gate using `radix` | Green for `exempla/triga-scene-store.fab`; monitor with `check-compile` |
 | Shader-stage MIR, legality, diagnostics, WGSL emission | `radix` | Primary next implementation area |
 | Graphics reflection agreement | `radix`, forced by `triga` workload | Stage 4 acceptance seam |
 | Direct browser/WebGPU lifecycle | `radix/hosts/webgpu-browser` or successor | Stage 5, after Stage 4 reflection exists |

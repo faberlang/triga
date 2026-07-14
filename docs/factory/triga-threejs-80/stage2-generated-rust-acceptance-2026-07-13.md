@@ -3,8 +3,8 @@
 **Date**: 2026-07-13
 **Scope**: provider-imported `exempla/triga-scene-store.fab`
 **Result**: generated-Rust acceptance green after producer fixes and Triga
-fixture correction on 2026-07-14. Direct Radix provider-interface diagnostics
-remain separate from the generated-Rust execution gate.
+fixture correction on 2026-07-14. The direct Radix scene-store check is also
+green in the current local workspace and is covered by `scripta/check-compile`.
 
 ## Commands
 
@@ -80,7 +80,8 @@ Cargo blocker was reduced to seven Rust ownership/mutability errors:
   inside `scene_set_local_matrix`; it should clone or otherwise lower the
   borrowed value safely.
 
-Direct Radix check remains a separate provider-interface residual:
+At that point, direct Radix check remained a separate provider-interface
+residual:
 
 ```text
 WARN014.file_interface_export_skipped:scene.scene_node
@@ -125,9 +126,8 @@ Radix/Faber-owned next unit:
   `triga.matrix4_multiplicata(parent_world, node.local_matrix)` call.
 - Fix borrowed-value lowering for struct fields populated from `de` params, as
   shown by `local_matrix = local_matrix` moving out of `&Matrix4`.
-- Keep the direct provider-interface diagnostic set (`WARN014`/`SEM004`/`SEM010`)
-  as a separate Radix/Faber provider interface task unless a Triga source error
-  is proven by direct source inspection.
+- Keep any remaining provider-interface diagnostics as Radix/Faber tasks unless
+  a Triga source error is proven by direct source inspection.
 
 Historical queue-ready backlog packet before producer fix:
 
@@ -147,9 +147,9 @@ FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
   the intra-library `matrix4_multiplicata` call emits owned `Matrix4` arguments
   for `de Matrix4` params, and `scene_set_local_matrix` moves out of borrowed
   `local_matrix`.
-- **Separate residual**: direct Radix provider check still owns
-  `WARN014.file_interface_export_skipped:scene.scene_node` plus downstream
-  `SEM004`/`SEM010` diagnostics.
+- **Historical separate residual**: at this point, direct Radix provider check
+  still owned `WARN014.file_interface_export_skipped:scene.scene_node` plus
+  downstream `SEM004`/`SEM010` diagnostics.
 
 ## 2026-07-14 Acceptance Result
 
@@ -183,7 +183,7 @@ FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
 All four commands pass. The generated-Rust scene identity acceptance gate is
 green.
 
-Remaining separate residual:
+Current direct Radix check:
 
 ```bash
 FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
@@ -192,9 +192,9 @@ FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
   check exempla/triga-scene-store.fab
 ```
 
-still reports `WARN014.file_interface_export_skipped:scene.scene_node` and
-downstream `SEM004`/`SEM010` diagnostics. That path remains Radix/Faber-owned
-unless a new Triga source defect is proven.
+now passes for `exempla/triga-scene-store.fab`. This direct source-interface
+probe is included in `scripta/check-compile` so Triga's Stage 2 evidence cannot
+drift behind the local Radix provider-interface behavior.
 
 ## Minimal Repros
 
@@ -211,7 +211,8 @@ genus SceneNode {
 }
 ```
 
-Generated Rust currently places `SceneNode` inside `mod scene` with:
+The historical generated Rust failure placed `SceneNode` inside `mod scene`
+with:
 
 ```rust
 pub local_matrix: Matrix4

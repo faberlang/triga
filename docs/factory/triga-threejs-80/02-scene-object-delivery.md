@@ -83,15 +83,14 @@ returns its stable handle rather than a copied node or list position. Lookup
 validates the full traversal, rejects stale roots and malformed graph edges, and
 the executable scene exemplar proves lookup through a multilevel hierarchy.
 
-## Provider-Interface Validation Residual
+## Provider-Interface Validation Status
 
-The public scene source and its exemplar still expose a direct Radix
-provider-interface residual. `scripta/check-compile` intentionally covers the
-passing Triga math and geometry targets while excluding
-`exempla/triga-scene-store.fab`: direct `radix check` still reports
-`WARN014.file_interface_export_skipped:scene.scene_node` plus downstream
-`SEM004`/`SEM010` diagnostics. The Faber provider check and generated-Rust run
-are green, so this residual is not a generated-Rust acceptance blocker.
+The public scene source and its exemplar now pass the direct Radix
+provider-interface check. `scripta/check-compile` includes
+`exempla/triga-scene-store.fab` so Triga's source gate covers math, geometry,
+Stage 4 layout facts, scene-store source validation, and transform codegen.
+The Faber provider check and generated-Rust run remain the executable
+acceptance evidence for application-lane behavior.
 
 The 2026-07-13 generated-Rust acceptance attempt, with 2026-07-14 reduced
 blocker follow-up, is recorded in
@@ -99,14 +98,13 @@ blocker follow-up, is recorded in
 Faber provider check accepts the exemplar, the initial generated-Rust failures
 for cross-module `Matrix4` qualification and nullable `Some(...)` wrapping have
 been cleared upstream, and Triga fixture/source review cleared the remaining
-runtime assertion around reparenting. Generated-Rust execution is green. The
-direct provider-interface `WARN014`/`SEM004`/`SEM010` residual remains
-Radix/Faber-owned unless a new Triga source defect is proven.
+runtime assertion around reparenting. Generated-Rust execution is green, and
+the direct Radix source check is green for the same exemplar.
 
 ## Stop Condition
 
 Do not introduce numeric list indexes as identity, copied `discretio` payload
 graphs, backend handles, or compatibility wrappers around `Object3D.children`.
 Do not reopen Stage 2 generated-Rust acceptance without a new failing provider
-package run. Keep direct provider-interface diagnostics routed separately to
-Radix/Faber.
+package run. Keep the direct scene-store Radix check in `scripta/check-compile`
+so source-interface drift does not reappear unnoticed.
