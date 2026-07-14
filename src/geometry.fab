@@ -106,7 +106,7 @@ functio float32_attribute(
 
 functio indexed_triangle_geometry(
     numerus vertex_count,
-    lista<BufferAttribute> attributes,
+    de lista<BufferAttribute> attributes,
     lista<u32> indices,
     DrawRange draw_range,
     lista<GeometryGroup> groups
@@ -120,7 +120,7 @@ functio indexed_triangle_geometry(
 
 functio triangle_geometry(
     numerus vertex_count,
-    lista<BufferAttribute> attributes,
+    de lista<BufferAttribute> attributes,
     DrawRange draw_range,
     lista<GeometryGroup> groups
 ) → BufferGeometry {
@@ -499,11 +499,19 @@ functio geometry_vertex_normals(de BufferGeometry geometry) → BufferAttribute 
     i ← 0
     fixum f32 zero ← 0.0
     dum i < normals.longitudo() {
-        fixum f32 normal_scale ← _geometry_radix_f32(
-            normals[i] * normals[i] + normals[i + 1] * normals[i + 1]
-                + normals[i + 2] * normals[i + 2]
+        fixum f32 abs_x ← normals[i].absolutum()
+        fixum f32 abs_y ← normals[i + 1].absolutum()
+        fixum f32 abs_z ← normals[i + 2].absolutum()
+        varia f32 normal_max ← abs_x
+        si abs_y > normal_max { normal_max ← abs_y }
+        si abs_z > normal_max { normal_max ← abs_z }
+        si normal_max ≡ zero { redde nihil }
+        fixum f32 scaled_x ← normals[i] / normal_max
+        fixum f32 scaled_y ← normals[i + 1] / normal_max
+        fixum f32 scaled_z ← normals[i + 2] / normal_max
+        fixum f32 normal_scale ← normal_max * _geometry_radix_f32(
+            scaled_x * scaled_x + scaled_y * scaled_y + scaled_z * scaled_z
         )
-        si normal_scale ≡ zero { redde nihil }
         normals[i] ← normals[i] / normal_scale
         normals[i + 1] ← normals[i + 1] / normal_scale
         normals[i + 2] ← normals[i + 2] / normal_scale
@@ -917,7 +925,7 @@ functio _geometry_indices_valid(de BufferGeometry geometry) → bivalens {
     si geometry.indices.longitudo() ≡ 0 ergo redde falsum
     varia numerus i ← 0
     dum i < geometry.indices.longitudo() {
-        fixum u32 index ← geometry.indices[i]
+        fixum numerus index ← geometry.indices[i] ↦ numerus
         si index ≥ geometry.vertex_count { redde falsum }
         i ← i + 1
     }
