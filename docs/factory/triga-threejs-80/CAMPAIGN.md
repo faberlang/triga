@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-11) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source complete through `15edfbf`, with generated-Rust/provider acceptance still open
+**Status**: active (2026-07-13) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source complete through `15edfbf`, with generated-Rust/provider acceptance blocked on reusable codegen/provider seams
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 2 — generated-Rust scene identity acceptance
+**Selected next stage**: Stage 2 — generated-Rust scene identity acceptance blocker handoff
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -187,7 +187,7 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972`; **scene store** Unit 1 (`30fdf0a`) | Stage 2 graph ops/traversal; keep transform + scene exempla green |
+| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972`; **scene store** Unit 1 (`30fdf0a`) with source-complete identity exemplar | Keep transform + scene source green; route Stage 2 generated-Rust blocker |
 | Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
 | Vector/tensor foundation | Source types + MIR vector elementwise/dot/cross on WGSL; CPU stepper matrix product | Consume in Stage 3; no metal/llvm matrix register emit yet |
 | Matrix foundation | MIR CPU matmul/applica/normalize/inversa green; **WGSL** register construct+cell emit (`f99b8fad7`); metal/llvm **fail-closed** stable shapes (`2f3e3ccb1`) | Kernel matrix params still ABI-reject; no multi-backend matrix register parity |
@@ -265,12 +265,15 @@ operations execute consistently in required Rust and MIR/GPU paths.
 
 ### Stage 2 — Scene graph and object model
 
-**Status**: Triga-owned source complete on packet through `15edfbf` — the
-generational scene store now proves heterogeneous group/mesh/camera/light nodes,
+**Status**: Triga-owned source complete on packet through `15edfbf`; generated-Rust
+acceptance attempted 2026-07-13 and blocked at reusable provider/codegen seams
+([`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md)).
+The generational scene store proves heterogeneous group/mesh/camera/light nodes,
 shared resource handles, parent edits, ordered traversal, world transforms,
-stale/cycle rejection, and stable name lookup. The integration gate remains
-open for provider-imported generated-Rust execution and confirmation that the
-identity contract is reusable rather than a Triga-specific compiler seam.
+stale/cycle rejection, and stable name lookup in Triga source. The integration
+gate remains open for provider-imported generated-Rust execution and
+confirmation that the identity contract is reusable rather than a Triga-specific
+compiler seam.
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve

@@ -1,7 +1,9 @@
 # Goal 02: Scene Graph And Object Model
 
 **Status**: Triga source complete on packet through `15edfbf`; generated-Rust
-identity and execution acceptance remains open
+identity and execution acceptance remains blocked on reusable provider/codegen
+seams documented in
+[`stage2-generated-rust-acceptance-2026-07-13.md`](../stage2-generated-rust-acceptance-2026-07-13.md)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix` when language ownership/identity facts are missing, `faber-runtime`, `examples`
 **Depends on**: Goals 00–01

@@ -94,6 +94,13 @@ need `bac61aa`; the exclusion is not a passing claim, and Stage 2 acceptance
 remains open until the scene exemplar compiles and runs through the provider
 path.
 
+The 2026-07-13 generated-Rust acceptance attempt is recorded in
+[`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md):
+Faber provider check now accepts the exemplar, but generated Rust still fails
+on reusable cross-module nominal type qualification and nullable return wrapping
+gaps, while direct Radix provider check still reproduces the earlier
+`SEM004`/`SEM010` residual.
+
 ## Stop Condition
 
 Do not introduce numeric list indexes as identity, copied `discretio` payload
