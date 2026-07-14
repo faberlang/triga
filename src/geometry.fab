@@ -931,6 +931,9 @@ functio _geometry_groups_valid(de BufferGeometry geometry) → bivalens {
     dum i < geometry.groups.longitudo() {
         fixum GeometryGroup group ← geometry.groups[i]
         si group.count ≡ 0 ergo redde falsum
+        si _primitive_range_valid(geometry.topology, group.start, group.count) ≡ falsum {
+            redde falsum
+        }
         si group.start < previous_end ergo redde falsum
         fixum numerus group_end ← group.start + group.count
         si group_end > element_count { redde falsum }
@@ -944,6 +947,22 @@ functio _element_count_divisible(numerus element_count, numerus divisor) → biv
     varia numerus remaining ← element_count
     dum remaining ≥ divisor { remaining ← remaining - divisor }
     redde remaining ≡ 0
+}
+
+functio _primitive_range_valid(
+    de PrimitiveTopology topology,
+    numerus start,
+    numerus count
+) → bivalens {
+    discerne topology {
+        casu TriangleList {
+            redde _element_count_divisible(start, 3) et _element_count_divisible(count, 3)
+        }
+        casu LineList {
+            redde _element_count_divisible(start, 2) et _element_count_divisible(count, 2)
+        }
+        casu PointList { redde count > 0 }
+    }
 }
 
 functio _geometry_topology_valid(de BufferGeometry geometry) → bivalens {
@@ -962,6 +981,9 @@ functio geometry_valid(de BufferGeometry geometry) → bivalens {
     fixum numerus element_count ← geometry_element_count(geometry)
     si geometry.draw_range.count ≡ 0 ergo redde falsum
     si geometry.draw_range.start + geometry.draw_range.count > element_count ergo redde falsum
+    si _primitive_range_valid(
+        geometry.topology, geometry.draw_range.start, geometry.draw_range.count
+    ) ≡ falsum ergo redde falsum
     si _geometry_topology_valid(geometry) ≡ falsum ergo redde falsum
     redde _geometry_groups_valid(geometry)
 }

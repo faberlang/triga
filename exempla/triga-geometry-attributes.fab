@@ -195,6 +195,12 @@ incipit {
     )
     adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
         "out-of-range index rejects"
+    fixum geometry.BufferGeometry partial_triangle_draw_range ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2],
+        geometry.DrawRange { start = 0, count = 1 }, vacua
+    )
+    adfirma geometry.geometry_valid(partial_triangle_draw_range) ≡ falsum,
+        "triangle draw ranges must select complete primitives"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },
@@ -205,6 +211,13 @@ incipit {
     )
     adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
         "geometry groups may not overlap"
+    fixum geometry.BufferGeometry partial_triangle_group ← geometry.indexed_triangle_geometry(
+        3, [positions], [0, 1, 2],
+        geometry.DrawRange { start = 0, count = 3 },
+        [geometry.GeometryGroup { start = 0, count = 1, material_index = 0 }]
+    )
+    adfirma geometry.geometry_valid(partial_triangle_group) ≡ falsum,
+        "triangle groups must select complete primitives"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
