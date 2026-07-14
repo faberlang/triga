@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
+if [[ -n "${RADIX_ROOT:-}" ]]; then
+  RADIX="$RADIX_ROOT"
+elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
+  RADIX="$ROOT/../radix"
+else
+  RADIX="$ROOT/../../../radix"
+fi
+
+if [[ ! -d "$RADIX/crates/radix" ]]; then
+  echo "check-exempla-inventory: missing radix checkout at $RADIX" >&2
+  exit 1
+fi
+
+if [[ -n "${FABER_ROOT:-}" ]]; then
+  FABER="$FABER_ROOT"
+elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
+  FABER="$ROOT/../faber"
+else
+  FABER="$ROOT/../../../faber"
+fi
+
+if [[ ! -f "$FABER/Cargo.toml" ]]; then
+  echo "check-exempla-inventory: missing faber checkout at $FABER" >&2
+  exit 1
+fi
+
+RADIX_BIN="$RADIX/target/debug/radix"
+if [[ ! -x "$RADIX_BIN" ]]; then
+  (cd "$RADIX" && cargo build -q -p radix --bin radix)
+fi
+
+export FABER_LIBRARY_HOME
+export RADIX_ROOT="$RADIX"
+
+contains() {
+  local needle="$1"
+  shift
+  local item
+  for item in "$@"; do
+    if [[ "$item" == "$needle" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+mapfile -t documented < <(
+  awk '/^  [^[:space:]]+\.fab[[:space:]]/ { print "exempla/" $1 }' "$ROOT/exempla/README.md" | sort
+)
+mapfile -t actual < <(
+  cd "$ROOT" && find exempla -maxdepth 1 -type f -name '*.fab' -print | sort
+)
+
+if [[ "${#documented[@]}" -eq 0 ]]; then
+  echo "check-exempla-inventory: no documented exempla found in exempla/README.md" >&2
+  exit 1
+fi
+
+status=0
+
+for file in "${actual[@]}"; do
+  if ! contains "$file" "${documented[@]}"; then
+    echo "check-exempla-inventory: undocumented exemplar file: $file" >&2
+    status=1
+  fi
+done
+
+for file in "${documented[@]}"; do
+  if [[ ! -f "$ROOT/$file" ]]; then
+    echo "check-exempla-inventory: documented exemplar is missing: $file" >&2
+    status=1
+  fi
+done
+
+if [[ "$status" -ne 0 ]]; then
+  exit "$status"
+fi
+
+compile_allowlist_reason() {
+  case "$1" in
+    exempla/triga-geometry-attributes.fab)
+      echo "geometry attribute generated Rust still has list-index and ownership lowering residuals; Radix source check remains required"
+      ;;
+    exempla/triga-stage4-source-facts.fab)
+      echo "Stage 4 source facts depend on geometry layout helpers that share the current generated-Rust geometry lowering residuals; Radix source check remains required"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+for file in "${documented[@]}"; do
+  echo "check-exempla-inventory: radix check $file"
+  "$RADIX_BIN" check "$ROOT/$file"
+done
+
+for file in "${documented[@]}"; do
+  if reason="$(compile_allowlist_reason "$file")"; then
+    echo "check-exempla-inventory: compile allowlist $file - $reason"
+    continue
+  fi
+
+  echo "check-exempla-inventory: faber run --compile $file"
+  (cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- run --compile "$file")
+done

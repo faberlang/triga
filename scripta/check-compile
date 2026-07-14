@@ -60,3 +60,4 @@ echo "check-compile: running scene-store generated-Rust acceptance"
 (cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- run --compile exempla/triga-scene-store.fab)
 
 "$ROOT/scripta/check-transforms"
+"$ROOT/scripta/check-exempla-inventory"
