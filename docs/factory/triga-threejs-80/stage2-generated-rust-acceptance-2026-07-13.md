@@ -2,9 +2,9 @@
 
 **Date**: 2026-07-13
 **Scope**: provider-imported `exempla/triga-scene-store.fab`
-**Result**: reduced blocker. Initial reusable Radix/Faber generated-Rust seams
-were partially cleared on 2026-07-14; provider-imported generated-Rust
-execution is still not accepted.
+**Result**: generated-Rust acceptance green after producer fixes and Triga
+fixture correction on 2026-07-14. Direct Radix provider-interface diagnostics
+remain separate from the generated-Rust execution gate.
 
 ## Commands
 
@@ -129,7 +129,7 @@ Radix/Faber-owned next unit:
   as a separate Radix/Faber provider interface task unless a Triga source error
   is proven by direct source inspection.
 
-Current queue-ready backlog packet:
+Historical queue-ready backlog packet before producer fix:
 
 - **Owner**: Radix/Faber, not Triga.
 - **Preconditions**: none from Triga; Stage 2 source/fixture ownership review is
@@ -150,6 +150,51 @@ FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
 - **Separate residual**: direct Radix provider check still owns
   `WARN014.file_interface_export_skipped:scene.scene_node` plus downstream
   `SEM004`/`SEM010` diagnostics.
+
+## 2026-07-14 Acceptance Result
+
+After Radix/Faber producer fixes at Radix `7d32673f8`, generated Rust reached
+runtime and exposed one Triga-owned fixture assertion bug:
+
+```text
+thread 'main' panicked at src/main.rs:456:5:
+reparent removes old edge
+```
+
+The failing assertion expected the old root to have zero children after
+reparenting `mesh` under `group`. That expectation was too strong: the old root
+should lose only the moved `mesh` edge while preserving the `shared-mesh`,
+`camera`, and `light` siblings in order. The fixture now asserts that remaining
+sibling list instead.
+
+Validation after the Triga fixture fix:
+
+```bash
+./scripta/check-source
+./scripta/check-compile
+FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
+  cargo run -q --manifest-path /home/ianzepp/work/faberlang/faber/Cargo.toml -- \
+  check exempla/triga-scene-store.fab
+FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
+  cargo run -q --manifest-path /home/ianzepp/work/faberlang/faber/Cargo.toml -- \
+  run --compile exempla/triga-scene-store.fab
+```
+
+All four commands pass. The generated-Rust scene identity acceptance gate is
+green.
+
+Remaining separate residual:
+
+```bash
+FABER_LIBRARY_HOME=/home/ianzepp/work/faberlang \
+  cargo run -q -p radix --bin radix \
+  --manifest-path /home/ianzepp/work/faberlang/radix/Cargo.toml -- \
+  check exempla/triga-scene-store.fab
+```
+
+still reports `WARN014.file_interface_export_skipped:scene.scene_node` and
+downstream `SEM004`/`SEM010` diagnostics. That path remains Radix/Faber-owned
+unless a new Triga source defect is proven.
 
 ## Minimal Repros
 
@@ -194,9 +239,7 @@ shows the same class in `scene_mesh_geometry`, `scene_mesh_material`, and
 
 ## Decision
 
-Do not claim Stage 2 accepted yet. The scene identity model remains
-Triga-source-complete, but provider-imported generated-Rust execution still
-needs a final ownership/mutability pass. Triga should keep the scene exemplar as
-the acceptance workload, make only fixture/source corrections that preserve the
-public ownership contract, and route remaining generated-Rust lowering defects
-to Radix/Faber rather than hiding them with Triga-specific rewrites.
+The Stage 2 generated-Rust scene identity gate is accepted: the provider
+package path builds and runs `exempla/triga-scene-store.fab` assertions without
+a host-side graph or Triga-specific compiler branch. Keep the separate direct
+Radix provider-interface diagnostics routed to Radix/Faber.

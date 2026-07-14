@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-14) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source/fixture review complete, with generated-Rust/provider acceptance reduced to Radix/Faber lowering and direct provider-interface residuals
+**Status**: active (2026-07-14) — Stage 1 **foundation CLEARED**; Stage 2 generated-Rust scene identity acceptance **green**, with only direct Radix provider-interface residuals remaining
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 2 — Radix/Faber generated-Rust scene identity lowering packet
+**Selected next stage**: Stage 4 — graphics MIR and shader-stage handoff; keep Stage 2 direct Radix provider-interface residual routed separately
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -187,7 +187,7 @@ External feature baseline, captured 2026-07-10 from official three.js sources:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972`; **scene store** source/fixture ownership review complete through `e26aabd` | Keep transform + scene source green; route Stage 2 generated-Rust blocker |
+| Triga public API | Vector3/Matrix4 + extended families (quat, Euler fail-closed, color, Box/Sphere/Plane/Ray) on main `c3f2972`; **scene store** generated-Rust acceptance green after reparent fixture correction | Keep transform + scene source green; route direct Radix provider-interface residual separately |
 | Library import/build | Sibling provider manifest and type-construction exemplar exist | Include in every source-library gate |
 | Vector/tensor foundation | Source types + MIR vector elementwise/dot/cross on WGSL; CPU stepper matrix product | Consume in Stage 3; no metal/llvm matrix register emit yet |
 | Matrix foundation | MIR CPU matmul/applica/normalize/inversa green; **WGSL** register construct+cell emit (`f99b8fad7`); metal/llvm **fail-closed** stable shapes (`2f3e3ccb1`) | Kernel matrix params still ABI-reject; no multi-backend matrix register parity |
@@ -265,19 +265,18 @@ operations execute consistently in required Rust and MIR/GPU paths.
 
 ### Stage 2 — Scene graph and object model
 
-**Status**: Triga-owned source/fixture ownership review complete through
-`e26aabd`; generated-Rust acceptance attempted 2026-07-13 and reduced on
-2026-07-14 after reusable provider/codegen fixes
+**Status**: generated-Rust scene identity acceptance green after reusable
+provider/codegen fixes and Triga reparent assertion correction
 ([`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md)).
 The generational scene store proves heterogeneous group/mesh/camera/light nodes,
 shared resource handles, parent edits, ordered traversal, world transforms,
 stale/cycle rejection, and stable name lookup in Triga source. The integration
-gate remains open for provider-imported generated-Rust execution. Initial
-`Matrix4` qualification and nullable return wrapping blockers are cleared, and
-Triga fixture/source review cleared post-move store reuse plus traversal
-mutability. The remaining packet is Radix/Faber-owned: reference argument
-lowering for `de Matrix4` calls, borrowed-value field assignment, and direct
-provider-interface `WARN014`/`SEM004`/`SEM010` diagnostics.
+gate for provider-imported generated-Rust execution is green. Initial `Matrix4`
+qualification and nullable return wrapping blockers are cleared, Triga
+fixture/source review cleared post-move store reuse and traversal mutability,
+and the residual reparent assertion now checks only the moved edge while
+preserving siblings. Direct provider-interface
+`WARN014`/`SEM004`/`SEM010` diagnostics remain routed to Radix/Faber separately.
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve

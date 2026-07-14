@@ -47,12 +47,11 @@ objects or value-copy aliases.
 
 ## Current Status
 
-Triga-owned source and fixture review is complete through `e26aabd`: the public
-scene store and executable exemplar cover the graph, identity, traversal,
-transform, resource-sharing, rejection behavior, and fixture-owned ownership
-shape above. Acceptance remains open until the provider-imported generated Rust
-builds and runs those assertions without a host-side graph or Triga-specific
-compiler branch.
+Triga-owned source and generated-Rust acceptance are complete: the public scene
+store and executable exemplar cover the graph, identity, traversal, transform,
+resource-sharing, rejection behavior, and fixture-owned ownership shape above.
+Provider-imported generated Rust now builds and runs those assertions without a
+host-side graph or Triga-specific compiler branch.
 
 ## World-Transform Unit
 
@@ -86,31 +85,28 @@ the executable scene exemplar proves lookup through a multilevel hierarchy.
 
 ## Provider-Interface Validation Residual
 
-The public scene source and its exemplar remain a distinct upstream validation
-residual. `scripta/check-compile` intentionally covers the passing Triga math
-and geometry targets while excluding `exempla/triga-scene-store.fab`: the
-provider-imported check currently reports `SEM004`/`SEM010` diagnostics for
-scene-node fields and Matrix4-backed calls. This is tracked by upstream Vivi
-need `bac61aa`; the exclusion is not a passing claim, and Stage 2 acceptance
-remains open until the scene exemplar compiles and runs through the provider
-path.
+The public scene source and its exemplar still expose a direct Radix
+provider-interface residual. `scripta/check-compile` intentionally covers the
+passing Triga math and geometry targets while excluding
+`exempla/triga-scene-store.fab`: direct `radix check` still reports
+`WARN014.file_interface_export_skipped:scene.scene_node` plus downstream
+`SEM004`/`SEM010` diagnostics. The Faber provider check and generated-Rust run
+are green, so this residual is not a generated-Rust acceptance blocker.
 
 The 2026-07-13 generated-Rust acceptance attempt, with 2026-07-14 reduced
 blocker follow-up, is recorded in
 [`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md):
-Faber provider check accepts the exemplar, and the initial generated-Rust
-failures for cross-module `Matrix4` qualification and nullable `Some(...)`
-wrapping have been cleared upstream. Triga fixture/source review then cleared
-the post-move store reuse and traversal mutability pieces. Generated-Rust
-execution is now reduced to two Radix/Faber-owned lowering errors: reference
-argument lowering for `de Matrix4` calls and borrowed-value field assignment in
-`scene_set_local_matrix`. The direct provider-interface
-`WARN014`/`SEM004`/`SEM010` residual also remains Radix/Faber-owned unless a
-new Triga source defect is proven.
+Faber provider check accepts the exemplar, the initial generated-Rust failures
+for cross-module `Matrix4` qualification and nullable `Some(...)` wrapping have
+been cleared upstream, and Triga fixture/source review cleared the remaining
+runtime assertion around reparenting. Generated-Rust execution is green. The
+direct provider-interface `WARN014`/`SEM004`/`SEM010` residual remains
+Radix/Faber-owned unless a new Triga source defect is proven.
 
 ## Stop Condition
 
 Do not introduce numeric list indexes as identity, copied `discretio` payload
 graphs, backend handles, or compatibility wrappers around `Object3D.children`.
-Do not claim Stage 2 accepted until the generated-Rust execution evidence proves
-the identity contract at the reusable language/runtime seam.
+Do not reopen Stage 2 generated-Rust acceptance without a new failing provider
+package run. Keep direct provider-interface diagnostics routed separately to
+Radix/Faber.
