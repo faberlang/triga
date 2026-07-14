@@ -108,8 +108,11 @@ incipit {
         "name lookup returns stable identity"
     adfirma scene.scene_find_name(attached_store, root_step.handle, "missing") est nihil,
         "name lookup reports absence"
+    fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
+    fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
+    fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore ∪ nihil root_local ← scene.scene_set_local_matrix(
-        attached_store, root_step.handle,
+        transform_store, root_step.handle,
         triga.matrix4_translatio(triga.Vector3 { x = 5.0, y = 0.0, z = 0.0 })
     )
     adfirma root_local non est nihil, "root local transform accepted"
@@ -133,12 +136,15 @@ incipit {
     )
     adfirma world_origin.x ≡ (7.0 ∷ f32), "parent-first world transform composes"
     adfirma world_mesh!.world_dirty ≡ falsum, "world update clears dirty state"
-    adfirma scene.scene_update_world(world_store, mesh_step.handle) est nihil,
+    fixum scene.SceneStore non_root_world_store ← scene.SceneStore { slots = world_store.slots }
+    adfirma scene.scene_update_world(non_root_world_store, mesh_step.handle) est nihil,
         "non-root world update rejects"
-    adfirma scene.scene_remove(world_store, root_step.handle) est nihil,
+    fixum scene.SceneStore parent_remove_store ← scene.SceneStore { slots = world_store.slots }
+    adfirma scene.scene_remove(parent_remove_store, root_step.handle) est nihil,
         "removing a parent rejects dangling children"
+    fixum scene.SceneStore group_base_store ← scene.SceneStore { slots = world_store.slots }
     fixum scene.SceneInsert group_step ← scene.scene_insert(
-        world_store, scene.scene_group("group")
+        group_base_store, scene.scene_group("group")
     )
     fixum scene.SceneStore ∪ nihil reparented ← scene.scene_attach(
         group_step.store, mesh_step.handle, group_step.handle
@@ -154,7 +160,10 @@ incipit {
     )
     adfirma reparented_mesh_result!.parent!.index ≡ group_step.handle.index,
         "reparent preserves child identity"
-    adfirma scene.scene_attach(reparented_store, mesh_step.handle, group_step.handle) est nihil,
+    fixum scene.SceneStore duplicate_reparent_store ← scene.SceneStore {
+        slots = reparented_store.slots
+    }
+    adfirma scene.scene_attach(duplicate_reparent_store, mesh_step.handle, group_step.handle) est nihil,
         "duplicate attach rejects"
     fixum scene.SceneStore ∪ nihil detached ← scene.scene_detach(
         reparented_store, mesh_step.handle
@@ -165,11 +174,10 @@ incipit {
         detached_store, mesh_step.handle
     )
     adfirma detached_mesh_result!.parent est nihil, "detach clears parent"
-    fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     adfirma scene.scene_attach(cycle_store, root_step.handle, mesh_step.handle) est nihil,
         "cycle rejects"
     fixum scene.SceneStore ∪ nihil removed_result ← scene.scene_remove(
-        attached_store, mesh_step.handle
+        remove_store, mesh_step.handle
     )
     adfirma removed_result non est nihil, "remove succeeds"
     fixum scene.SceneStore removed ← scene.SceneStore { slots = removed_result!.slots }

@@ -99,12 +99,13 @@ blocker follow-up, is recorded in
 [`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md):
 Faber provider check accepts the exemplar, and the initial generated-Rust
 failures for cross-module `Matrix4` qualification and nullable `Some(...)`
-wrapping have been cleared upstream. Generated-Rust execution is now reduced to
-seven Rust ownership/mutability errors: Triga must review fixture reuse after
-value-consuming scene-store calls and the mutable traversal helper shape, while
-Radix/Faber still own reference argument lowering, borrowed-value field
-assignment, and the direct provider-interface `WARN014`/`SEM004`/`SEM010`
-residual.
+wrapping have been cleared upstream. Triga fixture/source review then cleared
+the post-move store reuse and traversal mutability pieces. Generated-Rust
+execution is now reduced to two Radix/Faber-owned lowering errors: reference
+argument lowering for `de Matrix4` calls and borrowed-value field assignment in
+`scene_set_local_matrix`. The direct provider-interface
+`WARN014`/`SEM004`/`SEM010` residual also remains Radix/Faber-owned unless a
+new Triga source defect is proven.
 
 ## Stop Condition
 

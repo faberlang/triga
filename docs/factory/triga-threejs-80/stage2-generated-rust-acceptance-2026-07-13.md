@@ -90,7 +90,7 @@ SEM010.expression_type_mismatch / initializer_annotation_mismatch
 
 ## Next Producer Units
 
-Triga-owned next unit:
+Triga-owned source/fixture review:
 
 - Review `exempla/triga-scene-store.fab` as an executable acceptance fixture for
   value-consuming APIs. The current fixture reuses `SceneStore` values after
@@ -102,6 +102,21 @@ Triga-owned next unit:
   source declares immutable storage where mutation is intended, correct it in
   Triga source. If the source is already mutable and generated Rust drops that
   mutability, route it back to Radix.
+
+2026-07-14 review result:
+
+- Triga fixture/source corrections were made for the Triga-owned portion:
+  `exempla/triga-scene-store.fab` now creates explicit store snapshots before
+  independent assertions that consume `SceneStore`, and `src/scene.fab` now
+  mutates a local traversal accumulator instead of the immutable `handles`
+  parameter.
+- Required Triga gates passed: `./scripta/check-source`,
+  `./scripta/check-compile`, and Faber provider check for
+  `exempla/triga-scene-store.fab`.
+- Provider-imported generated Rust is reduced from seven errors to two:
+  `matrix4_multiplicata((*parent_world), node.local_matrix.clone())` still
+  passes owned `Matrix4` values where `&Matrix4` is expected, and
+  `scene_set_local_matrix` still moves out of borrowed `local_matrix`.
 
 Radix/Faber-owned next unit:
 

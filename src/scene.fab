@@ -164,9 +164,10 @@ functio _scene_traverse_preorder(
         local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
         world_dirty = node_result!.world_dirty
     }
-    handles.appende(SceneHandle { index = handle.index, generation = handle.generation })
+    varia lista<SceneHandle> updated_handles ← handles
+    updated_handles.appende(SceneHandle { index = handle.index, generation = handle.generation })
     varia SceneTraversal traversal ← SceneTraversal {
-        handles = handles, remaining = remaining - 1
+        handles = updated_handles, remaining = remaining - 1
     }
     varia numerus i ← 0
     dum i < node.children.longitudo() {

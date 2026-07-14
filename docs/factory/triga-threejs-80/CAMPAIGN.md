@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-14) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source complete through `15edfbf`, with generated-Rust/provider acceptance reduced to ownership/mutability and direct provider-interface residuals
+**Status**: active (2026-07-14) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source/fixture review complete, with generated-Rust/provider acceptance reduced to Radix/Faber lowering and direct provider-interface residuals
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 2 — reduced generated-Rust scene identity ownership packet
+**Selected next stage**: Stage 2 — Radix/Faber generated-Rust scene identity lowering packet
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -273,11 +273,11 @@ The generational scene store proves heterogeneous group/mesh/camera/light nodes,
 shared resource handles, parent edits, ordered traversal, world transforms,
 stale/cycle rejection, and stable name lookup in Triga source. The integration
 gate remains open for provider-imported generated-Rust execution. Initial
-`Matrix4` qualification and nullable return wrapping blockers are cleared; the
-remaining packet splits into Triga fixture/source review for post-move store
-reuse and traversal mutability, plus Radix/Faber ownership for reference
-argument lowering, borrowed-value field assignment, and direct provider-interface
-`WARN014`/`SEM004`/`SEM010` diagnostics.
+`Matrix4` qualification and nullable return wrapping blockers are cleared, and
+Triga fixture/source review cleared post-move store reuse plus traversal
+mutability. The remaining packet is Radix/Faber-owned: reference argument
+lowering for `de Matrix4` calls, borrowed-value field assignment, and direct
+provider-interface `WARN014`/`SEM004`/`SEM010` diagnostics.
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve
