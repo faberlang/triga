@@ -8,6 +8,10 @@ summary = "Stage 4 source-owned vertex-layout facts for the graphics MIR handoff
 
 importa ex "triga:geometry" privata geometry
 
+@ vertex
+functio triga_plane_vertex() → vacuum {
+}
+
 incipit {
     fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 2.0)
     adfirma plane_result non est nihil, "Stage 4 source facts require valid plane geometry"
