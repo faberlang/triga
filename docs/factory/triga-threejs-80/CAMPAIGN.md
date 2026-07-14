@@ -4,7 +4,7 @@
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 4 — graphics MIR and shader-stage handoff; keep Stage 2 direct Radix provider-interface residual routed separately
+**Selected next stage**: Stage 4 — graphics MIR and shader-stage handoff; keep Stage 2 direct Radix provider-interface residual routed separately (readiness map: [`stage4-readiness-map-2026-07-14.md`](stage4-readiness-map-2026-07-14.md))
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
