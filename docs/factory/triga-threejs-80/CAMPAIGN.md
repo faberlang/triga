@@ -1,10 +1,10 @@
 # Campaign: Triga Three.js 80
 
-**Status**: active (2026-07-13) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source complete through `15edfbf`, with generated-Rust/provider acceptance blocked on reusable codegen/provider seams
+**Status**: active (2026-07-14) — Stage 1 **foundation CLEARED**; Stage 2 Triga-owned source complete through `15edfbf`, with generated-Rust/provider acceptance reduced to ownership/mutability and direct provider-interface residuals
 **Mode**: draft/maintain — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution stage
-**Selected next stage**: Stage 2 — generated-Rust scene identity acceptance blocker handoff
+**Selected next stage**: Stage 2 — reduced generated-Rust scene identity ownership packet
 **Release posture**: foundation-first; no release required before the first direct-render checkpoint
 
 ## Summary
@@ -266,14 +266,18 @@ operations execute consistently in required Rust and MIR/GPU paths.
 ### Stage 2 — Scene graph and object model
 
 **Status**: Triga-owned source complete on packet through `15edfbf`; generated-Rust
-acceptance attempted 2026-07-13 and blocked at reusable provider/codegen seams
+acceptance attempted 2026-07-13 and reduced on 2026-07-14 after reusable
+provider/codegen fixes
 ([`stage2-generated-rust-acceptance-2026-07-13.md`](stage2-generated-rust-acceptance-2026-07-13.md)).
 The generational scene store proves heterogeneous group/mesh/camera/light nodes,
 shared resource handles, parent edits, ordered traversal, world transforms,
 stale/cycle rejection, and stable name lookup in Triga source. The integration
-gate remains open for provider-imported generated-Rust execution and
-confirmation that the identity contract is reusable rather than a Triga-specific
-compiler seam.
+gate remains open for provider-imported generated-Rust execution. Initial
+`Matrix4` qualification and nullable return wrapping blockers are cleared; the
+remaining packet splits into Triga fixture/source review for post-move store
+reuse and traversal mutability, plus Radix/Faber ownership for reference
+argument lowering, borrowed-value field assignment, and direct provider-interface
+`WARN014`/`SEM004`/`SEM010` diagnostics.
 **Source**: [`goals/02-scene-graph-object-model.md`](goals/02-scene-graph-object-model.md)
 **Depends on**: Stages 0–1
 **Gate**: heterogeneous hierarchical scenes update world transforms and preserve

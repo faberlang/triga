@@ -1,8 +1,8 @@
 # Goal 02: Scene Graph And Object Model
 
 **Status**: Triga source complete on packet through `15edfbf`; generated-Rust
-identity and execution acceptance remains blocked on reusable provider/codegen
-seams documented in
+identity and execution acceptance remains open after 2026-07-14 reduction to
+ownership/mutability and direct provider-interface residuals documented in
 [`stage2-generated-rust-acceptance-2026-07-13.md`](../stage2-generated-rust-acceptance-2026-07-13.md)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repos**: `triga`, `radix` when language ownership/identity facts are missing, `faber-runtime`, `examples`
@@ -35,6 +35,11 @@ it.
 - Provide deterministic traversal/update ordering and cycle rejection.
 - Route missing reusable discriminated-data, reference, arena, or ownership
   facts to Radix rather than building a host-only object system.
+- For the reduced generated-Rust blocker, keep Triga work limited to acceptance
+  fixture/source corrections that preserve the public ownership model: avoid
+  post-move reuse in independent assertions and verify traversal helpers declare
+  intended mutability. Keep reference argument lowering, borrowed-value field
+  assignment, and provider-interface diagnostics owned by Radix/Faber.
 
 Out of scope: renderer scheduling, full event dispatch, editor undo/redo, and
 network replication.
