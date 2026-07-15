@@ -50,10 +50,16 @@ contains() {
   return 1
 }
 
-mapfile -t documented < <(
+documented=()
+while IFS= read -r file; do
+  documented[${#documented[@]}]="$file"
+done < <(
   awk '/^  [^[:space:]]+\.fab[[:space:]]/ { print "exempla/" $1 }' "$ROOT/exempla/README.md" | sort
 )
-mapfile -t actual < <(
+actual=()
+while IFS= read -r file; do
+  actual[${#actual[@]}]="$file"
+done < <(
   cd "$ROOT" && find exempla -maxdepth 1 -type f -name '*.fab' -print | sort
 )
 
