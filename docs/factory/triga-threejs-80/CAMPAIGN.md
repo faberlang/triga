@@ -304,8 +304,9 @@ family produce validated bounds, normals, UVs, groups, and GPU layout facts.
 
 **Status**: in progress — Triga vertex/layout contract v1 is complete with
 explicit unique shader locations and ordered typed format/offset/stride/step
-reflection facts; handoff is now to Radix Stage 4 graphics MIR and reflection
-agreement
+reflection facts; Radix Stage 4 unit evidence now covers source vertex WGSL,
+reflection rows, and duplicate-location fail-closed handling while the wider
+Stage 4 handoff remains open.
 **Source**: [`goals/04-graphics-mir-shader-stages.md`](goals/04-graphics-mir-shader-stages.md)
 **Depends on**: Stages 0–1; consumes Stage 3 attribute contract
 **Overlap rule**: reopens and updates MIR GPU Stage 8 instead of creating a
