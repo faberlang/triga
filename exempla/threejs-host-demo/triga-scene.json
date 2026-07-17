@@ -1,0 +1,168 @@
+{
+  "schema": "triga.threejs-host-demo.v1",
+  "source": {
+    "trigaModules": ["triga:geometry", "triga:scene", "triga:triga"],
+    "sceneFacts": [
+      "Scene nodes use stable handle identities and parent/child traversal from src/scene.fab.",
+      "Matrix4 elements are column-major and multiply column vectors, matching THREE.Matrix4.fromArray().",
+      "BufferGeometry uses structure-of-arrays position, normal, uv, and index attributes from src/geometry.fab."
+    ]
+  },
+  "materials": [
+    {
+      "id": "mat-coral",
+      "type": "MeshStandardMaterial",
+      "color": "#ff7f66",
+      "roughness": 0.58,
+      "metalness": 0.05
+    },
+    {
+      "id": "mat-blue",
+      "type": "MeshStandardMaterial",
+      "color": "#5ea8ff",
+      "roughness": 0.42,
+      "metalness": 0.12
+    },
+    {
+      "id": "mat-grid",
+      "type": "MeshStandardMaterial",
+      "color": "#82d173",
+      "roughness": 0.8,
+      "metalness": 0.0
+    }
+  ],
+  "geometries": [
+    {
+      "id": "geo-pyramid",
+      "kind": "BufferGeometry",
+      "vertexCount": 5,
+      "attributes": {
+        "position": {
+          "componentWidth": 3,
+          "values": [
+            -1, 0, -1,
+            1, 0, -1,
+            1, 0, 1,
+            -1, 0, 1,
+            0, 1.45, 0
+          ]
+        },
+        "normal": {
+          "componentWidth": 3,
+          "values": [
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, 1, 0
+          ]
+        },
+        "uv": {
+          "componentWidth": 2,
+          "values": [
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1,
+            0.5, 0.5
+          ]
+        }
+      },
+      "indices": [0, 2, 1, 0, 3, 2, 0, 1, 4, 1, 2, 4, 2, 3, 4, 3, 0, 4]
+    },
+    {
+      "id": "geo-panel",
+      "kind": "BufferGeometry",
+      "vertexCount": 4,
+      "attributes": {
+        "position": {
+          "componentWidth": 3,
+          "values": [
+            -0.75, -0.75, 0,
+            0.75, -0.75, 0,
+            0.75, 0.75, 0,
+            -0.75, 0.75, 0
+          ]
+        },
+        "normal": {
+          "componentWidth": 3,
+          "values": [
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1
+          ]
+        },
+        "uv": {
+          "componentWidth": 2,
+          "values": [
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1
+          ]
+        }
+      },
+      "indices": [0, 1, 2, 0, 2, 3]
+    }
+  ],
+  "nodes": [
+    {
+      "handle": { "index": 0, "generation": 0 },
+      "name": "triga-root",
+      "kind": "group",
+      "parent": null,
+      "children": [1, 2, 3, 4],
+      "localMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    },
+    {
+      "handle": { "index": 1, "generation": 0 },
+      "name": "pyramid-mesh",
+      "kind": "mesh",
+      "geometry": "geo-pyramid",
+      "material": "mat-coral",
+      "parent": 0,
+      "children": [],
+      "localMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -1.55, 0.2, 0, 1]
+    },
+    {
+      "handle": { "index": 2, "generation": 0 },
+      "name": "shared-pyramid-mesh",
+      "kind": "mesh",
+      "geometry": "geo-pyramid",
+      "material": "mat-blue",
+      "parent": 0,
+      "children": [],
+      "localMatrix": [0.65, 0, 0, 0, 0, 0.65, 0, 0, 0, 0, 0.65, 0, 1.55, 0.2, 0, 1]
+    },
+    {
+      "handle": { "index": 3, "generation": 0 },
+      "name": "uv-panel",
+      "kind": "mesh",
+      "geometry": "geo-panel",
+      "material": "mat-grid",
+      "parent": 0,
+      "children": [],
+      "localMatrix": [1.25, 0, 0, 0, 0, 1.25, 0, 0, 0, 0, 1.25, 0, 0, 1.25, -1.05, 1]
+    },
+    {
+      "handle": { "index": 4, "generation": 0 },
+      "name": "scene-light",
+      "kind": "directional-light",
+      "parent": 0,
+      "children": [],
+      "color": "#ffffff",
+      "intensity": 2.4,
+      "localMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 3, 4, 5, 1]
+    }
+  ],
+  "camera": {
+    "name": "demo-camera",
+    "kind": "perspective-camera",
+    "fov": 45,
+    "near": 0.1,
+    "far": 100,
+    "localMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 2.2, 6.2, 1],
+    "lookAt": [0, 0.55, 0]
+  }
+}
