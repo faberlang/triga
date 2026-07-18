@@ -33,3 +33,24 @@ three.js ESM import from `unpkg.com`; the Triga scene data is local.
   camera, and transform matrices.
 - `triga-three-host.js` — the thin browser host that maps the JSON into three.js.
 - `index.html` — import map, canvas, and notes.
+
+## Stage 4 MIR pipeline mapping
+
+The demo renders through three.js, not through Radix MIR WGSL emission.
+However, the scene data implies a concrete pipeline reflection that maps
+to the Stage 4 `MirGraphicsPipelineReflection` types in Radix. This section
+documents the mapping so a future Goal 05 host can consume the same facts
+from MIR reflection rather than reconstructing them from scene JSON.
+
+| Pipeline reflection field | Demo value | Source |
+| --- | --- | --- |
+| `color_target_formats` | `[Rgba8Unorm]` | three.js default canvas (single RGBA8 back buffer) |
+| `primitive_topology` | `TriangleList` | geometry indices define triangle faces; no line/point topology in scene |
+| `depth_stencil` | `Some { depth_write_enabled: true, depth_compare: Less }` | three.js `WebGLRenderer` enables depth testing by default |
+| `vertex_input_count` | `3` | position (Float32x3, location 0), normal (Float32x3, location 1), uv (Float32x2, location 2) |
+| `varying_count` | `2` | normal + uv passed from vertex to fragment (implied by MeshStandardMaterial lighting) |
+| `vertex_count` | scene-dependent | geo-pyramid has 5 vertices; geo-panel has 4 |
+
+These facts are **not** emitted by the demo; they describe what a MIR
+reflection would carry for this scene. The three.js host resolves them
+internally through its own renderer defaults.
