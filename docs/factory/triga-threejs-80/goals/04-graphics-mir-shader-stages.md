@@ -83,6 +83,14 @@ graph completeness, production web packaging, and a general shader DSL.
   inputs, not Stage 4 shader-lowering claims.
 - Next residual: lower one matching vertex input through graphics MIR and prove
   emitted reflection agrees with these facts without inspecting attribute names.
+- Fragment stage variant added to `MirKernelShaderStage`; minimal
+  `emit_wgsl_fragment_entry_contract` emits a solid-color `@fragment` entry with
+  fail-closed rejection for compute and vertex stages, and vertex entry now also
+  rejects fragment reflection. Varying/interstage IO and typed color-target
+  formats are follow-on work.
+- Remaining Stage 4 gate items: typed vertex/fragment IO (varyings), pipeline
+  reflection for resources and draw prerequisites, and fail-closed WGSL for
+  unsupported type/resource combinations.
 
 ## Stop Conditions
 
