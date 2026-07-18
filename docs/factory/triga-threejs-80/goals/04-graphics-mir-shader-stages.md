@@ -3,9 +3,10 @@
 **Status**: in progress — Radix graphics MIR now covers vertex and fragment
 WGSL entry contracts, typed interstage varyings with cross-stage compatibility
 validation, a graphics pipeline reflection seam (color targets, topology,
-depth/stencil, vertex count), and multi-target fragment output emission.
-Remaining: source-level MIR lowering from @vertex/@fragment annotations, stencil
-read/write masks, and full resource reflection in pipeline context.
+depth/stencil with stencil masks, vertex count), and multi-target fragment
+output emission. Remaining: source-level MIR lowering from
+@vertex/@fragment annotations and full resource reflection in pipeline
+context.
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repo**: `radix`; `triga` and `examples` provide the forcing workloads
 **Depends on**: Goals 00–01 and the Goal 03 vertex attribute contract
@@ -116,8 +117,7 @@ graph completeness, production web packaging, and a general shader DSL.
 - Host-configurable topology (radix `d7f633b3d`):
   `.with_topology()` builder overrides default `TriangleList`.
 - Remaining Stage 4 gate items: MIR lowering from Faber `@vertex`/`@fragment`
-  annotations (reflection is test-constructed, not source-lowered); stencil
-  read/write masks (depth compare + write exist, stencil ops deferred); full
+  annotations (reflection is test-constructed, not source-lowered); full
   resource reflection in pipeline context (uniforms, storage, textures, samplers
   are reflected for compute but not yet integrated into the graphics pipeline
   reflection).
@@ -127,8 +127,8 @@ graph completeness, production web packaging, and a general shader DSL.
 Stage 4 is **not complete**. The gate is not met because source-level MIR
 lowering from `@vertex`/`@fragment` annotations does not exist — all
 reflection and WGSL emission is test-constructed, not lowered from Faber
-source. The reflection and WGSL emission subset is closed; source lowering,
-full resource integration, and stencil ops remain.
+source. The reflection and WGSL emission subset is closed; source lowering
+and full resource integration remain.
 
 | Gate item | Status | Evidence |
 | --- | --- | --- |
@@ -140,13 +140,12 @@ full resource integration, and stencil ops remain.
 
 **Closed reflection subset:** vertex/fragment WGSL entry contracts, interstage
 varyings with cross-stage validation, pipeline reflection (color targets,
-topology, depth/stencil, vertex count), and fail-closed stage/target/input
-validation.
+topology, depth/stencil with stencil read/write masks and per-face ops,
+vertex count), and fail-closed stage/target/input validation.
 
 **Open residual owners:**
 - Source-level MIR lowering (Radix — blocks gate item 1)
 - Full resource reflection in pipeline context (Radix)
-- Stencil read/write masks (Radix)
 
 ## Stop Conditions
 
