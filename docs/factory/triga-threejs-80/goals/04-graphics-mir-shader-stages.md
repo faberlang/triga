@@ -2,10 +2,10 @@
 
 **Status**: in progress — Radix graphics MIR now covers vertex and fragment
 WGSL entry contracts, typed interstage varyings with cross-stage compatibility
-validation, and a graphics pipeline reflection seam (color targets, topology,
-depth/stencil, vertex count). Remaining: fragment multi-location WGSL output,
-source-level MIR lowering from @vertex/@fragment annotations, and full resource
-reflection.
+validation, a graphics pipeline reflection seam (color targets, topology,
+depth/stencil, vertex count), and multi-target fragment output emission.
+Remaining: source-level MIR lowering from @vertex/@fragment annotations, stencil
+read/write masks, and full resource reflection in pipeline context.
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repo**: `radix`; `triga` and `examples` provide the forcing workloads
 **Depends on**: Goals 00–01 and the Goal 03 vertex attribute contract
@@ -107,13 +107,22 @@ graph completeness, production web packaging, and a general shader DSL.
 - Multi-target color attachments (radix `c4a29f425`):
   `graphics_pipeline_reflection` accepts `color_targets: &[MirColorTargetFormat]`;
   fail-closed for empty.
+- Varying compatibility in pipeline constructor (radix `c4a29f425`):
+  `graphics_pipeline_reflection` now calls `validate_varying_compatibility`
+  internally — mismatched vertex/fragment varyings fail before pipeline creation
+  (resolves CXO `a627e820` bullet 1).
+- Multi-location fragment WGSL emission (radix `1ba3a660d`):
+  `emit_wgsl_fragment_entry_contract_with_targets(reflection, count)` emits
+  `@location(N) color_N` per target. Single-target `emit_wgsl_fragment_entry_contract`
+  delegates with count=1 (byte-identical output). Fail-closed on zero targets.
 - Host-configurable topology (radix `d7f633b3d`):
   `.with_topology()` builder overrides default `TriangleList`.
-- Remaining Stage 4 gate items: fragment WGSL emitter still outputs single
-  `@location(0)` (multi-location fragment output needs output reflection on
-  `MirKernelReflection`); MIR lowering from Faber `@vertex`/`@fragment`
+- Remaining Stage 4 gate items: MIR lowering from Faber `@vertex`/`@fragment`
   annotations (reflection is test-constructed, not source-lowered); stencil
-  read/write masks; full resource reflection in pipeline context.
+  read/write masks (depth compare + write exist, stencil ops deferred); full
+  resource reflection in pipeline context (uniforms, storage, textures, samplers
+  are reflected for compute but not yet integrated into the graphics pipeline
+  reflection).
 
 ## Stop Conditions
 
