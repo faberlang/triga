@@ -83,8 +83,6 @@ graph completeness, production web packaging, and a general shader DSL.
   transparency, opacity, alpha test, depth test/write, base color, roughness,
   metalness, emissive color, and emissive intensity. These are Stage 6 shader
   inputs, not Stage 4 shader-lowering claims.
-- Next residual: lower one matching vertex input through graphics MIR and prove
-  emitted reflection agrees with these facts without inspecting attribute names.
 - Fragment stage variant added to `MirKernelShaderStage`; minimal
   `emit_wgsl_fragment_entry_contract` emits a solid-color `@fragment` entry with
   fail-closed rejection for compute and vertex stages, and vertex entry now also
@@ -123,6 +121,32 @@ graph completeness, production web packaging, and a general shader DSL.
   resource reflection in pipeline context (uniforms, storage, textures, samplers
   are reflected for compute but not yet integrated into the graphics pipeline
   reflection).
+
+## Gate Check (2026-07-18)
+
+Stage 4 is **not complete**. The gate is not met because source-level MIR
+lowering from `@vertex`/`@fragment` annotations does not exist — all
+reflection and WGSL emission is test-constructed, not lowered from Faber
+source. The reflection and WGSL emission subset is closed; source lowering,
+full resource integration, and stencil ops remain.
+
+| Gate item | Status | Evidence |
+| --- | --- | --- |
+| Faber fixture lowers to typed vertex + fragment MIR and valid WGSL | **OPEN** | Reflection is test-constructed; no MIR lowering from `@vertex`/`@fragment` source. WGSL validates with naga when available. |
+| Reflection describes stage IO, vertex layouts, resources, pipeline targets, draw prerequisites | **PARTIAL** | Stage IO (varyings), vertex layouts (inputs), pipeline targets (color formats), draw prerequisites (topology, vertex count, depth/stencil) are done. Resources (uniforms, storage, textures, samplers) not yet integrated into graphics pipeline reflection. |
+| Mismatched varyings, unsupported types, illegal resources, missing outputs fail before emission | **PARTIAL** | Varying mismatch fails via `validate_varying_compatibility` and pipeline constructor. Duplicate locations, wrong stages, empty inputs/targets fail closed. Unsupported types and illegal resources in graphics context not yet tested. |
+| Existing compute kernels and reflection remain valid | **MET** | Compute WGSL emission, ABI, and launch plan unchanged. Graphics types are additive. |
+| MIR GPU Stage 8 artifact and progress ledger reflect state | **MET** | This goal doc and CAMPAIGN.md are current. |
+
+**Closed reflection subset:** vertex/fragment WGSL entry contracts, interstage
+varyings with cross-stage validation, pipeline reflection (color targets,
+topology, depth/stencil, vertex count), and fail-closed stage/target/input
+validation.
+
+**Open residual owners:**
+- Source-level MIR lowering (Radix — blocks gate item 1)
+- Full resource reflection in pipeline context (Radix)
+- Stencil read/write masks (Radix)
 
 ## Stop Conditions
 
