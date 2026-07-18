@@ -3,10 +3,11 @@
 **Status**: in progress — Radix graphics MIR now covers vertex and fragment
 WGSL entry contracts, typed interstage varyings with cross-stage compatibility
 validation, a graphics pipeline reflection seam (color targets, topology,
-depth/stencil with stencil masks, vertex count), and multi-target fragment
-output emission. Remaining: source-level MIR lowering from
-@vertex/@fragment annotations and full resource reflection in pipeline
-context.
+depth/stencil with stencil masks, vertex count), multi-target fragment
+output emission, and resource count surfacing. HIR inventory landed
+(`a5c24aa1f`): `is_vertex`/`is_fragment` flags exist on `HirFunction`.
+Remaining: device_role Vertex/Fragment mapping (graphics path still bypasses
+MIR lowering), and combined pipeline-layout descriptors with stage visibility.
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repo**: `radix`; `triga` and `examples` provide the forcing workloads
 **Depends on**: Goals 00–01 and the Goal 03 vertex attribute contract
@@ -116,24 +117,26 @@ graph completeness, production web packaging, and a general shader DSL.
   delegates with count=1 (byte-identical output). Fail-closed on zero targets.
 - Host-configurable topology (radix `d7f633b3d`):
   `.with_topology()` builder overrides default `TriangleList`.
-- Remaining Stage 4 gate items: MIR lowering from Faber `@vertex`/`@fragment`
-  annotations (reflection is test-constructed, not source-lowered); combined
-  pipeline-layout descriptors with stage visibility (resource counts are now
-  surfaced on `MirGraphicsPipelineReflection` via `vertex_resource_count` /
-  `fragment_resource_count` (radix `e55263119`); full bindings remain on
-  per-stage `launch_plan()`).
+- Remaining Stage 4 gate items: device_role Vertex/Fragment mapping — HIR
+  `is_vertex`/`is_fragment` flags exist (`a5c24aa1f`) but the graphics path
+  still bypasses MIR lowering; `MirDeviceRole::Vertex`/`Fragment` variants
+  are the next unit. Combined pipeline-layout descriptors with stage
+  visibility (resource counts surfaced via `vertex_resource_count` /
+  `fragment_resource_count` (`e55263119`); full bindings remain on per-stage
+  `launch_plan()`).
 
 ## Gate Check (2026-07-18)
 
 Stage 4 is **not complete**. The gate is not met because source-level MIR
-lowering from `@vertex`/`@fragment` annotations does not exist — all
-reflection and WGSL emission is test-constructed, not lowered from Faber
-source. The reflection and WGSL emission subset is closed; source lowering
-and full resource integration remain.
+lowering from `@vertex`/`@fragment` annotations does not exist — HIR
+`is_vertex`/`is_fragment` flags landed (`a5c24aa1f`) but the graphics path
+still bypasses MIR. All reflection and WGSL emission is test-constructed,
+not lowered from Faber source. The reflection and WGSL emission subset is
+closed; device_role mapping and full resource integration remain.
 
 | Gate item | Status | Evidence |
 | --- | --- | --- |
-| Faber fixture lowers to typed vertex + fragment MIR and valid WGSL | **OPEN** | Reflection is test-constructed; no MIR lowering from `@vertex`/`@fragment` source. WGSL validates with naga when available. |
+| Faber fixture lowers to typed vertex + fragment MIR and valid WGSL | **OPEN** | HIR `is_vertex`/`is_fragment` flags landed (`a5c24aa1f`); device_role mapping is next unit. Reflection is still test-constructed; no MIR lowering from source. WGSL validates with naga when available. |
 | Reflection describes stage IO, vertex layouts, resources, pipeline targets, draw prerequisites | **PARTIAL** | Stage IO (varyings), vertex layouts (inputs), pipeline targets (color formats), draw prerequisites (topology, vertex count, depth/stencil) are done. Resource counts surfaced on pipeline reflection (`e55263119`); full bindings remain on per-stage `launch_plan()`. Combined pipeline-layout descriptors with stage visibility are a future unit. |
 | Mismatched varyings, unsupported types, illegal resources, missing outputs fail before emission | **PARTIAL** | Varying mismatch fails via `validate_varying_compatibility` and pipeline constructor. Duplicate locations, wrong stages, empty inputs/targets fail closed. Unsupported types and illegal resources in graphics context not yet tested. |
 | Existing compute kernels and reflection remain valid | **MET** | Compute WGSL emission, ABI, and launch plan unchanged. Graphics types are additive. |
@@ -145,7 +148,9 @@ topology, depth/stencil with stencil read/write masks and per-face ops,
 vertex count), and fail-closed stage/target/input validation.
 
 **Open residual owners:**
-- Source-level MIR lowering (Radix — blocks gate item 1)
+- Source-level MIR lowering via device_role Vertex/Fragment mapping (Radix —
+  HIR flags `a5c24aa1f` landed; `MirDeviceRole::Vertex`/`Fragment` next unit;
+  blocks gate item 1)
 - Combined pipeline-layout descriptors with stage visibility (Radix —
   resource counts partial `e55263119`; full bindings on per-stage `launch_plan()`)
 
