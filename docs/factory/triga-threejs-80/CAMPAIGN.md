@@ -302,11 +302,12 @@ family produce validated bounds, normals, UVs, groups, and GPU layout facts.
 
 ### Stage 4 — Graphics MIR and shader stages
 
-**Status**: in progress — Triga vertex/layout contract v1 is complete with
-explicit unique shader locations and ordered typed format/offset/stride/step
-reflection facts; Radix Stage 4 unit evidence now covers source vertex WGSL,
-reflection rows, and duplicate-location fail-closed handling while the wider
-Stage 4 handoff remains open.
+**Status**: in progress — Radix Stage 4 now covers vertex + fragment WGSL
+entry contracts, typed interstage varyings with cross-stage compatibility
+validation, and a graphics pipeline reflection seam (color targets,
+topology, depth/stencil, vertex count). Remaining: fragment multi-location WGSL
+output, source-level @vertex/@fragment MIR lowering, and full resource
+reflection.
 **Source**: [`goals/04-graphics-mir-shader-stages.md`](goals/04-graphics-mir-shader-stages.md)
 **Depends on**: Stages 0–1; consumes Stage 3 attribute contract
 **Overlap rule**: reopens and updates MIR GPU Stage 8 instead of creating a

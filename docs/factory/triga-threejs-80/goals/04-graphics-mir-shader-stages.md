@@ -1,9 +1,11 @@
 # Goal 04: Graphics MIR And Shader Stages
 
-**Status**: in progress — Triga vertex/layout contract v1 is complete with
-unique shader locations and ordered CPU-side location/format/offset/stride/step
-reflection facts; handoff is now to Radix Stage 4 graphics MIR, reflection
-agreement, shader stages, and host consumption
+**Status**: in progress — Radix graphics MIR now covers vertex and fragment
+WGSL entry contracts, typed interstage varyings with cross-stage compatibility
+validation, and a graphics pipeline reflection seam (color targets, topology,
+depth/stencil, vertex count). Remaining: fragment multi-location WGSL output,
+source-level MIR lowering from @vertex/@fragment annotations, and full resource
+reflection.
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Target repo**: `radix`; `triga` and `examples` provide the forcing workloads
 **Depends on**: Goals 00–01 and the Goal 03 vertex attribute contract
@@ -86,11 +88,32 @@ graph completeness, production web packaging, and a general shader DSL.
 - Fragment stage variant added to `MirKernelShaderStage`; minimal
   `emit_wgsl_fragment_entry_contract` emits a solid-color `@fragment` entry with
   fail-closed rejection for compute and vertex stages, and vertex entry now also
-  rejects fragment reflection. Varying/interstage IO and typed color-target
-  formats are follow-on work.
-- Remaining Stage 4 gate items: typed vertex/fragment IO (varyings), pipeline
-  reflection for resources and draw prerequisites, and fail-closed WGSL for
-  unsupported type/resource combinations.
+  rejects fragment reflection.
+- Varying/interstage IO (radix `6a93ac2e4`): `MirVaryingReflection` connects
+  vertex output to fragment input through typed `@location(N)` members with
+  `v_` prefix and pass-through from matched vertex inputs. Both vertex and
+  fragment emitters validate unique varying locations.
+- Cross-stage varying compatibility (radix `7a4c44809`):
+  `validate_varying_compatibility(vertex, fragment)` checks bijective
+  location/name/format agreement; mismatched varyings fail before emission.
+- Graphics pipeline reflection (radix `0b2282c35`):
+  `MirGraphicsPipelineReflection` carries color target formats, primitive
+  topology, vertex count, vertex input count, and varying count — the
+  draw-prerequisite seam consumed by Goal 05.
+- Depth/stencil state (radix `5eaee949b`):
+  `MirDepthStencilState { depth_write_enabled, depth_compare }` with
+  `MirDepthCompareFunction` (8 variants). Optional via `.with_depth_stencil()`
+  builder; defaults to `None`.
+- Multi-target color attachments (radix `c4a29f425`):
+  `graphics_pipeline_reflection` accepts `color_targets: &[MirColorTargetFormat]`;
+  fail-closed for empty.
+- Host-configurable topology (radix `d7f633b3d`):
+  `.with_topology()` builder overrides default `TriangleList`.
+- Remaining Stage 4 gate items: fragment WGSL emitter still outputs single
+  `@location(0)` (multi-location fragment output needs output reflection on
+  `MirKernelReflection`); MIR lowering from Faber `@vertex`/`@fragment`
+  annotations (reflection is test-constructed, not source-lowered); stencil
+  read/write masks; full resource reflection in pipeline context.
 
 ## Stop Conditions
 
