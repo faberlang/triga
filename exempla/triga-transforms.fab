@@ -139,6 +139,18 @@ incipit {
         et union_bounds!.min.x ≡ (-1.0 ∷ f32)
         et union_bounds!.max.x ≡ (3.0 ∷ f32),
         "box union covers both input boxes"
+    fixum triga.Box3 ∪ nihil inflated_bounds ← triga.box3_inflata(bounds, 0.1 ∷ f32)
+    adfirma inflated_bounds non est nihil
+        et (inflated_bounds!.min.x + 1.1).absolutum() ≤ 0.0001
+        et (inflated_bounds!.max.x - 1.1).absolutum() ≤ 0.0001,
+        "box inflation supports selection tolerance"
+    fixum triga.Box3 ∪ nihil shrunken_bounds ← triga.box3_inflata(bounds, -0.5 ∷ f32)
+    adfirma shrunken_bounds non est nihil
+        et shrunken_bounds!.min.x ≡ (-0.5 ∷ f32)
+        et shrunken_bounds!.max.x ≡ (0.5 ∷ f32),
+        "box inflation supports negative collision padding"
+    adfirma triga.box3_inflata(bounds, -2.0 ∷ f32) est nihil,
+        "box inflation rejects inverted output"
     fixum triga.Box3 distant_bounds ← triga.box3_translata(
         bounds, triga.vector3(3.1 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
     )
@@ -162,6 +174,8 @@ incipit {
         "box containment rejects invalid child bounds"
     adfirma triga.box3_unio(invalid_bounds, bounds) est nihil,
         "box union rejects invalid input"
+    adfirma triga.box3_inflata(invalid_bounds, 0.1 ∷ f32) est nihil,
+        "box inflation rejects invalid input"
     fixum triga.Sphere sphere ← triga.Sphere {
         center = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         radius = 2.0 ∷ f32

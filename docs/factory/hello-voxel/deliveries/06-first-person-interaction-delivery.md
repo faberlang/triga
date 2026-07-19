@@ -29,10 +29,11 @@ placement to the bounded world using Faber state and the authoritative model.
   yaw/pitch camera ray helper with the locked pitch clamp, min-size and
   center-size `Box3` construction helpers for player and selection extents,
   `Box3` overlap extents for axis-ordered collision fixtures, `Box3`
-  containment and union for aggregate bounds, and a `RayBox3Hit` result with
-  distance, point, and outward face normal for selection indicators. Voxel DDA
-  remains application-owned. Triga geometry also provides `box_wire_geometry`
-  for a minimal selection outline without host-side shape construction.
+  containment and union for aggregate bounds, `Box3` inflation for selection and
+  collision tolerances, and a `RayBox3Hit` result with distance, point, and
+  outward face normal for selection indicators. Voxel DDA remains
+  application-owned. Triga geometry also provides `box_wire_geometry` for a
+  minimal selection outline without host-side shape construction.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.
 

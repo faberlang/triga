@@ -616,6 +616,16 @@ functio box3_unio(de Box3 a, de Box3 b) → Box3 ∪ nihil {
     }
 }
 
+functio box3_inflata(de Box3 bounds, f32 amount) → Box3 ∪ nihil {
+    si box3_validum(bounds) ≡ falsum ergo redde nihil
+    fixum Box3 expanded ← Box3 {
+        min = vector3(bounds.min.x - amount, bounds.min.y - amount, bounds.min.z - amount),
+        max = vector3(bounds.max.x + amount, bounds.max.y + amount, bounds.max.z + amount)
+    }
+    si box3_validum(expanded) ≡ falsum ergo redde nihil
+    redde expanded
+}
+
 functio box3_translata(de Box3 bounds, de Vector3 offset) → Box3 {
     si box3_validum(bounds) ≡ falsum ergo redde bounds
     redde Box3 {

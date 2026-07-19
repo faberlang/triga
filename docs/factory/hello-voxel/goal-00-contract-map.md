@@ -118,7 +118,8 @@ translation, scale, composition, multiplication, point application, transpose,
 and affine inverse helpers. It also provides min-size and center-size `Box3`
 construction, point and box containment, `Box3` overlap extents for
 axis-ordered collision fixtures, `Box3` union for aggregate chunk or selection
-bounds, camera yaw/pitch ray construction, ray-to-`Box3` entry distance, and
+bounds, `Box3` inflation for source-owned selection and collision tolerances,
+camera yaw/pitch ray construction, ray-to-`Box3` entry distance, and
 `RayBox3Hit` distance/point/normal facts for selection
 indicators. Voxel DDA remains application-owned.
 
