@@ -521,7 +521,35 @@ functio box3_continet(de Box3 bounds, de Vector3 point) → bivalens {
         point.z ≥ bounds.min.z et point.z ≤ bounds.max.z
 }
 
+functio box3_validum(de Box3 bounds) → bivalens {
+    redde bounds.min.x ≤ bounds.max.x et
+        bounds.min.y ≤ bounds.max.y et
+        bounds.min.z ≤ bounds.max.z
+}
+
+functio box3_ex_minimo_et_mensura(
+    de Vector3 minimum,
+    de Vector3 size
+) → Box3 ∪ nihil {
+    si size.x ≤ 0.0 aut size.y ≤ 0.0 aut size.z ≤ 0.0 ergo redde nihil
+    redde Box3 {
+        min = minimum,
+        max = vector3_addita(minimum, size)
+    }
+}
+
+functio box3_mensura(de Box3 bounds) → Vector3 ∪ nihil {
+    si box3_validum(bounds) ≡ falsum ergo redde nihil
+    redde vector3_subtracta(bounds.max, bounds.min)
+}
+
+functio box3_centrum(de Box3 bounds) → Vector3 ∪ nihil {
+    si box3_validum(bounds) ≡ falsum ergo redde nihil
+    redde vector3_multiplicata(vector3_addita(bounds.min, bounds.max), 0.5)
+}
+
 functio box3_intersecat(de Box3 a, de Box3 b) → bivalens {
+    si box3_validum(a) ≡ falsum aut box3_validum(b) ≡ falsum ergo redde falsum
     si a.max.x < b.min.x aut a.min.x > b.max.x ergo redde falsum
     si a.max.y < b.min.y aut a.min.y > b.max.y ergo redde falsum
     si a.max.z < b.min.z aut a.min.z > b.max.z ergo redde falsum
@@ -529,6 +557,7 @@ functio box3_intersecat(de Box3 a, de Box3 b) → bivalens {
 }
 
 functio box3_translata(de Box3 bounds, de Vector3 offset) → Box3 {
+    si box3_validum(bounds) ≡ falsum ergo redde bounds
     redde Box3 {
         min = vector3_addita(bounds.min, offset),
         max = vector3_addita(bounds.max, offset)

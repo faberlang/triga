@@ -26,7 +26,8 @@ placement to the bounded world using Faber state and the authoritative model.
 - Render integration from the existing Hello Voxel application package.
 - Triga vectors, rays, matrices, bounds, AABB overlap, translation, and
   ray-to-`Box3` entry checks in `triga/src/triga.fab`. Triga also provides a
-  yaw/pitch camera ray helper with the locked pitch clamp. Voxel DDA remains
+  yaw/pitch camera ray helper with the locked pitch clamp and `Box3`
+  construction helpers for the locked player extent. Voxel DDA remains
   application-owned.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.

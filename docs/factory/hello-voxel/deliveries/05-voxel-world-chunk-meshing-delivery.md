@@ -29,6 +29,8 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   `triga/src/geometry.fab`, including the validated position/color indexed
   triangle constructor, triangle-count helper, and group draw-command helper for
   chunk mesh payloads.
+- Reusable `Box3` construction, validation, size, center, and translation
+  helpers in `triga/src/triga.fab` for chunk mesh bounds.
 - No current voxel or chunk implementation exists in the examples repository.
 
 ## Stage Graph
