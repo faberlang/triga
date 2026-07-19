@@ -325,6 +325,10 @@ incipit {
         scene.scene_visible_mesh_draw_packet_count(
             attached_store, root_step.handle, view_projection
         )
+    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil default_draw_batch_facts ←
+        scene.scene_visible_mesh_draw_batch_facts(
+            attached_store, root_step.handle, view_projection
+        )
     adfirma default_visible_meshes non est nihil
         et default_visible_mesh_count non est nihil
         et default_visible_resources non est nihil
@@ -367,6 +371,10 @@ incipit {
             default_draw_packets![0].transform, 0
         ) vel 0.0) ≡ (2.0 ∷ f32),
         "visible mesh draw packets combine resources and transform payloads"
+    adfirma default_draw_batch_facts non est nihil
+        et default_draw_batch_facts!.packet_count ≡ 2
+        et default_draw_batch_facts!.transform_payload_byte_count ≡ 256,
+        "visible mesh draw batch facts tie packet count to transform upload bytes"
     fixum triga.Matrix4 invalid_view_projection ← triga.Matrix4 { elements = [1.0 ∷ f32] }
     adfirma scene.scene_visible_mesh_transform_payloads(
         attached_store, root_step.handle, invalid_view_projection
@@ -376,6 +384,10 @@ incipit {
         attached_store, root_step.handle, invalid_view_projection
     ) est nihil,
         "visible mesh draw packets reject invalid view-projection matrices"
+    adfirma scene.scene_visible_mesh_draw_batch_facts(
+        attached_store, root_step.handle, invalid_view_projection
+    ) est nihil,
+        "visible mesh draw batch facts reject invalid view-projection matrices"
     fixum scene.SceneStore ∪ nihil shared_hidden ← scene.scene_set_visible(
         attached_store, shared_mesh_step.handle, falsum
     )
@@ -416,6 +428,10 @@ incipit {
         scene.scene_visible_mesh_draw_packet_count(
             shared_hidden_store, root_step.handle, view_projection
         )
+    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil hidden_draw_batch_facts ←
+        scene.scene_visible_mesh_draw_batch_facts(
+            shared_hidden_store, root_step.handle, view_projection
+        )
     adfirma hidden_visible_meshes non est nihil
         et hidden_visible_mesh_count non est nihil
         et hidden_visible_resources non est nihil
@@ -436,6 +452,10 @@ incipit {
         et (hidden_draw_packet_count vel 999) ≡ 1
         et hidden_draw_packets![0].node.index ≡ mesh_step.handle.index,
         "visible mesh draw packets omit hidden mesh nodes"
+    adfirma hidden_draw_batch_facts non est nihil
+        et hidden_draw_batch_facts!.packet_count ≡ 1
+        et hidden_draw_batch_facts!.transform_payload_byte_count ≡ 128,
+        "visible mesh draw batch facts omit hidden mesh nodes"
     adfirma scene.scene_find_name(shared_hidden_store, root_step.handle, "shared-mesh") non est nihil,
         "name lookup still sees hidden nodes"
     fixum scene.SceneStore ∪ nihil root_hidden ← scene.scene_set_visible(
@@ -479,6 +499,10 @@ incipit {
         scene.scene_visible_mesh_draw_packet_count(
             root_hidden_store, root_step.handle, view_projection
         )
+    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil root_hidden_draw_batch_facts ←
+        scene.scene_visible_mesh_draw_batch_facts(
+            root_hidden_store, root_step.handle, view_projection
+        )
     adfirma root_hidden_meshes non est nihil
         et root_hidden_mesh_count non est nihil
         et root_hidden_resources non est nihil
@@ -493,6 +517,10 @@ incipit {
     adfirma root_hidden_draw_packets non est nihil
         et (root_hidden_draw_packet_count vel 999) ≡ 0,
         "hidden ancestors suppress visible mesh draw packets"
+    adfirma root_hidden_draw_batch_facts non est nihil
+        et root_hidden_draw_batch_facts!.packet_count ≡ 0
+        et root_hidden_draw_batch_facts!.transform_payload_byte_count ≡ 0,
+        "hidden ancestors suppress visible mesh draw batch facts"
     fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }

@@ -89,6 +89,9 @@ Triga already provides the source-owned geometry data needed by the first draw:
   geometry handle, material handle, and transform payload into one source-owned
   packet per effectively visible mesh. Goals 04 and 05 can pass draw assembly
   facts to the host without JavaScript reconstructing scene policy.
+- `scene_visible_mesh_draw_batch_facts` ties the visible draw packet count to
+  the total transform payload byte count. Goals 04 and 05 can prove draw count
+  and transform upload size with one source-owned scene fact.
 - `visible_face_vertex_count`, `visible_face_index_count`,
   `visible_face_triangle_count`, and visible-face payload byte helpers expose
   deterministic quad-face mesh accounting for chunk meshing. Goal 05 can use

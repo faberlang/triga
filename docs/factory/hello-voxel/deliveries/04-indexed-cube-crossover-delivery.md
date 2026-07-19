@@ -37,8 +37,9 @@ the first visible Faber-authored indexed 3D application.
   vertex, and instance count.
 - Triga scene: `triga/src/scene.fab` and scene-store exemplar. It includes
   visible mesh resource and transform-payload projection plus visible draw
-  packets, so the cube proof can hand one source-owned node/resource/transform
-  packet to the host without host-side scene reconstruction.
+  packets and draw batch facts, so the cube proof can hand one source-owned
+  node/resource/transform packet and its transform-upload byte count to the host
+  without host-side scene reconstruction.
 - Application root: `examples/hello-voxel/` created by HV-03.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: `radix/hosts/webgpu-browser/` after HV-02.

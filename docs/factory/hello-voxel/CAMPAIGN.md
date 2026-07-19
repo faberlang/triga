@@ -207,7 +207,8 @@ single-resource lifecycle states plus batch live/current-handle evidence for
 empty and non-empty chunk remeshes. Visible mesh transform-payload facts now
 lock one 128-byte model/view-projection upload per effectively visible mesh.
 Visible mesh draw packets now lock one source-owned node/resource/transform
-packet per effectively visible mesh.
+packet per effectively visible mesh plus batch facts that tie visible packet
+count to transform upload bytes.
 The first remaining executable Goal 00 gate is HV-00B: Radix-owned red
 fixtures for fragment admission and compute-only graphics-host rejection. That
 work remains pending because Radix has active foreign implementation work.

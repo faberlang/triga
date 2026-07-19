@@ -87,6 +87,11 @@ genus SceneMeshDrawPacket {
     triga.TransformPayload transform
 }
 
+genus SceneVisibleMeshDrawBatchFacts {
+    numerus packet_count
+    numerus transform_payload_byte_count
+}
+
 genus SceneMeshResourceTraversal {
     lista<SceneMeshResources> resources
     numerus remaining
@@ -1081,6 +1086,24 @@ functio scene_visible_mesh_draw_packet_count(
         count ← count + 1
     }
     redde count
+}
+
+functio scene_visible_mesh_draw_batch_facts(
+    de SceneStore store,
+    de SceneHandle root,
+    de triga.Matrix4 view_projection
+) → SceneVisibleMeshDrawBatchFacts ∪ nihil {
+    fixum numerus ∪ nihil packet_count_result ← scene_visible_mesh_draw_packet_count(
+        store, root, view_projection
+    )
+    si packet_count_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil transform_bytes_result ←
+        scene_visible_mesh_transform_payload_byte_count(store, root, view_projection)
+    si transform_bytes_result est nihil ergo redde nihil
+    redde SceneVisibleMeshDrawBatchFacts {
+        packet_count = packet_count_result vel 0,
+        transform_payload_byte_count = transform_bytes_result vel 0
+    }
 }
 
 functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {
