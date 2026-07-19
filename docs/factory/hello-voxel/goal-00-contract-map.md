@@ -153,7 +153,8 @@ and affine inverse helpers. It also provides min-max, min-size, and center-size
 axis-ordered collision fixtures, `Box3` union for aggregate chunk or selection
 bounds, `Box3` inflation for source-owned selection and collision tolerances,
 camera yaw/pitch ray construction, yaw-derived horizontal movement basis
-vectors, ray-to-`Box3` entry distance, and `RayBox3Hit`
+vectors, normalized planar movement deltas with speed and frame time,
+ray-to-`Box3` entry distance, and `RayBox3Hit`
 distance/point/normal facts for selection indicators. Voxel DDA remains
 application-owned.
 

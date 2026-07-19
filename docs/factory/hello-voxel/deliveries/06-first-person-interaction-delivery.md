@@ -27,7 +27,8 @@ placement to the bounded world using Faber state and the authoritative model.
 - Triga vectors, rays, matrices, bounds, AABB overlap, translation, and
   ray-to-`Box3` entry checks in `triga/src/triga.fab`. Triga also provides a
   yaw/pitch camera ray helper with the locked pitch clamp, yaw-derived
-  horizontal forward/right vectors for first-person movement, min-max/min-size
+  horizontal forward/right vectors, and normalized planar movement deltas with
+  speed and frame time for first-person movement. It also provides min-max/min-size
   and center-size `Box3` construction helpers for player and selection extents,
   `Box3` overlap extents plus axis-specific overlap accessors for axis-ordered
   collision fixtures, `Box3` containment and union for aggregate bounds, `Box3`

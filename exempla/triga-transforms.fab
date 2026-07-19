@@ -294,6 +294,29 @@ incipit {
     adfirma camera_ray.origin.y ≡ (3.0 ∷ f32)
         et (camera_ray.direction.z + 1.0).absolutum() ≤ 0.0001,
         "camera ray preserves origin and yaw-pitch direction"
+    fixum triga.Vector3 forward_motion ← triga.camera_motus_planus_ex_yaw(
+        0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32, 4.0 ∷ f32, 0.5 ∷ f32
+    )
+    adfirma forward_motion.x.absolutum() ≤ 0.0001
+        et forward_motion.y.absolutum() ≤ 0.0001
+        et (forward_motion.z + 2.0).absolutum() ≤ 0.0001,
+        "camera planar motion applies speed and frame time"
+    fixum triga.Vector3 diagonal_motion ← triga.camera_motus_planus_ex_yaw(
+        0.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32
+    )
+    adfirma (triga.vector3_longitudo(diagonal_motion) - 1.0).absolutum() ≤ 0.0001,
+        "camera planar motion normalizes diagonal input"
+    fixum triga.Vector3 yawed_motion ← triga.camera_motus_planus_ex_yaw(
+        90.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32, 3.0 ∷ f32, 1.0 ∷ f32
+    )
+    adfirma (yawed_motion.x - 3.0).absolutum() ≤ 0.0001
+        et yawed_motion.z.absolutum() ≤ 0.0001,
+        "camera planar motion follows yaw"
+    fixum triga.Vector3 stopped_motion ← triga.camera_motus_planus_ex_yaw(
+        0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32, 4.0 ∷ f32, 0.0 ∷ f32
+    )
+    adfirma triga.vector3_longitudo(stopped_motion) ≡ (0.0 ∷ f32),
+        "camera planar motion rejects zero frame time"
 
     fixum triga.Color midpoint_color ← triga.color_interpolata(
         triga.Color { r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 },

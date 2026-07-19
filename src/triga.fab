@@ -503,6 +503,24 @@ functio camera_right_ex_yaw(f32 yaw_degrees) → Vector3 {
     ))
 }
 
+functio camera_motus_planus_ex_yaw(
+    f32 yaw_degrees,
+    f32 forward_amount,
+    f32 right_amount,
+    f32 speed,
+    f32 delta_seconds
+) → Vector3 {
+    si speed ≤ 0.0 aut delta_seconds ≤ 0.0 ergo redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    fixum Vector3 forward ← camera_forward_planus_ex_yaw(yaw_degrees)
+    fixum Vector3 right ← camera_right_ex_yaw(yaw_degrees)
+    fixum Vector3 mixed ← vector3_addita(
+        vector3_multiplicata(forward, forward_amount),
+        vector3_multiplicata(right, right_amount)
+    )
+    fixum Vector3 direction ← vector3_normalizata(mixed)
+    redde vector3_multiplicata(direction, speed * delta_seconds)
+}
+
 functio camera_ray_ex_yaw_pitch(
     de Vector3 origin,
     f32 yaw_degrees,
