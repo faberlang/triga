@@ -174,7 +174,7 @@ reflection consumer admits compute kernels only.
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
-| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold plus generated lifecycle mount automation; frame, resize, keyboard, pointer, focus, and pointer-lock subscription contracts exist in `web:dom`; generated browser entries now expose controller mount/failure/dispose lifecycle records, and the `examples/browser-app` harness consumes that generated helper | Extend through Goal 03 for frame-owned application runtime |
+| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold plus generated lifecycle mount automation; frame, resize, keyboard, pointer, focus, and pointer-lock subscription contracts exist in `web:dom`; generated browser entries now expose controller mount/failure/dispose lifecycle records; `examples/browser-app` now proves source-authored frame delivery and generated disposal cancellation through that helper | Extend through Goal 03 for resize, keyboard, pointer, focus, pointer-lock, and typed failure delivery |
 | Voxel domain | Not implemented | Begin only after indexed-cube crossover |
 | Direct graphics proof | Not implemented | Goal 04 |
 | Runtime clean break | Not achieved | Goal 08 |
@@ -238,8 +238,14 @@ lifecycle helper. HV-03C now has a Hello Voxel scaffold automation slice:
 `examples/hello-voxel/tests/run.sh` builds the browser product, imports the
 generated ESM through a Node DOM harness, mounts the generated controller
 lifecycle, and verifies the Faber controller changes `.hv-status` to
-`package-ready`. Goal 03 still needs frame-owned application runtime coverage
-before it can satisfy its full gate.
+`package-ready`. HV-03D now has an executable frame slice: Faber product
+ambient declarations include the `web:dom` frame, resize, keyboard, pointer,
+focus, and pointer-lock contracts; `examples/browser-app` defines a
+`frame_controller` that returns its `dom.on_frame` subscription; the Node DOM
+harness proves generated ESM receives scheduled frame callbacks, updates
+visible state across frames, and cancels later callbacks through
+`mountControllers().dispose()`. Goal 03 still needs source-authored resize,
+keyboard, pointer, focus, pointer-lock, and typed browser failure coverage.
 
 ### Goal 01 - Source Graphics Pipeline
 
