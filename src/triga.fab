@@ -825,6 +825,16 @@ functio ray_box3_hit(
     }
 }
 
+functio ray_box3_hit_face_code(de RayBox3Hit hit) → numerus ∪ nihil {
+    si hit.normal.x ≡ (-1.0 ∷ f32) ergo redde 1
+    si hit.normal.x ≡ (1.0 ∷ f32) ergo redde 2
+    si hit.normal.y ≡ (-1.0 ∷ f32) ergo redde 3
+    si hit.normal.y ≡ (1.0 ∷ f32) ergo redde 4
+    si hit.normal.z ≡ (-1.0 ∷ f32) ergo redde 5
+    si hit.normal.z ≡ (1.0 ∷ f32) ergo redde 6
+    redde nihil
+}
+
 functio matrix4_identitas() → Matrix4 {
     redde Matrix4 { elements = [
         1.0, 0.0, 0.0, 0.0,

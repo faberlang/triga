@@ -155,7 +155,8 @@ bounds, `Box3` inflation for source-owned selection and collision tolerances,
 camera yaw/pitch ray construction, yaw-derived horizontal movement basis
 vectors, normalized planar movement deltas with speed and frame time,
 ray-to-`Box3` entry distance, and `RayBox3Hit`
-distance/point/normal facts for selection indicators. Voxel DDA remains
+distance/point/normal facts plus stable face-code projection for selection
+indicators and edit-adjacent-cell derivation. Voxel DDA remains
 application-owned.
 
 The first draw uses one transform storage buffer with 32 `f32` values. The

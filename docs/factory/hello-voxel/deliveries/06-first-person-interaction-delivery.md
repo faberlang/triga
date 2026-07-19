@@ -33,8 +33,9 @@ placement to the bounded world using Faber state and the authoritative model.
   `Box3` overlap extents plus axis-specific overlap accessors for axis-ordered
   collision fixtures, `Box3` containment and union for aggregate bounds, `Box3`
   inflation for selection and collision tolerances, and a `RayBox3Hit` result
-  with distance, point, and outward face normal for selection indicators. Voxel
-  DDA remains application-owned. Triga geometry also provides
+  with distance, point, outward face normal, and stable face-code projection for
+  selection indicators and edit-adjacent-cell derivation. Voxel DDA remains
+  application-owned. Triga geometry also provides
   `box_wire_geometry` for a minimal selection outline and `geometry_line_count`
   for deterministic line-list draw evidence without host-side shape
   construction.

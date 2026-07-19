@@ -236,6 +236,13 @@ incipit {
         et ray_box_hit!.normal.x ≡ (-1.0 ∷ f32)
         et (ray_box_hit!.point.x - 1.0).absolutum() ≤ 0.0001,
         "ray box hit records entry point and outward face normal"
+    fixum triga.RayBox3Hit ray_box_hit_value ← triga.RayBox3Hit {
+        distance = ray_box_hit!.distance,
+        point = ray_box_hit!.point,
+        normal = ray_box_hit!.normal
+    }
+    adfirma (triga.ray_box3_hit_face_code(ray_box_hit_value) vel 0) ≡ 1,
+        "ray box hit face code records negative x entry"
     fixum triga.Ray negative_ray ← triga.Ray {
         origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -245,6 +252,13 @@ incipit {
     )
     adfirma negative_hit non est nihil et negative_hit!.normal.x ≡ (1.0 ∷ f32),
         "ray box hit records positive face normals"
+    fixum triga.RayBox3Hit negative_hit_value ← triga.RayBox3Hit {
+        distance = negative_hit!.distance,
+        point = negative_hit!.point,
+        normal = negative_hit!.normal
+    }
+    adfirma (triga.ray_box3_hit_face_code(negative_hit_value) vel 0) ≡ 2,
+        "ray box hit face code records positive x entry"
     fixum triga.Ray inside_ray ← triga.Ray {
         origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -256,6 +270,13 @@ incipit {
         et inside_hit!.distance ≡ (0.0 ∷ f32)
         et inside_hit!.normal.x ≡ (0.0 ∷ f32),
         "inside ray box hit uses zero distance and no entry normal"
+    fixum triga.RayBox3Hit inside_hit_value ← triga.RayBox3Hit {
+        distance = inside_hit!.distance,
+        point = inside_hit!.point,
+        normal = inside_hit!.normal
+    }
+    adfirma triga.ray_box3_hit_face_code(inside_hit_value) est nihil,
+        "inside ray box hit has no entry face code"
     fixum _ ray_miss ← triga.ray_intersecat_box3(ray, shifted_bounds, 0.5 ∷ f32)
     adfirma ray_miss est nihil, "ray rejects hits beyond maximum distance"
     adfirma triga.ray_box3_hit(ray, shifted_bounds, 0.5 ∷ f32) est nihil,
