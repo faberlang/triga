@@ -596,14 +596,7 @@ functio geometry_group_draw_commands(
             instance_count = command!.instance_count,
             material_index = command!.material_index
         }
-        commands.appende(GeometryDrawCommand {
-            indexed = value.indexed,
-            element_count = value.element_count,
-            first_element = value.first_element,
-            base_vertex = value.base_vertex,
-            instance_count = value.instance_count,
-            material_index = value.material_index
-        })
+        commands.appende(value)
         i ← i + 1
     }
     redde commands
