@@ -171,6 +171,22 @@ functio resource_transition_changed_indices(
     redde indices
 }
 
+functio resource_transition_unchanged_indices(
+    de lista<ResourceTransition> transitions
+) → lista<numerus> ∪ nihil {
+    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<numerus> indices ← vacua
+    varia numerus i ← 0
+    dum i < transitions.longitudo() {
+        fixum ResourceTransition transition ← transitions[i]
+        si transition.changed ≡ falsum {
+            indices.appende(transition.current.index)
+        }
+        i ← i + 1
+    }
+    redde indices
+}
+
 functio scene_store() → SceneStore {
     redde SceneStore { slots = vacua }
 }

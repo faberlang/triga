@@ -29,9 +29,10 @@ GPU buffer replacement, queue-safe retirement, and bounded lifecycle evidence.
   `resource_handle_next` for logical resource identity and generation advance.
   It also provides pure `ResourceTransition` helpers for unchanged and replaced
   logical resources, plus batch validation for unique logical resource
-  transitions. Validated changed/unchanged transition counters and changed
-  logical-index extraction support exact affected-chunk assertions without GPU
-  lifetime policy. GPU lifetime and queue completion remain host-owned.
+  transitions. Validated changed/unchanged transition counters and changed plus
+  unchanged logical-index extraction support exact affected-chunk and stable
+  unaffected-chunk assertions without GPU lifetime policy. GPU lifetime and
+  queue completion remain host-owned.
 - Host buffer creation/submission: Radix browser WebGPU runtime after HV-02.
 - Existing compute runtime already owns buffer usage and queue submission; its
   semantics are evidence, not permission to duplicate graphics lifecycle code.
