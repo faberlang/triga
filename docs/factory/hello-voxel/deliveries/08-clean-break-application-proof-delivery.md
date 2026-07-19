@@ -31,6 +31,8 @@ runtime paths, update only earned evidence, and run an independent closeout audi
   `triga/scripta/check-capabilities`.
 - Campaign state under `triga/docs/factory/hello-voxel/` and the older Three.js
   80 breadth reference.
+- Triga runtime dependency inventory:
+  [`../runtime-dependency-inventory.md`](../runtime-dependency-inventory.md).
 
 ## Stage Graph
 
@@ -90,6 +92,8 @@ clean break; they must not be written speculatively in parallel.
 - Repeated edit/resource lifecycle proof after queue completion.
 - Bounded `rg` runtime scan across `triga`, `radix`, `faber`, and `examples` for
   imports/CDN scripts/runtime references to third-party renderers.
+- Triga-owned scan expectations and historical-reference boundaries from
+  [`../runtime-dependency-inventory.md`](../runtime-dependency-inventory.md).
 - Independent `poker-face` and correctness review against Goal 08.
 
 ## Companion Skill Plan
