@@ -197,8 +197,8 @@ alpha facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
 Transform facts now lock the 32-float, 128-byte model then view-projection
 payload order.
-Ray/AABB hit facts now lock face codes and integer face offsets for edit
-placement derivation.
+Face-code facts now lock ray/AABB hit codes, integer face offsets, and
+direction colors for meshing and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states for empty and non-empty chunk remeshes.
 Radix red fixtures remain pending because Radix has active foreign

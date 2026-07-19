@@ -37,7 +37,9 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   geometry scans.
 - Reusable `Box3` min-max/min-size/center-size construction, validation, size,
   center, containment, union, and translation helpers in `triga/src/triga.fab`
-  for chunk mesh bounds.
+  for chunk mesh bounds. Generic face-code validation, offset projection, and
+  direction colors in `triga/src/triga.fab` let chunk meshing encode six
+  visible face directions without host-side color policy.
 - Reusable scene visibility state, effective visible traversal, visible
   mesh-handle traversal, visible mesh resource projection, visible resource-pair
   counts, and geometry/material handle projection in `triga/src/scene.fab`,

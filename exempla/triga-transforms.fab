@@ -280,6 +280,10 @@ incipit {
         et (triga.ray_box3_hit_face_offset_y(ray_box_hit_value) vel 99) ≡ 0
         et (triga.ray_box3_hit_face_offset_z(ray_box_hit_value) vel 99) ≡ 0,
         "ray box hit face offset records negative x placement direction"
+    fixum numerus ray_face_code ← triga.ray_box3_hit_face_code(ray_box_hit_value) vel 0
+    fixum numerus generic_ray_x_offset ← triga.face_code_x_offset(ray_face_code) vel 0
+    adfirma generic_ray_x_offset ≡ (triga.ray_box3_hit_face_offset_x(ray_box_hit_value) vel 0),
+        "ray box face code agrees with generic face-code offset"
     fixum triga.Ray negative_ray ← triga.Ray {
         origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -300,6 +304,11 @@ incipit {
         et (triga.ray_box3_hit_face_offset_y(negative_hit_value) vel 99) ≡ 0
         et (triga.ray_box3_hit_face_offset_z(negative_hit_value) vel 99) ≡ 0,
         "ray box hit face offset records positive x placement direction"
+    fixum numerus ∪ nihil generic_positive_x_offset ← triga.face_code_x_offset(2)
+    adfirma (generic_positive_x_offset vel 0) ≡ 1,
+        "generic face-code offset records positive x placement direction"
+    adfirma triga.face_code_x_offset(0) est nihil,
+        "generic face-code offset rejects invalid face codes"
     fixum triga.Ray y_ray ← triga.Ray {
         origin = triga.vector3(2.0 ∷ f32, -3.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
@@ -332,6 +341,9 @@ incipit {
     adfirma (triga.ray_box3_hit_face_code(z_hit_value) vel 0) ≡ 6
         et (triga.ray_box3_hit_face_offset_z(z_hit_value) vel 0) ≡ 1,
         "ray box hit face offset records positive z placement direction"
+    fixum numerus ∪ nihil generic_positive_z_offset ← triga.face_code_z_offset(6)
+    adfirma (generic_positive_z_offset vel 0) ≡ 1,
+        "generic face-code offset records positive z placement direction"
     fixum triga.RayBox3Hit y_positive_face ← triga.RayBox3Hit {
         distance = 1.0 ∷ f32,
         point = zero,
@@ -340,6 +352,9 @@ incipit {
     adfirma (triga.ray_box3_hit_face_code(y_positive_face) vel 0) ≡ 4
         et (triga.ray_box3_hit_face_offset_y(y_positive_face) vel 0) ≡ 1,
         "ray box hit face offset records positive y placement direction"
+    fixum numerus ∪ nihil generic_positive_y_offset ← triga.face_code_y_offset(4)
+    adfirma (generic_positive_y_offset vel 0) ≡ 1,
+        "generic face-code offset records positive y placement direction"
     fixum triga.RayBox3Hit z_negative_face ← triga.RayBox3Hit {
         distance = 1.0 ∷ f32,
         point = zero,

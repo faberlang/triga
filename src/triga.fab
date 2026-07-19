@@ -264,6 +264,41 @@ functio color_valid(de Color value) → bivalens {
     redde verum
 }
 
+functio face_code_valid(numerus code) → bivalens {
+    redde code ≥ 1 et code ≤ 6
+}
+
+functio face_code_x_offset(numerus code) → numerus ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    si code ≡ 1 ergo redde -1
+    si code ≡ 2 ergo redde 1
+    redde 0
+}
+
+functio face_code_y_offset(numerus code) → numerus ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    si code ≡ 3 ergo redde -1
+    si code ≡ 4 ergo redde 1
+    redde 0
+}
+
+functio face_code_z_offset(numerus code) → numerus ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    si code ≡ 5 ergo redde -1
+    si code ≡ 6 ergo redde 1
+    redde 0
+}
+
+functio face_code_color(numerus code) → Color ∪ nihil {
+    si code ≡ 1 ergo redde Color { r = 0.8 ∷ f32, g = 0.1 ∷ f32, b = 0.1 ∷ f32 }
+    si code ≡ 2 ergo redde Color { r = 1.0 ∷ f32, g = 0.4 ∷ f32, b = 0.4 ∷ f32 }
+    si code ≡ 3 ergo redde Color { r = 0.1 ∷ f32, g = 0.7 ∷ f32, b = 0.1 ∷ f32 }
+    si code ≡ 4 ergo redde Color { r = 0.4 ∷ f32, g = 1.0 ∷ f32, b = 0.4 ∷ f32 }
+    si code ≡ 5 ergo redde Color { r = 0.1 ∷ f32, g = 0.1 ∷ f32, b = 0.8 ∷ f32 }
+    si code ≡ 6 ergo redde Color { r = 0.4 ∷ f32, g = 0.4 ∷ f32, b = 1.0 ∷ f32 }
+    redde nihil
+}
+
 functio material_double_sided(de Material value) → Material {
     redde Material {
         name = value.name,
