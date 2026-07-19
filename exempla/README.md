@@ -15,6 +15,9 @@ exempla/
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
   triga-stage4-source-facts.fab # Stage 4 vertex-layout handoff facts
   triga-transforms.fab          # Vector, quaternion, and matrix operations
+  triga-types-untested.fab      # Instantiation of previously untested genus types
+  triga-math-edge-cases.fab     # NaN/Infinity, degenerate-input, boundary tests
+  triga-scene-store-empty.fab   # Empty SceneStore edge case tests
   threejs-host-demo/            # Browser fixture: Triga scene data rendered by three.js
 ```
 
