@@ -151,6 +151,8 @@ incipit {
         "lifecycle batch validates unique logical resources"
     adfirma (scene.resource_lifecycle_changed_count(lifecycle_batch) vel 0) ≡ 3,
         "lifecycle batch counts changed resources"
+    adfirma (scene.resource_lifecycle_unchanged_count(lifecycle_batch) vel 0) ≡ 1,
+        "lifecycle batch counts unchanged resources"
     adfirma (scene.resource_lifecycle_created_count(lifecycle_batch) vel 0) ≡ 1,
         "lifecycle batch counts created resources"
     adfirma (scene.resource_lifecycle_removed_count(lifecycle_batch) vel 0) ≡ 1,
@@ -163,6 +165,7 @@ incipit {
         "lifecycle batch exposes one source-owned fact record"
     adfirma lifecycle_facts_result!.transition_count ≡ 4
         et lifecycle_facts_result!.changed_count ≡ 3
+        et lifecycle_facts_result!.unchanged_count ≡ 1
         et lifecycle_facts_result!.created_count ≡ 1
         et lifecycle_facts_result!.removed_count ≡ 1
         et lifecycle_facts_result!.live_count ≡ 3,
@@ -174,6 +177,11 @@ incipit {
         et lifecycle_changed_indices![1] ≡ new_geometry.index
         et lifecycle_changed_indices![2] ≡ removed_geometry.index,
         "lifecycle batch exposes changed logical indices"
+    fixum lista<numerus> ∪ nihil lifecycle_unchanged_indices ←
+        scene.resource_lifecycle_unchanged_indices(lifecycle_batch)
+    adfirma lifecycle_unchanged_indices non est nihil
+        et lifecycle_unchanged_indices![0] ≡ geometry.index,
+        "lifecycle batch exposes unchanged logical indices"
     fixum lista<numerus> ∪ nihil lifecycle_removed_indices ←
         scene.resource_lifecycle_removed_indices(lifecycle_batch)
     adfirma lifecycle_removed_indices non est nihil
@@ -196,6 +204,13 @@ incipit {
     adfirma lifecycle_changed_handles![1].index ≡ new_geometry.index
         et lifecycle_changed_handles![1].generation ≡ new_geometry.generation,
         "lifecycle batch exposes created changed handle"
+    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_unchanged_handles ←
+        scene.resource_lifecycle_unchanged_handles(lifecycle_batch)
+    adfirma lifecycle_unchanged_handles non est nihil,
+        "lifecycle batch exposes unchanged handles"
+    adfirma lifecycle_unchanged_handles![0].index ≡ geometry.index
+        et lifecycle_unchanged_handles![0].generation ≡ geometry.generation,
+        "lifecycle batch preserves unchanged handle generation"
     fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_removed_handles ←
         scene.resource_lifecycle_removed_handles(lifecycle_batch)
     adfirma lifecycle_removed_handles non est nihil,
@@ -224,12 +239,16 @@ incipit {
         "lifecycle batch rejects duplicate logical resources"
     adfirma scene.resource_lifecycle_changed_indices(duplicate_lifecycle_batch) est nihil,
         "lifecycle changed indices reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_unchanged_indices(duplicate_lifecycle_batch) est nihil,
+        "lifecycle unchanged indices reject duplicate logical resources"
     adfirma scene.resource_lifecycle_removed_indices(duplicate_lifecycle_batch) est nihil,
         "lifecycle removed indices reject duplicate logical resources"
     adfirma scene.resource_lifecycle_live_indices(duplicate_lifecycle_batch) est nihil,
         "lifecycle live indices reject duplicate logical resources"
     adfirma scene.resource_lifecycle_changed_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle changed handles reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_unchanged_handles(duplicate_lifecycle_batch) est nihil,
+        "lifecycle unchanged handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_removed_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle removed handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_current_handles(duplicate_lifecycle_batch) est nihil,

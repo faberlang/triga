@@ -213,17 +213,19 @@ created, and removed single-resource states. Goal 07 can use removed lifecycle
 states to represent empty chunk remeshes with no current GPU resource while
 keeping actual retirement and queue completion host-owned.
 `resource_lifecycles_valid`, `resource_lifecycle_changed_count`,
-`resource_lifecycle_created_count`, `resource_lifecycle_removed_count`,
-`resource_lifecycle_live_count`, `resource_lifecycle_changed_indices`,
+`resource_lifecycle_unchanged_count`, `resource_lifecycle_created_count`,
+`resource_lifecycle_removed_count`, `resource_lifecycle_live_count`,
+`resource_lifecycle_changed_indices`, `resource_lifecycle_unchanged_indices`,
 `resource_lifecycle_removed_indices`, `resource_lifecycle_live_indices`,
-`resource_lifecycle_changed_handles`, `resource_lifecycle_removed_handles`, and
-`resource_lifecycle_current_handles` expose validated batch lifecycle facts for
-exact per-chunk generation, affected-set, removed-chunk, previous removed
+`resource_lifecycle_changed_handles`, `resource_lifecycle_unchanged_handles`,
+`resource_lifecycle_removed_handles`, and `resource_lifecycle_current_handles`
+expose validated batch lifecycle facts for exact per-chunk generation,
+affected-set, stable unaffected chunk, removed-chunk, previous removed
 resource, changed current resource, and live-resource evidence before
 host-owned retirement and destruction.
-`resource_lifecycle_batch_facts` packages transition, changed, created,
-removed, and live counters into one validated source-owned record for Goal 07
-host-facing lifecycle evidence.
+`resource_lifecycle_batch_facts` packages transition, changed, unchanged,
+created, removed, and live counters into one validated source-owned record for
+Goal 07 host-facing lifecycle evidence.
 `scene_set_visible`,
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
 `scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,

@@ -113,6 +113,9 @@ facts, colored mesh bounds, line draw-batch facts, and direct wire-box
 draw-batch facts for selection outlines. The
 `triga/scripta/check-hello-voxel-contract` gate packages the Triga-owned
 executable evidence and compile viability without claiming browser rendering.
+Scene lifecycle facts now also expose unchanged resource counters, unchanged
+logical indices, and unchanged handles so HV-07 can prove stable unaffected
+chunk identities directly.
 The `examples/hello-voxel` scaffold now builds as a browser package and proves
 package/controller admission plus generated controller mount automation. The
 Faber browser-product path now proves generated mount/failure/dispose

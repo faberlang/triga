@@ -213,10 +213,11 @@ vectors, integer face offsets, direction colors, axis/opposite-face metadata,
 and outward-wound unit face quads for meshing, selection, and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch changed, created, removed, live,
-and current handle evidence for empty and non-empty chunk remeshes. A lifecycle
-batch fact record now packages transition, changed, created, removed, and live
-counts for host-facing resource proof. Visible mesh transform-payload facts now
-lock one 128-byte model/view-projection upload per effectively visible mesh.
+unchanged, and current handle evidence for empty and non-empty chunk remeshes.
+A lifecycle batch fact record now packages transition, changed, unchanged,
+created, removed, and live counts for host-facing resource proof. Visible mesh
+transform-payload facts now lock one 128-byte model/view-projection upload per
+effectively visible mesh.
 Visible mesh resource facts now package mesh, resource-pair, geometry-handle,
 and material-handle counts without host-side scene reconstruction.
 Visible mesh draw packets now lock one source-owned node/resource/transform

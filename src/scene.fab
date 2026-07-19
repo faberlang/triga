@@ -29,6 +29,7 @@ genus ResourceLifecycleTransition {
 genus ResourceLifecycleBatchFacts {
     numerus transition_count
     numerus changed_count
+    numerus unchanged_count
     numerus created_count
     numerus removed_count
     numerus live_count
@@ -408,6 +409,17 @@ functio resource_lifecycle_changed_count(
     redde count
 }
 
+functio resource_lifecycle_unchanged_count(
+    de lista<ResourceLifecycleTransition> transitions
+) → numerus ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia numerus count ← 0
+    itera ex transitions fixum transition {
+        si transition.changed ≡ falsum { count ← count + 1 }
+    }
+    redde count
+}
+
 functio resource_lifecycle_created_count(
     de lista<ResourceLifecycleTransition> transitions
 ) → numerus ∪ nihil {
@@ -448,11 +460,13 @@ functio resource_lifecycle_batch_facts(
 ) → ResourceLifecycleBatchFacts ∪ nihil {
     si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
     varia numerus changed_count ← 0
+    varia numerus unchanged_count ← 0
     varia numerus created_count ← 0
     varia numerus removed_count ← 0
     varia numerus live_count ← 0
     itera ex transitions fixum transition {
         si transition.changed { changed_count ← changed_count + 1 }
+        si transition.changed ≡ falsum { unchanged_count ← unchanged_count + 1 }
         si transition.previous est nihil et transition.current non est nihil {
             created_count ← created_count + 1
         }
@@ -462,6 +476,7 @@ functio resource_lifecycle_batch_facts(
     redde ResourceLifecycleBatchFacts {
         transition_count = transitions.longitudo(),
         changed_count = changed_count,
+        unchanged_count = unchanged_count,
         created_count = created_count,
         removed_count = removed_count,
         live_count = live_count
@@ -475,6 +490,19 @@ functio resource_lifecycle_changed_indices(
     varia lista<numerus> indices ← vacua
     itera ex transitions fixum transition {
         si transition.changed {
+            indices.appende(transition.logical_index)
+        }
+    }
+    redde indices
+}
+
+functio resource_lifecycle_unchanged_indices(
+    de lista<ResourceLifecycleTransition> transitions
+) → lista<numerus> ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<numerus> indices ← vacua
+    itera ex transitions fixum transition {
+        si transition.changed ≡ falsum {
             indices.appende(transition.logical_index)
         }
     }
@@ -514,6 +542,22 @@ functio resource_lifecycle_changed_handles(
     varia lista<ResourceHandle> handles ← vacua
     itera ex transitions fixum transition {
         si transition.changed et transition.current non est nihil {
+            handles.appende(ResourceHandle {
+                index = transition.current!.index,
+                generation = transition.current!.generation
+            })
+        }
+    }
+    redde handles
+}
+
+functio resource_lifecycle_unchanged_handles(
+    de lista<ResourceLifecycleTransition> transitions
+) → lista<ResourceHandle> ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<ResourceHandle> handles ← vacua
+    itera ex transitions fixum transition {
+        si transition.changed ≡ falsum et transition.current non est nihil {
             handles.appende(ResourceHandle {
                 index = transition.current!.index,
                 generation = transition.current!.generation
