@@ -89,6 +89,18 @@ incipit {
         max = triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
     }
     adfirma triga.box3_continet(bounds, zero), "box contains origin"
+    fixum triga.Box3 shifted_bounds ← triga.box3_translata(
+        bounds, triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    )
+    adfirma shifted_bounds.min.x ≡ (1.0 ∷ f32) et shifted_bounds.max.x ≡ (3.0 ∷ f32),
+        "box translation preserves extent"
+    adfirma triga.box3_intersecat(bounds, shifted_bounds),
+        "touching boxes intersect"
+    fixum triga.Box3 distant_bounds ← triga.box3_translata(
+        bounds, triga.vector3(3.1 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    )
+    adfirma triga.box3_intersecat(bounds, distant_bounds) ≡ falsum,
+        "separated boxes do not intersect"
     fixum triga.Sphere sphere ← triga.Sphere {
         center = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         radius = 2.0 ∷ f32
@@ -107,6 +119,16 @@ incipit {
     }
     fixum triga.Vector3 ray_point ← triga.ray_punctum(ray, 3.0 ∷ f32)
     adfirma ray_point.x ≡ (3.0 ∷ f32), "ray point at distance"
+    fixum _ ray_hit ← triga.ray_intersecat_box3(ray, shifted_bounds, 6.0 ∷ f32)
+    adfirma ray_hit non est nihil, "ray reports a box entry within maximum distance"
+    fixum _ ray_miss ← triga.ray_intersecat_box3(ray, shifted_bounds, 0.5 ∷ f32)
+    adfirma ray_miss est nihil, "ray rejects hits beyond maximum distance"
+    fixum triga.Ray parallel_miss ← triga.Ray {
+        origin = triga.vector3(0.0 ∷ f32, 2.0 ∷ f32, 0.0 ∷ f32),
+        direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    }
+    adfirma triga.ray_intersecat_box3(parallel_miss, shifted_bounds, 6.0 ∷ f32) est nihil,
+        "parallel ray outside slab misses"
 
     fixum triga.Color midpoint_color ← triga.color_interpolata(
         triga.Color { r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 },

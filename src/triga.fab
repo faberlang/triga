@@ -86,6 +86,11 @@ genus Ray {
     Vector3 direction
 }
 
+genus RayInterval {
+    f32 minimum
+    f32 maximum
+}
+
 # =========================================================================
 # SCENE GRAPH
 #
@@ -441,6 +446,20 @@ functio box3_continet(de Box3 bounds, de Vector3 point) → bivalens {
         point.z ≥ bounds.min.z et point.z ≤ bounds.max.z
 }
 
+functio box3_intersecat(de Box3 a, de Box3 b) → bivalens {
+    si a.max.x < b.min.x aut a.min.x > b.max.x ergo redde falsum
+    si a.max.y < b.min.y aut a.min.y > b.max.y ergo redde falsum
+    si a.max.z < b.min.z aut a.min.z > b.max.z ergo redde falsum
+    redde verum
+}
+
+functio box3_translata(de Box3 bounds, de Vector3 offset) → Box3 {
+    redde Box3 {
+        min = vector3_addita(bounds.min, offset),
+        max = vector3_addita(bounds.max, offset)
+    }
+}
+
 functio sphere_continet(de Sphere sphere, de Vector3 point) → bivalens {
     redde vector3_distantia(sphere.center, point) ≤ sphere.radius
 }
@@ -451,6 +470,63 @@ functio plane_distantia(de Plane plane, de Vector3 point) → f32 {
 
 functio ray_punctum(de Ray ray, f32 distance) → Vector3 {
     redde vector3_addita(ray.origin, vector3_multiplicata(ray.direction, distance))
+}
+
+@ privata
+functio _ray_axis_interval(
+    f32 origin,
+    f32 direction,
+    f32 minimum,
+    f32 maximum
+) → RayInterval ∪ nihil {
+    si direction.absolutum() ≤ 0.000001 {
+        si origin < minimum aut origin > maximum ergo redde nihil
+        redde RayInterval {
+            minimum = -1000000000.0 ∷ f32,
+            maximum = 1000000000.0 ∷ f32
+        }
+    }
+    varia f32 first ← (minimum - origin) / direction
+    varia f32 second ← (maximum - origin) / direction
+    si first > second {
+        fixum f32 swap ← first
+        first ← second
+        second ← swap
+    }
+    redde RayInterval { minimum = first, maximum = second }
+}
+
+functio ray_intersecat_box3(
+    de Ray ray,
+    de Box3 bounds,
+    f32 max_distance
+) → f32 ∪ nihil {
+    si max_distance < 0.0 ergo redde nihil
+    fixum RayInterval ∪ nihil x_interval ← _ray_axis_interval(
+        ray.origin.x, ray.direction.x, bounds.min.x, bounds.max.x
+    )
+    si x_interval est nihil ergo redde nihil
+    fixum RayInterval ∪ nihil y_interval ← _ray_axis_interval(
+        ray.origin.y, ray.direction.y, bounds.min.y, bounds.max.y
+    )
+    si y_interval est nihil ergo redde nihil
+    fixum RayInterval ∪ nihil z_interval ← _ray_axis_interval(
+        ray.origin.z, ray.direction.z, bounds.min.z, bounds.max.z
+    )
+    si z_interval est nihil ergo redde nihil
+
+    varia f32 entry ← x_interval!.minimum
+    si y_interval!.minimum > entry { entry ← y_interval!.minimum }
+    si z_interval!.minimum > entry { entry ← z_interval!.minimum }
+    si entry < 0.0 { entry ← 0.0 }
+
+    varia f32 exit ← x_interval!.maximum
+    si y_interval!.maximum < exit { exit ← y_interval!.maximum }
+    si z_interval!.maximum < exit { exit ← z_interval!.maximum }
+    si max_distance < exit { exit ← max_distance }
+
+    si entry > exit ergo redde nihil
+    redde entry
 }
 
 functio matrix4_identitas() → Matrix4 {

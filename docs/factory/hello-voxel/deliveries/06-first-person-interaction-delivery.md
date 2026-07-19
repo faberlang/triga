@@ -24,8 +24,9 @@ placement to the bounded world using Faber state and the authoritative model.
 - Typed browser events and frame lifecycle from HV-03.
 - Authoritative world model from `examples/hello-voxel/src/voxel.fab`.
 - Render integration from the existing Hello Voxel application package.
-- Triga vectors, rays, matrices, and bounds in `triga/src/triga.fab`; current ray
-  support provides point-at-distance but not voxel DDA.
+- Triga vectors, rays, matrices, bounds, AABB overlap, translation, and
+  ray-to-`Box3` entry checks in `triga/src/triga.fab`; voxel DDA remains
+  application-owned.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.
 
