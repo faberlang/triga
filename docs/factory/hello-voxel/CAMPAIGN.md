@@ -211,7 +211,8 @@ view-projection facts, plus the 32-float, 128-byte model then view-projection
 payload order.
 Face-code facts now lock ray/AABB hit codes, packaged face metadata, normal
 vectors, integer face offsets, direction colors, axis/opposite-face metadata,
-and outward-wound unit face quads for meshing, selection, and edit placement.
+ray-hit face fact packaging, and outward-wound unit face quads for meshing,
+selection, and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch changed, created, removed, live,
 unchanged, and current handle evidence for empty and non-empty chunk remeshes.

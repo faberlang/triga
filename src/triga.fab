@@ -1184,6 +1184,12 @@ functio ray_box3_hit_face_offset_z(de RayBox3Hit hit) → numerus ∪ nihil {
     redde 0
 }
 
+functio ray_box3_hit_face_facts(de RayBox3Hit hit) → FaceCodeFacts ∪ nihil {
+    fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
+    si code_result est nihil ergo redde nihil
+    redde face_code_facts(code_result vel 0)
+}
+
 functio matrix4_identitas() → Matrix4 {
     redde Matrix4 { elements = [
         1.0, 0.0, 0.0, 0.0,

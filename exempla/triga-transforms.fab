@@ -325,6 +325,14 @@ incipit {
         et ray_face_facts!.normal.z ≡ (0.0 ∷ f32)
         et ray_face_facts!.color.r > 0.7,
         "face code facts preserve normal and color"
+    fixum triga.FaceCodeFacts ∪ nihil ray_hit_face_facts ←
+        triga.ray_box3_hit_face_facts(ray_box_hit_value)
+    adfirma ray_hit_face_facts non est nihil,
+        "ray box hit face facts package selection face metadata"
+    adfirma ray_hit_face_facts!.code ≡ ray_face_facts!.code
+        et ray_hit_face_facts!.x_offset ≡ ray_face_facts!.x_offset
+        et ray_hit_face_facts!.normal.x ≡ ray_box_hit_value.normal.x,
+        "ray box hit face facts agree with ray hit normal and offsets"
     fixum triga.Ray negative_ray ← triga.Ray {
         origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -567,6 +575,8 @@ incipit {
         et triga.ray_box3_hit_face_offset_y(inside_hit_value) est nihil
         et triga.ray_box3_hit_face_offset_z(inside_hit_value) est nihil,
         "inside ray box hit has no edit placement offset"
+    adfirma triga.ray_box3_hit_face_facts(inside_hit_value) est nihil,
+        "inside ray box hit does not invent face facts"
     fixum _ ray_miss ← triga.ray_intersecat_box3(ray, shifted_bounds, 0.5 ∷ f32)
     adfirma ray_miss est nihil, "ray rejects hits beyond maximum distance"
     adfirma triga.ray_box3_hit(ray, shifted_bounds, 0.5 ∷ f32) est nihil,

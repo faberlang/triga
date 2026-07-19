@@ -265,7 +265,10 @@ normalized planar movement deltas with speed and frame time,
 `camera_yaw_pitch_facts` packaging input yaw, input pitch, clamped pitch,
 view direction, planar basis, and ray for one first-person camera state,
 ray-to-`Box3` entry distance, and `RayBox3Hit`
-distance/point/normal facts plus stable face-code projection. Generic
+distance/point/normal facts plus stable face-code projection.
+`ray_box3_hit_face_facts` packages a ray hit's face code, normal, offsets,
+axis, opposite face, and color for source-owned selection and placement
+fixtures. Generic
 face-code validation, axis classification, normal-vector projection,
 opposite-face projection, face offsets, and face colors define reusable
 axis-direction facts for meshing, selection indicators, neighbor updates, and

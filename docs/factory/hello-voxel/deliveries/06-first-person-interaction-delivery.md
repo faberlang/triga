@@ -39,8 +39,10 @@ placement to the bounded world using Faber state and the authoritative model.
   union for aggregate bounds, `Box3` inflation for selection and collision
   tolerances, and a `RayBox3Hit` result with distance, point, outward face
   normal, stable face-code projection, and integer face-offset projection for
-  selection indicators and
-  edit-adjacent-cell derivation. Generic face-code axis, normal, opposite-face,
+  selection indicators and edit-adjacent-cell derivation. The
+  `ray_box3_hit_face_facts` helper packages the hit face code, normal, offsets,
+  axis, opposite face, and color in one record for selection and placement
+  fixtures. Generic face-code axis, normal, opposite-face,
   offset, and packaged `face_code_facts` helpers expose the same adjacent-cell,
   selection-normal, color, and paired-face direction facts without requiring a
   ray-hit value. Voxel DDA remains application-owned. Triga geometry also provides
