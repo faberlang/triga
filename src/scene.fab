@@ -296,6 +296,20 @@ functio scene_mesh_material(de SceneNode node) → ResourceHandle ∪ nihil {
     }
 }
 
+functio scene_mesh_world_matrix(
+    de SceneStore store,
+    de SceneHandle handle
+) → triga.Matrix4 ∪ nihil {
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    discerne node_result!.kind {
+        casu SceneMesh fixum geometry, material { redde node_result!.world_matrix }
+        casu SceneGroup { redde nihil }
+        casu SceneCamera { redde nihil }
+        casu SceneLight { redde nihil }
+    }
+}
+
 functio scene_insert(SceneStore store, SceneNode node) → SceneInsert {
     varia lista<SceneSlot> slots ← vacua
     varia numerus i ← 0

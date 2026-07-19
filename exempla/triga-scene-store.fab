@@ -175,12 +175,20 @@ incipit {
     fixum scene.ResourceHandle ∪ nihil shared_geometry ← scene.scene_mesh_geometry(shared_mesh)
     fixum scene.ResourceHandle ∪ nihil mesh_material ← scene.scene_mesh_material(mesh)
     fixum scene.ResourceHandle ∪ nihil shared_material ← scene.scene_mesh_material(shared_mesh)
+    fixum triga.Matrix4 ∪ nihil mesh_initial_world ← scene.scene_mesh_world_matrix(
+        attached_store, mesh_step.handle
+    )
     adfirma mesh_geometry!.index ≡ shared_geometry!.index et
         mesh_geometry!.generation ≡ shared_geometry!.generation,
         "meshes preserve shared geometry identity"
     adfirma mesh_material!.index ≡ shared_material!.index et
         mesh_material!.generation ≡ shared_material!.generation,
         "meshes preserve shared material identity"
+    adfirma mesh_initial_world non est nihil
+        et mesh_initial_world!.elements[0] ≡ (1.0 ∷ f32),
+        "mesh world matrix accessor accepts mesh handles"
+    adfirma scene.scene_mesh_world_matrix(attached_store, root_step.handle) est nihil,
+        "mesh world matrix accessor rejects non-mesh handles"
     adfirma scene.scene_get(attached_store, camera_step.handle)!.name ≡ "camera",
         "camera shares the heterogeneous scene store"
     adfirma scene.scene_get(attached_store, light_step.handle)!.name ≡ "light",
@@ -305,6 +313,12 @@ incipit {
     )
     adfirma world_origin.x ≡ (7.0 ∷ f32), "parent-first world transform composes"
     adfirma world_mesh!.world_dirty ≡ falsum, "world update clears dirty state"
+    fixum triga.Matrix4 ∪ nihil mesh_world_matrix ← scene.scene_mesh_world_matrix(
+        world_store, mesh_step.handle
+    )
+    adfirma mesh_world_matrix non est nihil
+        et mesh_world_matrix!.elements[12] ≡ (7.0 ∷ f32),
+        "mesh world matrix accessor returns propagated transform"
     fixum scene.SceneStore non_root_world_store ← scene.SceneStore { slots = world_store.slots }
     adfirma scene.scene_update_world(non_root_world_store, mesh_step.handle) est nihil,
         "non-root world update rejects"
