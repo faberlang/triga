@@ -259,7 +259,9 @@ distance/point/normal facts plus stable face-code projection. Generic
 face-code validation, axis classification, normal-vector projection,
 opposite-face projection, face offsets, and face colors define reusable
 axis-direction facts for meshing, selection indicators, neighbor updates, and
-edit-adjacent-cell derivation. Voxel DDA remains application-owned.
+edit-adjacent-cell derivation. `face_code_facts` packages code, axis,
+opposite face, offsets, normal, and color into one validated record for callers
+that need all face metadata. Voxel DDA remains application-owned.
 
 The first draw uses one transform storage buffer with 32 `f32` values and 128
 bytes. `transform_payload_float_count`, `transform_payload_byte_count`,

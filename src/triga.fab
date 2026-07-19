@@ -63,6 +63,17 @@ genus Color {
     f32 b
 }
 
+genus FaceCodeFacts {
+    numerus code
+    numerus axis_code
+    numerus opposite_code
+    numerus x_offset
+    numerus y_offset
+    numerus z_offset
+    Vector3 normal
+    Color color
+}
+
 genus Euler {
     f32 x
     f32 y
@@ -376,6 +387,42 @@ functio face_code_color(numerus code) → Color ∪ nihil {
     si code ≡ 5 ergo redde Color { r = 0.1 ∷ f32, g = 0.1 ∷ f32, b = 0.8 ∷ f32 }
     si code ≡ 6 ergo redde Color { r = 0.4 ∷ f32, g = 0.4 ∷ f32, b = 1.0 ∷ f32 }
     redde nihil
+}
+
+functio face_code_facts(numerus code) → FaceCodeFacts ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    fixum numerus ∪ nihil axis_result ← face_code_axis_code(code)
+    si axis_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil opposite_result ← face_code_opposite(code)
+    si opposite_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil x_offset_result ← face_code_x_offset(code)
+    si x_offset_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil y_offset_result ← face_code_y_offset(code)
+    si y_offset_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil z_offset_result ← face_code_z_offset(code)
+    si z_offset_result est nihil ergo redde nihil
+    fixum Vector3 ∪ nihil normal_result ← face_code_normal(code)
+    si normal_result est nihil ergo redde nihil
+    fixum Color ∪ nihil color_result ← face_code_color(code)
+    si color_result est nihil ergo redde nihil
+    redde FaceCodeFacts {
+        code = code,
+        axis_code = axis_result vel 0,
+        opposite_code = opposite_result vel 0,
+        x_offset = x_offset_result vel 0,
+        y_offset = y_offset_result vel 0,
+        z_offset = z_offset_result vel 0,
+        normal = Vector3 {
+            x = normal_result!.x,
+            y = normal_result!.y,
+            z = normal_result!.z
+        },
+        color = Color {
+            r = color_result!.r,
+            g = color_result!.g,
+            b = color_result!.b
+        }
+    }
 }
 
 functio face_code_unit_quad(

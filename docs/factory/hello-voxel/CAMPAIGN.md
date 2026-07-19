@@ -168,7 +168,7 @@ reflection consumer admits compute kernels only.
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga math and transforms | Camera yaw/pitch fact records, ray, AABB, transform payload, packaged collision extents, first-person planar movement, face-code unit quads, and indexed-cube view-projection facts are locked | Preserve and consume |
+| Triga math and transforms | Camera yaw/pitch fact records, ray, AABB, transform payload, packaged collision extents, first-person planar movement, face-code fact records, face-code unit quads, and indexed-cube view-projection facts are locked | Preserve and consume |
 | Triga scene identity | Stable scene-store source, resource transitions, lifecycle-state fixtures, lifecycle batch facts, visible resource facts, changed/removed lifecycle handles, visible draw packets, and draw-batch facts exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
 | Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, indexed draw batch, line draw-batch, visible-face accounting, colored quad append, colored quad finalization, colored mesh fact records, and colored mesh draw-batch facts are locked | Preserve and consume |
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
@@ -208,9 +208,9 @@ records, packaged `Box3` overlap facts, and normalized planar movement deltas.
 Camera and transform facts now lock perspective projection, composed
 view-projection facts, plus the 32-float, 128-byte model then view-projection
 payload order.
-Face-code facts now lock ray/AABB hit codes, normal vectors, integer face
-offsets, direction colors, axis/opposite-face metadata, and outward-wound
-unit face quads for meshing, selection, and edit placement.
+Face-code facts now lock ray/AABB hit codes, packaged face metadata, normal
+vectors, integer face offsets, direction colors, axis/opposite-face metadata,
+and outward-wound unit face quads for meshing, selection, and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch changed, created, removed, live,
 and current handle evidence for empty and non-empty chunk remeshes. A lifecycle

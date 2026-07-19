@@ -308,6 +308,22 @@ incipit {
         "generic face-code axis records x-axis faces"
     adfirma (triga.face_code_opposite(ray_face_code) vel 0) ≡ 2,
         "generic face-code opposite records paired x-axis faces"
+    fixum triga.FaceCodeFacts ∪ nihil ray_face_facts ← triga.face_code_facts(ray_face_code)
+    adfirma ray_face_facts non est nihil,
+        "face code facts package validated face metadata"
+    adfirma ray_face_facts!.code ≡ 1
+        et ray_face_facts!.axis_code ≡ 1
+        et ray_face_facts!.opposite_code ≡ 2,
+        "face code facts preserve code, axis, and opposite metadata"
+    adfirma ray_face_facts!.x_offset ≡ -1
+        et ray_face_facts!.y_offset ≡ 0
+        et ray_face_facts!.z_offset ≡ 0,
+        "face code facts preserve edit offsets"
+    adfirma ray_face_facts!.normal.x ≡ (-1.0 ∷ f32)
+        et ray_face_facts!.normal.y ≡ (0.0 ∷ f32)
+        et ray_face_facts!.normal.z ≡ (0.0 ∷ f32)
+        et ray_face_facts!.color.r > 0.7,
+        "face code facts preserve normal and color"
     fixum triga.Ray negative_ray ← triga.Ray {
         origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -368,6 +384,8 @@ incipit {
         "generic face-code metadata rejects invalid face codes"
     adfirma triga.face_code_normal(0) est nihil,
         "generic face-code normal rejects invalid face codes"
+    adfirma triga.face_code_facts(0) est nihil,
+        "face code facts reject invalid face codes"
     fixum triga.FaceQuad ∪ nihil negative_x_quad_result ←
         triga.face_code_unit_quad(1, 10.0 ∷ f32, 20.0 ∷ f32, 30.0 ∷ f32, 2.0 ∷ f32)
     adfirma negative_x_quad_result non est nihil,
