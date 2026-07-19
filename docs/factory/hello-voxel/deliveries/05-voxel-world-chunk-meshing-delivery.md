@@ -36,6 +36,9 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   visible-face vertex/index/triangle and payload byte accounting, let chunk
   tests prove resource size, upload sizes, expected index totals, face-derived
   triangle counts, and draw scaling without host-side geometry scans.
+  The `ColoredQuadMesh` append helper lets the application mesher derive
+  face-local position/color/index buffers from caller-owned coordinates and RGB
+  values while Triga owns the repeated color and index-base pattern.
 - Reusable `Box3` min-max/min-size/center-size construction, validation, size,
   center, containment, union, and translation helpers in `triga/src/triga.fab`
   for chunk mesh bounds. Generic face-code validation, offset projection, and

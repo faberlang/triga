@@ -105,6 +105,11 @@ Triga already provides the source-owned geometry data needed by the first draw:
   and payload byte facts into one source-owned record. Goal 05 can use it as a
   chunk mesh proof object without making the host recalculate draw-scale
   accounting.
+- `ColoredQuadMesh` and `colored_quad_mesh_append` package the
+  renderer-generic append pattern for one colored quad face: four position
+  vertices, four repeated RGB triples, and six `u32` indices based on the
+  current vertex count. Goal 05 can use it for simple face emission while
+  voxel storage and neighbor policy stay in the application package.
 - `geometry_vertex_count`, `geometry_index_count`, `geometry_group_count`,
   `geometry_group_element_total`, `geometry_attribute_scalar_count`,
   `geometry_attribute_byte_count`, `geometry_vertex_payload_byte_count`,

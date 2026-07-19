@@ -170,7 +170,7 @@ reflection consumer admits compute kernels only.
 | --- | --- | --- |
 | Triga math and transforms | Camera, ray, AABB, transform payload, collision extent, first-person planar movement, and indexed-cube view-projection facts are locked | Preserve and consume |
 | Triga scene identity | Stable scene-store source, resource transitions, lifecycle-state fixtures, visible draw packets, and draw-batch facts exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
-| Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, and indexed draw batch facts are locked | Preserve and consume |
+| Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, indexed draw batch, visible-face accounting, and colored quad append facts are locked | Preserve and consume |
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
@@ -194,7 +194,10 @@ browser fact required by the first indexed draw.
 Triga-owned Goal 00 source gap is known. Geometry now
 locks first-draw layout, topology, index format, vertex-step mode, draw, and
 count facts plus reusable indexed draw batch and visible-face mesh fact records
-for chunk meshing.
+for chunk meshing. Geometry also exposes a renderer-generic colored quad append
+contract so Goal 05 meshing can append face vertices, repeated RGB values, and
+base-relative `u32` indices without duplicating that buffer pattern in each
+application mesher.
 Material policy now locks side, depth-test, depth-write, transparency, RGB,
 alpha, alpha-test, and reusable pipeline fact records.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.

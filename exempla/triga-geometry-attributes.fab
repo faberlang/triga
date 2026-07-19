@@ -82,6 +82,70 @@ incipit {
         "zero visible faces reject mesh accounting"
     adfirma geometry.visible_face_mesh_facts(0) est nihil,
         "zero visible faces reject mesh fact records"
+    fixum geometry.ColoredQuadMesh ∪ nihil first_quad_result ← geometry.colored_quad_mesh_append(
+        vacua,
+        vacua,
+        vacua,
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.2, 0.4, 0.6
+    )
+    adfirma first_quad_result non est nihil,
+        "colored quad append accepts empty mesh buffers"
+    adfirma first_quad_result!.positions.longitudo() ≡ 12
+        et first_quad_result!.colors.longitudo() ≡ 12,
+        "colored quad append emits four position and color vertices"
+    adfirma first_quad_result!.indices.longitudo() ≡ 6,
+        "colored quad append emits six triangle indices"
+    adfirma first_quad_result!.indices[0] ≡ (0 ↦ u32)
+        et first_quad_result!.indices[1] ≡ (1 ↦ u32)
+        et first_quad_result!.indices[2] ≡ (2 ↦ u32)
+        et first_quad_result!.indices[3] ≡ (0 ↦ u32)
+        et first_quad_result!.indices[4] ≡ (2 ↦ u32)
+        et first_quad_result!.indices[5] ≡ (3 ↦ u32),
+        "colored quad append locks outward triangle index order"
+    adfirma first_quad_result!.colors[0] ≡ (0.2 ∷ f32)
+        et first_quad_result!.colors[1] ≡ (0.4 ∷ f32)
+        et first_quad_result!.colors[2] ≡ (0.6 ∷ f32)
+        et first_quad_result!.colors[9] ≡ (0.2 ∷ f32),
+        "colored quad append repeats one RGB color across four vertices"
+    fixum geometry.ColoredQuadMesh first_quad ← geometry.ColoredQuadMesh {
+        positions = first_quad_result!.positions,
+        colors = first_quad_result!.colors,
+        indices = first_quad_result!.indices
+    }
+    fixum geometry.ColoredQuadMesh ∪ nihil second_quad_result ← geometry.colored_quad_mesh_append(
+        first_quad.positions,
+        first_quad.colors,
+        first_quad.indices,
+        2.0, 0.0, 0.0,
+        3.0, 0.0, 0.0,
+        3.0, 1.0, 0.0,
+        2.0, 1.0, 0.0,
+        0.7, 0.8, 0.9
+    )
+    adfirma second_quad_result non est nihil,
+        "colored quad append chains across existing mesh buffers"
+    adfirma second_quad_result!.indices[6] ≡ (4 ↦ u32)
+        et second_quad_result!.indices[7] ≡ (5 ↦ u32)
+        et second_quad_result!.indices[8] ≡ (6 ↦ u32)
+        et second_quad_result!.indices[9] ≡ (4 ↦ u32)
+        et second_quad_result!.indices[10] ≡ (6 ↦ u32)
+        et second_quad_result!.indices[11] ≡ (7 ↦ u32),
+        "colored quad append derives the next index base from position count"
+    adfirma geometry.colored_quad_mesh_append(
+        [0.0, 0.0],
+        vacua,
+        vacua,
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        1.0, 1.0, 1.0
+    ) est nihil,
+        "colored quad append rejects malformed source buffers"
     fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(
         triangle, "position"
     ) vel 0

@@ -107,6 +107,12 @@ genus VisibleFaceMeshFacts {
     numerus total_payload_byte_count
 }
 
+genus ColoredQuadMesh {
+    lista<f32> positions
+    lista<f32> colors
+    lista<u32> indices
+}
+
 genus BufferGeometry {
     PrimitiveTopology topology
     numerus vertex_count
@@ -710,6 +716,77 @@ functio visible_face_mesh_facts(numerus face_count) → VisibleFaceMeshFacts ∪
         color_payload_byte_count = color_bytes_result vel 0,
         index_payload_byte_count = index_bytes_result vel 0,
         total_payload_byte_count = total_bytes_result vel 0
+    }
+}
+
+functio colored_quad_mesh_append(
+    lista<f32> positions,
+    lista<f32> colors,
+    lista<u32> indices,
+    f32 ax, f32 ay, f32 az,
+    f32 bx, f32 by, f32 bz,
+    f32 cx, f32 cy, f32 cz,
+    f32 dx, f32 dy, f32 dz,
+    f32 r, f32 g, f32 b
+) → ColoredQuadMesh ∪ nihil {
+    si positions.longitudo() ≠ colors.longitudo() ergo redde nihil
+    si positions.longitudo() % 3 ≠ 0 ergo redde nihil
+    si indices.longitudo() % 3 ≠ 0 ergo redde nihil
+
+    varia lista<f32> next_positions ← vacua
+    varia numerus i ← 0
+    dum i < positions.longitudo() {
+        next_positions.appende(positions[i])
+        i ← i + 1
+    }
+
+    varia lista<f32> next_colors ← vacua
+    i ← 0
+    dum i < colors.longitudo() {
+        next_colors.appende(colors[i])
+        i ← i + 1
+    }
+
+    varia lista<u32> next_indices ← vacua
+    i ← 0
+    dum i < indices.longitudo() {
+        next_indices.appende(indices[i])
+        i ← i + 1
+    }
+
+    fixum numerus vertex_base ← positions.longitudo() / 3
+    next_positions.appende(ax)
+    next_positions.appende(ay)
+    next_positions.appende(az)
+    next_positions.appende(bx)
+    next_positions.appende(by)
+    next_positions.appende(bz)
+    next_positions.appende(cx)
+    next_positions.appende(cy)
+    next_positions.appende(cz)
+    next_positions.appende(dx)
+    next_positions.appende(dy)
+    next_positions.appende(dz)
+
+    i ← 0
+    dum i < 4 {
+        next_colors.appende(r)
+        next_colors.appende(g)
+        next_colors.appende(b)
+        i ← i + 1
+    }
+
+    next_indices.appende(vertex_base ↦ u32)
+    next_indices.appende((vertex_base + 1) ↦ u32)
+    next_indices.appende((vertex_base + 2) ↦ u32)
+    next_indices.appende(vertex_base ↦ u32)
+    next_indices.appende((vertex_base + 2) ↦ u32)
+    next_indices.appende((vertex_base + 3) ↦ u32)
+
+    redde ColoredQuadMesh {
+        positions = next_positions,
+        colors = next_colors,
+        indices = next_indices
     }
 }
 
