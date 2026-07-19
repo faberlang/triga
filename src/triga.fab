@@ -101,6 +101,13 @@ genus RayBox3Hit {
     Vector3 normal
 }
 
+genus FaceQuad {
+    Vector3 a
+    Vector3 b
+    Vector3 c
+    Vector3 d
+}
+
 # =========================================================================
 # SCENE GRAPH
 #
@@ -352,6 +359,56 @@ functio face_code_color(numerus code) → Color ∪ nihil {
     si code ≡ 5 ergo redde Color { r = 0.1 ∷ f32, g = 0.1 ∷ f32, b = 0.8 ∷ f32 }
     si code ≡ 6 ergo redde Color { r = 0.4 ∷ f32, g = 0.4 ∷ f32, b = 1.0 ∷ f32 }
     redde nihil
+}
+
+functio face_code_unit_quad(
+    numerus code,
+    f32 x,
+    f32 y,
+    f32 z,
+    f32 size
+) → FaceQuad ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    si size ≤ 0.0 ergo redde nihil
+    fixum f32 x1 ← x + size
+    fixum f32 y1 ← y + size
+    fixum f32 z1 ← z + size
+    si code ≡ 1 ergo redde FaceQuad {
+        a = vector3(x, y, z),
+        b = vector3(x, y, z1),
+        c = vector3(x, y1, z1),
+        d = vector3(x, y1, z)
+    }
+    si code ≡ 2 ergo redde FaceQuad {
+        a = vector3(x1, y, z1),
+        b = vector3(x1, y, z),
+        c = vector3(x1, y1, z),
+        d = vector3(x1, y1, z1)
+    }
+    si code ≡ 3 ergo redde FaceQuad {
+        a = vector3(x, y, z),
+        b = vector3(x1, y, z),
+        c = vector3(x1, y, z1),
+        d = vector3(x, y, z1)
+    }
+    si code ≡ 4 ergo redde FaceQuad {
+        a = vector3(x, y1, z1),
+        b = vector3(x1, y1, z1),
+        c = vector3(x1, y1, z),
+        d = vector3(x, y1, z)
+    }
+    si code ≡ 5 ergo redde FaceQuad {
+        a = vector3(x1, y, z),
+        b = vector3(x, y, z),
+        c = vector3(x, y1, z),
+        d = vector3(x1, y1, z)
+    }
+    redde FaceQuad {
+        a = vector3(x, y, z1),
+        b = vector3(x1, y, z1),
+        c = vector3(x1, y1, z1),
+        d = vector3(x, y1, z1)
+    }
 }
 
 functio material_double_sided(de Material value) → Material {

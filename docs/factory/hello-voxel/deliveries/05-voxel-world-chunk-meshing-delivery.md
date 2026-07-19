@@ -45,7 +45,9 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   center, containment, union, and translation helpers in `triga/src/triga.fab`
   for chunk mesh bounds. Generic face-code validation, offset projection, and
   direction colors in `triga/src/triga.fab` let chunk meshing encode six
-  visible face directions without host-side color policy.
+  visible face directions without host-side color policy. `face_code_unit_quad`
+  also provides the outward-wound corner order for each visible face so the
+  application mesher does not own a duplicate winding table.
 - Reusable scene visibility state, effective visible traversal, visible
   mesh-handle traversal, visible mesh resource projection, visible resource-pair
   counts, geometry/material handle projection, and visible mesh transform

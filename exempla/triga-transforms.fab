@@ -354,6 +354,61 @@ incipit {
         "generic face-code metadata rejects invalid face codes"
     adfirma triga.face_code_normal(0) est nihil,
         "generic face-code normal rejects invalid face codes"
+    fixum triga.FaceQuad ∪ nihil negative_x_quad_result ←
+        triga.face_code_unit_quad(1, 10.0 ∷ f32, 20.0 ∷ f32, 30.0 ∷ f32, 2.0 ∷ f32)
+    adfirma negative_x_quad_result non est nihil,
+        "face-code unit quad accepts valid negative x face"
+    fixum triga.FaceQuad negative_x_quad ← triga.FaceQuad {
+        a = negative_x_quad_result!.a,
+        b = negative_x_quad_result!.b,
+        c = negative_x_quad_result!.c,
+        d = negative_x_quad_result!.d
+    }
+    adfirma negative_x_quad.a.x ≡ (10.0 ∷ f32)
+        et negative_x_quad.b.z ≡ (32.0 ∷ f32)
+        et negative_x_quad.c.y ≡ (22.0 ∷ f32)
+        et negative_x_quad.d.z ≡ (30.0 ∷ f32),
+        "face-code unit quad locks negative x corner coordinates"
+    fixum triga.Vector3 negative_x_edge_ab ←
+        triga.vector3_subtracta(negative_x_quad.b, negative_x_quad.a)
+    fixum triga.Vector3 negative_x_edge_ac ←
+        triga.vector3_subtracta(negative_x_quad.c, negative_x_quad.a)
+    fixum triga.Vector3 negative_x_winding_normal ←
+        triga.vector3_normalizata(triga.vector3_cross(negative_x_edge_ab, negative_x_edge_ac))
+    fixum triga.Vector3 ∪ nihil expected_negative_x_normal ← triga.face_code_normal(1)
+    adfirma expected_negative_x_normal non est nihil
+        et negative_x_winding_normal.x ≡ expected_negative_x_normal!.x
+        et negative_x_winding_normal.y ≡ expected_negative_x_normal!.y
+        et negative_x_winding_normal.z ≡ expected_negative_x_normal!.z,
+        "face-code unit quad winding matches negative x face normal"
+    fixum triga.FaceQuad ∪ nihil positive_z_quad_result ←
+        triga.face_code_unit_quad(6, 0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    adfirma positive_z_quad_result non est nihil,
+        "face-code unit quad accepts valid positive z face"
+    fixum triga.FaceQuad positive_z_quad ← triga.FaceQuad {
+        a = positive_z_quad_result!.a,
+        b = positive_z_quad_result!.b,
+        c = positive_z_quad_result!.c,
+        d = positive_z_quad_result!.d
+    }
+    fixum triga.Vector3 positive_z_edge_ab ←
+        triga.vector3_subtracta(positive_z_quad.b, positive_z_quad.a)
+    fixum triga.Vector3 positive_z_edge_ac ←
+        triga.vector3_subtracta(positive_z_quad.c, positive_z_quad.a)
+    fixum triga.Vector3 positive_z_winding_normal ←
+        triga.vector3_normalizata(triga.vector3_cross(positive_z_edge_ab, positive_z_edge_ac))
+    fixum triga.Vector3 ∪ nihil expected_positive_z_normal ← triga.face_code_normal(6)
+    adfirma expected_positive_z_normal non est nihil
+        et positive_z_winding_normal.x ≡ expected_positive_z_normal!.x
+        et positive_z_winding_normal.y ≡ expected_positive_z_normal!.y
+        et positive_z_winding_normal.z ≡ expected_positive_z_normal!.z,
+        "face-code unit quad winding matches positive z face normal"
+    adfirma triga.face_code_unit_quad(0, 0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+        est nihil,
+        "face-code unit quad rejects invalid face codes"
+    adfirma triga.face_code_unit_quad(1, 0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+        est nihil,
+        "face-code unit quad rejects non-positive sizes"
     fixum triga.Ray z_ray ← triga.Ray {
         origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 3.0 ∷ f32),
         direction = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)

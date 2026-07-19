@@ -105,6 +105,9 @@ Triga already provides the source-owned geometry data needed by the first draw:
   and payload byte facts into one source-owned record. Goal 05 can use it as a
   chunk mesh proof object without making the host recalculate draw-scale
   accounting.
+- `face_code_unit_quad` maps a valid face code, origin, and positive size to
+  four outward-wound corner points. Goal 05 can derive visible face coordinates
+  without each application mesher maintaining a separate six-face winding table.
 - `ColoredQuadMesh` and `colored_quad_mesh_append` package the
   renderer-generic append pattern for one colored quad face: four position
   vertices, four repeated RGB triples, and six `u32` indices based on the

@@ -104,7 +104,7 @@ and should be serialized unless delivery-specific write scopes prove otherwise.
 
 All nine delivery specs exist. HV-00 is active. Its Triga-side reusable
 contract pass is complete, including first-draw layout, material, transform,
-scene/resource lifecycle handles, face-code, visible-mesh packet, visible-face
+scene/resource lifecycle handles, face-code unit quads, visible-mesh packet, visible-face
 accounting, colored quad finalization, colored mesh fact records, and colored
 mesh bounds. The
 `triga/scripta/check-hello-voxel-contract` gate packages the
