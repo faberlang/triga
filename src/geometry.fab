@@ -368,6 +368,38 @@ functio geometry_element_count(de BufferGeometry geometry) → numerus {
     redde geometry.indices.longitudo()
 }
 
+functio geometry_vertex_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    redde geometry.vertex_count
+}
+
+functio geometry_index_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si geometry.indexed ≡ falsum ergo redde nihil
+    fixum numerus count ← geometry.indices.longitudo()
+    redde count
+}
+
+functio geometry_group_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    fixum numerus count ← geometry.groups.longitudo()
+    redde count
+}
+
+functio geometry_attribute_scalar_count(
+    de BufferGeometry geometry,
+    textus name
+) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    varia numerus i ← 0
+    dum i < geometry.attributes.longitudo() {
+        fixum BufferAttribute attribute ← geometry.attributes[i]
+        si attribute.name ≡ name ergo redde attribute_scalar_count(attribute)
+        i ← i + 1
+    }
+    redde nihil
+}
+
 functio geometry_draw_command(
     de BufferGeometry geometry,
     numerus instance_count

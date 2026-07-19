@@ -20,6 +20,22 @@ incipit {
         [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
     )
     adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
+    fixum numerus triangle_vertex_count ← geometry.geometry_vertex_count(triangle) vel 0
+    adfirma triangle_vertex_count ≡ 3,
+        "valid geometry exposes source-owned vertex count"
+    fixum numerus triangle_index_count ← geometry.geometry_index_count(triangle) vel 0
+    adfirma triangle_index_count ≡ 3,
+        "valid indexed geometry exposes source-owned index count"
+    fixum numerus triangle_group_count ← geometry.geometry_group_count(triangle) vel 0
+    adfirma triangle_group_count ≡ 1,
+        "valid geometry exposes source-owned draw group count"
+    fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(
+        triangle, "position"
+    ) vel 0
+    adfirma triangle_position_scalars ≡ 9,
+        "valid geometry exposes named attribute scalar count"
+    adfirma geometry.geometry_attribute_scalar_count(triangle, "color") est nihil,
+        "missing attribute scalar count is explicit"
     fixum geometry.GeometryDrawCommand ∪ nihil group_draw_result ← geometry.geometry_group_draw_command(
         triangle, 0, 2
     )
@@ -121,6 +137,8 @@ incipit {
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )
     adfirma geometry.geometry_valid(nonindexed), "explicit non-indexed geometry validates"
+    adfirma geometry.geometry_index_count(nonindexed) est nihil,
+        "non-indexed geometry has no source-owned index payload count"
     adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
         "non-indexed triangles produce vertex normals"
 
