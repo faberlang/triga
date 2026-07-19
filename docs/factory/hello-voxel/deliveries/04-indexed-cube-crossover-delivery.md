@@ -53,11 +53,22 @@ the first visible Faber-authored indexed 3D application.
 
 ### HV-04A - Reusable Triga Prerequisites
 
+**Status**: complete for current reusable Triga scope
 **Output**: only missing generic matrix/camera/material/geometry helpers with
 focused Triga exempla.
 **Write scope**: `triga/src/` and `triga/exempla/`.
 **Gate**: helpers compile and emit through existing Triga checks; no cube-specific
 state enters Triga.
+**Evidence**: `triga/src/triga.fab`, `triga/src/geometry.fab`,
+`triga/src/scene.fab`, `triga/exempla/triga-basics.fab`,
+`triga/exempla/triga-geometry-attributes.fab`,
+`triga/exempla/triga-scene-store.fab`, and
+`triga/exempla/triga-transforms.fab`. The current source covers the reusable
+cube prerequisites: position/color indexed geometry, indexed draw batch facts,
+minimal unlit material and pipeline facts, perspective/view-projection math,
+32-float transform payloads, and visible mesh draw-packet facts. HV-04 remains
+pending because the direct shader, host, browser runtime, and example package
+dependencies are not complete.
 
 ### HV-04B - Faber Cube Application
 

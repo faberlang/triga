@@ -168,10 +168,10 @@ reflection consumer admits compute kernels only.
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga math and transforms | Camera, ray, AABB, transform payload, collision extent, and first-person planar movement facts are locked | Preserve and consume |
-| Triga scene identity | Stable scene-store source, resource transitions, and lifecycle-state fixtures exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
-| Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, and count facts are locked | Preserve and consume |
-| Triga material policy | Opaque material, side, depth-test, depth-write, RGB, and alpha facts are locked | Preserve and consume |
+| Triga math and transforms | Camera, ray, AABB, transform payload, collision extent, first-person planar movement, and indexed-cube view-projection facts are locked | Preserve and consume |
+| Triga scene identity | Stable scene-store source, resource transitions, lifecycle-state fixtures, visible draw packets, and draw-batch facts exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
+| Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, and indexed draw batch facts are locked | Preserve and consume |
+| Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
 | Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; frame/input lifecycle is missing | Extend through Goal 03 |
@@ -254,6 +254,9 @@ lock, and platform-failure handling through generated browser bindings.
 camera and depth testing through direct WebGPU.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: one coherent vertical slice
+**Progress**: HV-04A reusable Triga prerequisites are complete for the current
+source scope. The full crossover remains pending on HV-01 shader/reflection,
+HV-02 direct graphics host, HV-03 browser runtime, and the example package.
 **Release checkpoint**: record an internal direct-render milestone; do not
 publish unless separately authorized.
 
