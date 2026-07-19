@@ -494,6 +494,52 @@ functio geometry_bounding_box(de BufferGeometry geometry) → BoundingBox ∪ ni
     }
 }
 
+functio geometry_group_bounding_box(
+    de BufferGeometry geometry,
+    numerus group_index
+) → BoundingBox ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si group_index ≥ geometry.groups.longitudo() ergo redde nihil
+    fixum GeometryGroup group ← geometry.groups[group_index]
+    fixum lista<f32> positions ← _geometry_position_values(geometry)
+
+    varia numerus vertex_index ← group.start
+    si geometry.indexed {
+        vertex_index ← geometry.indices[group.start] ↦ numerus
+    }
+    varia numerus position_index ← vertex_index * 3
+    varia f32 min_x ← positions[position_index]
+    varia f32 min_y ← positions[position_index + 1]
+    varia f32 min_z ← positions[position_index + 2]
+    varia f32 max_x ← min_x
+    varia f32 max_y ← min_y
+    varia f32 max_z ← min_z
+
+    varia numerus i ← group.start
+    fixum numerus end ← group.start + group.count
+    dum i < end {
+        vertex_index ← i
+        si geometry.indexed {
+            vertex_index ← geometry.indices[i] ↦ numerus
+        }
+        position_index ← vertex_index * 3
+        fixum f32 x ← positions[position_index]
+        fixum f32 y ← positions[position_index + 1]
+        fixum f32 z ← positions[position_index + 2]
+        si x < min_x { min_x ← x }
+        si y < min_y { min_y ← y }
+        si z < min_z { min_z ← z }
+        si x > max_x { max_x ← x }
+        si y > max_y { max_y ← y }
+        si z > max_z { max_z ← z }
+        i ← i + 1
+    }
+    redde BoundingBox {
+        min_x = min_x, min_y = min_y, min_z = min_z,
+        max_x = max_x, max_y = max_y, max_z = max_z
+    }
+}
+
 functio _geometry_radix_f32(f32 value) → f32 {
     si value ≤ 0.0 ergo redde 0.0
     varia f32 scaled ← value

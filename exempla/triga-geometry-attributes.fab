@@ -52,6 +52,38 @@ incipit {
         "bounding-box minimum derives from position data"
     adfirma bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one et bounds_result!.max_z ≡ zero,
         "bounding-box maximum derives from position data"
+    fixum geometry.BoundingBox ∪ nihil group_bounds_result ← geometry.geometry_group_bounding_box(
+        triangle, 0
+    )
+    adfirma group_bounds_result non est nihil,
+        "valid geometry group produces bounds"
+    adfirma group_bounds_result!.min_x ≡ zero et group_bounds_result!.max_y ≡ one,
+        "single group bounds derive from group elements"
+    adfirma geometry.geometry_group_bounding_box(triangle, 1) est nihil,
+        "missing geometry group rejects bounds"
+    fixum geometry.BufferAttribute split_positions ← geometry.float32_attribute(
+        "position", 0, 3, 6,
+        [
+            0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+            10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0
+        ]
+    )
+    fixum geometry.BufferGeometry split_groups ← geometry.indexed_triangle_geometry(
+        6, [split_positions], [0, 1, 2, 3, 4, 5],
+        geometry.DrawRange { start = 0, count = 6 },
+        [
+            geometry.GeometryGroup { start = 0, count = 3, material_index = 0 },
+            geometry.GeometryGroup { start = 3, count = 3, material_index = 1 },
+        ]
+    )
+    fixum geometry.BoundingBox ∪ nihil second_group_bounds ← geometry.geometry_group_bounding_box(
+        split_groups, 1
+    )
+    fixum f32 ten ← 10.0
+    fixum f32 eleven ← 11.0
+    adfirma second_group_bounds non est nihil
+        et second_group_bounds!.min_x ≡ ten et second_group_bounds!.max_x ≡ eleven,
+        "group bounds stay local to the selected draw group"
     fixum geometry.BoundingSphere ∪ nihil sphere_result ← geometry.geometry_bounding_sphere(triangle)
     adfirma sphere_result non est nihil, "valid position data produces a bounding sphere"
     fixum f32 half ← 0.5
