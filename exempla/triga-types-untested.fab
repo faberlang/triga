@@ -71,7 +71,8 @@ incipit {
     fixum triga.OrthographicCamera ortho ← triga.OrthographicCamera {
         base = standalone,
         left = -10.0 ∷ f32, right = 10.0 ∷ f32,
-        top = 10.0 ∷ f32, bottom = -10.0 ∷ f32
+        top = 10.0 ∷ f32, bottom = -10.0 ∷ f32,
+        near = 0.1 ∷ f32, far = 2000.0 ∷ f32
     }
     adfirma ortho.left ≡ (-10.0 ∷ f32) et ortho.right ≡ (10.0 ∷ f32),
         "OrthographicCamera preserves bounds"
@@ -90,7 +91,8 @@ incipit {
         color = white,
         roughness = 0.5 ∷ f32,
         metalness = 0.8 ∷ f32,
-        emissive = emissive
+        emissive = emissive,
+        emissive_intensity = 0.0 ∷ f32
     }
     fixum triga.MeshGeometry empty_geometry ← triga.MeshGeometry {
         positions = vacua, indices = vacua
@@ -102,11 +104,21 @@ incipit {
     adfirma mesh.base.visible,
         "Mesh preserves Object3D base state"
 
+    adfirma pbr_material.roughness ≡ (0.5 ∷ f32)
+        et pbr_material.metalness ≡ (0.8 ∷ f32)
+        et pbr_material.emissive.r ≡ (0.0 ∷ f32),
+        "MeshStandardMaterial preserves explicit roughness, metalness, emissive"
+    adfirma triga.material_valid(pbr_material.base),
+        "MeshStandardMaterial base validates for explicit material"
+
     # MeshStandardMaterial defaults
     fixum triga.MeshStandardMaterial default_pbr ← triga.MeshStandardMaterial {
         base = triga.material("default-pbr"),
         color = white,
-        emissive = emissive
+        roughness = 1.0 ∷ f32,
+        metalness = 0.0 ∷ f32,
+        emissive = emissive,
+        emissive_intensity = 0.0 ∷ f32
     }
     adfirma default_pbr.roughness ≡ (1.0 ∷ f32)
         et default_pbr.metalness ≡ (0.0 ∷ f32)
@@ -132,7 +144,8 @@ incipit {
     fixum triga.MeshPhongMaterial default_phong ← triga.MeshPhongMaterial {
         base = triga.material("default-phong"),
         color = white,
-        specular = spec
+        specular = spec,
+        shininess = 30.0 ∷ f32
     }
     adfirma default_phong.shininess ≡ (30.0 ∷ f32),
         "MeshPhongMaterial preserves default shininess"

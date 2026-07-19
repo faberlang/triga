@@ -60,9 +60,19 @@ incipit {
     }
     adfirma triga.color_valid(bad_high_b) ≡ falsum,
         "color_valid rejects b > 1.0"
+    fixum triga.Color bad_r ← triga.Color {
+        r = 0.0 ∷ f32 - 0.1, g = 0.5 ∷ f32, b = 0.5 ∷ f32
+    }
+    adfirma triga.color_valid(bad_r) ≡ falsum,
+        "color_valid rejects negative r component"
+    fixum triga.Color bad_high_r ← triga.Color {
+        r = 1.0 ∷ f32 + 0.1, g = 0.5 ∷ f32, b = 0.5 ∷ f32
+    }
+    adfirma triga.color_valid(bad_high_r) ≡ falsum,
+        "color_valid rejects r > 1.0"
 
     # Ray intersect box3 with max_distance < 0
-    fixum triga.Box3 box ← triga.Box3 {
+    fixum triga.Box3 test_box ← triga.Box3 {
         min = triga.vector3(-1.0∷f32, -1.0∷f32, -1.0∷f32),
         max = triga.vector3(1.0∷f32, 1.0∷f32, 1.0∷f32)
     }
@@ -70,10 +80,10 @@ incipit {
         origin = triga.vector3(-3.0∷f32, 0.0∷f32, 0.0∷f32),
         direction = triga.vector3(1.0∷f32, 0.0∷f32, 0.0∷f32)
     }
-    fixum _ negative_hit ← triga.ray_intersecat_box3(ray, box, 0.0 ∷ f32 - 1.0)
+    fixum _ negative_hit ← triga.ray_intersecat_box3(ray, test_box, 0.0 ∷ f32 - 1.0)
     adfirma negative_hit est nihil,
         "ray_intersecat_box3 rejects negative max_distance"
-    adfirma triga.ray_box3_hit(ray, box, 0.0 ∷ f32 - 1.0) est nihil,
+    adfirma triga.ray_box3_hit(ray, test_box, 0.0 ∷ f32 - 1.0) est nihil,
         "ray_box3_hit rejects negative max_distance"
 
     # Camera motus planus ex yaw with negative speed
