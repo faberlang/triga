@@ -114,6 +114,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
   the canonical indexed position/color geometry with one complete draw group.
   Goal 05 can use this to finalize chunk mesh buffers without host-side layout
   inference or voxel policy in Triga.
+- `colored_quad_mesh_face_count` and `colored_quad_mesh_facts` derive
+  visible-face counts and payload facts from actual accumulated colored quad
+  buffers. Goal 05 can use these helpers to prove that emitted chunk mesh
+  buffers match the authoritative face count before finalizing render resources.
 - `geometry_vertex_count`, `geometry_index_count`, `geometry_group_count`,
   `geometry_group_element_total`, `geometry_attribute_scalar_count`,
   `geometry_attribute_byte_count`, `geometry_vertex_payload_byte_count`,

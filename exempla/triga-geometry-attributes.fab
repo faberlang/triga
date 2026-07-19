@@ -162,12 +162,37 @@ incipit {
         "colored quad mesh finalization creates one complete draw group"
     adfirma (geometry.geometry_triangle_count(two_quad_geometry) vel 0) ≡ 4,
         "colored quad mesh finalization exposes triangle count"
+    adfirma (geometry.colored_quad_mesh_face_count(two_quad_mesh) vel 0) ≡ 2,
+        "colored quad mesh exposes face count from accumulated buffers"
+    fixum geometry.VisibleFaceMeshFacts ∪ nihil two_quad_facts_result ←
+        geometry.colored_quad_mesh_facts(two_quad_mesh)
+    adfirma two_quad_facts_result non est nihil,
+        "colored quad mesh exposes visible-face facts from accumulated buffers"
+    adfirma two_quad_facts_result!.face_count ≡ 2
+        et two_quad_facts_result!.vertex_count ≡ 8
+        et two_quad_facts_result!.index_count ≡ 12
+        et two_quad_facts_result!.triangle_count ≡ 4,
+        "colored quad mesh facts preserve face-derived counts"
+    adfirma two_quad_facts_result!.total_payload_byte_count ≡ 240,
+        "colored quad mesh facts preserve face-derived payload bytes"
     adfirma geometry.colored_quad_mesh_geometry(geometry.ColoredQuadMesh {
         positions = [0.0, 0.0],
         colors = [0.0, 0.0],
         indices = [0, 1, 2]
     }) est nihil,
         "colored quad mesh finalization rejects malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_face_count(geometry.ColoredQuadMesh {
+        positions = [0.0, 0.0],
+        colors = [0.0, 0.0],
+        indices = [0, 1, 2]
+    }) est nihil,
+        "colored quad mesh face count rejects malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_facts(geometry.ColoredQuadMesh {
+        positions = [0.0, 0.0],
+        colors = [0.0, 0.0],
+        indices = [0, 1, 2]
+    }) est nihil,
+        "colored quad mesh facts reject malformed accumulated buffers"
     adfirma geometry.colored_quad_mesh_append(
         [0.0, 0.0],
         vacua,

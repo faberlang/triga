@@ -798,6 +798,23 @@ functio colored_quad_mesh_geometry(de ColoredQuadMesh mesh) → BufferGeometry �
     redde colored_indexed_geometry(vertex_count, mesh.positions, mesh.colors, mesh.indices)
 }
 
+functio colored_quad_mesh_face_count(de ColoredQuadMesh mesh) → numerus ∪ nihil {
+    si mesh.positions.longitudo() ≠ mesh.colors.longitudo() ergo redde nihil
+    si mesh.positions.longitudo() % 12 ≠ 0 ergo redde nihil
+    si mesh.indices.longitudo() % 6 ≠ 0 ergo redde nihil
+    fixum numerus face_count ← mesh.positions.longitudo() / 12
+    si face_count ≡ 0 ergo redde nihil
+    si mesh.indices.longitudo() ≠ face_count * 6 ergo redde nihil
+    redde face_count
+}
+
+functio colored_quad_mesh_facts(de ColoredQuadMesh mesh) → VisibleFaceMeshFacts ∪ nihil {
+    fixum numerus ∪ nihil face_count_result ← colored_quad_mesh_face_count(mesh)
+    si face_count_result est nihil ergo redde nihil
+    fixum numerus face_count ← face_count_result vel 0
+    redde visible_face_mesh_facts(face_count)
+}
+
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     discerne geometry.topology {
