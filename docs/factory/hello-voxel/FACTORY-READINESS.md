@@ -107,7 +107,8 @@ All nine delivery specs exist. HV-00 is active. Its Triga-side reusable
 contract pass is complete, including first-draw layout, material, transform,
 camera yaw/pitch fact records, scene/resource lifecycle handles and batch
 facts, packaged `Box3` overlap facts, packaged face-code facts, face-code unit
-quads, visible resource facts, visible-mesh packet, visible-face accounting,
+quads, face-code colored mesh append, visible resource facts,
+visible-mesh packet, visible-face accounting,
 colored quad finalization, colored mesh fact records, colored mesh draw-batch
 facts, colored mesh bounds, line draw-batch facts, and direct wire-box
 draw-batch facts for selection outlines. The

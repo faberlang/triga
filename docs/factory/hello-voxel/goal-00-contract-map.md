@@ -117,6 +117,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
   vertices, four repeated RGB triples, and six `u32` indices based on the
   current vertex count. Goal 05 can use it for simple face emission while
   voxel storage and neighbor policy stay in the application package.
+- `face_code_colored_quad_mesh_append` combines `face_code_unit_quad`,
+  `face_code_color`, and `colored_quad_mesh_append` into one Triga-owned bridge.
+  Goal 05 can append a visible face from its face code and voxel origin without
+  duplicating six-face winding, color, or index-base tables in the application.
 - `colored_quad_mesh_geometry` converts an accumulated colored quad mesh into
   the canonical indexed position/color geometry with one complete draw group.
   Goal 05 can use this to finalize chunk mesh buffers without host-side layout

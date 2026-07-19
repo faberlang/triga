@@ -7,6 +7,7 @@ summary = "Triga Vector3 and Matrix4 transform-chain policy and CPU proof."
 +++
 
 importa ex "triga:triga" privata triga
+importa ex "triga:geometry" privata geometry
 
 incipit {
     fixum triga.Vector3 zero ← triga.vector3(0.0, 0.0, 0.0)
@@ -435,6 +436,71 @@ incipit {
         et positive_z_winding_normal.y ≡ expected_positive_z_normal!.y
         et positive_z_winding_normal.z ≡ expected_positive_z_normal!.z,
         "face-code unit quad winding matches positive z face normal"
+    fixum geometry.ColoredQuadMesh ∪ nihil face_mesh_result ←
+        triga.face_code_colored_quad_mesh_append(
+            vacua,
+            vacua,
+            vacua,
+            6,
+            0.0 ∷ f32,
+            0.0 ∷ f32,
+            0.0 ∷ f32,
+            1.0 ∷ f32
+        )
+    adfirma face_mesh_result non est nihil,
+        "face-code colored mesh append accepts a valid face code"
+    adfirma face_mesh_result!.positions.longitudo() ≡ 12
+        et face_mesh_result!.colors.longitudo() ≡ 12
+        et face_mesh_result!.indices.longitudo() ≡ 6,
+        "face-code colored mesh append emits one quad payload"
+    adfirma face_mesh_result!.positions[2] ≡ (1.0 ∷ f32)
+        et face_mesh_result!.positions[11] ≡ (1.0 ∷ f32),
+        "face-code colored mesh append uses the face-code corner order"
+    adfirma face_mesh_result!.colors[0] ≡ (0.4 ∷ f32)
+        et face_mesh_result!.colors[1] ≡ (0.4 ∷ f32)
+        et face_mesh_result!.colors[2] ≡ (1.0 ∷ f32),
+        "face-code colored mesh append uses the face-code color"
+    adfirma face_mesh_result!.indices[0] ≡ (0 ↦ u32)
+        et face_mesh_result!.indices[5] ≡ (3 ↦ u32),
+        "face-code colored mesh append uses the canonical quad indices"
+    fixum geometry.ColoredQuadMesh ∪ nihil second_face_mesh_result ←
+        triga.face_code_colored_quad_mesh_append(
+            face_mesh_result!.positions,
+            face_mesh_result!.colors,
+            face_mesh_result!.indices,
+            1,
+            2.0 ∷ f32,
+            0.0 ∷ f32,
+            0.0 ∷ f32,
+            1.0 ∷ f32
+        )
+    adfirma second_face_mesh_result non est nihil,
+        "face-code colored mesh append chains across existing face buffers"
+    adfirma second_face_mesh_result!.indices[6] ≡ (4 ↦ u32)
+        et second_face_mesh_result!.indices[11] ≡ (7 ↦ u32),
+        "face-code colored mesh append derives the next index base"
+    adfirma triga.face_code_colored_quad_mesh_append(
+        vacua,
+        vacua,
+        vacua,
+        0,
+        0.0 ∷ f32,
+        0.0 ∷ f32,
+        0.0 ∷ f32,
+        1.0 ∷ f32
+    ) est nihil,
+        "face-code colored mesh append rejects invalid face codes"
+    adfirma triga.face_code_colored_quad_mesh_append(
+        vacua,
+        vacua,
+        vacua,
+        1,
+        0.0 ∷ f32,
+        0.0 ∷ f32,
+        0.0 ∷ f32,
+        0.0 ∷ f32
+    ) est nihil,
+        "face-code colored mesh append rejects non-positive sizes"
     adfirma triga.face_code_unit_quad(0, 0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
         est nihil,
         "face-code unit quad rejects invalid face codes"

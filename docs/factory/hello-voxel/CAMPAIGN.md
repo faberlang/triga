@@ -194,13 +194,14 @@ browser fact required by the first indexed draw.
 Triga-owned Goal 00 source gap is known. Geometry now locks first-draw layout,
 topology, index format, vertex-step mode, draw, and count facts plus reusable
 indexed draw batch and visible-face mesh fact records for chunk meshing.
-Geometry also exposes renderer-generic colored quad append, finalization,
-face-count, mesh-fact, draw-batch, and bounds contracts so Goal 05 meshing can
-append face vertices, repeated RGB values, base-relative `u32` indices,
-validated position/color indexed geometry, draw-scale facts, upload byte facts,
-and coarse mesh volumes without duplicating those buffer patterns in each
-application mesher. Line draw-batch facts now package line count, draw scale,
-and upload byte counts for Goal 06 selection outlines.
+Geometry also exposes renderer-generic colored quad append, a face-code colored
+mesh append bridge, finalization, face-count, mesh-fact, draw-batch, and bounds
+contracts so Goal 05 meshing can append face vertices, repeated RGB values,
+base-relative `u32` indices, validated position/color indexed geometry,
+draw-scale facts, upload byte facts, and coarse mesh volumes without duplicating
+those buffer patterns in each application mesher. Line draw-batch facts now
+package line count, draw scale, and upload byte counts for Goal 06 selection
+outlines.
 Material policy now locks side, depth-test, depth-write, transparency, RGB,
 alpha, alpha-test, and reusable pipeline fact records.
 Interaction math now locks yaw/pitch rays, packaged camera yaw/pitch fact

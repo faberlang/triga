@@ -41,7 +41,10 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   values while Triga owns the repeated color and index-base pattern. Its
   finalization, fact, draw-batch, and bounds helpers let chunk mesh tests prove
   emitted payload shape, draw scale, upload byte counts, and coarse volumes from
-  the same accumulated buffers.
+  the same accumulated buffers. `face_code_colored_quad_mesh_append` bridges
+  face-code quads and colors into the same accumulated mesh so the application
+  mesher owns neighbor visibility and voxel coordinates, but not repeated face
+  winding, color, or index-base tables.
 - Reusable `Box3` min-max/min-size/center-size construction, validation, size,
   center, containment, union, and translation helpers in `triga/src/triga.fab`
   for chunk mesh bounds. Generic face-code validation, offset projection, and

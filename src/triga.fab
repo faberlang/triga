@@ -11,6 +11,8 @@
 #
 # STYLE: numeric sugar (f32, u32) — all triga types are geometric/mathematical
 
+importa ex "triga:geometry" privata geometry
+
 # =========================================================================
 # MATH TYPES
 #
@@ -473,6 +475,32 @@ functio face_code_unit_quad(
         c = vector3(x1, y1, z1),
         d = vector3(x, y1, z1)
     }
+}
+
+functio face_code_colored_quad_mesh_append(
+    lista<f32> positions,
+    lista<f32> colors,
+    lista<u32> indices,
+    numerus code,
+    f32 x,
+    f32 y,
+    f32 z,
+    f32 size
+) → geometry.ColoredQuadMesh ∪ nihil {
+    fixum FaceQuad ∪ nihil quad_result ← face_code_unit_quad(code, x, y, z, size)
+    si quad_result est nihil ergo redde nihil
+    fixum Color ∪ nihil color_result ← face_code_color(code)
+    si color_result est nihil ergo redde nihil
+    redde geometry.colored_quad_mesh_append(
+        positions,
+        colors,
+        indices,
+        quad_result!.a.x, quad_result!.a.y, quad_result!.a.z,
+        quad_result!.b.x, quad_result!.b.y, quad_result!.b.z,
+        quad_result!.c.x, quad_result!.c.y, quad_result!.c.z,
+        quad_result!.d.x, quad_result!.d.y, quad_result!.d.z,
+        color_result!.r, color_result!.g, color_result!.b
+    )
 }
 
 functio material_double_sided(de Material value) → Material {
