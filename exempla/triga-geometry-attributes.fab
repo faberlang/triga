@@ -123,12 +123,25 @@ incipit {
     adfirma group_draws_result![0].element_count ≡ 3
         et group_draws_result![0].material_index ≡ 0,
         "group draw command list preserves group order and material index"
+    fixum geometry.IndexedGeometryDrawBatchFacts ∪ nihil indexed_batch_result ←
+        geometry.indexed_geometry_draw_batch_facts(triangle, 2)
+    adfirma indexed_batch_result non est nihil,
+        "valid indexed geometry exposes draw batch facts"
+    adfirma indexed_batch_result!.draw_count ≡ 1
+        et indexed_batch_result!.grouped_element_total ≡ 3,
+        "indexed draw batch facts expose group draw count and elements"
+    adfirma indexed_batch_result!.vertex_payload_byte_count ≡ 36
+        et indexed_batch_result!.index_payload_byte_count ≡ 12
+        et indexed_batch_result!.total_payload_byte_count ≡ 48,
+        "indexed draw batch facts expose upload byte counts"
     adfirma geometry.geometry_group_draw_command(triangle, 1, 1) est nihil,
         "missing geometry group rejects draw command creation"
     adfirma geometry.geometry_group_draw_command(triangle, 0, 0) est nihil,
         "empty instance count rejects group draw command creation"
     adfirma geometry.geometry_group_draw_commands(triangle, 0) est nihil,
         "empty instance count rejects group draw command list creation"
+    adfirma geometry.indexed_geometry_draw_batch_facts(triangle, 0) est nihil,
+        "empty instance count rejects indexed draw batch facts"
     fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
     adfirma bounds_result non est nihil, "valid position data produces bounds"
     fixum f32 zero ← 0.0
@@ -219,6 +232,8 @@ incipit {
         "non-indexed geometry has no index payload bytes"
     adfirma (geometry.geometry_payload_byte_count(nonindexed) vel 0) ≡ 36,
         "non-indexed geometry reports only vertex payload bytes"
+    adfirma geometry.indexed_geometry_draw_batch_facts(nonindexed, 1) est nihil,
+        "non-indexed geometry rejects indexed draw batch facts"
     adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
         "non-indexed triangles produce vertex normals"
 

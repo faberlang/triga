@@ -34,7 +34,8 @@ the first visible Faber-authored indexed 3D application.
   validated colored indexed constructor for position/color payloads and
   explicit layout facts for count, source name, format, stride, and vertex step
   mode, plus a source draw command for indexed count, first element, base
-  vertex, and instance count.
+  vertex, and instance count. It also exposes indexed draw batch facts for draw
+  count, grouped element total, and upload byte counts.
 - Triga scene: `triga/src/scene.fab` and scene-store exemplar. It includes
   visible mesh resource and transform-payload projection plus visible draw
   packets and draw batch facts, so the cube proof can hand one source-owned

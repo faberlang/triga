@@ -78,6 +78,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_group_draw_commands` returns the validated draw command list for all
   groups in group order. Goal 05 can use it to submit one chunk geometry without
   host-side group inference.
+- `indexed_geometry_draw_batch_facts` packages draw count, grouped element
+  total, vertex payload bytes, index payload bytes, and total payload bytes for
+  valid indexed geometry. Goals 04 and 05 can prove draw batch scale and upload
+  size without host-side geometry scans.
 - `scene_visible_mesh_transform_payloads`,
   `scene_visible_mesh_transform_payload_count`, and
   `scene_visible_mesh_transform_payload_byte_count` project effectively visible

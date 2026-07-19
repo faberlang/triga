@@ -32,10 +32,10 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   bounding boxes and bounding spheres so chunk draw groups can carry
   source-owned coarse volumes without host-side vertex inference. Validated
   topology, index-format, vertex, index, group, grouped-element, and
-  named-attribute scalar and byte counts, plus visible-face vertex/index/
-  triangle and payload byte accounting, let chunk tests prove resource size,
-  upload sizes, expected index totals, face-derived triangle counts, and draw
-  scaling without host-side geometry scans.
+  named-attribute scalar and byte counts, indexed draw batch facts, plus
+  visible-face vertex/index/triangle and payload byte accounting, let chunk
+  tests prove resource size, upload sizes, expected index totals, face-derived
+  triangle counts, and draw scaling without host-side geometry scans.
 - Reusable `Box3` min-max/min-size/center-size construction, validation, size,
   center, containment, union, and translation helpers in `triga/src/triga.fab`
   for chunk mesh bounds. Generic face-code validation, offset projection, and

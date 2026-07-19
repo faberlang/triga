@@ -72,6 +72,14 @@ genus GeometryGroup {
     numerus material_index
 }
 
+genus IndexedGeometryDrawBatchFacts {
+    numerus draw_count
+    numerus grouped_element_total
+    numerus vertex_payload_byte_count
+    numerus index_payload_byte_count
+    numerus total_payload_byte_count
+}
+
 genus BoundingBox {
     f32 min_x
     f32 min_y
@@ -595,6 +603,35 @@ functio geometry_group_element_total(de BufferGeometry geometry) → numerus ∪
         i ← i + 1
     }
     redde total
+}
+
+functio indexed_geometry_draw_batch_facts(
+    de BufferGeometry geometry,
+    numerus instance_count
+) → IndexedGeometryDrawBatchFacts ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si geometry.indexed ≡ falsum ergo redde nihil
+    si instance_count ≡ 0 ergo redde nihil
+    fixum lista<GeometryDrawCommand> ∪ nihil commands_result ←
+        geometry_group_draw_commands(geometry, instance_count)
+    si commands_result est nihil ergo redde nihil
+    fixum lista<GeometryDrawCommand> empty_commands ← vacua
+    fixum lista<GeometryDrawCommand> commands ← commands_result vel empty_commands
+    fixum numerus ∪ nihil grouped_elements_result ← geometry_group_element_total(geometry)
+    si grouped_elements_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil vertex_bytes_result ← geometry_vertex_payload_byte_count(geometry)
+    si vertex_bytes_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil index_bytes_result ← geometry_index_payload_byte_count(geometry)
+    si index_bytes_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil total_bytes_result ← geometry_payload_byte_count(geometry)
+    si total_bytes_result est nihil ergo redde nihil
+    redde IndexedGeometryDrawBatchFacts {
+        draw_count = commands.longitudo(),
+        grouped_element_total = grouped_elements_result vel 0,
+        vertex_payload_byte_count = vertex_bytes_result vel 0,
+        index_payload_byte_count = index_bytes_result vel 0,
+        total_payload_byte_count = total_bytes_result vel 0
+    }
 }
 
 functio visible_face_vertex_count(numerus face_count) → numerus ∪ nihil {
