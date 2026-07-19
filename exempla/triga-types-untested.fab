@@ -1,0 +1,141 @@
++++
+term = "triga-types-untested"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Constructor and field-access tests for untested triga genus types."
+syntax = "importa ex \"triga:triga\" privata triga"
++++
+
+# exempla/triga-types-untested — instantiation and field defaults for types
+# that previously had zero exempla coverage.
+#
+# Covers: Vector2, Vector4, Matrix3, Mesh, Scene, MeshStandardMaterial,
+# MeshPhongMaterial, OrthographicCamera, Object3D standalone.
+
+importa ex "triga:triga" privata triga
+
+incipit {
+    # Vector2 construction
+    fixum triga.Vector2 vec2 ← triga.Vector2 { x = 3.0 ∷ f32, y = 4.0 ∷ f32 }
+    adfirma vec2.x ≡ (3.0 ∷ f32) et vec2.y ≡ (4.0 ∷ f32),
+        "Vector2 construction preserves field values"
+    fixum triga.Vector2 zero2 ← triga.Vector2 { x = 0.0 ∷ f32, y = 0.0 ∷ f32 }
+    adfirma zero2.x ≡ (0.0 ∷ f32) et zero2.y ≡ (0.0 ∷ f32),
+        "Vector2 zero construction"
+
+    # Vector4 construction
+    fixum triga.Vector4 vec4 ← triga.Vector4 {
+        x = 1.0 ∷ f32, y = 2.0 ∷ f32, z = 3.0 ∷ f32, w = 4.0 ∷ f32
+    }
+    adfirma vec4.x ≡ (1.0 ∷ f32) et vec4.y ≡ (2.0 ∷ f32)
+        et vec4.z ≡ (3.0 ∷ f32) et vec4.w ≡ (4.0 ∷ f32),
+        "Vector4 construction preserves field values"
+
+    # Matrix3 construction
+    fixum triga.Matrix3 matrix3 ← triga.Matrix3 {
+        elements = [1.0 ∷ f32, 2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32, 5.0 ∷ f32,
+                    6.0 ∷ f32, 7.0 ∷ f32, 8.0 ∷ f32, 9.0 ∷ f32]
+    }
+    adfirma matrix3.elements.longitudo() ≡ 9
+        et matrix3.elements[0] ≡ (1.0 ∷ f32)
+        et matrix3.elements[4] ≡ (5.0 ∷ f32),
+        "Matrix3 construction preserves nine-element layout"
+
+    # Object3D standalone (following pattern from triga-transforms.fab)
+    fixum triga.Object3D standalone ← triga.Object3D {
+        position = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
+        rotation = triga.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" },
+        quaternion = triga.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 },
+        scale = triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32),
+        matrix = triga.matrix4_identitas(),
+        children = vacua,
+        visible = verum,
+        name = "standalone"
+    }
+    adfirma standalone.visible,
+        "Object3D preserves visible defaults"
+    adfirma standalone.children.longitudo() ≡ 0,
+        "Object3D starts with no children"
+
+    # Scene (background is sponte but accepts direct assignment)
+    fixum triga.Scene scene ← triga.Scene {
+        base = standalone,
+        background = triga.Color { r = 0.5 ∷ f32, g = 0.6 ∷ f32, b = 0.7 ∷ f32 }
+    }
+    fixum triga.Color ∪ nihil bg ← scene.background
+    adfirma bg non est nihil et bg!.r ≡ (0.5 ∷ f32),
+        "Scene background color access"
+
+    # OrthographicCamera
+    fixum triga.OrthographicCamera ortho ← triga.OrthographicCamera {
+        base = standalone,
+        left = -10.0 ∷ f32, right = 10.0 ∷ f32,
+        top = 10.0 ∷ f32, bottom = -10.0 ∷ f32
+    }
+    adfirma ortho.left ≡ (-10.0 ∷ f32) et ortho.right ≡ (10.0 ∷ f32),
+        "OrthographicCamera preserves bounds"
+    adfirma ortho.near ≡ (0.1 ∷ f32) et ortho.far ≡ (2000.0 ∷ f32),
+        "OrthographicCamera preserves clip plane defaults"
+
+    # Mesh with MeshStandardMaterial
+    fixum triga.Color white ← triga.Color {
+        r = 1.0 ∷ f32, g = 1.0 ∷ f32, b = 1.0 ∷ f32
+    }
+    fixum triga.Color emissive ← triga.Color {
+        r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32
+    }
+    fixum triga.MeshStandardMaterial pbr_material ← triga.MeshStandardMaterial {
+        base = triga.material("pbr"),
+        color = white,
+        roughness = 0.5 ∷ f32,
+        metalness = 0.8 ∷ f32,
+        emissive = emissive
+    }
+    fixum triga.MeshGeometry empty_geometry ← triga.MeshGeometry {
+        positions = vacua, indices = vacua
+    }
+    fixum triga.Mesh mesh ← triga.Mesh {
+        base = standalone,
+        geometry = empty_geometry
+    }
+    adfirma mesh.base.visible,
+        "Mesh preserves Object3D base state"
+
+    # MeshStandardMaterial defaults
+    fixum triga.MeshStandardMaterial default_pbr ← triga.MeshStandardMaterial {
+        base = triga.material("default-pbr"),
+        color = white,
+        emissive = emissive
+    }
+    adfirma default_pbr.roughness ≡ (1.0 ∷ f32)
+        et default_pbr.metalness ≡ (0.0 ∷ f32)
+        et default_pbr.emissive_intensity ≡ (0.0 ∷ f32),
+        "MeshStandardMaterial preserves roughness, metalness, emissive defaults"
+    adfirma triga.material_valid(default_pbr.base),
+        "MeshStandardMaterial base validates"
+
+    # MeshPhongMaterial
+    fixum triga.Color spec ← triga.Color {
+        r = 0.2 ∷ f32, g = 0.2 ∷ f32, b = 0.2 ∷ f32
+    }
+    fixum triga.MeshPhongMaterial phong ← triga.MeshPhongMaterial {
+        base = triga.material("phong"),
+        color = white,
+        specular = spec,
+        shininess = 60.0 ∷ f32
+    }
+    adfirma phong.color.r ≡ (1.0 ∷ f32)
+        et phong.specular.g ≡ (0.2 ∷ f32)
+        et phong.shininess ≡ (60.0 ∷ f32),
+        "MeshPhongMaterial preserves color, specular, and shininess"
+    fixum triga.MeshPhongMaterial default_phong ← triga.MeshPhongMaterial {
+        base = triga.material("default-phong"),
+        color = white,
+        specular = spec
+    }
+    adfirma default_phong.shininess ≡ (30.0 ∷ f32),
+        "MeshPhongMaterial preserves default shininess"
+    adfirma triga.material_valid(default_phong.base),
+        "MeshPhongMaterial base validates"
+}
