@@ -284,6 +284,12 @@ incipit {
     fixum numerus generic_ray_x_offset ← triga.face_code_x_offset(ray_face_code) vel 0
     adfirma generic_ray_x_offset ≡ (triga.ray_box3_hit_face_offset_x(ray_box_hit_value) vel 0),
         "ray box face code agrees with generic face-code offset"
+    fixum triga.Vector3 ∪ nihil generic_ray_normal ← triga.face_code_normal(ray_face_code)
+    adfirma generic_ray_normal non est nihil
+        et generic_ray_normal!.x ≡ ray_box_hit_value.normal.x
+        et generic_ray_normal!.y ≡ ray_box_hit_value.normal.y
+        et generic_ray_normal!.z ≡ ray_box_hit_value.normal.z,
+        "ray box face code agrees with generic face-code normal"
     adfirma (triga.face_code_axis_code(ray_face_code) vel 0) ≡ 1,
         "generic face-code axis records x-axis faces"
     adfirma (triga.face_code_opposite(ray_face_code) vel 0) ≡ 2,
@@ -335,9 +341,19 @@ incipit {
     adfirma (triga.face_code_axis_code(5) vel 0) ≡ 3
         et (triga.face_code_opposite(5) vel 0) ≡ 6,
         "generic face-code metadata records z-axis pairs"
+    fixum triga.Vector3 ∪ nihil generic_y_normal ← triga.face_code_normal(3)
+    fixum triga.Vector3 ∪ nihil generic_z_normal ← triga.face_code_normal(6)
+    adfirma generic_y_normal non est nihil
+        et generic_y_normal!.y ≡ (-1.0 ∷ f32)
+        et generic_y_normal!.x ≡ (0.0 ∷ f32)
+        et generic_z_normal non est nihil
+        et generic_z_normal!.z ≡ (1.0 ∷ f32),
+        "generic face-code normals record y and z axis directions"
     adfirma triga.face_code_axis_code(0) est nihil
         et triga.face_code_opposite(0) est nihil,
         "generic face-code metadata rejects invalid face codes"
+    adfirma triga.face_code_normal(0) est nihil,
+        "generic face-code normal rejects invalid face codes"
     fixum triga.Ray z_ray ← triga.Ray {
         origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 3.0 ∷ f32),
         direction = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)

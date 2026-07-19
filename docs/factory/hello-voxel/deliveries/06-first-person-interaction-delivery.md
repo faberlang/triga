@@ -35,10 +35,10 @@ placement to the bounded world using Faber state and the authoritative model.
   inflation for selection and collision tolerances, and a `RayBox3Hit` result
   with distance, point, outward face normal, stable face-code projection, and
   integer face-offset projection for selection indicators and
-  edit-adjacent-cell derivation. Generic face-code axis, opposite-face, and
-  offset helpers expose the same adjacent-cell and paired-face direction facts
-  without requiring a ray-hit value. Voxel DDA remains application-owned. Triga
-  geometry also provides
+  edit-adjacent-cell derivation. Generic face-code axis, normal, opposite-face,
+  and offset helpers expose the same adjacent-cell, selection-normal, and
+  paired-face direction facts without requiring a ray-hit value. Voxel DDA
+  remains application-owned. Triga geometry also provides
   `box_wire_geometry` for a minimal selection outline and `geometry_line_count`
   for deterministic line-list draw evidence without host-side shape
   construction.

@@ -334,6 +334,16 @@ functio face_code_z_offset(numerus code) → numerus ∪ nihil {
     redde 0
 }
 
+functio face_code_normal(numerus code) → Vector3 ∪ nihil {
+    si code ≡ 1 ergo redde vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    si code ≡ 2 ergo redde vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    si code ≡ 3 ergo redde vector3(0.0 ∷ f32, -1.0 ∷ f32, 0.0 ∷ f32)
+    si code ≡ 4 ergo redde vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
+    si code ≡ 5 ergo redde vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
+    si code ≡ 6 ergo redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    redde nihil
+}
+
 functio face_code_color(numerus code) → Color ∪ nihil {
     si code ≡ 1 ergo redde Color { r = 0.8 ∷ f32, g = 0.1 ∷ f32, b = 0.1 ∷ f32 }
     si code ≡ 2 ergo redde Color { r = 1.0 ∷ f32, g = 0.4 ∷ f32, b = 0.4 ∷ f32 }

@@ -219,10 +219,10 @@ yaw/pitch ray construction, yaw-derived horizontal movement basis vectors,
 normalized planar movement deltas with speed and frame time,
 ray-to-`Box3` entry distance, and `RayBox3Hit`
 distance/point/normal facts plus stable face-code projection. Generic
-face-code validation, axis classification, opposite-face projection, face
-offsets, and face colors define reusable axis-direction facts for meshing,
-selection indicators, neighbor updates, and edit-adjacent-cell derivation.
-Voxel DDA remains application-owned.
+face-code validation, axis classification, normal-vector projection,
+opposite-face projection, face offsets, and face colors define reusable
+axis-direction facts for meshing, selection indicators, neighbor updates, and
+edit-adjacent-cell derivation. Voxel DDA remains application-owned.
 
 The first draw uses one transform storage buffer with 32 `f32` values and 128
 bytes. `transform_payload_float_count`, `transform_payload_byte_count`,

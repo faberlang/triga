@@ -204,9 +204,9 @@ Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
 Camera and transform facts now lock perspective projection, composed
 view-projection facts, plus the 32-float, 128-byte model then view-projection
 payload order.
-Face-code facts now lock ray/AABB hit codes, integer face offsets, and
-direction colors plus axis/opposite-face metadata for meshing, selection, and
-edit placement.
+Face-code facts now lock ray/AABB hit codes, normal vectors, integer face
+offsets, direction colors, and axis/opposite-face metadata for meshing,
+selection, and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch live/current-handle evidence for
 empty and non-empty chunk remeshes. Visible mesh transform-payload facts now
