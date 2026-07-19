@@ -300,12 +300,14 @@ incipit {
     fixum scene.SceneStore ∪ nihil shared_attached ← scene.scene_attach(
         mesh_attached_store, shared_mesh_step.handle, root_step.handle
     )
+    adfirma shared_attached non est nihil, "shared-mesh attach succeeds"
     fixum scene.SceneStore shared_attached_store ← scene.SceneStore {
         slots = shared_attached!.slots
     }
     fixum scene.SceneStore ∪ nihil camera_attached ← scene.scene_attach(
         shared_attached_store, camera_step.handle, root_step.handle
     )
+    adfirma camera_attached non est nihil, "camera attach succeeds"
     fixum scene.SceneStore camera_attached_store ← scene.SceneStore {
         slots = camera_attached!.slots
     }
