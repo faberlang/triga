@@ -579,6 +579,23 @@ functio box3_intersecat(de Box3 a, de Box3 b) → bivalens {
     redde verum
 }
 
+functio box3_superpositio(de Box3 a, de Box3 b) → Vector3 ∪ nihil {
+    si box3_intersecat(a, b) ≡ falsum ergo redde nihil
+    varia f32 min_x ← a.max.x
+    varia f32 min_y ← a.max.y
+    varia f32 min_z ← a.max.z
+    varia f32 max_x ← a.min.x
+    varia f32 max_y ← a.min.y
+    varia f32 max_z ← a.min.z
+    si b.max.x < min_x { min_x ← b.max.x }
+    si b.max.y < min_y { min_y ← b.max.y }
+    si b.max.z < min_z { min_z ← b.max.z }
+    si b.min.x > max_x { max_x ← b.min.x }
+    si b.min.y > max_y { max_y ← b.min.y }
+    si b.min.z > max_z { max_z ← b.min.z }
+    redde vector3(min_x - max_x, min_y - max_y, min_z - max_z)
+}
+
 functio box3_unio(de Box3 a, de Box3 b) → Box3 ∪ nihil {
     si box3_validum(a) ≡ falsum aut box3_validum(b) ≡ falsum ergo redde nihil
     varia f32 min_x ← a.min.x

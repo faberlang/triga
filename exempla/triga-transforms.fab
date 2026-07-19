@@ -130,6 +130,10 @@ incipit {
         "box translation preserves extent"
     adfirma triga.box3_intersecat(bounds, shifted_bounds),
         "touching boxes intersect"
+    fixum triga.Vector3 ∪ nihil overlap ← triga.box3_superpositio(bounds, shifted_bounds)
+    adfirma overlap non est nihil et overlap!.x ≡ (0.0 ∷ f32)
+        et overlap!.y ≡ (2.0 ∷ f32) et overlap!.z ≡ (2.0 ∷ f32),
+        "box overlap records shared extent per axis"
     fixum triga.Box3 ∪ nihil union_bounds ← triga.box3_unio(bounds, shifted_bounds)
     adfirma union_bounds non est nihil
         et union_bounds!.min.x ≡ (-1.0 ∷ f32)
@@ -140,6 +144,8 @@ incipit {
     )
     adfirma triga.box3_intersecat(bounds, distant_bounds) ≡ falsum,
         "separated boxes do not intersect"
+    adfirma triga.box3_superpositio(bounds, distant_bounds) est nihil,
+        "separated boxes do not produce overlap extents"
     adfirma triga.box3_continet_box3(bounds, distant_bounds) ≡ falsum,
         "box containment rejects escaped bounds"
     fixum triga.Box3 invalid_bounds ← triga.Box3 {
@@ -150,6 +156,8 @@ incipit {
         "box rejects inverted x extent"
     adfirma triga.box3_intersecat(invalid_bounds, bounds) ≡ falsum,
         "invalid boxes do not intersect"
+    adfirma triga.box3_superpositio(invalid_bounds, bounds) est nihil,
+        "box overlap rejects invalid input"
     adfirma triga.box3_continet_box3(bounds, invalid_bounds) ≡ falsum,
         "box containment rejects invalid child bounds"
     adfirma triga.box3_unio(invalid_bounds, bounds) est nihil,
