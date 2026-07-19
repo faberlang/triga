@@ -89,9 +89,10 @@ rejection cases.
 source-owned material data. `material` records default opaque material state,
 `material_double_sided` records disabled face culling intent through `side = 2`,
 `material_est_double_sided` checks that intent, `material_depth_enabled` checks
-depth-test and depth-write policy, and `material_valid` rejects empty names and
-out-of-range material scalars. The pipeline reflection for culling, depth target
-format, depth compare, and color target format remains Radix-owned.
+depth-test and depth-write policy, `mesh_basic_material` records minimal unlit
+color material intent, and `material_valid` plus `mesh_basic_material_valid`
+reject invalid base material state. The pipeline reflection for culling, depth
+target format, depth compare, and color target format remains Radix-owned.
 
 ## Scene And Resource Facts
 
