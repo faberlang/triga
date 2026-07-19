@@ -168,7 +168,7 @@ reflection consumer admits compute kernels only.
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga math and transforms | Camera, ray, AABB, collision extent, and first-person planar movement facts are locked | Preserve and consume |
+| Triga math and transforms | Camera, ray, AABB, transform payload, collision extent, and first-person planar movement facts are locked | Preserve and consume |
 | Triga scene identity | Stable scene-store source, resource transitions, and lifecycle-state fixtures exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
 | Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, and count facts are locked | Preserve and consume |
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, and alpha facts are locked | Preserve and consume |
@@ -195,6 +195,7 @@ locks first-draw layout, topology, index format, vertex-step mode, draw, and
 count facts. Material policy now locks side, depth-test, depth-write, RGB, and
 alpha facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
+Transform facts now lock the 32-float model then view-projection payload order.
 Ray/AABB hit facts now lock face codes and integer face offsets for edit
 placement derivation.
 Scene/resource facts now lock created, replaced, unchanged, and removed

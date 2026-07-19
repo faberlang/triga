@@ -158,9 +158,11 @@ host facts.
 ## Matrix Facts
 
 `triga/src/triga.fab` defines `Matrix4` as `lista<f32>` and states that
-elements are column-major and multiply column vectors. It provides identity,
-translation, scale, composition, multiplication, point application, transpose,
-and affine inverse helpers. It also provides min-max, min-size, and center-size
+elements are column-major and multiply column vectors. It provides matrix
+length validation, identity, translation, scale, composition, multiplication,
+point application, transpose, affine inverse helpers, and a `TransformPayload`
+constructor that packs model matrix values before view-projection values. It
+also provides min-max, min-size, and center-size
 `Box3` construction, point and box containment, `Box3` overlap extents for
 axis-ordered collision fixtures, `Box3` union for aggregate chunk or selection
 bounds, `Box3` inflation for source-owned selection and collision tolerances,
@@ -171,10 +173,11 @@ distance/point/normal facts plus stable face-code and face-offset projections
 for selection indicators and edit-adjacent-cell derivation. Voxel DDA remains
 application-owned.
 
-The first draw uses one transform storage buffer with 32 `f32` values. The
-buffer order is model matrix first and view-projection matrix second. The host
-must not split this buffer or reorder the matrices unless Radix reflection says
-so.
+The first draw uses one transform storage buffer with 32 `f32` values.
+`transform_payload_float_count`, `transform_payload_model_value`, and
+`transform_payload_view_projection_value` expose the locked count and order.
+The host must not split this buffer or reorder the matrices unless Radix
+reflection says so.
 
 ## Radix And Browser State
 

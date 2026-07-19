@@ -31,6 +31,32 @@ incipit {
     adfirma (transformed.x - 7.0).absolutum() ≤ 0.0001, "scaled and translated x"
     adfirma (transformed.y - 4.0).absolutum() ≤ 0.0001, "scaled and translated y"
     adfirma (transformed.z + 1.0).absolutum() ≤ 0.0001, "scaled and translated z"
+    adfirma triga.matrix4_valid(world), "matrix4 validation accepts sixteen values"
+    fixum triga.TransformPayload ∪ nihil packed_transform_result ←
+        triga.transform_payload(world, scale)
+    adfirma packed_transform_result non est nihil,
+        "transform payload accepts model and view-projection matrices"
+    fixum triga.TransformPayload packed_transform ← triga.TransformPayload {
+        values = packed_transform_result!.values
+    }
+    adfirma (triga.transform_payload_float_count(packed_transform) vel 0) ≡ 32,
+        "transform payload locks thirty-two f32 values"
+    adfirma (triga.transform_payload_model_value(packed_transform, 0) vel 0.0)
+        ≡ world.elements[0],
+        "transform payload starts with model matrix values"
+    adfirma (triga.transform_payload_model_value(packed_transform, 15) vel 0.0)
+        ≡ world.elements[15],
+        "transform payload keeps full model matrix first"
+    adfirma (triga.transform_payload_view_projection_value(packed_transform, 0) vel 0.0)
+        ≡ scale.elements[0],
+        "transform payload stores view-projection matrix after model matrix"
+    adfirma triga.transform_payload_model_value(packed_transform, 16) est nihil,
+        "transform payload rejects model indices outside sixteen values"
+    fixum triga.Matrix4 invalid_matrix ← triga.Matrix4 { elements = [1.0 ∷ f32] }
+    adfirma triga.matrix4_valid(invalid_matrix) ≡ falsum,
+        "matrix4 validation rejects non-sixteen-value matrices"
+    adfirma triga.transform_payload(invalid_matrix, scale) est nihil,
+        "transform payload rejects invalid model matrices"
 
     fixum triga.Matrix4 ∪ nihil inverse ← triga.matrix4_inversa_affinis(world)
     fixum triga.Matrix4 inverse_value ← triga.Matrix4 { elements = inverse!.elements }

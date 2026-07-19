@@ -32,7 +32,8 @@ contract while preserving compute behavior.
 - WGSL contract: `mir/wgsl_text.rs` and `mir/wgsl_text_test.rs`.
 - JSON: `tool/commands/reflection.rs` and `tool_test.rs`.
 - Triga agreement: `triga/src/geometry.fab` for vertex layout facts and
-  `triga/src/triga.fab` for validated material RGB/alpha facts.
+  `triga/src/triga.fab` for validated material RGB/alpha facts and locked
+  32-float transform payload order.
 
 ## Stage Graph
 

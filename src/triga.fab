@@ -46,6 +46,10 @@ genus Matrix4 {
     lista<f32> elements
 }
 
+genus TransformPayload {
+    lista<f32> values
+}
+
 genus Quaternion {
     f32 x
     f32 y
@@ -896,6 +900,52 @@ functio matrix4_identitas() → Matrix4 {
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0,
     ] }
+}
+
+functio matrix4_valid(de Matrix4 matrix) → bivalens {
+    redde matrix.elements.longitudo() ≡ 16
+}
+
+functio transform_payload(
+    de Matrix4 model,
+    de Matrix4 view_projection
+) → TransformPayload ∪ nihil {
+    si matrix4_valid(model) ≡ falsum ergo redde nihil
+    si matrix4_valid(view_projection) ≡ falsum ergo redde nihil
+    varia lista<f32> values ← vacua
+    itera ex model.elements fixum value {
+        values.appende(value)
+    }
+    itera ex view_projection.elements fixum value {
+        values.appende(value)
+    }
+    redde TransformPayload { values = values }
+}
+
+functio transform_payload_float_count(de TransformPayload payload) → numerus ∪ nihil {
+    si payload.values.longitudo() ≠ 32 ergo redde nihil
+    fixum numerus count ← payload.values.longitudo()
+    redde count
+}
+
+functio transform_payload_model_value(
+    de TransformPayload payload,
+    numerus index
+) → f32 ∪ nihil {
+    si payload.values.longitudo() ≠ 32 ergo redde nihil
+    si index < 0 aut index ≥ 16 ergo redde nihil
+    fixum f32 value ← payload.values[index]
+    redde value
+}
+
+functio transform_payload_view_projection_value(
+    de TransformPayload payload,
+    numerus index
+) → f32 ∪ nihil {
+    si payload.values.longitudo() ≠ 32 ergo redde nihil
+    si index < 0 aut index ≥ 16 ergo redde nihil
+    fixum f32 value ← payload.values[index + 16]
+    redde value
 }
 
 functio matrix4_translatio(de Vector3 offset) → Matrix4 {
