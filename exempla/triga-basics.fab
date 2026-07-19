@@ -55,6 +55,10 @@ incipit {
         "material constructor records front-side culling intent"
     adfirma triga.material_depth_enabled(base_material),
         "material defaults keep depth testing enabled"
+    adfirma triga.material_depth_test_enabled(base_material),
+        "material defaults expose enabled depth testing"
+    adfirma triga.material_depth_write_enabled(base_material),
+        "material defaults expose enabled depth writes"
 
     fixum triga.Material double_sided ← triga.material_double_sided(base_material)
     adfirma triga.material_est_double_sided(double_sided),
@@ -63,6 +67,10 @@ incipit {
         "double-sided material exposes disabled culling side code"
     adfirma triga.material_depth_enabled(double_sided),
         "double-sided material preserves depth policy"
+    adfirma triga.material_depth_test_enabled(double_sided),
+        "double-sided material preserves depth testing"
+    adfirma triga.material_depth_write_enabled(double_sided),
+        "double-sided material preserves depth writes"
 
     fixum triga.MeshBasicMaterial ∪ nihil unlit ← triga.mesh_basic_material(
         "hello-voxel-unlit",
@@ -74,6 +82,10 @@ incipit {
         "mesh basic material preserves valid base material state"
     adfirma triga.material_depth_enabled(unlit!.base),
         "mesh basic material preserves opaque depth policy"
+    adfirma triga.material_depth_test_enabled(unlit!.base),
+        "mesh basic material exposes depth testing"
+    adfirma triga.material_depth_write_enabled(unlit!.base),
+        "mesh basic material exposes depth writes"
     adfirma unlit!.color.g ≡ (0.5 ∷ f32),
         "mesh basic material records unlit color intent"
     adfirma triga.mesh_basic_material("", triga.Color { r = 1.0, g = 1.0, b = 1.0 }) est nihil,

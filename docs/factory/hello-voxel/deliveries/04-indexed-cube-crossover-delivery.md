@@ -25,9 +25,9 @@ the first visible Faber-authored indexed 3D application.
   perspective projection and look-at view matrix helpers for the crossover
   camera.
 - Triga material: `triga/src/triga.fab` and basics exemplar. It includes a
-  validated material constructor, side-code projection, depth-policy check,
-  double-sided material helper, and minimal unlit `MeshBasicMaterial`
-  constructor for source-owned cube material intent.
+  validated material constructor, side-code projection, combined and per-flag
+  depth-policy checks, double-sided material helper, and minimal unlit
+  `MeshBasicMaterial` constructor for source-owned cube material intent.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
   validated colored indexed constructor for position/color payloads and
   a source draw command for indexed count, first element, base vertex, and

@@ -278,6 +278,14 @@ functio material_depth_enabled(de Material value) → bivalens {
     redde value.depth_test et value.depth_write
 }
 
+functio material_depth_test_enabled(de Material value) → bivalens {
+    redde value.depth_test
+}
+
+functio material_depth_write_enabled(de Material value) → bivalens {
+    redde value.depth_write
+}
+
 functio mesh_basic_material(textus name, de Color color) → MeshBasicMaterial ∪ nihil {
     fixum Material base ← material(name)
     si material_valid(base) ≡ falsum ergo redde nihil
