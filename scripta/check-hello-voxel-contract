@@ -39,7 +39,14 @@ echo "check-hello-voxel-contract: scene/resource and draw-packet facts"
 "$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
 
 echo "check-hello-voxel-contract: compile viability"
-"$ROOT/scripta/check-compile"
+COMPILE_LOG="$(mktemp "${TMPDIR:-/tmp}/triga-hello-voxel-compile.XXXXXX.log")"
+trap 'rm -f "$COMPILE_LOG"' EXIT
+if "$ROOT/scripta/check-compile" >"$COMPILE_LOG" 2>&1; then
+  echo "check-hello-voxel-contract: compile viability ok"
+else
+  cat "$COMPILE_LOG" >&2
+  exit 1
+fi
 
 echo "check-hello-voxel-contract: runtime dependency inventory"
 "$ROOT/scripta/check-hello-voxel-runtime-deps"
