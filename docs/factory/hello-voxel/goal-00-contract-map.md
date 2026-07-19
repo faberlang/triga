@@ -15,8 +15,13 @@ reflection and data. It must not parse WGSL or infer Triga field names.
 
 This pass writes only Triga planning evidence. Radix has active foreign
 implementation work, so this pass does not add Radix tests or browser-host
-fixtures. The deferred fixture work stays part of Goal 00, but it is not a
-Triga-owned write.
+fixtures. The Triga reusable-contract pass is complete for Goal 00. The
+deferred fixture work stays part of Goal 00, but it is not a Triga-owned write.
+
+Do not compensate for the Radix and browser gaps by moving voxel storage, DDA,
+dirty chunk tracking, shader lowering, reflection, browser lifecycle, or
+WebGPU host behavior into Triga. Those facts remain application, compiler, or
+host-owned until a later delivery spec assigns them otherwise.
 
 ## First Draw Contract
 
@@ -236,8 +241,9 @@ This pass read the current Radix and browser surfaces without writing them.
 ## Deferred Red Fixtures
 
 Goal 00 requested red fixtures for missing fragment admission and
-compute-only graphics-host rejection. They are still useful, but this Triga
-pass did not write them because Radix has foreign work in progress.
+compute-only graphics-host rejection. They are the first remaining executable
+Goal 00 gate, but this Triga pass did not write them because Radix has foreign
+work in progress.
 
 The intended Radix fixture boundaries are:
 

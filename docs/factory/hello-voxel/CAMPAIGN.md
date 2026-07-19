@@ -190,7 +190,8 @@ reflection consumer admits compute kernels only.
 browser fact required by the first indexed draw.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: discovery-first
-**Progress**: Triga-side executable-truth inventory is complete. Geometry now
+**Progress**: Triga-side executable-truth inventory is complete. No remaining
+Triga-owned Goal 00 source gap is known. Geometry now
 locks first-draw layout, topology, index format, vertex-step mode, draw, and
 count facts plus visible-face mesh accounting for chunk meshing. Material
 policy now locks side, depth-test, depth-write, RGB, and alpha facts.
@@ -206,8 +207,9 @@ empty and non-empty chunk remeshes. Visible mesh transform-payload facts now
 lock one 128-byte model/view-projection upload per effectively visible mesh.
 Visible mesh draw packets now lock one source-owned node/resource/transform
 packet per effectively visible mesh.
-Radix red fixtures remain pending because Radix has active foreign
-implementation work.
+The first remaining executable Goal 00 gate is HV-00B: Radix-owned red
+fixtures for fragment admission and compute-only graphics-host rejection. That
+work remains pending because Radix has active foreign implementation work.
 
 ### Goal 01 - Source Graphics Pipeline
 

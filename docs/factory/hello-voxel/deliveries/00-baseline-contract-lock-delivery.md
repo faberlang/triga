@@ -1,7 +1,7 @@
 # HV-00 Delivery: Baseline And Contract Lock
 
 **Parent goal**: [`../goals/00-baseline-contract-lock.md`](../goals/00-baseline-contract-lock.md)
-**Factory admission**: ACTIVE; Triga inventory/layout proof complete, Radix red fixtures pending
+**Factory admission**: ACTIVE; Triga reusable-contract pass complete, Radix red fixtures pending
 **Primary repo**: `triga` for the current pass; `radix` for deferred red fixtures
 **Supporting repos**: `triga`, `faber`
 
@@ -37,13 +37,16 @@ fixtures only where a missing capability needs an implementation entry point.
 
 ### HV-00A - Executable Truth Inventory
 
-**Status**: complete for Triga-owned evidence
+**Status**: complete for Triga-owned source and planning evidence
 **Output**: a fact/owner/state table saved beside this delivery spec.
 **Write scope**: `triga/docs/factory/hello-voxel/` only.
 **Gate**: every Goal 01 locked fact maps to a live type, generated field, missing
 field, or platform-owned value.
 **Evidence**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md) and
-`triga/exempla/hello-voxel-first-draw-facts.fab`
+`triga/exempla/hello-voxel-first-draw-facts.fab`. The Triga evidence now covers
+first-draw layout, material policy, transform payload order, scene resource
+lifecycle facts, visible mesh draw packets, face-code metadata, and
+visible-face mesh accounting.
 
 ### HV-00B - Red Admission Fixtures
 
@@ -55,7 +58,8 @@ missing fragment and graphics-adapter boundaries.
 `radix/hosts/webgpu-browser/public/src/`.
 **Gate**: tests fail for named unsupported behavior and preserve compute checks.
 **Current constraint**: Radix has active foreign implementation work. Do not
-write these fixtures from a Triga-only pass.
+write these fixtures from a Triga-only pass. This is the next executable
+Goal 00 gate after the completed Triga reusable-contract pass.
 
 ### HV-00C - Contract Freeze
 
