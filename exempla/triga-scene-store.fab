@@ -194,6 +194,12 @@ incipit {
         et lifecycle_live_indices![1] ≡ material.index
         et lifecycle_live_indices![2] ≡ new_geometry.index,
         "lifecycle batch exposes current live logical indices"
+    fixum lista<numerus> ∪ nihil lifecycle_retired_indices ←
+        scene.resource_lifecycle_retired_indices(lifecycle_batch)
+    adfirma lifecycle_retired_indices non est nihil
+        et lifecycle_retired_indices![0] ≡ material.index
+        et lifecycle_retired_indices![1] ≡ removed_geometry.index,
+        "lifecycle batch exposes retired logical indices"
     fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_changed_handles ←
         scene.resource_lifecycle_changed_handles(lifecycle_batch)
     adfirma lifecycle_changed_handles non est nihil,
@@ -218,6 +224,16 @@ incipit {
     adfirma lifecycle_removed_handles![0].index ≡ removed_geometry.index
         et lifecycle_removed_handles![0].generation ≡ removed_geometry.generation,
         "lifecycle batch preserves removed previous generation"
+    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_retired_handles ←
+        scene.resource_lifecycle_retired_handles(lifecycle_batch)
+    adfirma lifecycle_retired_handles non est nihil,
+        "lifecycle batch exposes retired previous handles"
+    adfirma lifecycle_retired_handles![0].index ≡ material.index
+        et lifecycle_retired_handles![0].generation ≡ material.generation,
+        "lifecycle batch exposes replaced previous generation for retirement"
+    adfirma lifecycle_retired_handles![1].index ≡ removed_geometry.index
+        et lifecycle_retired_handles![1].generation ≡ removed_geometry.generation,
+        "lifecycle batch exposes removed previous generation for retirement"
     fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_current_handles ←
         scene.resource_lifecycle_current_handles(lifecycle_batch)
     adfirma lifecycle_current_handles non est nihil,
@@ -245,12 +261,16 @@ incipit {
         "lifecycle removed indices reject duplicate logical resources"
     adfirma scene.resource_lifecycle_live_indices(duplicate_lifecycle_batch) est nihil,
         "lifecycle live indices reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_retired_indices(duplicate_lifecycle_batch) est nihil,
+        "lifecycle retired indices reject duplicate logical resources"
     adfirma scene.resource_lifecycle_changed_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle changed handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_unchanged_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle unchanged handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_removed_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle removed handles reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_retired_handles(duplicate_lifecycle_batch) est nihil,
+        "lifecycle retired handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_current_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle current handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_batch_facts(duplicate_lifecycle_batch) est nihil,

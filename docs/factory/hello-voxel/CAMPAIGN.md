@@ -215,7 +215,8 @@ ray-hit face fact packaging, and outward-wound unit face quads for meshing,
 selection, and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch changed, created, removed, live,
-unchanged, and current handle evidence for empty and non-empty chunk remeshes.
+unchanged, retired, and current handle evidence for empty and non-empty chunk
+remeshes.
 A lifecycle batch fact record now packages transition, changed, unchanged,
 created, removed, and live counts for host-facing resource proof. Visible mesh
 transform-payload facts now lock one 128-byte model/view-projection upload per

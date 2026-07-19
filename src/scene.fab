@@ -535,6 +535,19 @@ functio resource_lifecycle_live_indices(
     redde indices
 }
 
+functio resource_lifecycle_retired_indices(
+    de lista<ResourceLifecycleTransition> transitions
+) → lista<numerus> ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<numerus> indices ← vacua
+    itera ex transitions fixum transition {
+        si transition.changed et transition.previous non est nihil {
+            indices.appende(transition.logical_index)
+        }
+    }
+    redde indices
+}
+
 functio resource_lifecycle_changed_handles(
     de lista<ResourceLifecycleTransition> transitions
 ) → lista<ResourceHandle> ∪ nihil {
@@ -574,6 +587,22 @@ functio resource_lifecycle_removed_handles(
     varia lista<ResourceHandle> handles ← vacua
     itera ex transitions fixum transition {
         si transition.removed et transition.previous non est nihil {
+            handles.appende(ResourceHandle {
+                index = transition.previous!.index,
+                generation = transition.previous!.generation
+            })
+        }
+    }
+    redde handles
+}
+
+functio resource_lifecycle_retired_handles(
+    de lista<ResourceLifecycleTransition> transitions
+) → lista<ResourceHandle> ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<ResourceHandle> handles ← vacua
+    itera ex transitions fixum transition {
+        si transition.changed et transition.previous non est nihil {
             handles.appende(ResourceHandle {
                 index = transition.previous!.index,
                 generation = transition.previous!.generation

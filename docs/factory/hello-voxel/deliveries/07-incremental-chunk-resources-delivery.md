@@ -39,10 +39,12 @@ GPU buffer replacement, queue-safe retirement, and bounded lifecycle evidence.
   and removed single-resource states, so empty chunk remeshes can be represented
   as no-current-resource facts before host disposal. Batch lifecycle validation,
   a packaged lifecycle batch fact record, changed/unchanged/removed/live
-  logical-index extraction, unchanged handle extraction, and current-handle
+  logical-index extraction, retired logical-index extraction, unchanged handle
+  extraction, retired previous-handle extraction, and current-handle
   extraction provide exact per-chunk generation, affected-set, stable
-  unaffected chunk, removed-chunk, and live-resource evidence. GPU retirement,
-  destroyed counters, and queue completion remain host-owned.
+  unaffected chunk, removed-chunk, old resources that need retirement, and
+  live-resource evidence. Queue completion, GPU destruction, and destroyed
+  counters remain host-owned.
 - Host buffer creation/submission: Radix browser WebGPU runtime after HV-02.
 - Existing compute runtime already owns buffer usage and queue submission; its
   semantics are evidence, not permission to duplicate graphics lifecycle code.
