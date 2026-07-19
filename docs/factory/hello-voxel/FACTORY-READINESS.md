@@ -105,10 +105,10 @@ and should be serialized unless delivery-specific write scopes prove otherwise.
 All nine delivery specs exist. HV-00 is active. Its Triga-side reusable
 contract pass is complete, including first-draw layout, material, transform,
 camera yaw/pitch fact records, scene/resource lifecycle handles and batch
-facts, face-code unit quads, visible resource facts, visible-mesh packet,
-visible-face accounting, colored quad finalization, colored mesh fact records,
-colored mesh draw-batch facts, colored mesh bounds, and line draw-batch facts
-for selection outlines. The
+facts, packaged `Box3` overlap facts, face-code unit quads, visible resource
+facts, visible-mesh packet, visible-face accounting, colored quad finalization,
+colored mesh fact records, colored mesh draw-batch facts, colored mesh bounds,
+and line draw-batch facts for selection outlines. The
 `triga/scripta/check-hello-voxel-contract` gate packages the Triga-owned
 executable evidence and compile viability without claiming browser rendering.
 HV-04A's reusable Triga prerequisite scope is also complete for the current

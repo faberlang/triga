@@ -244,8 +244,10 @@ point application, transpose, affine inverse helpers, and a `TransformPayload`
 constructor that packs model matrix values before view-projection values. It
 also provides min-max, min-size, and center-size
 `Box3` construction, point and box containment, `Box3` overlap extents for
-axis-ordered collision fixtures, `Box3` union for aggregate chunk or selection
-bounds, `Box3` inflation for source-owned selection and collision tolerances,
+axis-ordered collision fixtures, `box3_superpositio_facta` packaging the
+overlap vector and X/Y/Z collision extents into one validated record, `Box3`
+union for aggregate chunk or selection bounds, `Box3` inflation for
+source-owned selection and collision tolerances,
 perspective camera projection facts for aspect, near/far, projection length,
 projection scale evidence, composed perspective view-projection facts, camera
 yaw/pitch ray construction, yaw-derived horizontal movement basis vectors,

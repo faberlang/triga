@@ -75,6 +75,13 @@ genus Box3 {
     Vector3 max
 }
 
+genus Box3OverlapFacts {
+    Vector3 overlap
+    f32 x
+    f32 y
+    f32 z
+}
+
 genus Sphere {
     Vector3 center
     f32 radius
@@ -883,6 +890,22 @@ functio box3_superpositio(de Box3 a, de Box3 b) → Vector3 ∪ nihil {
     si b.min.y > max_y { max_y ← b.min.y }
     si b.min.z > max_z { max_z ← b.min.z }
     redde vector3(min_x - max_x, min_y - max_y, min_z - max_z)
+}
+
+functio box3_superpositio_facta(de Box3 a, de Box3 b) → Box3OverlapFacts ∪ nihil {
+    fixum Vector3 ∪ nihil overlap_result ← box3_superpositio(a, b)
+    si overlap_result est nihil ergo redde nihil
+    fixum Vector3 overlap ← Vector3 {
+        x = overlap_result!.x,
+        y = overlap_result!.y,
+        z = overlap_result!.z
+    }
+    redde Box3OverlapFacts {
+        overlap = overlap,
+        x = overlap.x,
+        y = overlap.y,
+        z = overlap.z
+    }
 }
 
 functio box3_superpositio_x(de Box3 a, de Box3 b) → f32 ∪ nihil {

@@ -195,6 +195,18 @@ incipit {
         et (triga.box3_superpositio_y(bounds, shifted_bounds) vel 0.0) ≡ (2.0 ∷ f32)
         et (triga.box3_superpositio_z(bounds, shifted_bounds) vel 0.0) ≡ (2.0 ∷ f32),
         "box overlap exposes axis-specific collision extents"
+    fixum triga.Box3OverlapFacts ∪ nihil overlap_facts ←
+        triga.box3_superpositio_facta(bounds, shifted_bounds)
+    adfirma overlap_facts non est nihil,
+        "box overlap facts package collision extents"
+    adfirma overlap_facts!.overlap.x ≡ (0.0 ∷ f32)
+        et overlap_facts!.overlap.y ≡ (2.0 ∷ f32)
+        et overlap_facts!.overlap.z ≡ (2.0 ∷ f32),
+        "box overlap facts preserve the overlap vector"
+    adfirma overlap_facts!.x ≡ (0.0 ∷ f32)
+        et overlap_facts!.y ≡ (2.0 ∷ f32)
+        et overlap_facts!.z ≡ (2.0 ∷ f32),
+        "box overlap facts expose per-axis collision extents"
     fixum triga.Box3 ∪ nihil union_bounds ← triga.box3_unio(bounds, shifted_bounds)
     adfirma union_bounds non est nihil
         et union_bounds!.min.x ≡ (-1.0 ∷ f32)
@@ -219,6 +231,8 @@ incipit {
         "separated boxes do not intersect"
     adfirma triga.box3_superpositio(bounds, distant_bounds) est nihil,
         "separated boxes do not produce overlap extents"
+    adfirma triga.box3_superpositio_facta(bounds, distant_bounds) est nihil,
+        "separated boxes do not produce overlap fact records"
     adfirma triga.box3_continet_box3(bounds, distant_bounds) ≡ falsum,
         "box containment rejects escaped bounds"
     fixum triga.Box3 invalid_bounds ← triga.Box3 {
