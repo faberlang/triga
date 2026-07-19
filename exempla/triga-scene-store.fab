@@ -157,6 +157,25 @@ incipit {
         "lifecycle batch counts removed resources"
     adfirma (scene.resource_lifecycle_live_count(lifecycle_batch) vel 0) ≡ 3,
         "lifecycle batch counts current live resources"
+    fixum lista<numerus> ∪ nihil lifecycle_changed_indices ←
+        scene.resource_lifecycle_changed_indices(lifecycle_batch)
+    adfirma lifecycle_changed_indices non est nihil
+        et lifecycle_changed_indices![0] ≡ material.index
+        et lifecycle_changed_indices![1] ≡ new_geometry.index
+        et lifecycle_changed_indices![2] ≡ removed_geometry.index,
+        "lifecycle batch exposes changed logical indices"
+    fixum lista<numerus> ∪ nihil lifecycle_removed_indices ←
+        scene.resource_lifecycle_removed_indices(lifecycle_batch)
+    adfirma lifecycle_removed_indices non est nihil
+        et lifecycle_removed_indices![0] ≡ removed_geometry.index,
+        "lifecycle batch exposes removed logical indices"
+    fixum lista<numerus> ∪ nihil lifecycle_live_indices ←
+        scene.resource_lifecycle_live_indices(lifecycle_batch)
+    adfirma lifecycle_live_indices non est nihil
+        et lifecycle_live_indices![0] ≡ geometry.index
+        et lifecycle_live_indices![1] ≡ material.index
+        et lifecycle_live_indices![2] ≡ new_geometry.index,
+        "lifecycle batch exposes current live logical indices"
     fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_current_handles ←
         scene.resource_lifecycle_current_handles(lifecycle_batch)
     adfirma lifecycle_current_handles non est nihil,
@@ -176,6 +195,12 @@ incipit {
     ]
     adfirma scene.resource_lifecycles_valid(duplicate_lifecycle_batch) ≡ falsum,
         "lifecycle batch rejects duplicate logical resources"
+    adfirma scene.resource_lifecycle_changed_indices(duplicate_lifecycle_batch) est nihil,
+        "lifecycle changed indices reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_removed_indices(duplicate_lifecycle_batch) est nihil,
+        "lifecycle removed indices reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_live_indices(duplicate_lifecycle_batch) est nihil,
+        "lifecycle live indices reject duplicate logical resources"
     adfirma scene.resource_lifecycle_current_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle current handles reject duplicate logical resources"
     fixum scene.SceneInsert root_step ← scene.scene_insert(

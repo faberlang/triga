@@ -185,9 +185,11 @@ states to represent empty chunk remeshes with no current GPU resource while
 keeping actual retirement and queue completion host-owned.
 `resource_lifecycles_valid`, `resource_lifecycle_changed_count`,
 `resource_lifecycle_created_count`, `resource_lifecycle_removed_count`,
-`resource_lifecycle_live_count`, and `resource_lifecycle_current_handles`
-expose validated batch lifecycle facts for exact per-chunk generation and
-live-resource evidence before host-owned retirement and destruction.
+`resource_lifecycle_live_count`, `resource_lifecycle_changed_indices`,
+`resource_lifecycle_removed_indices`, `resource_lifecycle_live_indices`, and
+`resource_lifecycle_current_handles` expose validated batch lifecycle facts for
+exact per-chunk generation, affected-set, removed-chunk, and live-resource
+evidence before host-owned retirement and destruction.
 `scene_set_visible`,
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
 `scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,
