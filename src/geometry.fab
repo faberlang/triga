@@ -57,6 +57,14 @@ genus DrawRange {
     numerus count
 }
 
+genus GeometryDrawCommand {
+    bivalens indexed
+    numerus element_count
+    numerus first_element
+    numerus base_vertex
+    numerus instance_count
+}
+
 genus GeometryGroup {
     numerus start
     numerus count
@@ -343,6 +351,21 @@ functio attribute_valid(de BufferAttribute attribute) → bivalens {
 functio geometry_element_count(de BufferGeometry geometry) → numerus {
     si geometry.indexed ≡ falsum ergo redde geometry.vertex_count
     redde geometry.indices.longitudo()
+}
+
+functio geometry_draw_command(
+    de BufferGeometry geometry,
+    numerus instance_count
+) → GeometryDrawCommand ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si instance_count ≡ 0 ergo redde nihil
+    redde GeometryDrawCommand {
+        indexed = geometry.indexed,
+        element_count = geometry.draw_range.count,
+        first_element = geometry.draw_range.start,
+        base_vertex = 0,
+        instance_count = instance_count
+    }
 }
 
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {

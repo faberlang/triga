@@ -28,7 +28,9 @@ the first visible Faber-authored indexed 3D application.
   validated material constructor, depth-policy check, and double-sided material
   helper.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
-  validated colored indexed triangle constructor for position/color payloads.
+  validated colored indexed triangle constructor for position/color payloads and
+  a source draw command for indexed count, first element, base vertex, and
+  instance count.
 - Application root: `examples/hello-voxel/` created by HV-03.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: `radix/hosts/webgpu-browser/` after HV-02.

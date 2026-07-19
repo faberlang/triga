@@ -29,14 +29,14 @@ color buffer, one index buffer, and one transform buffer.
 | Vertex buffer 1 | color, location 1, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | `colored_indexed_triangle_geometry`; same shape as position with source name `color` | implemented in Triga; Radix reflection pending | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab`; `radix/crates/radix/src/mir/abi.rs` |
 | Index buffer | `u32` indices | Triga source; browser platform upload | `BufferGeometry.indices`; WebGPU index buffer | implemented in Triga; direct render host absent | `triga/src/geometry.fab`; `triga/exempla/triga-geometry-attributes.fab` |
 | Topology | triangle-list | Triga source; Radix reflection | `PrimitiveTopology.TriangleList`; WebGPU primitive topology | implemented in Triga; render pipeline reflection absent | `triga/src/geometry.fab` |
-| Draw range | indexed draw start/count | Triga source; Radix draw reflection | `DrawRange`; future indexed draw fields | Triga implemented; Radix draw reflection absent | `triga/src/geometry.fab` |
+| Draw range | indexed draw start/count | Triga source; Radix draw reflection | `DrawRange`; `GeometryDrawCommand`; future indexed draw fields | Triga implemented; Radix draw reflection absent | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab` |
 | Transform buffer | 32 `f32` values: model then view-projection matrices | Application Faber; Radix binding reflection | group 0 binding 0 read-only storage buffer | planned; no Triga core type change needed | `triga/src/triga.fab`; Goal 01 delivery |
 | Vertex entry | `@vertex` entry emits builtin position and color varying | Radix source lowering | vertex WGSL plus reflection | position-only scaffold exists; color varying absent | `radix/crates/radix/src/driver/mod.rs`; `radix/crates/radix/src/mir/wgsl_text.rs` |
 | Fragment entry | fragment returns location 0 RGBA with alpha 1 | Radix source lowering | fragment WGSL plus reflection | absent | `radix/crates/radix/src/mir/abi.rs` has no fragment stage |
 | Color target | `bgra8unorm` | Radix reflection; browser platform host | render pipeline descriptor | absent | browser host is compute-only |
 | Depth target | `depth24plus`, write enabled, compare less | Radix reflection; browser platform host | render pipeline and depth texture descriptor | absent | browser host is compute-only |
 | Culling | none | Radix reflection | render pipeline primitive state | absent | no direct graphics host descriptor |
-| Instance count | one | Radix draw reflection | indexed draw command | absent | no draw reflection object |
+| Instance count | one | Triga source; Radix draw reflection | `GeometryDrawCommand.instance_count`; future indexed draw command | Triga implemented; Radix draw reflection absent | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab` |
 
 ## Triga Source Facts
 
@@ -52,6 +52,8 @@ Triga already provides the source-owned geometry data needed by the first draw:
   layout shape and returns `nihil` if the geometry does not validate.
 - `geometry_triangle_count` exposes valid triangle element counts and returns
   `nihil` for invalid or non-triangle geometry.
+- `geometry_draw_command` records indexed status, element count, first element,
+  base vertex, and instance count for valid geometry.
 - `geometry_valid` rejects malformed attributes, duplicate names, duplicate
   shader locations, out-of-range indices, and partial triangle draw ranges.
 - `geometry_vertex_layouts` converts valid geometry into layout records.
@@ -61,8 +63,8 @@ Triga already provides the source-owned geometry data needed by the first draw:
 
 The current Stage 4 exemplar proves position, normal, and UV layout facts.
 `triga/exempla/hello-voxel-first-draw-facts.fab` proves the locked first-draw
-position and color pair with 8 vertices, 36 `u32` indices, and a full draw
-range.
+position and color pair with 8 vertices, 36 `u32` indices, a full draw range,
+and one indexed instance command.
 
 ## Material Facts
 

@@ -59,6 +59,20 @@ incipit {
         "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
     adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,
         "Hello Voxel first draw covers the full indexed cube range"
+    fixum geometry.GeometryDrawCommand ∪ nihil draw_result ← geometry.geometry_draw_command(cube, 1)
+    adfirma draw_result non est nihil,
+        "Hello Voxel first draw creates a source draw command"
+    fixum geometry.GeometryDrawCommand draw ← geometry.GeometryDrawCommand {
+        indexed = draw_result!.indexed,
+        element_count = draw_result!.element_count,
+        first_element = draw_result!.first_element,
+        base_vertex = draw_result!.base_vertex,
+        instance_count = draw_result!.instance_count
+    }
+    adfirma draw.indexed et draw.element_count ≡ 36 et draw.first_element ≡ 0,
+        "Hello Voxel first draw records indexed count and start"
+    adfirma draw.base_vertex ≡ 0 et draw.instance_count ≡ 1,
+        "Hello Voxel first draw records base vertex zero and one instance"
     fixum numerus ∪ nihil cube_triangles ← geometry.geometry_triangle_count(cube)
     adfirma cube_triangles non est nihil,
         "Hello Voxel first draw locks twelve indexed triangles"
@@ -71,6 +85,8 @@ incipit {
         "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
     adfirma geometry.geometry_vertex_layout_location(cube, 2) est nihil,
         "Hello Voxel first draw exposes only position and color vertex layouts"
+    adfirma geometry.geometry_draw_command(cube, 0) est nihil,
+        "Hello Voxel first draw rejects an empty instance draw command"
     adfirma geometry.colored_indexed_triangle_geometry(8, positions, colors, [0, 1]) est nihil,
         "colored indexed triangle geometry rejects incomplete triangle indices"
 }
