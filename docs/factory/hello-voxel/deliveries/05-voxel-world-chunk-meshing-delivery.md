@@ -27,7 +27,8 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   `examples/hello-voxel/src/voxel.fab` and `src/meshing.fab`.
 - Reusable geometry constructors, bounds, and validation in
   `triga/src/geometry.fab`, including the validated position/color indexed
-  triangle constructor and triangle-count helper for chunk mesh payloads.
+  triangle constructor, triangle-count helper, and group draw-command helper for
+  chunk mesh payloads.
 - No current voxel or chunk implementation exists in the examples repository.
 
 ## Stage Graph

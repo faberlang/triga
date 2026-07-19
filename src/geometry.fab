@@ -63,6 +63,7 @@ genus GeometryDrawCommand {
     numerus first_element
     numerus base_vertex
     numerus instance_count
+    numerus material_index
 }
 
 genus GeometryGroup {
@@ -364,7 +365,27 @@ functio geometry_draw_command(
         element_count = geometry.draw_range.count,
         first_element = geometry.draw_range.start,
         base_vertex = 0,
-        instance_count = instance_count
+        instance_count = instance_count,
+        material_index = 0
+    }
+}
+
+functio geometry_group_draw_command(
+    de BufferGeometry geometry,
+    numerus group_index,
+    numerus instance_count
+) → GeometryDrawCommand ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si group_index ≥ geometry.groups.longitudo() ergo redde nihil
+    si instance_count ≡ 0 ergo redde nihil
+    fixum GeometryGroup group ← geometry.groups[group_index]
+    redde GeometryDrawCommand {
+        indexed = geometry.indexed,
+        element_count = group.count,
+        first_element = group.start,
+        base_vertex = 0,
+        instance_count = instance_count,
+        material_index = group.material_index
     }
 }
 

@@ -20,6 +20,21 @@ incipit {
         [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
     )
     adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
+    fixum geometry.GeometryDrawCommand ∪ nihil group_draw_result ← geometry.geometry_group_draw_command(
+        triangle, 0, 2
+    )
+    adfirma group_draw_result non est nihil,
+        "valid geometry group produces a draw command"
+    adfirma group_draw_result!.indexed et group_draw_result!.element_count ≡ 3,
+        "group draw command preserves indexed element count"
+    adfirma group_draw_result!.first_element ≡ 0 et group_draw_result!.base_vertex ≡ 0,
+        "group draw command preserves first element and base vertex"
+    adfirma group_draw_result!.instance_count ≡ 2 et group_draw_result!.material_index ≡ 0,
+        "group draw command preserves instance count and material index"
+    adfirma geometry.geometry_group_draw_command(triangle, 1, 1) est nihil,
+        "missing geometry group rejects draw command creation"
+    adfirma geometry.geometry_group_draw_command(triangle, 0, 0) est nihil,
+        "empty instance count rejects group draw command creation"
     fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
     adfirma bounds_result non est nihil, "valid position data produces bounds"
     fixum f32 zero ← 0.0

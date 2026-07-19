@@ -67,12 +67,15 @@ incipit {
         element_count = draw_result!.element_count,
         first_element = draw_result!.first_element,
         base_vertex = draw_result!.base_vertex,
-        instance_count = draw_result!.instance_count
+        instance_count = draw_result!.instance_count,
+        material_index = draw_result!.material_index
     }
     adfirma draw.indexed et draw.element_count ≡ 36 et draw.first_element ≡ 0,
         "Hello Voxel first draw records indexed count and start"
     adfirma draw.base_vertex ≡ 0 et draw.instance_count ≡ 1,
         "Hello Voxel first draw records base vertex zero and one instance"
+    adfirma draw.material_index ≡ 0,
+        "Hello Voxel first draw records the default material index"
     fixum numerus ∪ nihil cube_triangles ← geometry.geometry_triangle_count(cube)
     adfirma cube_triangles non est nihil,
         "Hello Voxel first draw locks twelve indexed triangles"
