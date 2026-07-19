@@ -1,0 +1,194 @@
++++
+term = "triga-scene-store-empty"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Empty scene store edge cases: traversal, visibility, counts, and name lookup."
+syntax = "importa ex \"triga:scene\" privata scene"
++++
+
+# exempla/triga-scene-store-empty — empty SceneStore edge case tests.
+#
+# Covers: scene_visible_mesh_count, scene_traverse, scene_find_name,
+# scene_contains, scene_get, scene_update_world, scene_remove,
+# scene_set_visible, scene_set_local_matrix, scene_attach, scene_detach,
+# scene_scene_store with no inserts.
+
+importa ex "triga:scene" privata scene
+importa ex "triga:triga" privata triga
+
+incipit {
+    # EMPTY STORE: no inserts, no hierarchy
+    fixum scene.SceneStore empty ← scene.scene_store()
+    fixum scene.SceneHandle fresh_root ← scene.SceneHandle { index = 0, generation = 0 }
+
+    # scene_get on empty store with fresh handle
+    fixum scene.SceneNode ∪ nihil empty_get ← scene.scene_get(empty, fresh_root)
+    adfirma empty_get est nihil,
+        "empty store returns nil for scene_get on uninserted handle"
+
+    # scene_contains on empty store
+    adfirma scene.scene_contains(empty, fresh_root) ≡ falsum,
+        "empty store returns false for scene_contains"
+
+    # scene_traverse with nil root handle (never inserted)
+    fixum lista<scene.SceneHandle> ∪ nihil empty_traverse ← scene.scene_traverse(
+        empty, fresh_root
+    )
+    adfirma empty_traverse est nihil,
+        "empty store returns nil for scene_traverse on stale root"
+
+    # scene_visible_traverse with stale root
+    fixum lista<scene.SceneHandle> ∪ nihil empty_visible ← scene.scene_visible_traverse(
+        empty, fresh_root
+    )
+    adfirma empty_visible est nihil,
+        "empty store returns nil for scene_visible_traverse on stale root"
+
+    # scene_visible_mesh_traverse with stale root
+    fixum lista<scene.SceneHandle> ∪ nihil empty_mesh_traverse ←
+        scene.scene_visible_mesh_traverse(empty, fresh_root)
+    adfirma empty_mesh_traverse est nihil,
+        "empty store returns nil for visible_mesh_traverse on stale root"
+
+    # scene_visible_mesh_count with stale root
+    fixum numerus ∪ nihil empty_mesh_count ← scene.scene_visible_mesh_count(
+        empty, fresh_root
+    )
+    adfirma empty_mesh_count est nihil,
+        "empty store returns nil for visible_mesh_count on stale root"
+
+    # scene_visible_mesh_resources with stale root
+    fixum lista<scene.SceneMeshResources> ∪ nihil empty_resources ←
+        scene.scene_visible_mesh_resources(empty, fresh_root)
+    adfirma empty_resources est nihil,
+        "empty store returns nil for visible_mesh_resources on stale root"
+
+    # scene_visible_mesh_resource_pair_count with stale root
+    fixum numerus ∪ nihil empty_pair_count ←
+        scene.scene_visible_mesh_resource_pair_count(empty, fresh_root)
+    adfirma empty_pair_count est nihil,
+        "empty store returns nil for visible_mesh_resource_pair_count on stale root"
+
+    # scene_visible_mesh_geometry_handles with stale root
+    fixum lista<scene.ResourceHandle> ∪ nihil empty_geometry_handles ←
+        scene.scene_visible_mesh_geometry_handles(empty, fresh_root)
+    adfirma empty_geometry_handles est nihil,
+        "empty store returns nil for visible_mesh_geometry_handles on stale root"
+
+    # scene_visible_mesh_material_handles with stale root
+    fixum lista<scene.ResourceHandle> ∪ nihil empty_material_handles ←
+        scene.scene_visible_mesh_material_handles(empty, fresh_root)
+    adfirma empty_material_handles est nihil,
+        "empty store returns nil for visible_mesh_material_handles on stale root"
+
+    # scene_visible_mesh_resource_facts with stale root
+    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil empty_resource_facts ←
+        scene.scene_visible_mesh_resource_facts(empty, fresh_root)
+    adfirma empty_resource_facts est nihil,
+        "empty store returns nil for visible_mesh_resource_facts on stale root"
+
+    # scene_visible_mesh_transform_payloads with stale root
+    fixum lista<scene.SceneMeshTransformPayload> ∪ nihil empty_transform_payloads ←
+        scene.scene_visible_mesh_transform_payloads(
+            empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0))
+        )
+    adfirma empty_transform_payloads est nihil,
+        "empty store returns nil for visible_mesh_transform_payloads on stale root"
+
+    # scene_visible_mesh_draw_packets with stale root
+    fixum lista<scene.SceneMeshDrawPacket> ∪ nihil empty_draw_packets ←
+        scene.scene_visible_mesh_draw_packets(
+            empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0))
+        )
+    adfirma empty_draw_packets est nihil,
+        "empty store returns nil for visible_mesh_draw_packets on stale root"
+
+    # scene_visible_mesh_draw_batch_facts with stale root
+    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil empty_draw_batch_facts ←
+        scene.scene_visible_mesh_draw_batch_facts(
+            empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0))
+        )
+    adfirma empty_draw_batch_facts est nihil,
+        "empty store returns nil for visible_mesh_draw_batch_facts on stale root"
+
+    # scene_find_name on empty store
+    fixum scene.SceneHandle ∪ nihil empty_find ← scene.scene_find_name(
+        empty, fresh_root, "anything"
+    )
+    adfirma empty_find est nihil,
+        "empty store returns nil for scene_find_name on stale root"
+
+    # scene_effective_visible on stale handle
+    adfirma scene.scene_effective_visible(empty, fresh_root) ≡ falsum,
+        "empty store returns false for scene_effective_visible on stale handle"
+
+    # scene_set_visible on empty store
+    fixum scene.SceneStore ∪ nihil empty_set_visible ← scene.scene_set_visible(
+        empty, fresh_root, verum
+    )
+    adfirma empty_set_visible est nihil,
+        "empty store returns nil for scene_set_visible on stale handle"
+
+    # scene_set_local_matrix on empty store
+    fixum scene.SceneStore ∪ nihil empty_set_local ← scene.scene_set_local_matrix(
+        empty, fresh_root,
+        triga.matrix4_identitas()
+    )
+    adfirma empty_set_local est nihil,
+        "empty store returns nil for scene_set_local_matrix on stale handle"
+
+    # scene_update_world on empty store
+    adfirma scene.scene_update_world(empty, fresh_root) est nihil,
+        "empty store returns nil for scene_update_world on stale root"
+
+    # scene_remove on empty store
+    fixum scene.SceneStore ∪ nihil empty_remove ← scene.scene_remove(empty, fresh_root)
+    adfirma empty_remove est nihil,
+        "empty store returns nil for scene_remove on stale handle"
+
+    # scene_attach on empty store
+    fixum scene.SceneStore ∪ nihil empty_attach ← scene.scene_attach(
+        empty, fresh_root, fresh_root
+    )
+    adfirma empty_attach est nihil,
+        "empty store returns nil for scene_attach on stale handles"
+
+    # scene_detach on empty store
+    fixum scene.SceneStore ∪ nihil empty_detach ← scene.scene_detach(
+        empty, fresh_root
+    )
+    adfirma empty_detach est nihil,
+        "empty store returns nil for scene_detach on stale handle"
+
+    # scene_mesh_world_matrix on empty store
+    fixum triga.Matrix4 ∪ nihil empty_world_matrix ← scene.scene_mesh_world_matrix(
+        empty, fresh_root
+    )
+    adfirma empty_world_matrix est nihil,
+        "empty store returns nil for scene_mesh_world_matrix on stale handle"
+
+    # scene_visible_mesh_transform_payload_count with stale root
+    fixum numerus ∪ nihil empty_payload_count ←
+        scene.scene_visible_mesh_transform_payload_count(
+            empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0))
+        )
+    adfirma empty_payload_count est nihil,
+        "empty store returns nil for transform_payload_count on stale root"
+
+    # scene_visible_mesh_transform_payload_byte_count with stale root
+    fixum numerus ∪ nihil empty_payload_bytes ←
+        scene.scene_visible_mesh_transform_payload_byte_count(
+            empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0))
+        )
+    adfirma empty_payload_bytes est nihil,
+        "empty store returns nil for transform_payload_byte_count on stale root"
+
+    # scene_visible_mesh_draw_packet_count with stale root
+    fixum numerus ∪ nihil empty_packet_count ←
+        scene.scene_visible_mesh_draw_packet_count(
+            empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0))
+        )
+    adfirma empty_packet_count est nihil,
+        "empty store returns nil for draw_packet_count on stale root"
+}
