@@ -154,7 +154,7 @@ functio line_geometry(
     }
 }
 
-functio colored_indexed_triangle_geometry(
+functio colored_indexed_geometry(
     numerus vertex_count,
     lista<f32> positions,
     lista<f32> colors,

@@ -29,7 +29,7 @@ the first visible Faber-authored indexed 3D application.
   helper, and minimal unlit `MeshBasicMaterial` constructor for source-owned
   cube material intent.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
-  validated colored indexed triangle constructor for position/color payloads and
+  validated colored indexed constructor for position/color payloads and
   a source draw command for indexed count, first element, base vertex, and
   instance count.
 - Application root: `examples/hello-voxel/` created by HV-03.

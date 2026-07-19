@@ -38,11 +38,11 @@ incipit {
         1, 5, 6, 1, 6, 2,
         0, 3, 7, 0, 7, 4
     ]
-    fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_triangle_geometry(
+    fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_geometry(
         8, positions, colors, indices
     )
     adfirma cube_result non est nihil,
-        "Hello Voxel first draw creates a colored indexed triangle geometry"
+        "Hello Voxel first draw creates colored indexed geometry"
     fixum geometry.BufferGeometry cube ← geometry.BufferGeometry {
         topology = cube_result!.topology,
         vertex_count = cube_result!.vertex_count,
@@ -90,6 +90,6 @@ incipit {
         "Hello Voxel first draw exposes only position and color vertex layouts"
     adfirma geometry.geometry_draw_command(cube, 0) est nihil,
         "Hello Voxel first draw rejects an empty instance draw command"
-    adfirma geometry.colored_indexed_triangle_geometry(8, positions, colors, [0, 1]) est nihil,
-        "colored indexed triangle geometry rejects incomplete triangle indices"
+    adfirma geometry.colored_indexed_geometry(8, positions, colors, [0, 1]) est nihil,
+        "colored indexed geometry rejects incomplete triangle indices"
 }
