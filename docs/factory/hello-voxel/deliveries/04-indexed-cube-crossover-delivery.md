@@ -23,8 +23,8 @@ the first visible Faber-authored indexed 3D application.
 
 - Triga math: `triga/src/triga.fab` and transform exemplar. It now includes
   perspective projection and look-at view matrix helpers for the crossover
-  camera, plus a validated 32-float transform payload constructor that stores
-  model matrix values before view-projection matrix values.
+  camera, plus a validated 32-float, 128-byte transform payload constructor
+  that stores model matrix values before view-projection matrix values.
 - Triga material: `triga/src/triga.fab` and basics exemplar. It includes a
   validated material constructor, side-code projection, combined and per-flag
   depth-policy checks, double-sided material helper, and minimal unlit

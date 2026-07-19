@@ -928,6 +928,11 @@ functio transform_payload_float_count(de TransformPayload payload) → numerus �
     redde count
 }
 
+functio transform_payload_byte_count(de TransformPayload payload) → numerus ∪ nihil {
+    si payload.values.longitudo() ≠ 32 ergo redde nihil
+    redde payload.values.longitudo() * 4
+}
+
 functio transform_payload_model_value(
     de TransformPayload payload,
     numerus index

@@ -30,7 +30,7 @@ color buffer, one index buffer, and one transform buffer.
 | Index buffer | `u32` indices | Triga source; browser platform upload | `BufferGeometry.indices`; `geometry_index_format_code`; WebGPU index buffer | implemented in Triga; direct render host absent | `triga/src/geometry.fab`; `triga/exempla/triga-geometry-attributes.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab` |
 | Topology | triangle-list | Triga source; Radix reflection | `PrimitiveTopology.TriangleList`; `geometry_topology_code`; WebGPU primitive topology | implemented in Triga; render pipeline reflection absent | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab` |
 | Draw range | indexed draw start/count | Triga source; Radix draw reflection | `DrawRange`; `GeometryDrawCommand`; future indexed draw fields | Triga implemented; Radix draw reflection absent | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab`; `triga/exempla/triga-geometry-attributes.fab` |
-| Transform buffer | 32 `f32` values: model then view-projection matrices | Application Faber; Radix binding reflection | group 0 binding 0 read-only storage buffer | planned; no Triga core type change needed | `triga/src/triga.fab`; Goal 01 delivery |
+| Transform buffer | 32 `f32` values, 128 bytes: model then view-projection matrices | Triga source, then Radix binding reflection | `TransformPayload`; group 0 binding 0 read-only storage buffer | implemented in Triga; Radix binding reflection pending | `triga/src/triga.fab`; `triga/exempla/triga-transforms.fab`; Goal 01 delivery |
 | Vertex entry | `@vertex` entry emits builtin position and color varying | Radix source lowering | vertex WGSL plus reflection | position-only scaffold exists; color varying absent | `radix/crates/radix/src/driver/mod.rs`; `radix/crates/radix/src/mir/wgsl_text.rs` |
 | Fragment entry | fragment returns location 0 RGBA with alpha 1 | Radix source lowering | fragment WGSL plus reflection | absent | `radix/crates/radix/src/mir/abi.rs` has no fragment stage |
 | Color target | `bgra8unorm` | Radix reflection; browser platform host | render pipeline descriptor | absent | browser host is compute-only |
@@ -173,11 +173,11 @@ distance/point/normal facts plus stable face-code and face-offset projections
 for selection indicators and edit-adjacent-cell derivation. Voxel DDA remains
 application-owned.
 
-The first draw uses one transform storage buffer with 32 `f32` values.
-`transform_payload_float_count`, `transform_payload_model_value`, and
-`transform_payload_view_projection_value` expose the locked count and order.
-The host must not split this buffer or reorder the matrices unless Radix
-reflection says so.
+The first draw uses one transform storage buffer with 32 `f32` values and 128
+bytes. `transform_payload_float_count`, `transform_payload_byte_count`,
+`transform_payload_model_value`, and `transform_payload_view_projection_value`
+expose the locked count, byte size, and order. The host must not split this
+buffer or reorder the matrices unless Radix reflection says so.
 
 ## Radix And Browser State
 

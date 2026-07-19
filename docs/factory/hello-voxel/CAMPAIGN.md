@@ -195,7 +195,8 @@ locks first-draw layout, topology, index format, vertex-step mode, draw, and
 count facts. Material policy now locks side, depth-test, depth-write, RGB, and
 alpha facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
-Transform facts now lock the 32-float model then view-projection payload order.
+Transform facts now lock the 32-float, 128-byte model then view-projection
+payload order.
 Ray/AABB hit facts now lock face codes and integer face offsets for edit
 placement derivation.
 Scene/resource facts now lock created, replaced, unchanged, and removed
