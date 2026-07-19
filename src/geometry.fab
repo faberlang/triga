@@ -815,6 +815,36 @@ functio colored_quad_mesh_facts(de ColoredQuadMesh mesh) → VisibleFaceMeshFact
     redde visible_face_mesh_facts(face_count)
 }
 
+functio colored_quad_mesh_bounding_box(de ColoredQuadMesh mesh) → BoundingBox ∪ nihil {
+    fixum BufferGeometry ∪ nihil geometry_result ← colored_quad_mesh_geometry(mesh)
+    si geometry_result est nihil ergo redde nihil
+    fixum BufferGeometry geometry ← BufferGeometry {
+        topology = geometry_result!.topology,
+        vertex_count = geometry_result!.vertex_count,
+        attributes = geometry_result!.attributes,
+        indexed = geometry_result!.indexed,
+        indices = geometry_result!.indices,
+        draw_range = geometry_result!.draw_range,
+        groups = geometry_result!.groups
+    }
+    redde geometry_bounding_box(geometry)
+}
+
+functio colored_quad_mesh_bounding_sphere(de ColoredQuadMesh mesh) → BoundingSphere ∪ nihil {
+    fixum BufferGeometry ∪ nihil geometry_result ← colored_quad_mesh_geometry(mesh)
+    si geometry_result est nihil ergo redde nihil
+    fixum BufferGeometry geometry ← BufferGeometry {
+        topology = geometry_result!.topology,
+        vertex_count = geometry_result!.vertex_count,
+        attributes = geometry_result!.attributes,
+        indexed = geometry_result!.indexed,
+        indices = geometry_result!.indices,
+        draw_range = geometry_result!.draw_range,
+        groups = geometry_result!.groups
+    }
+    redde geometry_bounding_sphere(geometry)
+}
+
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     discerne geometry.topology {

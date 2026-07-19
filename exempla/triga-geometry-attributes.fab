@@ -175,6 +175,34 @@ incipit {
         "colored quad mesh facts preserve face-derived counts"
     adfirma two_quad_facts_result!.total_payload_byte_count ≡ 240,
         "colored quad mesh facts preserve face-derived payload bytes"
+    fixum geometry.BoundingBox ∪ nihil two_quad_bounds_result ←
+        geometry.colored_quad_mesh_bounding_box(two_quad_mesh)
+    adfirma two_quad_bounds_result non est nihil,
+        "colored quad mesh exposes bounds from accumulated buffers"
+    fixum f32 zero ← 0.0
+    fixum f32 one ← 1.0
+    fixum f32 three ← 3.0
+    adfirma two_quad_bounds_result!.min_x ≡ zero
+        et two_quad_bounds_result!.min_y ≡ zero
+        et two_quad_bounds_result!.min_z ≡ zero,
+        "colored quad mesh bounds preserve minimum position values"
+    adfirma two_quad_bounds_result!.max_x ≡ three
+        et two_quad_bounds_result!.max_y ≡ one
+        et two_quad_bounds_result!.max_z ≡ zero,
+        "colored quad mesh bounds preserve maximum position values"
+    fixum geometry.BoundingSphere ∪ nihil two_quad_sphere_result ←
+        geometry.colored_quad_mesh_bounding_sphere(two_quad_mesh)
+    adfirma two_quad_sphere_result non est nihil,
+        "colored quad mesh exposes a bounding sphere from accumulated buffers"
+    fixum f32 half ← 0.5
+    adfirma two_quad_sphere_result!.center_x > 1.4
+        et two_quad_sphere_result!.center_x < 1.6
+        et two_quad_sphere_result!.center_y ≡ half
+        et two_quad_sphere_result!.center_z ≡ zero,
+        "colored quad mesh sphere center derives from mesh bounds"
+    adfirma two_quad_sphere_result!.radius > 1.5
+        et two_quad_sphere_result!.radius < 1.6,
+        "colored quad mesh sphere radius encloses accumulated vertices"
     adfirma geometry.colored_quad_mesh_geometry(geometry.ColoredQuadMesh {
         positions = [0.0, 0.0],
         colors = [0.0, 0.0],
@@ -193,6 +221,18 @@ incipit {
         indices = [0, 1, 2]
     }) est nihil,
         "colored quad mesh facts reject malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_bounding_box(geometry.ColoredQuadMesh {
+        positions = [0.0, 0.0],
+        colors = [0.0, 0.0],
+        indices = [0, 1, 2]
+    }) est nihil,
+        "colored quad mesh bounds reject malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_bounding_sphere(geometry.ColoredQuadMesh {
+        positions = [0.0, 0.0],
+        colors = [0.0, 0.0],
+        indices = [0, 1, 2]
+    }) est nihil,
+        "colored quad mesh sphere rejects malformed accumulated buffers"
     adfirma geometry.colored_quad_mesh_append(
         [0.0, 0.0],
         vacua,
@@ -266,8 +306,6 @@ incipit {
         "empty instance count rejects indexed draw batch facts"
     fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
     adfirma bounds_result non est nihil, "valid position data produces bounds"
-    fixum f32 zero ← 0.0
-    fixum f32 one ← 1.0
     adfirma bounds_result!.min_x ≡ zero et bounds_result!.min_y ≡ zero et bounds_result!.min_z ≡ zero,
         "bounding-box minimum derives from position data"
     adfirma bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one et bounds_result!.max_z ≡ zero,
@@ -309,7 +347,6 @@ incipit {
         "group bounds stay local to the selected draw group"
     fixum geometry.BoundingSphere ∪ nihil sphere_result ← geometry.geometry_bounding_sphere(triangle)
     adfirma sphere_result non est nihil, "valid position data produces a bounding sphere"
-    fixum f32 half ← 0.5
     adfirma sphere_result!.center_x ≡ half et sphere_result!.center_y ≡ half
         et sphere_result!.center_z ≡ zero,
         "bounding-sphere center derives from the position bounds"
