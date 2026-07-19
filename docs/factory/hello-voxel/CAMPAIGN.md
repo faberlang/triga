@@ -1,9 +1,9 @@
 # Campaign: Hello Voxel
 
-**Status**: proposed
+**Status**: ready for factory
 **Selected next stage**: Goal 00 - Baseline And Contract Lock
 **Primary owner**: `triga`
-**Target repos**: `triga`, `radix`, `faber`, `examples`
+**Target repos**: `triga`, `radix`, `faber`, `faber-web`, `examples`
 **Process**: `campaign` -> `delivery` -> `factory`
 
 ## Summary
@@ -72,6 +72,10 @@ Compiler and host changes must follow the governing `radix/AGENTS.md`. Triga
 source changes must keep `./scripta/check-source` and
 `./scripta/check-compile` green. Browser execution claims require an actual
 WebGPU render or a clearly labeled non-GPU admission result.
+
+Goal-check verdicts are recorded in [`GOAL-CHECKS.md`](GOAL-CHECKS.md).
+Factory vision, production order, and generated delivery specs are indexed in
+[`FACTORY-READINESS.md`](FACTORY-READINESS.md).
 
 ## Scope Routing
 
@@ -147,6 +151,8 @@ The campaign is grounded in:
   render path to three.js;
 - `radix/hosts/webgpu-browser/`, which directly executes emitted compute WGSL
   but uses three.js only for presentation;
+- `faber-web/src/` and `faber-web/runtime/dom.ts`, which own the imported
+  `web:web` and `web:dom` source/runtime contracts;
 - Radix graphics MIR ABI and WGSL entry-contract code under
   `radix/crates/radix/src/mir/`;
 - `triga/docs/factory/triga-threejs-80/goals/04-graphics-mir-shader-stages.md`;
@@ -167,7 +173,7 @@ reflection consumer admits compute kernels only.
 | Triga geometry layouts | Source layout facts and deterministic primitives exist | Lock the first renderable layout |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
-| Browser application runtime | Partial package/browser work exists outside Triga | Inventory and close through Goal 03 |
+| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; frame/input lifecycle is missing | Extend through Goal 03 |
 | Voxel domain | Not implemented | Begin only after indexed-cube crossover |
 | Direct graphics proof | Not implemented | Goal 04 |
 | Runtime clean break | Not achieved | Goal 08 |

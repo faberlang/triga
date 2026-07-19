@@ -2,6 +2,7 @@
 
 **Status**: planned
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
+**Delivery**: [`../deliveries/08-clean-break-application-proof-delivery.md`](../deliveries/08-clean-break-application-proof-delivery.md)
 **Target repos**: `triga`, `radix`, `faber`, `examples`
 **Depends on**: Goals 00-07
 **Lowers to**: `delivery` -> `factory`
@@ -17,6 +18,40 @@ third-party rendering paths.
 An admitted Hello Voxel build contains one canonical rendering path: Faber and
 Triga intent lowered by Radix and executed through the direct browser WebGPU
 host.
+
+## Locked Proof And Removal Contract
+
+- The canonical product is `examples/hello-voxel/` built through the Faber
+  `browser-app` path and served by a checked repo script.
+- The proof state records artifact identity, WebGPU adapter/device result,
+  pipeline admission, submitted frame count, selected block, last edit, dirty
+  chunks, and resource counters.
+- The scripted success flow loads the deterministic world, waits for two frames,
+  acquires pointer lock when supported, moves the camera, selects a known block,
+  removes it, places it again, resizes the viewport, and verifies bounded live
+  resources.
+- Pixel evidence samples a deterministic viewport and tolerates only explicitly
+  documented backend variance. Structural state remains required even when
+  pixel evidence passes.
+- Remove runtime three.js imports and import maps from
+  `triga/exempla/threejs-host-demo/` and
+  `radix/hosts/webgpu-browser/public/`. Preserve only concise historical prose
+  when it remains accurate; do not retain an executable fallback.
+
+## Ground Truth And Implementation Path
+
+- Add the final proof driver beside `examples/hello-voxel/` and integrate
+  producer checks from Triga, Radix, and Faber.
+- Update `radix/scripta/webgpu-browser-proof` so its admitted graphics path no
+  longer requires three.js while its compute proof remains honest.
+- Update `triga/scripta/check-capabilities` only for evidence that actually
+  reaches the declared proof level. Do not convert source or static evidence
+  into `host_graphics` success.
+- Run a repository-bounded dependency scan across `triga`, `radix`, `faber`,
+  and `examples`; documentation/oracle references are allowed, runtime imports
+  are not.
+- Record the independent completion review under
+  `docs/factory/hello-voxel/` before changing campaign status.
 
 ## Scope
 

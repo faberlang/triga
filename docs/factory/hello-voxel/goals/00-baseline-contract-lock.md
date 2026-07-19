@@ -2,6 +2,7 @@
 
 **Status**: selected
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
+**Delivery**: [`../deliveries/00-baseline-contract-lock-delivery.md`](../deliveries/00-baseline-contract-lock-delivery.md)
 **Target repos**: `triga`, `radix`, `faber`, `examples`
 **Lowers to**: `delivery` -> `factory`
 **Batching posture**: discovery-first
@@ -15,6 +16,25 @@ ownership and artifact contract for the first indexed WebGPU draw.
 
 Every fact required to create and execute the first render pipeline has one
 named owner and one emitted or source-level representation.
+
+## Ground Truth And Implementation Path
+
+- Start at `radix/crates/radix/src/driver/mod.rs`, `mir/device.rs`,
+  `mir/abi.rs`, `mir/wgsl_text.rs`, and `tool/commands/reflection.rs`.
+- Trace the browser consumer through `radix/hosts/webgpu-browser/public/src/`
+  and `radix/scripta/webgpu-browser-proof`.
+- Trace browser packaging through `faber/src/package/product.rs`,
+  `manifest.rs`, and the adjacent tests in `faber/src/package_test.rs`.
+- Trace Triga facts through `src/geometry.fab`, `src/triga.fab`,
+  `src/scene.fab`, and `exempla/triga-stage4-source-facts.fab`.
+- Save the locked contract and red-evidence inventory in the Goal 00 delivery
+  artifact. Do not create a second campaign or shader design document.
+
+At goal creation, Radix admits `Compute` and `Vertex` in
+`MirKernelShaderStage`; its source vertex path accepts an empty `@ vertex`
+body, and the browser reflection consumer requires a single compute kernel.
+Treat older prose that claims a complete fragment path as stale until live
+source and tests prove otherwise.
 
 ## Scope
 

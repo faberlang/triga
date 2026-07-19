@@ -2,7 +2,8 @@
 
 **Status**: planned
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
-**Target repos**: `faber`, `radix`, `examples`
+**Delivery**: [`../deliveries/03-browser-application-runtime-delivery.md`](../deliveries/03-browser-application-runtime-delivery.md)
+**Target repos**: `faber-web`, `faber`, `examples`
 **Depends on**: Goal 00
 **May overlap**: Goal 01
 **Lowers to**: `delivery` -> `factory`
@@ -17,6 +18,37 @@ application-specific handwritten JavaScript.
 
 Faber source owns application behavior. Generated platform bindings own browser
 API adaptation and expose typed events and lifecycle operations.
+
+## Locked Runtime Contract
+
+- Extend the existing `browser-app` product and `WebController` packaging path;
+  do not add a Radix `web` target or a second bundler.
+- One generated controller mounts one canvas selected by a static selector.
+- The application receives `init`, `frame(timestamp_ms)`, `resize(width,
+  height, pixel_ratio)`, keyboard, pointer-move, pointer-button, focus, and
+  pointer-lock state events.
+- Keyboard state uses physical key codes. Pointer movement is relative only
+  while locked. Focus or lock loss clears pressed keys and pending deltas.
+- One outstanding animation-frame request is allowed. Shutdown cancels future
+  scheduling and removes generated listeners.
+- Browser capability failures are returned as typed application failures; they
+  are not logged-and-ignored callbacks.
+
+## Ground Truth And Implementation Path
+
+- Extend packaging in `faber/src/package/product.rs` and manifest admission in
+  `faber/src/package/manifest.rs`.
+- Extend generated ambient browser declarations and controller emission in
+  `product.rs`; cover them in the existing WEB3 tests in
+  `faber/src/package_test.rs`.
+- Extend the canonical `web:web` and `web:dom` contracts in
+  `faber-web/src/web.fab` and `faber-web/src/dom.fab`, with browser effects in
+  `faber-web/runtime/dom.ts`. Do not define local look-alike annotations in the
+  application package.
+- Place the first consuming package at `examples/hello-voxel/` with generated
+  output kept outside its static asset root under existing browser-product law.
+- Keep WebGPU object creation in the Radix browser host from Goal 02. This goal
+  owns event and application lifecycle only.
 
 ## Scope
 

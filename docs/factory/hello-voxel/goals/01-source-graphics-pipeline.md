@@ -2,6 +2,7 @@
 
 **Status**: planned
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
+**Delivery**: [`../deliveries/01-source-graphics-pipeline-delivery.md`](../deliveries/01-source-graphics-pipeline-delivery.md)
 **Target repos**: `radix`, `triga`, `examples`
 **Depends on**: Goal 00
 **Lowers to**: `delivery` -> `factory`
@@ -16,6 +17,38 @@ rather than a manually constructed MIR ABI fixture.
 
 Faber source owns shader intent; Radix validates and lowers that intent into
 shared graphics MIR, WGSL, and reflection without a parallel Triga compiler.
+
+## Locked First-Pipeline Contract
+
+- Vertex buffers are structure-of-arrays: `position` at location 0 as
+  `float32x3`, and `color` at location 1 as `float32x3`. Each has offset 0,
+  stride 12, and vertex step mode.
+- Indices are `u32`; topology is `triangle-list`; front-face culling is disabled
+  for the first proof; one instance is drawn.
+- Group 0 binding 0 is a read-only storage buffer containing 32 `f32` values:
+  a column-major model matrix followed by a column-major view-projection matrix.
+- The vertex stage emits builtin position and location-0 RGB color. The fragment
+  stage consumes location-0 color and emits location-0 RGBA with alpha 1.
+- The color target is `bgra8unorm`. Depth is `depth24plus`, writes are enabled,
+  and comparison is `less`.
+- Draw reflection carries indexed status, index format, index count, first index,
+  base vertex, and instance count. No host default supplies these values.
+
+## Ground Truth And Implementation Path
+
+- Extend the canonical annotation/HIR path in
+  `radix/crates/radix/src/hir/lower/`, `hir/nodes.rs`, and
+  `semantic/passes/typecheck.rs`.
+- Extend `mir/device.rs` and `mir/lower.rs` so vertex and fragment roles are
+  real lowered functions, not driver-only source facts.
+- Extend the shared ABI and JSON reflection in `mir/abi.rs` and
+  `tool/commands/reflection.rs`.
+- Extend WGSL emission in `mir/wgsl_text.rs`; keep compute emission on the same
+  shared MIR path.
+- Drive the implementation with a Faber fixture under Radix's existing fixture
+  conventions and compare locations 0 and 1 with `triga/src/geometry.fab`.
+- Update `radix/EBNF.md` and reader/exemplar surfaces only if current annotation
+  grammar cannot express the locked contract.
 
 ## Scope
 

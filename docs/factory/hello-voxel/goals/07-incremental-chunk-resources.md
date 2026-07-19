@@ -2,6 +2,7 @@
 
 **Status**: planned
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
+**Delivery**: [`../deliveries/07-incremental-chunk-resources-delivery.md`](../deliveries/07-incremental-chunk-resources-delivery.md)
 **Target repos**: `triga`, `radix`, `examples`
 **Depends on**: Goals 05 and 06
 **Lowers to**: `delivery` -> `factory`
@@ -17,6 +18,35 @@ the entire renderer or leaking replaced resources.
 A world mutation invalidates only the owning chunk and any neighbor whose
 visible faces can change. Resource replacement follows explicit ownership and
 disposal state.
+
+## Locked Invalidation And Resource Contract
+
+- An interior edit invalidates its owning chunk. An edit on local X or Z edge
+  also invalidates the directly adjacent in-world chunk. Y has no chunk layer
+  in the bounded proof.
+- Dirty chunks remesh once before the next submitted frame. Multiple edits in
+  one frame deduplicate the dirty set.
+- Each chunk has stable logical identity separate from replaceable mesh and GPU
+  resource generations.
+- Empty remesh results remove the chunk draw and destroy its previous buffers.
+  Non-empty results create replacement buffers before retiring old buffers.
+- Retired buffers are destroyed only after the queue has completed submitted
+  work that references them. The host uses an explicit completion fence or
+  equivalent WebGPU queue completion promise.
+- Proof counters expose created, live, retired, and destroyed buffer counts plus
+  per-chunk resource generation.
+
+## Ground Truth And Implementation Path
+
+- Implement dirty-set and logical generation behavior in
+  `examples/hello-voxel/src/voxel.fab` and `meshing.fab`.
+- Extend graphics resource creation/replacement in
+  `radix/hosts/webgpu-browser/public/src/webgpu-runtime.js` or its Goal 02
+  graphics sibling. Keep queue completion and destruction in the host.
+- Carry resource identity and payload changes through the generated artifact or
+  application-to-host contract established by Goals 02-04.
+- Add pure affected-set tests and a browser resource-cycle proof. Do not claim
+  leak freedom without bounded live-resource counters after repeated edits.
 
 ## Scope
 
