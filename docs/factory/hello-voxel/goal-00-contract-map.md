@@ -79,6 +79,11 @@ Triga already provides the source-owned geometry data needed by the first draw:
   mesh world matrices into validated 128-byte model/view-projection payloads.
   Goals 04 and 05 can use them to prove one transform upload per visible mesh or
   non-empty chunk without host-side scene traversal.
+- `scene_visible_mesh_draw_packets` and
+  `scene_visible_mesh_draw_packet_count` combine the visible mesh node,
+  geometry handle, material handle, and transform payload into one source-owned
+  packet per effectively visible mesh. Goals 04 and 05 can pass draw assembly
+  facts to the host without JavaScript reconstructing scene policy.
 - `visible_face_vertex_count`, `visible_face_index_count`,
   `visible_face_triangle_count`, and visible-face payload byte helpers expose
   deterministic quad-face mesh accounting for chunk meshing. Goal 05 can use
@@ -163,13 +168,15 @@ live-resource evidence before host-owned retirement and destruction.
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
 `scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,
 `scene_visible_mesh_geometry_handles`, `scene_visible_mesh_material_handles`,
+`scene_visible_mesh_transform_payloads`, `scene_visible_mesh_draw_packets`,
 `scene_mesh_world_matrix`, and `scene_effective_visible` define source-level
-visibility filtering, renderable resource projection, and mesh transform access
-without host renderer policy. Goal 05 can use that contract for visible chunk
-draw filtering, resource-pair count evidence, geometry/material handle
-projection, and world-matrix lookup. The scene store does not define voxel
-storage, dirty chunk sets, or GPU lifetime policy. Those remain application and
-host facts.
+visibility filtering, renderable resource projection, transform payload
+projection, draw packet assembly, and mesh transform access without host
+renderer policy. Goal 05 can use that contract for visible chunk draw filtering,
+resource-pair count evidence, geometry/material handle projection, transform
+upload evidence, draw packet evidence, and world-matrix lookup. The scene store
+does not define voxel storage, dirty chunk sets, or GPU lifetime policy. Those
+remain application and host facts.
 
 ## Matrix Facts
 

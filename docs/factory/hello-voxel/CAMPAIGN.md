@@ -203,6 +203,8 @@ Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch live/current-handle evidence for
 empty and non-empty chunk remeshes. Visible mesh transform-payload facts now
 lock one 128-byte model/view-projection upload per effectively visible mesh.
+Visible mesh draw packets now lock one source-owned node/resource/transform
+packet per effectively visible mesh.
 Radix red fixtures remain pending because Radix has active foreign
 implementation work.
 

@@ -80,6 +80,13 @@ genus SceneMeshTransformPayload {
     triga.TransformPayload payload
 }
 
+genus SceneMeshDrawPacket {
+    SceneHandle node
+    ResourceHandle geometry
+    ResourceHandle material
+    triga.TransformPayload transform
+}
+
 genus SceneMeshResourceTraversal {
     lista<SceneMeshResources> resources
     numerus remaining
@@ -1013,6 +1020,67 @@ functio scene_visible_mesh_transform_payload_byte_count(
         byte_count ← byte_count + bytes
     }
     redde byte_count
+}
+
+functio scene_visible_mesh_draw_packets(
+    de SceneStore store,
+    de SceneHandle root,
+    de triga.Matrix4 view_projection
+) → lista<SceneMeshDrawPacket> ∪ nihil {
+    fixum lista<SceneMeshResources> ∪ nihil resources_result ←
+        scene_visible_mesh_resources(store, root)
+    si resources_result est nihil ergo redde nihil
+    fixum lista<SceneMeshTransformPayload> ∪ nihil payloads_result ←
+        scene_visible_mesh_transform_payloads(store, root, view_projection)
+    si payloads_result est nihil ergo redde nihil
+    fixum lista<SceneMeshResources> empty_resources ← vacua
+    fixum lista<SceneMeshResources> resources ← resources_result vel empty_resources
+    fixum lista<SceneMeshTransformPayload> empty_payloads ← vacua
+    fixum lista<SceneMeshTransformPayload> payloads ← payloads_result vel empty_payloads
+    si resources.longitudo() ≠ payloads.longitudo() ergo redde nihil
+    varia lista<SceneMeshDrawPacket> packets ← vacua
+    varia numerus i ← 0
+    dum i < resources.longitudo() {
+        fixum SceneMeshResources mesh_resources ← resources[i]
+        fixum SceneMeshTransformPayload transform_payload ← payloads[i]
+        si scene_handle_equals(mesh_resources.node, transform_payload.node) ≡ falsum {
+            redde nihil
+        }
+        packets.appende(SceneMeshDrawPacket {
+            node = SceneHandle {
+                index = mesh_resources.node.index,
+                generation = mesh_resources.node.generation
+            },
+            geometry = ResourceHandle {
+                index = mesh_resources.geometry.index,
+                generation = mesh_resources.geometry.generation
+            },
+            material = ResourceHandle {
+                index = mesh_resources.material.index,
+                generation = mesh_resources.material.generation
+            },
+            transform = transform_payload.payload
+        })
+        i ← i + 1
+    }
+    redde packets
+}
+
+functio scene_visible_mesh_draw_packet_count(
+    de SceneStore store,
+    de SceneHandle root,
+    de triga.Matrix4 view_projection
+) → numerus ∪ nihil {
+    fixum lista<SceneMeshDrawPacket> ∪ nihil packets_result ←
+        scene_visible_mesh_draw_packets(store, root, view_projection)
+    si packets_result est nihil ergo redde nihil
+    fixum lista<SceneMeshDrawPacket> empty_packets ← vacua
+    fixum lista<SceneMeshDrawPacket> packets ← packets_result vel empty_packets
+    varia numerus count ← 0
+    itera ex packets fixum packet {
+        count ← count + 1
+    }
+    redde count
 }
 
 functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {
