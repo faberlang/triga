@@ -92,6 +92,17 @@ incipit {
         "bounding-sphere center derives from the position bounds"
     adfirma sphere_result!.radius > 0.7 et sphere_result!.radius < 0.8,
         "bounding-sphere radius encloses every position"
+    fixum geometry.BoundingSphere ∪ nihil group_sphere_result ←
+        geometry.geometry_group_bounding_sphere(split_groups, 1)
+    adfirma group_sphere_result non est nihil,
+        "valid geometry group produces a bounding sphere"
+    adfirma group_sphere_result!.center_x > ten et group_sphere_result!.center_x < eleven
+        et group_sphere_result!.center_y ≡ half,
+        "group bounding sphere center stays local to the selected draw group"
+    adfirma group_sphere_result!.radius > 0.7 et group_sphere_result!.radius < 0.8,
+        "group bounding sphere radius encloses selected group vertices"
+    adfirma geometry.geometry_group_bounding_sphere(split_groups, 2) est nihil,
+        "missing geometry group rejects sphere bounds"
     fixum _ vertex_result ← geometry.geometry_vertex_normals(triangle)
     adfirma vertex_result non est nihil, "valid triangles produce vertex normals"
     adfirma vertex_result!.name ≡ "normal" et vertex_result!.component_width ≡ 3,

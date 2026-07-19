@@ -63,6 +63,9 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_group_bounding_box` returns bounds for one validated draw group.
   Goal 05 can use it to associate chunk draw groups with chunk-local bounds
   without host-side vertex scanning.
+- `geometry_group_bounding_sphere` returns a center and enclosing radius for
+  one validated draw group. Goal 05 can use it for chunk-local coarse culling
+  or selection volumes without host-side vertex scanning.
 - `geometry_valid` rejects malformed attributes, duplicate names, duplicate
   shader locations, out-of-range indices, and partial triangle draw ranges.
 - `geometry_vertex_layouts` converts valid geometry into layout records.
