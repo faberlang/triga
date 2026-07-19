@@ -31,6 +31,8 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   chunk mesh payloads.
 - Reusable `Box3` construction, validation, size, center, and translation
   helpers in `triga/src/triga.fab` for chunk mesh bounds.
+- Reusable scene visibility state and effective visible traversal in
+  `triga/src/scene.fab` for chunk draw filtering without host renderer policy.
 - No current voxel or chunk implementation exists in the examples repository.
 
 ## Stage Graph
@@ -58,8 +60,8 @@ helpers.
 **Output**: non-empty chunk resources/draws through the HV-04 renderer and
 visible deterministic world proof.
 **Write scope**: Hello Voxel application and proof script.
-**Gate**: resource/draw count follows chunks, hidden faces are absent, and the
-world is visibly rendered.
+**Gate**: resource/draw count follows non-empty, effectively visible chunks;
+hidden faces are absent; the world is visibly rendered.
 
 ## Implementation Work
 

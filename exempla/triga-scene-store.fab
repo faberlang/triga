@@ -103,6 +103,7 @@ incipit {
         kind = mesh_result!.kind,
         parent = mesh_result!.parent,
         children = mesh_result!.children,
+        visible = mesh_result!.visible,
         local_matrix = mesh_result!.local_matrix,
         world_matrix = mesh_result!.world_matrix,
         world_dirty = mesh_result!.world_dirty
@@ -116,6 +117,7 @@ incipit {
         kind = shared_mesh_result!.kind,
         parent = shared_mesh_result!.parent,
         children = shared_mesh_result!.children,
+        visible = shared_mesh_result!.visible,
         local_matrix = shared_mesh_result!.local_matrix,
         world_matrix = shared_mesh_result!.world_matrix,
         world_dirty = shared_mesh_result!.world_dirty
@@ -143,6 +145,41 @@ incipit {
         "name lookup returns stable identity"
     adfirma scene.scene_find_name(attached_store, root_step.handle, "missing") est nihil,
         "name lookup reports absence"
+    fixum lista<scene.SceneHandle> ∪ nihil default_visible ← scene.scene_visible_traverse(
+        attached_store, root_step.handle
+    )
+    adfirma default_visible non est nihil,
+        "default visible traversal succeeds"
+    adfirma scene.scene_effective_visible(attached_store, shared_mesh_step.handle),
+        "visible traversal includes all default visible nodes"
+    fixum scene.SceneStore ∪ nihil shared_hidden ← scene.scene_set_visible(
+        attached_store, shared_mesh_step.handle, falsum
+    )
+    adfirma shared_hidden non est nihil, "visibility update accepts live handles"
+    fixum scene.SceneStore shared_hidden_store ← scene.SceneStore { slots = shared_hidden!.slots }
+    fixum lista<scene.SceneHandle> ∪ nihil hidden_traversal ← scene.scene_visible_traverse(
+        shared_hidden_store, root_step.handle
+    )
+    adfirma hidden_traversal non est nihil,
+        "hidden-node visible traversal succeeds"
+    adfirma scene.scene_effective_visible(shared_hidden_store, shared_mesh_step.handle) ≡ falsum et
+        scene.scene_effective_visible(shared_hidden_store, camera_step.handle),
+        "visible traversal omits explicitly hidden nodes"
+    adfirma scene.scene_find_name(shared_hidden_store, root_step.handle, "shared-mesh") non est nihil,
+        "name lookup still sees hidden nodes"
+    fixum scene.SceneStore ∪ nihil root_hidden ← scene.scene_set_visible(
+        attached_store, root_step.handle, falsum
+    )
+    adfirma root_hidden non est nihil, "root visibility update accepts live handles"
+    fixum scene.SceneStore root_hidden_store ← scene.SceneStore { slots = root_hidden!.slots }
+    fixum lista<scene.SceneHandle> ∪ nihil root_hidden_traversal ← scene.scene_visible_traverse(
+        root_hidden_store, root_step.handle
+    )
+    adfirma root_hidden_traversal non est nihil,
+        "root-hidden visible traversal succeeds"
+    adfirma scene.scene_effective_visible(root_hidden_store, root_step.handle) ≡ falsum et
+        scene.scene_effective_visible(root_hidden_store, mesh_step.handle) ≡ falsum,
+        "hidden parent suppresses descendants"
     fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }

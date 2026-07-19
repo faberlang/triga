@@ -30,6 +30,7 @@ genus SceneNode {
     SceneNodeKind kind
     SceneHandle parent sponte
     lista<SceneHandle> children
+    bivalens visible
     triga.Matrix4 local_matrix
     triga.Matrix4 world_matrix
     bivalens world_dirty
@@ -104,6 +105,7 @@ functio scene_store() → SceneStore {
 functio scene_node(textus name, SceneNodeKind kind) → SceneNode {
     redde SceneNode {
         name = name, kind = kind, children = vacua,
+        visible = verum,
         local_matrix = triga.matrix4_identitas(),
         world_matrix = triga.matrix4_identitas(),
         world_dirty = verum
@@ -205,6 +207,7 @@ functio _scene_traverse_preorder(
     fixum SceneNode node ← SceneNode {
         name = node_result!.name, kind = node_result!.kind,
         parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
         local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
         world_dirty = node_result!.world_dirty
     }
@@ -236,6 +239,79 @@ functio scene_traverse(de SceneStore store, de SceneHandle root) → lista<Scene
     )
     si traversal est nihil ergo redde nihil
     redde traversal!.handles
+}
+
+functio _scene_traverse_visible_preorder(
+    de SceneStore store,
+    de SceneHandle handle,
+    lista<SceneHandle> handles,
+    numerus remaining,
+    bivalens parent_visible
+) → SceneTraversal ∪ nihil {
+    si remaining ≡ 0 ergo redde nihil
+    si _scene_traversal_contains(handles, handle) ergo redde nihil
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    fixum bivalens effective_visible ← parent_visible et node.visible
+    varia lista<SceneHandle> updated_handles ← handles
+    si effective_visible {
+        updated_handles.appende(SceneHandle { index = handle.index, generation = handle.generation })
+    }
+    varia SceneTraversal traversal ← SceneTraversal {
+        handles = updated_handles, remaining = remaining - 1
+    }
+    varia numerus i ← 0
+    dum i < node.children.longitudo() {
+        fixum SceneTraversal ∪ nihil current ← _scene_traverse_visible_preorder(
+            store, node.children[i], traversal.handles, traversal.remaining, effective_visible
+        )
+        si current est nihil ergo redde nihil
+        fixum SceneTraversal current_value ← SceneTraversal {
+            handles = current!.handles, remaining = current!.remaining
+        }
+        traversal ← SceneTraversal {
+            handles = current_value.handles, remaining = current_value.remaining
+        }
+        i ← i + 1
+    }
+    redde traversal
+}
+
+functio scene_visible_traverse(
+    de SceneStore store,
+    de SceneHandle root
+) → lista<SceneHandle> ∪ nihil {
+    fixum SceneTraversal ∪ nihil traversal ← _scene_traverse_visible_preorder(
+        store, root, vacua, store.slots.longitudo(), verum
+    )
+    si traversal est nihil ergo redde nihil
+    redde traversal!.handles
+}
+
+functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {
+    varia SceneHandle cursor ← SceneHandle { index = handle.index, generation = handle.generation }
+    varia numerus remaining ← store.slots.longitudo() + 1
+    dum remaining > 0 {
+        fixum SceneNode ∪ nihil current ← scene_get(store, cursor)
+        si current est nihil ergo redde falsum
+        si current!.visible ≡ falsum ergo redde falsum
+        si current!.parent est nihil ergo redde verum
+        fixum SceneHandle parent ← SceneHandle {
+            index = current!.parent!.index, generation = current!.parent!.generation
+        }
+        cursor ← SceneHandle {
+            index = parent.index, generation = parent.generation
+        }
+        remaining ← remaining - 1
+    }
+    redde falsum
 }
 
 functio scene_find_name(
@@ -295,6 +371,7 @@ functio _scene_without_child(
     redde SceneNode {
         name = parent.name, kind = parent.kind,
         parent = parent.parent, children = children,
+        visible = parent.visible,
         local_matrix = parent.local_matrix, world_matrix = parent.world_matrix,
         world_dirty = parent.world_dirty
     }
@@ -310,6 +387,7 @@ functio _scene_would_cycle(de SceneStore store, de SceneHandle child, de SceneHa
         fixum SceneNode current_node ← SceneNode {
             name = current!.name, kind = current!.kind,
             parent = current!.parent, children = current!.children,
+            visible = current!.visible,
             local_matrix = current!.local_matrix, world_matrix = current!.world_matrix,
             world_dirty = current!.world_dirty
         }
@@ -340,12 +418,14 @@ functio scene_attach(
     fixum SceneNode child_node ← SceneNode {
         name = child_result!.name, kind = child_result!.kind,
         parent = child_result!.parent, children = child_result!.children,
+        visible = child_result!.visible,
         local_matrix = child_result!.local_matrix, world_matrix = child_result!.world_matrix,
         world_dirty = child_result!.world_dirty
     }
     fixum SceneNode parent_node ← SceneNode {
         name = parent_result!.name, kind = parent_result!.kind,
         parent = parent_result!.parent, children = parent_result!.children,
+        visible = parent_result!.visible,
         local_matrix = parent_result!.local_matrix, world_matrix = parent_result!.world_matrix,
         world_dirty = parent_result!.world_dirty
     }
@@ -366,6 +446,7 @@ functio scene_attach(
     fixum SceneNode updated_parent ← SceneNode {
         name = parent_node.name, kind = parent_node.kind,
         parent = parent_node.parent, children = children,
+        visible = parent_node.visible,
         local_matrix = parent_node.local_matrix, world_matrix = parent_node.world_matrix,
         world_dirty = parent_node.world_dirty
     }
@@ -373,6 +454,7 @@ functio scene_attach(
         name = child_node.name, kind = child_node.kind,
         parent = SceneHandle { index = parent.index, generation = parent.generation },
         children = child_node.children,
+        visible = child_node.visible,
         local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix,
         world_dirty = verum
     }
@@ -386,6 +468,7 @@ functio scene_attach(
         fixum SceneNode old_parent ← SceneNode {
             name = old_parent_result!.name, kind = old_parent_result!.kind,
             parent = old_parent_result!.parent, children = old_parent_result!.children,
+            visible = old_parent_result!.visible,
             local_matrix = old_parent_result!.local_matrix,
             world_matrix = old_parent_result!.world_matrix,
             world_dirty = old_parent_result!.world_dirty
@@ -405,6 +488,7 @@ functio scene_detach(SceneStore store, de SceneHandle child) → SceneStore ∪ 
     fixum SceneNode child_node ← SceneNode {
         name = child_result!.name, kind = child_result!.kind,
         parent = child_result!.parent, children = child_result!.children,
+        visible = child_result!.visible,
         local_matrix = child_result!.local_matrix, world_matrix = child_result!.world_matrix,
         world_dirty = child_result!.world_dirty
     }
@@ -417,11 +501,13 @@ functio scene_detach(SceneStore store, de SceneHandle child) → SceneStore ∪ 
     fixum SceneNode parent_node ← SceneNode {
         name = parent_result!.name, kind = parent_result!.kind,
         parent = parent_result!.parent, children = parent_result!.children,
+        visible = parent_result!.visible,
         local_matrix = parent_result!.local_matrix, world_matrix = parent_result!.world_matrix,
         world_dirty = parent_result!.world_dirty
     }
     fixum SceneNode detached_child ← SceneNode {
         name = child_node.name, kind = child_node.kind, children = child_node.children,
+        visible = child_node.visible,
         local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix,
         world_dirty = verum
     }
@@ -441,12 +527,14 @@ functio _scene_mark_world_dirty(
     fixum SceneNode node ← SceneNode {
         name = node_result!.name, kind = node_result!.kind,
         parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
         local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
         world_dirty = node_result!.world_dirty
     }
     varia SceneStore updated ← _scene_replace(store, handle, SceneNode {
         name = node.name, kind = node.kind,
         parent = node.parent, children = node.children,
+        visible = node.visible,
         local_matrix = node.local_matrix, world_matrix = node.world_matrix,
         world_dirty = verum
     })
@@ -462,6 +550,29 @@ functio _scene_mark_world_dirty(
     redde updated
 }
 
+functio scene_set_visible(
+    SceneStore store,
+    de SceneHandle handle,
+    bivalens visible
+) → SceneStore ∪ nihil {
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    redde _scene_replace(store, handle, SceneNode {
+        name = node.name, kind = node.kind,
+        parent = node.parent, children = node.children,
+        visible = visible,
+        local_matrix = node.local_matrix, world_matrix = node.world_matrix,
+        world_dirty = node.world_dirty
+    })
+}
+
 functio scene_set_local_matrix(
     SceneStore store,
     de SceneHandle handle,
@@ -473,12 +584,14 @@ functio scene_set_local_matrix(
     fixum SceneNode node ← SceneNode {
         name = node_result!.name, kind = node_result!.kind,
         parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
         local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
         world_dirty = node_result!.world_dirty
     }
     fixum SceneStore with_local ← _scene_replace(store, handle, SceneNode {
         name = node.name, kind = node.kind,
         parent = node.parent, children = node.children,
+        visible = node.visible,
         local_matrix = local_matrix, world_matrix = node.world_matrix,
         world_dirty = verum
     })
@@ -495,6 +608,7 @@ functio _scene_update_world_node(
     fixum SceneNode node ← SceneNode {
         name = node_result!.name, kind = node_result!.kind,
         parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
         local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
         world_dirty = node_result!.world_dirty
     }
@@ -502,6 +616,7 @@ functio _scene_update_world_node(
     varia SceneStore updated ← _scene_replace(store, handle, SceneNode {
         name = node.name, kind = node.kind,
         parent = node.parent, children = node.children,
+        visible = node.visible,
         local_matrix = node.local_matrix, world_matrix = world,
         world_dirty = falsum
     })
