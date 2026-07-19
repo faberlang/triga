@@ -38,7 +38,10 @@ for (const node of trigaScene.nodes) {
   if (node.parent === null) {
     threeScene.add(object);
   } else {
-    objectByIndex.get(node.parent).add(object);
+    const parent = objectByIndex.get(node.parent);
+    if (parent) {
+      parent.add(object);
+    }
   }
 }
 
