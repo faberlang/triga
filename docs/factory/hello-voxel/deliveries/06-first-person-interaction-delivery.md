@@ -26,11 +26,12 @@ placement to the bounded world using Faber state and the authoritative model.
 - Render integration from the existing Hello Voxel application package.
 - Triga vectors, rays, matrices, bounds, AABB overlap, translation, and
   ray-to-`Box3` entry checks in `triga/src/triga.fab`. Triga also provides a
-  yaw/pitch camera ray helper with the locked pitch clamp, min-size and
+  yaw/pitch camera ray helper with the locked pitch clamp, yaw-derived
+  horizontal forward/right vectors for first-person movement, min-size and
   center-size `Box3` construction helpers for player and selection extents,
   `Box3` overlap extents for axis-ordered collision fixtures, `Box3`
-  containment and union for aggregate bounds, `Box3` inflation for selection and
-  collision tolerances, and a `RayBox3Hit` result with distance, point, and
+  containment and union for aggregate bounds, `Box3` inflation for selection
+  and collision tolerances, and a `RayBox3Hit` result with distance, point, and
   outward face normal for selection indicators. Voxel DDA remains
   application-owned. Triga geometry also provides `box_wire_geometry` for a
   minimal selection outline without host-side shape construction.

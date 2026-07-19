@@ -83,6 +83,22 @@ incipit {
     fixum triga.Vector3 composed_point ← triga.matrix4_applica_punctum(composed, local)
     adfirma (composed_point.x - transformed.x).absolutum() ≤ 0.0001,
         "quaternion composition matches identity rotation chain"
+    fixum triga.Vector3 forward_zero ← triga.camera_forward_planus_ex_yaw(0.0 ∷ f32)
+    adfirma forward_zero.y ≡ (0.0 ∷ f32)
+        et forward_zero.z ≡ (-1.0 ∷ f32),
+        "camera flat forward uses locked yaw convention"
+    fixum triga.Vector3 right_zero ← triga.camera_right_ex_yaw(0.0 ∷ f32)
+    adfirma right_zero.x ≡ (1.0 ∷ f32)
+        et right_zero.y ≡ (0.0 ∷ f32),
+        "camera right uses locked yaw convention"
+    fixum triga.Vector3 forward_turn ← triga.camera_forward_planus_ex_yaw(90.0 ∷ f32)
+    adfirma (forward_turn.x - 1.0).absolutum() ≤ 0.0001
+        et forward_turn.y ≡ (0.0 ∷ f32),
+        "camera flat forward rotates with yaw"
+    fixum triga.Vector3 right_turn ← triga.camera_right_ex_yaw(90.0 ∷ f32)
+    adfirma (right_turn.z - 1.0).absolutum() ≤ 0.0001
+        et right_turn.y ≡ (0.0 ∷ f32),
+        "camera right rotates with yaw"
 
     fixum triga.Box3 bounds ← triga.Box3 {
         min = triga.vector3(-1.0 ∷ f32, -1.0 ∷ f32, -1.0 ∷ f32),

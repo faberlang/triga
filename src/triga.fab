@@ -462,6 +462,24 @@ functio camera_directio_ex_yaw_pitch(
     ))
 }
 
+functio camera_forward_planus_ex_yaw(f32 yaw_degrees) → Vector3 {
+    fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
+    redde vector3_normalizata(vector3(
+        _sinus_f32(yaw),
+        0.0 ∷ f32,
+        -_cosinus_f32(yaw)
+    ))
+}
+
+functio camera_right_ex_yaw(f32 yaw_degrees) → Vector3 {
+    fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
+    redde vector3_normalizata(vector3(
+        _cosinus_f32(yaw),
+        0.0 ∷ f32,
+        _sinus_f32(yaw)
+    ))
+}
+
 functio camera_ray_ex_yaw_pitch(
     de Vector3 origin,
     f32 yaw_degrees,
