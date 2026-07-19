@@ -51,12 +51,16 @@ incipit {
     fixum triga.Material base_material ← triga.material("hello-voxel")
     adfirma triga.material_valid(base_material),
         "material constructor creates valid material state"
+    adfirma (triga.material_side_code(base_material) vel 99) ≡ 0,
+        "material constructor records front-side culling intent"
     adfirma triga.material_depth_enabled(base_material),
         "material defaults keep depth testing enabled"
 
     fixum triga.Material double_sided ← triga.material_double_sided(base_material)
     adfirma triga.material_est_double_sided(double_sided),
         "double-sided material records disabled face culling intent"
+    adfirma (triga.material_side_code(double_sided) vel 0) ≡ 2,
+        "double-sided material exposes disabled culling side code"
     adfirma triga.material_depth_enabled(double_sided),
         "double-sided material preserves depth policy"
 
@@ -78,4 +82,6 @@ incipit {
     fixum triga.Material invalid ← triga.material("")
     adfirma triga.material_valid(invalid) ≡ falsum,
         "material validation rejects empty names"
+    adfirma triga.material_side_code(invalid) est nihil,
+        "invalid material rejects side code projection"
 }

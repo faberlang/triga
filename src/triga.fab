@@ -269,6 +269,11 @@ functio material_est_double_sided(de Material value) → bivalens {
     redde value.side ≡ (2 ↦ numerus<u32>)
 }
 
+functio material_side_code(de Material value) → numerus ∪ nihil {
+    si material_valid(value) ≡ falsum ergo redde nihil
+    redde value.side ↦ numerus
+}
+
 functio material_depth_enabled(de Material value) → bivalens {
     redde value.depth_test et value.depth_write
 }
