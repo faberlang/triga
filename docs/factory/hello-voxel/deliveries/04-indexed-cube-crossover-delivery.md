@@ -21,12 +21,12 @@ the first visible Faber-authored indexed 3D application.
 
 ## Repo-Aware Baseline
 
-- Triga math: `triga/src/triga.fab` and transform exemplar. It now includes
-  perspective projection and look-at view matrix helpers for the crossover
-  camera, reusable perspective-camera projection facts for aspect, near/far,
-  and projection scale evidence, plus a validated 32-float, 128-byte transform
-  payload constructor that stores model matrix values before view-projection
-  matrix values.
+- Triga math: `triga/src/triga.fab` and transform exemplar. The source now
+  includes perspective projection and look-at view matrix helpers for the
+  crossover camera, reusable perspective-camera projection facts for aspect,
+  near/far, projection scale evidence, and composed view-projection facts. The
+  exemplar also validates the 32-float, 128-byte transform payload constructor
+  that stores model matrix values before view-projection matrix values.
 - Triga material: `triga/src/triga.fab` and basics exemplar. It includes a
   validated material constructor, side-code projection, combined and per-flag
   depth-policy checks, double-sided material helper, and minimal unlit

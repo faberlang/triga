@@ -209,8 +209,9 @@ also provides min-max, min-size, and center-size
 axis-ordered collision fixtures, `Box3` union for aggregate chunk or selection
 bounds, `Box3` inflation for source-owned selection and collision tolerances,
 perspective camera projection facts for aspect, near/far, projection length,
-and projection scale evidence, camera yaw/pitch ray construction, yaw-derived
-horizontal movement basis vectors, normalized planar movement deltas with speed and frame time,
+projection scale evidence, composed perspective view-projection facts, camera
+yaw/pitch ray construction, yaw-derived horizontal movement basis vectors,
+normalized planar movement deltas with speed and frame time,
 ray-to-`Box3` entry distance, and `RayBox3Hit`
 distance/point/normal facts plus stable face-code projection. Generic
 face-code validation, axis classification, opposite-face projection, face

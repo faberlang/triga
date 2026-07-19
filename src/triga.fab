@@ -145,6 +145,14 @@ genus PerspectiveCameraProjectionFacts {
     f32 depth_scale
 }
 
+genus ViewProjectionFacts {
+    numerus float_count
+    f32 x_scale
+    f32 y_scale
+    f32 depth_scale
+    f32 view_translation_z
+}
+
 genus OrthographicCamera {
     Object3D base
     f32 left
@@ -1228,6 +1236,41 @@ functio camera_perspectiva_projection_facts(
         x_scale = projection.elements[0],
         y_scale = projection.elements[5],
         depth_scale = projection.elements[10]
+    }
+}
+
+functio camera_view_projection(
+    de PerspectiveCamera camera,
+    de Vector3 eye,
+    de Vector3 target,
+    de Vector3 up
+) → Matrix4 ∪ nihil {
+    fixum Matrix4 ∪ nihil projection_result ← camera_perspectiva_projection(camera)
+    si projection_result est nihil ergo redde nihil
+    fixum Matrix4 ∪ nihil view_result ← matrix4_conspectus(eye, target, up)
+    si view_result est nihil ergo redde nihil
+    fixum Matrix4 projection ← Matrix4 { elements = projection_result!.elements }
+    fixum Matrix4 view ← Matrix4 { elements = view_result!.elements }
+    redde matrix4_multiplicata(projection, view)
+}
+
+functio camera_view_projection_facts(
+    de PerspectiveCamera camera,
+    de Vector3 eye,
+    de Vector3 target,
+    de Vector3 up
+) → ViewProjectionFacts ∪ nihil {
+    fixum Matrix4 ∪ nihil view_projection_result ←
+        camera_view_projection(camera, eye, target, up)
+    si view_projection_result est nihil ergo redde nihil
+    fixum Matrix4 view_projection ← Matrix4 { elements = view_projection_result!.elements }
+    si matrix4_valid(view_projection) ≡ falsum ergo redde nihil
+    redde ViewProjectionFacts {
+        float_count = view_projection.elements.longitudo(),
+        x_scale = view_projection.elements[0],
+        y_scale = view_projection.elements[5],
+        depth_scale = view_projection.elements[10],
+        view_translation_z = view_projection.elements[14]
     }
 }
 
