@@ -207,6 +207,9 @@ keeping actual retirement and queue completion host-owned.
 exact per-chunk generation, affected-set, removed-chunk, previous removed
 resource, changed current resource, and live-resource evidence before
 host-owned retirement and destruction.
+`resource_lifecycle_batch_facts` packages transition, changed, created,
+removed, and live counters into one validated source-owned record for Goal 07
+host-facing lifecycle evidence.
 `scene_set_visible`,
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
 `scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,

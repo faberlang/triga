@@ -157,6 +157,16 @@ incipit {
         "lifecycle batch counts removed resources"
     adfirma (scene.resource_lifecycle_live_count(lifecycle_batch) vel 0) ≡ 3,
         "lifecycle batch counts current live resources"
+    fixum scene.ResourceLifecycleBatchFacts ∪ nihil lifecycle_facts_result ←
+        scene.resource_lifecycle_batch_facts(lifecycle_batch)
+    adfirma lifecycle_facts_result non est nihil,
+        "lifecycle batch exposes one source-owned fact record"
+    adfirma lifecycle_facts_result!.transition_count ≡ 4
+        et lifecycle_facts_result!.changed_count ≡ 3
+        et lifecycle_facts_result!.created_count ≡ 1
+        et lifecycle_facts_result!.removed_count ≡ 1
+        et lifecycle_facts_result!.live_count ≡ 3,
+        "lifecycle batch fact record packages transition counters"
     fixum lista<numerus> ∪ nihil lifecycle_changed_indices ←
         scene.resource_lifecycle_changed_indices(lifecycle_batch)
     adfirma lifecycle_changed_indices non est nihil
@@ -224,6 +234,8 @@ incipit {
         "lifecycle removed handles reject duplicate logical resources"
     adfirma scene.resource_lifecycle_current_handles(duplicate_lifecycle_batch) est nihil,
         "lifecycle current handles reject duplicate logical resources"
+    adfirma scene.resource_lifecycle_batch_facts(duplicate_lifecycle_batch) est nihil,
+        "lifecycle batch facts reject duplicate logical resources"
     fixum scene.SceneInsert root_step ← scene.scene_insert(
         scene.scene_store(), scene.scene_group("root")
     )

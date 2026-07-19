@@ -26,6 +26,14 @@ genus ResourceLifecycleTransition {
     bivalens removed
 }
 
+genus ResourceLifecycleBatchFacts {
+    numerus transition_count
+    numerus changed_count
+    numerus created_count
+    numerus removed_count
+    numerus live_count
+}
+
 discretio SceneNodeKind {
     SceneGroup { },
     SceneMesh { ResourceHandle geometry, ResourceHandle material },
@@ -426,6 +434,31 @@ functio resource_lifecycle_live_count(
         si transition.current non est nihil { count ← count + 1 }
     }
     redde count
+}
+
+functio resource_lifecycle_batch_facts(
+    de lista<ResourceLifecycleTransition> transitions
+) → ResourceLifecycleBatchFacts ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia numerus changed_count ← 0
+    varia numerus created_count ← 0
+    varia numerus removed_count ← 0
+    varia numerus live_count ← 0
+    itera ex transitions fixum transition {
+        si transition.changed { changed_count ← changed_count + 1 }
+        si transition.previous est nihil et transition.current non est nihil {
+            created_count ← created_count + 1
+        }
+        si transition.removed { removed_count ← removed_count + 1 }
+        si transition.current non est nihil { live_count ← live_count + 1 }
+    }
+    redde ResourceLifecycleBatchFacts {
+        transition_count = transitions.longitudo(),
+        changed_count = changed_count,
+        created_count = created_count,
+        removed_count = removed_count,
+        live_count = live_count
+    }
 }
 
 functio resource_lifecycle_changed_indices(
