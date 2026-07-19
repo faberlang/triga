@@ -213,6 +213,19 @@ functio _vertex_layout_format_code(de VertexAttributeLayout layout) → numerus 
 }
 
 @ privata
+functio _vertex_step_mode_code(de VertexStepMode mode) → numerus {
+    discerne mode {
+        casu VertexStep { redde 1 }
+        casu InstanceStep { redde 2 }
+    }
+}
+
+@ privata
+functio _vertex_layout_step_mode_code(de VertexAttributeLayout layout) → numerus {
+    redde _vertex_step_mode_code(layout.step_mode)
+}
+
+@ privata
 functio _primitive_topology_code(de PrimitiveTopology topology) → numerus {
     discerne topology {
         casu TriangleList { redde 1 }
@@ -285,6 +298,23 @@ functio geometry_vertex_layout_stride_bytes(
     fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
     si layout_result est nihil ergo redde nihil
     redde layout_result!.stride_bytes
+}
+
+functio geometry_vertex_layout_step_mode_code(
+    de BufferGeometry geometry,
+    numerus index
+) → numerus ∪ nihil {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde nihil
+    fixum VertexAttributeLayout layout ← VertexAttributeLayout {
+        source_name = layout_result!.source_name,
+        shader_location = layout_result!.shader_location,
+        vertex_format = layout_result!.vertex_format,
+        offset_bytes = layout_result!.offset_bytes,
+        stride_bytes = layout_result!.stride_bytes,
+        step_mode = layout_result!.step_mode
+    }
+    redde _vertex_layout_step_mode_code(layout)
 }
 
 functio geometry_vertex_layout_matches(

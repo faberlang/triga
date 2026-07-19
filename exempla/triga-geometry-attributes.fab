@@ -143,6 +143,8 @@ incipit {
         "generated UV layout covers every vertex"
     adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
         "layout stride derives from explicit component facts"
+    adfirma (geometry.geometry_vertex_layout_step_mode_code(triangle, 0) vel 0) ≡ 1,
+        "valid geometry exposes vertex-step layout mode"
     fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
         3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
     )

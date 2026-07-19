@@ -56,6 +56,8 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_index_format_code` exposes the validated source index format. It
   returns `1` for the current `u32` indexed payload and `nihil` for invalid or
   non-indexed geometry.
+- `geometry_vertex_layout_step_mode_code` exposes validated layout step mode
+  facts. It returns `1` for per-vertex buffers.
 - `geometry_triangle_count` exposes valid triangle element counts and returns
   `nihil` for invalid or non-triangle geometry.
 - `geometry_line_count` exposes valid line element counts and returns `nihil`
