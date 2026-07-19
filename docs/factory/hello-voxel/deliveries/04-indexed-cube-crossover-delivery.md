@@ -44,7 +44,9 @@ the first visible Faber-authored indexed 3D application.
   packets, and draw batch facts, so the cube proof can hand one source-owned
   node/resource/transform packet and its resource and transform-upload counts
   to the host without host-side scene reconstruction.
-- Application root: `examples/hello-voxel/` created by HV-03.
+- Application root: `examples/hello-voxel/` exists as a package-admission
+  scaffold. HV-03 still owns frame and input runtime support before HV-04 can
+  make it render-capable.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: `radix/hosts/webgpu-browser/` after HV-02.
 - Browser lifecycle: Faber `browser-app` output after HV-03.
@@ -73,8 +75,8 @@ dependencies are not complete.
 ### HV-04B - Faber Cube Application
 
 **Depends on**: HV-04A and HV-01/HV-03 artifacts
-**Output**: cube payload, camera, frame update, artifact manifest, and proof state
-under `examples/hello-voxel/`.
+**Output**: cube payload, camera, frame update, artifact manifest, and proof
+state added to the existing `examples/hello-voxel/` scaffold.
 **Write scope**: Hello Voxel example package only.
 **Gate**: generated artifacts match the locked contract and change model matrix
 across frames.

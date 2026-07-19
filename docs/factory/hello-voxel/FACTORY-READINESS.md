@@ -31,7 +31,7 @@ outside the factory boundary.
 - Faber browser packaging under `faber/src/package/`.
 - Faber browser contracts and runtime bindings under `faber-web/src/` and
   `faber-web/runtime/`.
-- The future application package at `examples/hello-voxel/`.
+- The Hello Voxel package scaffold at `examples/hello-voxel/`.
 
 ### Invariants
 
@@ -111,9 +111,12 @@ colored quad finalization, colored mesh fact records, colored mesh draw-batch
 facts, colored mesh bounds, and line draw-batch facts for selection outlines. The
 `triga/scripta/check-hello-voxel-contract` gate packages the Triga-owned
 executable evidence and compile viability without claiming browser rendering.
-HV-04A's reusable Triga prerequisite scope is also complete for the current
-indexed-cube delivery, but HV-04 itself still waits for the shader, host,
-browser runtime, and example package dependencies. The first remaining
+The `examples/hello-voxel` scaffold now builds as a browser package and proves
+only package/controller admission. It does not satisfy HV-03 frame/input
+lifecycle or HV-04 rendering gates. HV-04A's reusable Triga prerequisite scope
+is also complete for the current indexed-cube delivery, but HV-04 itself still
+waits for the shader, host, browser runtime, and example package dependencies
+to become render-capable. The first remaining
 executable campaign gate
 is the Radix-owned HV-00B red fixture pass. No full unit is complete, and no
 release is authorized.

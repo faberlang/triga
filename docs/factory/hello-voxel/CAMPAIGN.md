@@ -174,7 +174,7 @@ reflection consumer admits compute kernels only.
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
-| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; frame/input lifecycle is missing | Extend through Goal 03 |
+| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold; frame/input lifecycle is missing | Extend through Goal 03 |
 | Voxel domain | Not implemented | Begin only after indexed-cube crossover |
 | Direct graphics proof | Not implemented | Goal 04 |
 | Runtime clean break | Not achieved | Goal 08 |
@@ -225,6 +225,9 @@ count to transform upload bytes.
 The first remaining executable Goal 00 gate is HV-00B: Radix-owned red
 fixtures for fragment admission and compute-only graphics-host rejection. That
 work remains pending because Radix has active foreign implementation work.
+The `examples/hello-voxel` browser package scaffold now exists and proves only
+controller/package admission. It does not claim frame events, graphics, or
+WebGPU execution.
 
 ### Goal 01 - Source Graphics Pipeline
 

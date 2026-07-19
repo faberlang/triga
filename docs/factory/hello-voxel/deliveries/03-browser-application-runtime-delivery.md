@@ -32,7 +32,9 @@ interactive frame and input lifecycle through generated browser adaptation.
 - Browser runtime effects and bindings: `faber-web/runtime/dom.ts` and
   `faber-web/bindings/ts.toml`.
 - Existing consuming proof: `examples/browser-app/`.
-- New application consumer: `examples/hello-voxel/`.
+- New application consumer: `examples/hello-voxel/`. The current scaffold
+  proves package/controller admission only. It still needs the HV-03 frame,
+  resize, keyboard, pointer, focus, and pointer-lock runtime contract.
 
 ## Stage Graph
 
@@ -57,8 +59,9 @@ listeners on shutdown.
 ### HV-03C - Consuming Package Proof
 
 **Depends on**: HV-03B
-**Output**: minimal `examples/hello-voxel/` browser package that receives frames
-and input and exposes deterministic state without rendering policy.
+**Output**: extend the minimal `examples/hello-voxel/` browser package so it
+receives frames and input and exposes deterministic state without rendering
+policy.
 **Write scope**: the example package and its check script.
 **Gate**: browser automation observes frame progress and input/focus transitions
 originating from Faber state.
