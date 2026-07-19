@@ -119,7 +119,10 @@ lifecycle, frame and resize delivery, physical key-code delivery, pointer
 movement delivery, focus delivery, pointer-lock request/state delivery, typed
 denied failure handling, visible state updates, and generated listener/frame
 cleanup through `examples/browser-app`. This completes HV-03 for the current
-non-GPU browser runtime scope, but it does not satisfy HV-04 rendering gates.
+non-GPU browser runtime scope. The Triga capability checker records this as the
+non-scoring prerequisite manifest
+`proof/prerequisites/hello-voxel-browser-runtime.json`, but it does not satisfy
+HV-04 rendering gates.
 HV-04A's
 reusable Triga prerequisite scope is also complete for the current indexed-cube
 delivery, but HV-04 itself still waits for the shader and host dependencies to

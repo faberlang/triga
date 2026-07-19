@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "hello-voxel-browser-runtime",
+  "campaign": "hello-voxel",
+  "goal": "HV-03",
+  "state": "passed",
+  "scoring": false,
+  "scope": "Non-GPU browser application lifecycle prerequisite for Hello Voxel.",
+  "evidence": [
+    {
+      "repo": "faber",
+      "command": "cargo test g10_web3_builds_controllers_json_and_browser_esm -- --nocapture",
+      "proves": "browser product emits generated lifecycle helper and current web:dom ambient event declarations"
+    },
+    {
+      "repo": "examples/browser-app",
+      "command": "./tests/run.sh",
+      "proves": "generated ESM delivers frame, resize, keyboard, pointer, focus, pointer-lock, typed denied-failure, visible state update, and cleanup behavior"
+    },
+    {
+      "repo": "examples/hello-voxel",
+      "command": "./tests/run.sh",
+      "proves": "campaign package scaffold builds and generated controller mount automation updates package-ready state"
+    }
+  ],
+  "limits": [
+    "Does not prove WebGPU object creation.",
+    "Does not prove shader execution.",
+    "Does not prove visible direct rendering.",
+    "Does not change capability score or host_graphics floors."
+  ]
+}

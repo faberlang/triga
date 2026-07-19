@@ -115,6 +115,8 @@ fixtures can be batched after the first event pattern passes.
   typed denied-failure, visible state update, and cleanup behavior.
 - `examples/hello-voxel/tests/run.sh` builds the campaign package scaffold and
   proves generated controller mount automation.
+- `triga/proof/prerequisites/hello-voxel-browser-runtime.json` records the
+  completed HV-03 browser lifecycle scope as non-scoring prerequisite evidence.
 
 This delivery remains non-GPU. It does not claim WebGPU object creation,
 shader execution, or visible direct rendering.

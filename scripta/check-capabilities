@@ -8,6 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "proof" / "capabilities.json"
+PREREQUISITES = ROOT / "proof" / "prerequisites"
 VALID_STATES = {"unsupported", "available", "passed", "failed"}
 
 
@@ -71,14 +72,37 @@ def main():
         if capstones[-1]["stale"]:
             errors.append(f"{capstone_id}: manifest is older than capability ledger")
 
+    prerequisites = []
+    if PREREQUISITES.exists():
+        for path in sorted(PREREQUISITES.glob("*.json")):
+            manifest = load(path)
+            prereq_id = manifest.get("id", path.stem)
+            if manifest.get("schema_version") != 1:
+                errors.append(f"{prereq_id}: invalid prerequisite schema_version")
+            if manifest.get("state") not in VALID_STATES:
+                errors.append(f"{prereq_id}: invalid prerequisite state")
+            if manifest.get("scoring") is not False:
+                errors.append(f"{prereq_id}: prerequisite must declare scoring=false")
+            for field in ("campaign", "goal", "scope", "evidence", "limits"):
+                if field not in manifest:
+                    errors.append(f"{prereq_id}: missing {field}")
+            prerequisites.append({
+                "id": prereq_id,
+                "state": manifest.get("state"),
+                "goal": manifest.get("goal"),
+                "scoring": manifest.get("scoring"),
+            })
+
     browser = {"available": False, "result": "unavailable", "reason": "Stage 0 has no direct WebGPU browser runner"}
-    report = {"schema_version": 1, "score": score, "threshold": ledger["threshold"], "weights": total_weight, "floors": floor_results, "capstones": capstones, "browser": browser, "errors": errors}
+    report = {"schema_version": 1, "score": score, "threshold": ledger["threshold"], "weights": total_weight, "floors": floor_results, "capstones": capstones, "prerequisites": prerequisites, "browser": browser, "errors": errors}
     if args.as_json:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
         print(f"score: {score}/{total_weight} (threshold {ledger['threshold']})")
         print(f"mandatory floors: {sum(item['met'] for item in floor_results)}/{len(floor_results)} met")
         print(f"capstones: {len(capstones)}/{len(ledger['capstones'])} manifested; {sum(item['state'] == 'passed' for item in capstones)} passed")
+        if prerequisites:
+            print(f"non-scoring prerequisites: {sum(item['state'] == 'passed' for item in prerequisites)}/{len(prerequisites)} passed")
         print(f"browser validation: {browser['result']} — {browser['reason']}")
         print(f"artifact freshness: {'ok' if not any(item['stale'] for item in capstones) else 'stale'}")
         for error in errors:
