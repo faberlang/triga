@@ -193,6 +193,47 @@ functio attribute_stride_bytes(de BufferAttribute attribute) → numerus {
     redde attribute.component_width * attribute_scalar_bytes(attribute)
 }
 
+functio geometry_attribute_byte_count(
+    de BufferGeometry geometry,
+    textus name
+) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    itera ex geometry.attributes fixum attribute {
+        si attribute.name ≡ name {
+            fixum numerus scalars ← attribute_scalar_count(attribute)
+            fixum numerus bytes ← scalars * attribute_scalar_bytes(attribute)
+            redde bytes
+        }
+    }
+    redde nihil
+}
+
+functio geometry_vertex_payload_byte_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    varia numerus total ← 0
+    itera ex geometry.attributes fixum attribute {
+        total ← total + attribute_scalar_count(attribute) * attribute_scalar_bytes(attribute)
+    }
+    redde total
+}
+
+functio geometry_index_payload_byte_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si geometry.indexed ≡ falsum ergo redde nihil
+    fixum numerus bytes ← geometry.indices.longitudo() * 4
+    redde bytes
+}
+
+functio geometry_payload_byte_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    fixum numerus ∪ nihil vertex_bytes_result ← geometry_vertex_payload_byte_count(geometry)
+    si vertex_bytes_result est nihil ergo redde nihil
+    fixum numerus vertex_bytes ← vertex_bytes_result vel 0
+    fixum numerus ∪ nihil index_bytes_result ← geometry_index_payload_byte_count(geometry)
+    si index_bytes_result est nihil ergo redde vertex_bytes
+    fixum numerus index_bytes ← index_bytes_result vel 0
+    redde vertex_bytes + index_bytes
+}
+
 @ privata
 functio _vertex_format_code(de VertexFormat format) → numerus {
     discerne format {

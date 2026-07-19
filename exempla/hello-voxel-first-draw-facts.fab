@@ -61,6 +61,16 @@ incipit {
         "Hello Voxel first draw locks u32 index format"
     adfirma cube.indexed et cube.vertex_count ≡ 8 et cube.indices.longitudo() ≡ 36,
         "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
+    adfirma (geometry.geometry_attribute_byte_count(cube, "position") vel 0) ≡ 96,
+        "Hello Voxel first draw locks position payload bytes"
+    adfirma (geometry.geometry_attribute_byte_count(cube, "color") vel 0) ≡ 96,
+        "Hello Voxel first draw locks color payload bytes"
+    adfirma (geometry.geometry_vertex_payload_byte_count(cube) vel 0) ≡ 192,
+        "Hello Voxel first draw locks vertex payload bytes"
+    adfirma (geometry.geometry_index_payload_byte_count(cube) vel 0) ≡ 144,
+        "Hello Voxel first draw locks index payload bytes"
+    adfirma (geometry.geometry_payload_byte_count(cube) vel 0) ≡ 336,
+        "Hello Voxel first draw locks combined geometry payload bytes"
     adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,
         "Hello Voxel first draw covers the full indexed cube range"
     fixum geometry.GeometryDrawCommand ∪ nihil draw_result ← geometry.geometry_draw_command(cube, 1)

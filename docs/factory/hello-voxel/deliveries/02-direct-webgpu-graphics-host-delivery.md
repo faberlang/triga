@@ -30,6 +30,10 @@ reflection-driven indexed render path without adding a second host or renderer.
 - Generator/check/serve path: `scripta/webgpu-browser-proof`.
 - Current page imports `three/webgpu` for presentation; it is not part of the
   compute contract and must not enter the graphics adapter.
+- Triga geometry exposes validated attribute, vertex, index, and combined
+  payload byte counts. HV-02 should consume reflected payload sizes and use
+  these source facts as oracle evidence, not infer geometry structure inside the
+  JavaScript host.
 
 ## Stage Graph
 

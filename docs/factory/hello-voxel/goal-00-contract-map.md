@@ -74,10 +74,12 @@ Triga already provides the source-owned geometry data needed by the first draw:
   groups in group order. Goal 05 can use it to submit one chunk geometry without
   host-side group inference.
 - `geometry_vertex_count`, `geometry_index_count`, `geometry_group_count`,
-  `geometry_group_element_total`, and `geometry_attribute_scalar_count` expose
-  validated payload and draw-count facts. Goals 05 and 08 can use these facts
-  to prove chunk resource size, expected index totals, and draw scaling without
-  host-side geometry scans.
+  `geometry_group_element_total`, `geometry_attribute_scalar_count`,
+  `geometry_attribute_byte_count`, `geometry_vertex_payload_byte_count`,
+  `geometry_index_payload_byte_count`, and `geometry_payload_byte_count` expose
+  validated payload, byte-size, and draw-count facts. Goals 02, 05, and 08 can
+  use these facts to prove upload sizes, chunk resource size, expected index
+  totals, and draw scaling without host-side geometry scans.
 - `geometry_group_bounding_box` returns bounds for one validated draw group.
   Goal 05 can use it to associate chunk draw groups with chunk-local bounds
   without host-side vertex scanning.

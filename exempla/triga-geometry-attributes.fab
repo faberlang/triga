@@ -41,12 +41,22 @@ incipit {
     ) vel 0
     adfirma triangle_position_scalars ≡ 9,
         "valid geometry exposes named attribute scalar count"
+    adfirma (geometry.geometry_attribute_byte_count(triangle, "position") vel 0) ≡ 36,
+        "valid geometry exposes named attribute byte count"
+    adfirma (geometry.geometry_vertex_payload_byte_count(triangle) vel 0) ≡ 36,
+        "valid geometry exposes vertex payload byte count"
+    adfirma (geometry.geometry_index_payload_byte_count(triangle) vel 0) ≡ 12,
+        "valid indexed geometry exposes index payload byte count"
+    adfirma (geometry.geometry_payload_byte_count(triangle) vel 0) ≡ 48,
+        "valid indexed geometry exposes combined payload byte count"
     adfirma (geometry.geometry_vertex_layout_count(triangle) vel 0) ≡ 1,
         "valid geometry exposes vertex layout count"
     adfirma (geometry.geometry_vertex_layout_source_name(triangle, 0) vel "") ≡ "position",
         "valid geometry exposes vertex layout source name"
     adfirma geometry.geometry_attribute_scalar_count(triangle, "color") est nihil,
         "missing attribute scalar count is explicit"
+    adfirma geometry.geometry_attribute_byte_count(triangle, "color") est nihil,
+        "missing attribute byte count is explicit"
     adfirma geometry.geometry_vertex_layout_source_name(triangle, 1) est nihil,
         "missing vertex layout source name is explicit"
     fixum geometry.GeometryDrawCommand ∪ nihil group_draw_result ← geometry.geometry_group_draw_command(
@@ -159,6 +169,10 @@ incipit {
         "non-indexed geometry has no source-owned index payload count"
     adfirma geometry.geometry_index_format_code(nonindexed) est nihil,
         "non-indexed geometry has no source-owned index format"
+    adfirma geometry.geometry_index_payload_byte_count(nonindexed) est nihil,
+        "non-indexed geometry has no index payload bytes"
+    adfirma (geometry.geometry_payload_byte_count(nonindexed) vel 0) ≡ 36,
+        "non-indexed geometry reports only vertex payload bytes"
     adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
         "non-indexed triangles produce vertex normals"
 
