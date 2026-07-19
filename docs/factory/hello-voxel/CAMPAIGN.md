@@ -1,6 +1,6 @@
 # Campaign: Hello Voxel
 
-**Status**: ready for factory
+**Status**: in factory
 **Selected next stage**: Goal 00 - Baseline And Contract Lock
 **Primary owner**: `triga`
 **Target repos**: `triga`, `radix`, `faber`, `faber-web`, `examples`
@@ -182,12 +182,15 @@ reflection consumer admits compute kernels only.
 
 ### Goal 00 - Baseline And Contract Lock
 
-**Status**: selected
+**Status**: active
 **Source**: [`goals/00-baseline-contract-lock.md`](goals/00-baseline-contract-lock.md)
+**Contract map**: [`goal-00-contract-map.md`](goal-00-contract-map.md)
 **Gate**: one checked boundary map names every Faber, Triga, Radix, host, and
 browser fact required by the first indexed draw.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: discovery-first
+**Progress**: Triga-side executable-truth inventory is complete. Radix red
+fixtures remain pending because Radix has active foreign implementation work.
 
 ### Goal 01 - Source Graphics Pipeline
 
@@ -346,7 +349,9 @@ Implementation validation is goal-specific. The final proof must include:
 - Which existing Faber browser binding surface can be reused unchanged after
   Goal 00 inventory?
 - Which graphics reflection fields remain compiler-owned gaps when the first
-  indexed pipeline fixture is lowered?
+  indexed pipeline fixture is lowered? The current Goal 00 contract map names
+  fragment reflection, render-pipeline reflection, and indexed-draw reflection
+  as Radix-owned gaps.
 - What deterministic bounded world dimensions and chunk dimensions best keep
   proof execution fast while exercising a chunk boundary?
 - Which browser automation surface can provide repeatable WebGPU pixel and

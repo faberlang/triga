@@ -1,8 +1,9 @@
 # Goal 00: Baseline And Contract Lock
 
-**Status**: selected
+**Status**: active
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Delivery**: [`../deliveries/00-baseline-contract-lock-delivery.md`](../deliveries/00-baseline-contract-lock-delivery.md)
+**Contract map**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md)
 **Target repos**: `triga`, `radix`, `faber`, `examples`
 **Lowers to**: `delivery` -> `factory`
 **Batching posture**: discovery-first
@@ -48,6 +49,13 @@ source and tests prove otherwise.
 - Add red or unsupported fixtures for missing source lowering, reflection,
   direct render execution, and third-party-runtime exclusion.
 - Record exact downstream validation commands and browser evidence boundaries.
+
+## Progress
+
+- Triga-side executable-truth inventory is recorded in
+  [`../goal-00-contract-map.md`](../goal-00-contract-map.md).
+- Radix red admission fixtures are still required for the full Goal 00 gate.
+  They are deferred while Radix has active foreign implementation work.
 
 ## Non-Goals
 

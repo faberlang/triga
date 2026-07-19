@@ -1,8 +1,8 @@
 # HV-00 Delivery: Baseline And Contract Lock
 
 **Parent goal**: [`../goals/00-baseline-contract-lock.md`](../goals/00-baseline-contract-lock.md)
-**Factory admission**: READY and current
-**Primary repo**: `radix`
+**Factory admission**: ACTIVE; Triga inventory complete, Radix red fixtures pending
+**Primary repo**: `triga` for the current pass; `radix` for deferred red fixtures
 **Supporting repos**: `triga`, `faber`
 
 ## Interpreted Unit
@@ -37,22 +37,28 @@ fixtures only where a missing capability needs an implementation entry point.
 
 ### HV-00A - Executable Truth Inventory
 
+**Status**: complete for Triga-owned evidence
 **Output**: a fact/owner/state table saved beside this delivery spec.
 **Write scope**: `triga/docs/factory/hello-voxel/` only.
 **Gate**: every Goal 01 locked fact maps to a live type, generated field, missing
 field, or platform-owned value.
+**Evidence**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md)
 
 ### HV-00B - Red Admission Fixtures
 
+**Status**: pending Radix ownership
 **Depends on**: HV-00A
 **Output**: focused Radix and browser-consumer tests that expose the first
 missing fragment and graphics-adapter boundaries.
 **Write scope**: adjacent test modules under `radix/crates/radix/src/` and
 `radix/hosts/webgpu-browser/public/src/`.
 **Gate**: tests fail for named unsupported behavior and preserve compute checks.
+**Current constraint**: Radix has active foreign implementation work. Do not
+write these fixtures from a Triga-only pass.
 
 ### HV-00C - Contract Freeze
 
+**Status**: pending HV-00B
 **Depends on**: HV-00B
 **Output**: final contract matrix, fixture handles, exact validation commands,
 and any revisions propagated to Goal 01/02 delivery specs.
