@@ -198,8 +198,8 @@ for chunk meshing.
 Material policy now locks side, depth-test, depth-write, transparency, RGB,
 alpha, alpha-test, and reusable pipeline fact records.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
-Transform facts now lock the 32-float, 128-byte model then view-projection
-payload order.
+Camera and transform facts now lock perspective projection facts plus the
+32-float, 128-byte model then view-projection payload order.
 Face-code facts now lock ray/AABB hit codes, integer face offsets, and
 direction colors plus axis/opposite-face metadata for meshing, selection, and
 edit placement.
