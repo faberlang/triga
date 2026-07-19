@@ -213,6 +213,15 @@ functio _vertex_layout_format_code(de VertexAttributeLayout layout) → numerus 
 }
 
 @ privata
+functio _primitive_topology_code(de PrimitiveTopology topology) → numerus {
+    discerne topology {
+        casu TriangleList { redde 1 }
+        casu LineList { redde 2 }
+        casu PointList { redde 3 }
+    }
+}
+
+@ privata
 functio _geometry_vertex_layout_at(
     de BufferGeometry geometry,
     numerus index
@@ -236,6 +245,11 @@ functio geometry_vertex_layout_location(
     fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
     si layout_result est nihil ergo redde nihil
     redde layout_result!.shader_location
+}
+
+functio geometry_topology_code(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    redde _primitive_topology_code(geometry.topology)
 }
 
 functio geometry_vertex_layout_format_code(

@@ -20,6 +20,8 @@ incipit {
         [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
     )
     adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
+    adfirma (geometry.geometry_topology_code(triangle) vel 0) ≡ 1,
+        "triangle geometry exposes source-owned topology code"
     fixum numerus triangle_vertex_count ← geometry.geometry_vertex_count(triangle) vel 0
     adfirma triangle_vertex_count ≡ 3,
         "valid geometry exposes source-owned vertex count"
@@ -294,6 +296,8 @@ incipit {
     }
     adfirma geometry.geometry_valid(box_wire),
         "wire box validates as indexed line geometry"
+    adfirma (geometry.geometry_topology_code(box_wire) vel 0) ≡ 2,
+        "line geometry exposes source-owned topology code"
     adfirma box_wire_result!.indexed et box_wire_result!.vertex_count ≡ 8
         et box_wire_result!.indices.longitudo() ≡ 24,
         "wire box has deterministic corner and edge index counts"
@@ -377,6 +381,8 @@ incipit {
         "invalid geometry rejects group draw command lists"
     adfirma geometry.geometry_group_element_total(partial_triangle_group) est nihil,
         "invalid geometry rejects grouped element totals"
+    adfirma geometry.geometry_topology_code(partial_triangle_group) est nihil,
+        "invalid geometry rejects topology codes"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
