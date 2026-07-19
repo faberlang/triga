@@ -60,12 +60,24 @@ incipit {
     adfirma changed_indices non est nihil
         et changed_indices![0] ≡ material.index,
         "resource transition batch exposes changed logical indices"
+    fixum lista<scene.ResourceHandle> ∪ nihil changed_handles ←
+        scene.resource_transition_changed_handles([stable_transition, material_transition])
+    adfirma changed_handles non est nihil
+        et changed_handles![0].index ≡ material.index
+        et changed_handles![0].generation ≡ material.generation + 1,
+        "resource transition batch exposes changed handles with generations"
     fixum lista<numerus> ∪ nihil unchanged_indices ← scene.resource_transition_unchanged_indices(
         [stable_transition, material_transition]
     )
     adfirma unchanged_indices non est nihil
         et unchanged_indices![0] ≡ geometry.index,
         "resource transition batch exposes unchanged logical indices"
+    fixum lista<scene.ResourceHandle> ∪ nihil unchanged_handles ←
+        scene.resource_transition_unchanged_handles([stable_transition, material_transition])
+    adfirma unchanged_handles non est nihil
+        et unchanged_handles![0].index ≡ geometry.index
+        et unchanged_handles![0].generation ≡ geometry.generation,
+        "resource transition batch exposes unchanged handles with generations"
     fixum scene.ResourceTransition duplicate_transition ← scene.resource_transition_replaced(material)
     fixum scene.ResourceTransition duplicate_second ← scene.resource_transition_unchanged(material)
     adfirma scene.resource_transitions_valid([duplicate_transition, duplicate_second]) ≡ falsum,
@@ -74,8 +86,12 @@ incipit {
         "resource transition count rejects duplicate logical resources"
     adfirma scene.resource_transition_changed_indices([duplicate_transition, duplicate_second]) est nihil,
         "changed resource indices reject duplicate logical resources"
+    adfirma scene.resource_transition_changed_handles([duplicate_transition, duplicate_second]) est nihil,
+        "changed resource handles reject duplicate logical resources"
     adfirma scene.resource_transition_unchanged_indices([duplicate_transition, duplicate_second]) est nihil,
         "unchanged resource indices reject duplicate logical resources"
+    adfirma scene.resource_transition_unchanged_handles([duplicate_transition, duplicate_second]) est nihil,
+        "unchanged resource handles reject duplicate logical resources"
     adfirma scene.resource_transitions_valid([stable_transition, invalid_jump]) ≡ falsum,
         "resource transition batch rejects invalid transitions"
     adfirma scene.resource_transition_unchanged_count([stable_transition, invalid_jump]) est nihil,

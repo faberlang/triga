@@ -111,10 +111,12 @@ resource generations. `resource_transition_valid` and
 `resource_transitions_valid` validate single and batched logical resource
 transitions without GPU lifetime policy. `resource_transition_changed_count`,
 `resource_transition_unchanged_count`, and
-`resource_transition_changed_indices` expose validated batch facts for exact
-affected-chunk evidence in Goal 07. `resource_transition_unchanged_indices`
-exposes stable unaffected logical resource indices for identity-preservation
-assertions. `scene_set_visible`,
+`resource_transition_changed_indices`, and
+`resource_transition_changed_handles` expose validated batch facts for exact
+affected-chunk evidence in Goal 07. `resource_transition_unchanged_indices` and
+`resource_transition_unchanged_handles` expose stable unaffected logical
+resource indices and generations for identity-preservation assertions.
+`scene_set_visible`,
 `scene_visible_traverse`, and `scene_effective_visible` define source-level
 visibility filtering without host renderer policy. Goal 05 can use that
 contract for visible chunk draw filtering. The scene store does not define
