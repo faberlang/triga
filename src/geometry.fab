@@ -140,6 +140,20 @@ functio triangle_geometry(
     }
 }
 
+functio line_geometry(
+    numerus vertex_count,
+    de lista<BufferAttribute> attributes,
+    lista<u32> indices,
+    DrawRange draw_range,
+    lista<GeometryGroup> groups
+) → BufferGeometry {
+    redde BufferGeometry {
+        topology = finge LineList, vertex_count = vertex_count,
+        attributes = attributes, indexed = verum, indices = indices,
+        draw_range = draw_range, groups = groups
+    }
+}
+
 functio colored_indexed_triangle_geometry(
     numerus vertex_count,
     lista<f32> positions,
@@ -1120,6 +1134,38 @@ functio box_geometry(f32 width, f32 height, f32 depth) → BufferGeometry ∪ ni
             16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23,
         ]
     )
+}
+
+functio box_wire_geometry(f32 width, f32 height, f32 depth) → BufferGeometry ∪ nihil {
+    si width ≤ 0.0 aut height ≤ 0.0 aut depth ≤ 0.0 ergo redde nihil
+    fixum f32 x ← width * 0.5
+    fixum f32 y ← height * 0.5
+    fixum f32 z ← depth * 0.5
+    fixum BufferAttribute positions ← float32_attribute(
+        "position", 0, 3, 8,
+        [
+            0.0 - x, 0.0 - y, 0.0 - z,
+            x, 0.0 - y, 0.0 - z,
+            x, y, 0.0 - z,
+            0.0 - x, y, 0.0 - z,
+            0.0 - x, 0.0 - y, z,
+            x, 0.0 - y, z,
+            x, y, z,
+            0.0 - x, y, z,
+        ]
+    )
+    fixum lista<u32> indices ← [
+        0, 1, 1, 2, 2, 3, 3, 0,
+        4, 5, 5, 6, 6, 7, 7, 4,
+        0, 4, 1, 5, 2, 6, 3, 7,
+    ]
+    fixum BufferGeometry geometry ← line_geometry(
+        8, [positions], indices,
+        DrawRange { start = 0, count = indices.longitudo() },
+        [GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
+    )
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    redde geometry
 }
 
 functio _geometry_indices_valid(de BufferGeometry geometry) → bivalens {

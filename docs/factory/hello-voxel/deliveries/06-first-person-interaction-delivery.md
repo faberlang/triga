@@ -31,7 +31,8 @@ placement to the bounded world using Faber state and the authoritative model.
   `Box3` overlap extents for axis-ordered collision fixtures, `Box3`
   containment and union for aggregate bounds, and a `RayBox3Hit` result with
   distance, point, and outward face normal for selection indicators. Voxel DDA
-  remains application-owned.
+  remains application-owned. Triga geometry also provides `box_wire_geometry`
+  for a minimal selection outline without host-side shape construction.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.
 

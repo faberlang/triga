@@ -72,6 +72,9 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `box_geometry` emits a deterministic indexed box with 24 vertices and 36
   indices. Goal 05 can reuse this as a reference for voxel face meshing, but
   the voxel world must remain in the example package until it proves reusable.
+- `box_wire_geometry` emits a deterministic indexed line-list box with 8
+  vertices and 24 indices. Goal 06 can reuse this for a minimal selection
+  indicator without host-side shape construction.
 
 The current Stage 4 exemplar proves position, normal, and UV layout facts.
 `triga/exempla/hello-voxel-first-draw-facts.fab` proves the locked first-draw
