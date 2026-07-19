@@ -21,7 +21,9 @@ the first visible Faber-authored indexed 3D application.
 
 ## Repo-Aware Baseline
 
-- Triga math: `triga/src/triga.fab` and transform exemplar.
+- Triga math: `triga/src/triga.fab` and transform exemplar. It now includes
+  perspective projection and look-at view matrix helpers for the crossover
+  camera.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar.
 - Application root: `examples/hello-voxel/` created by HV-03.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.

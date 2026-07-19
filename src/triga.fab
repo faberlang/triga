@@ -392,6 +392,10 @@ functio _cosinus_f32(f32 angle) → f32 {
     redde 1.0 - x2 / 2.0 + x4 / 24.0 - x6 / 720.0 + x8 / 40320.0
 }
 
+functio radians_ex_gradibus(f32 degrees) → f32 {
+    redde degrees * 0.017453292519943295
+}
+
 functio euler_ad_quaternionem(de Euler rotation) → Quaternion ∪ nihil {
     si rotation.order ≠ "XYZ" ergo redde nihil
     fixum f32 hx ← rotation.x * 0.5
@@ -674,5 +678,47 @@ functio matrix4_inversa_affinis(de Matrix4 matrix) → Matrix4 ∪ nihil {
         -(i10 * tx + i11 * ty + i12 * tz),
         -(i20 * tx + i21 * ty + i22 * tz),
         1.0,
+    ] }
+}
+
+functio matrix4_perspectiva(
+    f32 fov_y_degrees,
+    f32 aspect,
+    f32 near,
+    f32 far
+) → Matrix4 ∪ nihil {
+    si fov_y_degrees ≤ 0.0 aut fov_y_degrees ≥ 180.0 ergo redde nihil
+    si aspect ≤ 0.0 ergo redde nihil
+    si near ≤ 0.0 aut far ≤ near ergo redde nihil
+    fixum f32 half_angle ← radians_ex_gradibus(fov_y_degrees) * 0.5
+    fixum f32 sine ← _sinus_f32(half_angle)
+    fixum f32 cosine ← _cosinus_f32(half_angle)
+    si sine.absolutum() ≤ 0.000001 ergo redde nihil
+    fixum f32 focal ← cosine / sine
+    fixum f32 depth ← far / (near - far)
+    redde Matrix4 { elements = [
+        focal / aspect, 0.0, 0.0, 0.0,
+        0.0, focal, 0.0, 0.0,
+        0.0, 0.0, depth, -1.0 ∷ f32,
+        0.0, 0.0, near * depth, 0.0,
+    ] }
+}
+
+functio matrix4_conspectus(
+    de Vector3 eye,
+    de Vector3 target,
+    de Vector3 up
+) → Matrix4 ∪ nihil {
+    fixum Vector3 forward ← vector3_normalizata(vector3_subtracta(target, eye))
+    si vector3_longitudo(forward) ≤ 0.000001 ergo redde nihil
+    fixum Vector3 side ← vector3_normalizata(vector3_cross(forward, up))
+    si vector3_longitudo(side) ≤ 0.000001 ergo redde nihil
+    fixum Vector3 camera_up ← vector3_cross(side, forward)
+    redde Matrix4 { elements = [
+        side.x, camera_up.x, -forward.x, 0.0,
+        side.y, camera_up.y, -forward.y, 0.0,
+        side.z, camera_up.z, -forward.z, 0.0,
+        -vector3_dot(side, eye), -vector3_dot(camera_up, eye),
+        vector3_dot(forward, eye), 1.0,
     ] }
 }

@@ -140,4 +140,28 @@ incipit {
         "affine determinant"
     fixum triga.Matrix4 transposed_translation ← triga.matrix4_transposita(translation)
     adfirma transposed_translation.elements[3] ≡ (5.0 ∷ f32), "matrix transpose x"
+
+    fixum triga.Matrix4 ∪ nihil projection ← triga.matrix4_perspectiva(
+        90.0 ∷ f32, 1.0 ∷ f32, 0.1 ∷ f32, 100.0 ∷ f32
+    )
+    adfirma projection non est nihil, "valid perspective projection"
+    adfirma projection!.elements[0] > 0.99 et projection!.elements[0] < 1.01,
+        "perspective projection uses focal length"
+    adfirma triga.matrix4_perspectiva(0.0 ∷ f32, 1.0 ∷ f32, 0.1 ∷ f32, 100.0 ∷ f32)
+        est nihil, "invalid perspective field of view rejects"
+    adfirma triga.matrix4_perspectiva(90.0 ∷ f32, 0.0 ∷ f32, 0.1 ∷ f32, 100.0 ∷ f32)
+        est nihil, "invalid perspective aspect rejects"
+
+    fixum triga.Matrix4 ∪ nihil view ← triga.matrix4_conspectus(
+        triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, 5.0 ∷ f32),
+        zero,
+        triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
+    )
+    adfirma view non est nihil, "valid look-at view matrix"
+    fixum triga.Matrix4 view_matrix ← triga.Matrix4 { elements = view!.elements }
+    fixum triga.Vector3 view_origin ← triga.matrix4_applica_punctum(view_matrix, zero)
+    adfirma (view_origin.z + 5.0).absolutum() ≤ 0.0001,
+        "look-at view moves target in front of camera"
+    adfirma triga.matrix4_conspectus(zero, zero, triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32))
+        est nihil, "look-at rejects coincident eye and target"
 }
