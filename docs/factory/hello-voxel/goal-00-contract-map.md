@@ -101,9 +101,10 @@ format, depth compare, and color target format remains Radix-owned.
 derived-resource generation advance. Goal 07 can use this pattern for chunk mesh
 resource generations. `resource_transition_valid` and
 `resource_transitions_valid` validate single and batched logical resource
-transitions without GPU lifetime policy. `resource_transition_changed_count`
-and `resource_transition_unchanged_count` expose validated batch counts for
-exact affected-chunk evidence in Goal 07. `scene_set_visible`,
+transitions without GPU lifetime policy. `resource_transition_changed_count`,
+`resource_transition_unchanged_count`, and
+`resource_transition_changed_indices` expose validated batch facts for exact
+affected-chunk evidence in Goal 07. `scene_set_visible`,
 `scene_visible_traverse`, and `scene_effective_visible` define source-level
 visibility filtering without host renderer policy. Goal 05 can use that
 contract for visible chunk draw filtering. The scene store does not define
