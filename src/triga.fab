@@ -268,6 +268,23 @@ functio face_code_valid(numerus code) → bivalens {
     redde code ≥ 1 et code ≤ 6
 }
 
+functio face_code_axis_code(numerus code) → numerus ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    si code ≤ 2 ergo redde 1
+    si code ≤ 4 ergo redde 2
+    redde 3
+}
+
+functio face_code_opposite(numerus code) → numerus ∪ nihil {
+    si face_code_valid(code) ≡ falsum ergo redde nihil
+    si code ≡ 1 ergo redde 2
+    si code ≡ 2 ergo redde 1
+    si code ≡ 3 ergo redde 4
+    si code ≡ 4 ergo redde 3
+    si code ≡ 5 ergo redde 6
+    redde 5
+}
+
 functio face_code_x_offset(numerus code) → numerus ∪ nihil {
     si face_code_valid(code) ≡ falsum ergo redde nihil
     si code ≡ 1 ergo redde -1

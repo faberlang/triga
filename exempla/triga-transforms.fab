@@ -284,6 +284,10 @@ incipit {
     fixum numerus generic_ray_x_offset ← triga.face_code_x_offset(ray_face_code) vel 0
     adfirma generic_ray_x_offset ≡ (triga.ray_box3_hit_face_offset_x(ray_box_hit_value) vel 0),
         "ray box face code agrees with generic face-code offset"
+    adfirma (triga.face_code_axis_code(ray_face_code) vel 0) ≡ 1,
+        "generic face-code axis records x-axis faces"
+    adfirma (triga.face_code_opposite(ray_face_code) vel 0) ≡ 2,
+        "generic face-code opposite records paired x-axis faces"
     fixum triga.Ray negative_ray ← triga.Ray {
         origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -325,6 +329,15 @@ incipit {
     adfirma (triga.ray_box3_hit_face_code(y_hit_value) vel 0) ≡ 3
         et (triga.ray_box3_hit_face_offset_y(y_hit_value) vel 0) ≡ -1,
         "ray box hit face offset records negative y placement direction"
+    adfirma (triga.face_code_axis_code(3) vel 0) ≡ 2
+        et (triga.face_code_opposite(3) vel 0) ≡ 4,
+        "generic face-code metadata records y-axis pairs"
+    adfirma (triga.face_code_axis_code(5) vel 0) ≡ 3
+        et (triga.face_code_opposite(5) vel 0) ≡ 6,
+        "generic face-code metadata records z-axis pairs"
+    adfirma triga.face_code_axis_code(0) est nihil
+        et triga.face_code_opposite(0) est nihil,
+        "generic face-code metadata rejects invalid face codes"
     fixum triga.Ray z_ray ← triga.Ray {
         origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 3.0 ∷ f32),
         direction = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
