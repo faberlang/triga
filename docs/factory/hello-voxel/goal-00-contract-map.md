@@ -157,6 +157,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
   vertices and 24 indices. Goal 06 can reuse this for a minimal selection
   indicator without host-side shape construction, then use
   `line_geometry_draw_batch_facts` for one-record draw evidence.
+- `box_wire_draw_batch_facts` packages the same deterministic wire box through
+  line draw-batch facts in one source-owned record. Goal 06 can prove
+  selection-outline draw scale and upload size without making the host build or
+  inspect line geometry.
 
 The current Stage 4 exemplar proves position, normal, and UV layout facts.
 `triga/exempla/hello-voxel-first-draw-facts.fab` proves the locked first-draw

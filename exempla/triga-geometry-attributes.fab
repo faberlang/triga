@@ -590,10 +590,20 @@ incipit {
         et box_wire_batch_result!.index_payload_byte_count ≡ 96
         et box_wire_batch_result!.total_payload_byte_count ≡ 192,
         "line draw batch facts preserve wire upload byte counts"
+    fixum geometry.LineGeometryDrawBatchFacts ∪ nihil box_wire_direct_batch_result ←
+        geometry.box_wire_draw_batch_facts(2.0, 4.0, 6.0, 1)
+    adfirma box_wire_direct_batch_result non est nihil,
+        "wire box exposes direct line draw batch facts"
+    adfirma box_wire_direct_batch_result!.draw_count ≡ 1
+        et box_wire_direct_batch_result!.line_count ≡ 12
+        et box_wire_direct_batch_result!.total_payload_byte_count ≡ 192,
+        "direct wire box draw batch facts preserve selection-outline scale"
     adfirma geometry.line_geometry_draw_batch_facts(box_wire, 0) est nihil,
         "line draw batch facts reject empty instance counts"
     adfirma geometry.line_geometry_draw_batch_facts(box, 1) est nihil,
         "line draw batch facts reject triangle topology"
+    adfirma geometry.box_wire_draw_batch_facts(2.0, 4.0, 6.0, 0) est nihil,
+        "wire box draw batch facts reject empty instance counts"
     adfirma geometry.plane_geometry(0.0, 1.0) est nihil,
         "plane primitive rejects non-positive dimensions"
     adfirma geometry.circle_geometry(0.0) est nihil,
@@ -610,6 +620,8 @@ incipit {
         "box primitive rejects non-positive dimensions"
     adfirma geometry.box_wire_geometry(1.0, 0.0, 1.0) est nihil,
         "wire box primitive rejects non-positive dimensions"
+    adfirma geometry.box_wire_draw_batch_facts(1.0, 0.0, 1.0, 1) est nihil,
+        "wire box draw batch facts reject non-positive dimensions"
 
     fixum geometry.BufferAttribute flat_positions ← geometry.float32_attribute(
         "position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0]

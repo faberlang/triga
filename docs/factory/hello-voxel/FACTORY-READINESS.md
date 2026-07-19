@@ -109,7 +109,8 @@ camera yaw/pitch fact records, scene/resource lifecycle handles and batch
 facts, packaged `Box3` overlap facts, packaged face-code facts, face-code unit
 quads, visible resource facts, visible-mesh packet, visible-face accounting,
 colored quad finalization, colored mesh fact records, colored mesh draw-batch
-facts, colored mesh bounds, and line draw-batch facts for selection outlines. The
+facts, colored mesh bounds, line draw-batch facts, and direct wire-box
+draw-batch facts for selection outlines. The
 `triga/scripta/check-hello-voxel-contract` gate packages the Triga-owned
 executable evidence and compile viability without claiming browser rendering.
 The `examples/hello-voxel` scaffold now builds as a browser package and proves

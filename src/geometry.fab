@@ -671,6 +671,26 @@ functio line_geometry_draw_batch_facts(
     }
 }
 
+functio box_wire_draw_batch_facts(
+    f32 width,
+    f32 height,
+    f32 depth,
+    numerus instance_count
+) → LineGeometryDrawBatchFacts ∪ nihil {
+    fixum BufferGeometry ∪ nihil geometry_result ← box_wire_geometry(width, height, depth)
+    si geometry_result est nihil ergo redde nihil
+    fixum BufferGeometry geometry ← BufferGeometry {
+        topology = geometry_result!.topology,
+        vertex_count = geometry_result!.vertex_count,
+        attributes = geometry_result!.attributes,
+        indexed = geometry_result!.indexed,
+        indices = geometry_result!.indices,
+        draw_range = geometry_result!.draw_range,
+        groups = geometry_result!.groups
+    }
+    redde line_geometry_draw_batch_facts(geometry, instance_count)
+}
+
 functio visible_face_vertex_count(numerus face_count) → numerus ∪ nihil {
     si face_count ≤ 0 ergo redde nihil
     redde face_count * 4

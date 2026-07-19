@@ -47,7 +47,9 @@ placement to the bounded world using Faber state and the authoritative model.
   `box_wire_geometry` for a minimal selection outline, `geometry_line_count`
   for deterministic line-list count evidence, and
   `line_geometry_draw_batch_facts` for selection-outline draw scale and upload
-  byte evidence without host-side shape or line geometry scans.
+  byte evidence without host-side shape or line geometry scans. The
+  `box_wire_draw_batch_facts` helper packages the deterministic wire box and
+  line draw-batch facts into one source-owned proof record.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.
 
