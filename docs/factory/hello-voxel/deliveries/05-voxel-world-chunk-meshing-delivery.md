@@ -39,8 +39,9 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   The `ColoredQuadMesh` append helper lets the application mesher derive
   face-local position/color/index buffers from caller-owned coordinates and RGB
   values while Triga owns the repeated color and index-base pattern. Its
-  finalization, fact, and bounds helpers let chunk mesh tests prove emitted
-  payload shape and coarse volumes from the same accumulated buffers.
+  finalization, fact, draw-batch, and bounds helpers let chunk mesh tests prove
+  emitted payload shape, draw scale, upload byte counts, and coarse volumes from
+  the same accumulated buffers.
 - Reusable `Box3` min-max/min-size/center-size construction, validation, size,
   center, containment, union, and translation helpers in `triga/src/triga.fab`
   for chunk mesh bounds. Generic face-code validation, offset projection, and

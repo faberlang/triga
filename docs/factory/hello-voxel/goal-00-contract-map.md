@@ -121,6 +121,11 @@ Triga already provides the source-owned geometry data needed by the first draw:
   visible-face counts and payload facts from actual accumulated colored quad
   buffers. Goal 05 can use these helpers to prove that emitted chunk mesh
   buffers match the authoritative face count before finalizing render resources.
+- `colored_quad_mesh_draw_batch_facts` packages the draw count, grouped element
+  total, vertex payload bytes, index payload bytes, and total payload bytes for
+  an accumulated colored quad mesh after validated geometry finalization. Goal
+  05 can use it to prove chunk draw scale and upload size without host-side
+  geometry scans.
 - `colored_quad_mesh_bounding_box` and
   `colored_quad_mesh_bounding_sphere` derive coarse volumes from accumulated
   colored quad buffers after validated geometry finalization. Goal 05 can prove

@@ -106,8 +106,8 @@ All nine delivery specs exist. HV-00 is active. Its Triga-side reusable
 contract pass is complete, including first-draw layout, material, transform,
 scene/resource lifecycle handles and batch facts, face-code unit quads,
 visible resource facts, visible-mesh packet, visible-face accounting, colored
-quad finalization, colored mesh fact records, and colored mesh bounds. The
-`triga/scripta/check-hello-voxel-contract` gate packages the
+quad finalization, colored mesh fact records, colored mesh draw-batch facts,
+and colored mesh bounds. The `triga/scripta/check-hello-voxel-contract` gate packages the
 Triga-owned executable evidence and compile viability without claiming browser
 rendering. HV-04A's reusable Triga prerequisite scope is also complete for the
 current indexed-cube delivery, but HV-04 itself still waits for the shader,

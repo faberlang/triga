@@ -815,6 +815,24 @@ functio colored_quad_mesh_facts(de ColoredQuadMesh mesh) → VisibleFaceMeshFact
     redde visible_face_mesh_facts(face_count)
 }
 
+functio colored_quad_mesh_draw_batch_facts(
+    de ColoredQuadMesh mesh,
+    numerus instance_count
+) → IndexedGeometryDrawBatchFacts ∪ nihil {
+    fixum BufferGeometry ∪ nihil geometry_result ← colored_quad_mesh_geometry(mesh)
+    si geometry_result est nihil ergo redde nihil
+    fixum BufferGeometry geometry ← BufferGeometry {
+        topology = geometry_result!.topology,
+        vertex_count = geometry_result!.vertex_count,
+        attributes = geometry_result!.attributes,
+        indexed = geometry_result!.indexed,
+        indices = geometry_result!.indices,
+        draw_range = geometry_result!.draw_range,
+        groups = geometry_result!.groups
+    }
+    redde indexed_geometry_draw_batch_facts(geometry, instance_count)
+}
+
 functio colored_quad_mesh_bounding_box(de ColoredQuadMesh mesh) → BoundingBox ∪ nihil {
     fixum BufferGeometry ∪ nihil geometry_result ← colored_quad_mesh_geometry(mesh)
     si geometry_result est nihil ergo redde nihil

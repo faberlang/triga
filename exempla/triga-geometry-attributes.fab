@@ -175,6 +175,19 @@ incipit {
         "colored quad mesh facts preserve face-derived counts"
     adfirma two_quad_facts_result!.total_payload_byte_count ≡ 240,
         "colored quad mesh facts preserve face-derived payload bytes"
+    fixum geometry.IndexedGeometryDrawBatchFacts ∪ nihil two_quad_batch_result ←
+        geometry.colored_quad_mesh_draw_batch_facts(two_quad_mesh, 1)
+    adfirma two_quad_batch_result non est nihil,
+        "colored quad mesh exposes indexed draw batch facts"
+    adfirma two_quad_batch_result!.draw_count ≡ 1
+        et two_quad_batch_result!.grouped_element_total ≡ 12,
+        "colored quad mesh draw batch facts preserve draw group scale"
+    adfirma two_quad_batch_result!.vertex_payload_byte_count ≡ 192
+        et two_quad_batch_result!.index_payload_byte_count ≡ 48
+        et two_quad_batch_result!.total_payload_byte_count ≡ 240,
+        "colored quad mesh draw batch facts preserve upload byte counts"
+    adfirma geometry.colored_quad_mesh_draw_batch_facts(two_quad_mesh, 0) est nihil,
+        "colored quad mesh draw batch facts reject empty instance counts"
     fixum geometry.BoundingBox ∪ nihil two_quad_bounds_result ←
         geometry.colored_quad_mesh_bounding_box(two_quad_mesh)
     adfirma two_quad_bounds_result non est nihil,
@@ -221,6 +234,12 @@ incipit {
         indices = [0, 1, 2]
     }) est nihil,
         "colored quad mesh facts reject malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_draw_batch_facts(geometry.ColoredQuadMesh {
+        positions = [0.0, 0.0],
+        colors = [0.0, 0.0],
+        indices = [0, 1, 2]
+    }, 1) est nihil,
+        "colored quad mesh draw batch facts reject malformed accumulated buffers"
     adfirma geometry.colored_quad_mesh_bounding_box(geometry.ColoredQuadMesh {
         positions = [0.0, 0.0],
         colors = [0.0, 0.0],
