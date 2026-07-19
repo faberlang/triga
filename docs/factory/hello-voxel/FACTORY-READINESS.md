@@ -107,11 +107,12 @@ contract pass is complete, including first-draw layout, material, transform,
 scene/resource lifecycle handles and batch facts, face-code unit quads,
 visible resource facts, visible-mesh packet, visible-face accounting, colored
 quad finalization, colored mesh fact records, colored mesh draw-batch facts,
-and colored mesh bounds. The `triga/scripta/check-hello-voxel-contract` gate packages the
-Triga-owned executable evidence and compile viability without claiming browser
-rendering. HV-04A's reusable Triga prerequisite scope is also complete for the
-current indexed-cube delivery, but HV-04 itself still waits for the shader,
-host, browser runtime, and example package dependencies. The first remaining
+colored mesh bounds, and line draw-batch facts for selection outlines. The
+`triga/scripta/check-hello-voxel-contract` gate packages the Triga-owned
+executable evidence and compile viability without claiming browser rendering.
+HV-04A's reusable Triga prerequisite scope is also complete for the current
+indexed-cube delivery, but HV-04 itself still waits for the shader, host,
+browser runtime, and example package dependencies. The first remaining
 executable campaign gate
 is the Radix-owned HV-00B red fixture pass. No full unit is complete, and no
 release is authorized.

@@ -70,6 +70,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_line_count` exposes valid line element counts and returns `nihil`
   for invalid or non-line geometry. Goal 06 can use this with
   `box_wire_geometry` for selection-outline draw evidence.
+- `line_geometry_draw_batch_facts` packages line count, draw count, grouped
+  element total, vertex payload bytes, index payload bytes, and total payload
+  bytes for valid indexed line-list geometry. Goal 06 can prove selection
+  outline draw scale and upload size without host-side line geometry scans.
 - `geometry_draw_command` records indexed status, element count, first element,
   base vertex, instance count, and material index for valid geometry.
 - `geometry_group_draw_command` records the same draw facts from a validated
@@ -151,7 +155,8 @@ Triga already provides the source-owned geometry data needed by the first draw:
   the voxel world must remain in the example package until it proves reusable.
 - `box_wire_geometry` emits a deterministic indexed line-list box with 8
   vertices and 24 indices. Goal 06 can reuse this for a minimal selection
-  indicator without host-side shape construction.
+  indicator without host-side shape construction, then use
+  `line_geometry_draw_batch_facts` for one-record draw evidence.
 
 The current Stage 4 exemplar proves position, normal, and UV layout facts.
 `triga/exempla/hello-voxel-first-draw-facts.fab` proves the locked first-draw

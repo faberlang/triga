@@ -80,6 +80,15 @@ genus IndexedGeometryDrawBatchFacts {
     numerus total_payload_byte_count
 }
 
+genus LineGeometryDrawBatchFacts {
+    numerus draw_count
+    numerus line_count
+    numerus grouped_element_total
+    numerus vertex_payload_byte_count
+    numerus index_payload_byte_count
+    numerus total_payload_byte_count
+}
+
 genus BoundingBox {
     f32 min_x
     f32 min_y
@@ -637,6 +646,28 @@ functio indexed_geometry_draw_batch_facts(
         vertex_payload_byte_count = vertex_bytes_result vel 0,
         index_payload_byte_count = index_bytes_result vel 0,
         total_payload_byte_count = total_bytes_result vel 0
+    }
+}
+
+functio line_geometry_draw_batch_facts(
+    de BufferGeometry geometry,
+    numerus instance_count
+) → LineGeometryDrawBatchFacts ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si geometry.indexed ≡ falsum ergo redde nihil
+    si instance_count ≡ 0 ergo redde nihil
+    fixum numerus ∪ nihil line_count_result ← geometry_line_count(geometry)
+    si line_count_result est nihil ergo redde nihil
+    fixum IndexedGeometryDrawBatchFacts ∪ nihil batch_result ←
+        indexed_geometry_draw_batch_facts(geometry, instance_count)
+    si batch_result est nihil ergo redde nihil
+    redde LineGeometryDrawBatchFacts {
+        draw_count = batch_result!.draw_count,
+        line_count = line_count_result vel 0,
+        grouped_element_total = batch_result!.grouped_element_total,
+        vertex_payload_byte_count = batch_result!.vertex_payload_byte_count,
+        index_payload_byte_count = batch_result!.index_payload_byte_count,
+        total_payload_byte_count = batch_result!.total_payload_byte_count
     }
 }
 

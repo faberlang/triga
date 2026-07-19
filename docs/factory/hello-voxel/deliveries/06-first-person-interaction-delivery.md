@@ -39,9 +39,10 @@ placement to the bounded world using Faber state and the authoritative model.
   and offset helpers expose the same adjacent-cell, selection-normal, and
   paired-face direction facts without requiring a ray-hit value. Voxel DDA
   remains application-owned. Triga geometry also provides
-  `box_wire_geometry` for a minimal selection outline and `geometry_line_count`
-  for deterministic line-list draw evidence without host-side shape
-  construction.
+  `box_wire_geometry` for a minimal selection outline, `geometry_line_count`
+  for deterministic line-list count evidence, and
+  `line_geometry_draw_batch_facts` for selection-outline draw scale and upload
+  byte evidence without host-side shape or line geometry scans.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.
 
