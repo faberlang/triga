@@ -304,6 +304,21 @@ incipit {
         scene.scene_visible_mesh_geometry_handles(attached_store, root_step.handle)
     fixum lista<scene.ResourceHandle> ∪ nihil default_material_handles ←
         scene.scene_visible_mesh_material_handles(attached_store, root_step.handle)
+    fixum triga.Matrix4 view_projection ← triga.matrix4_scala(
+        triga.Vector3 { x = 2.0, y = 2.0, z = 2.0 }
+    )
+    fixum lista<scene.SceneMeshTransformPayload> ∪ nihil default_transform_payloads ←
+        scene.scene_visible_mesh_transform_payloads(
+            attached_store, root_step.handle, view_projection
+        )
+    fixum numerus ∪ nihil default_transform_payload_count ←
+        scene.scene_visible_mesh_transform_payload_count(
+            attached_store, root_step.handle, view_projection
+        )
+    fixum numerus ∪ nihil default_transform_payload_bytes ←
+        scene.scene_visible_mesh_transform_payload_byte_count(
+            attached_store, root_step.handle, view_projection
+        )
     adfirma default_visible_meshes non est nihil
         et default_visible_mesh_count non est nihil
         et default_visible_resources non est nihil
@@ -321,6 +336,25 @@ incipit {
         et default_visible_resources![0].material.index ≡ material.index
         et default_visible_resources![1].node.index ≡ shared_mesh_step.handle.index,
         "visible mesh resources expose node, geometry, and material handles"
+    adfirma default_transform_payloads non est nihil
+        et default_transform_payload_count non est nihil
+        et default_transform_payload_bytes non est nihil
+        et (default_transform_payload_count vel 999) ≡ 2
+        et (default_transform_payload_bytes vel 0) ≡ 256,
+        "visible mesh transform payloads expose one 128-byte payload per visible mesh"
+    adfirma default_transform_payloads![0].node.index ≡ mesh_step.handle.index
+        et (triga.transform_payload_model_value(
+            default_transform_payloads![0].payload, 0
+        ) vel 0.0) ≡ (1.0 ∷ f32)
+        et (triga.transform_payload_view_projection_value(
+            default_transform_payloads![0].payload, 0
+        ) vel 0.0) ≡ (2.0 ∷ f32),
+        "visible mesh transform payloads preserve model and view-projection order"
+    fixum triga.Matrix4 invalid_view_projection ← triga.Matrix4 { elements = [1.0 ∷ f32] }
+    adfirma scene.scene_visible_mesh_transform_payloads(
+        attached_store, root_step.handle, invalid_view_projection
+    ) est nihil,
+        "visible mesh transform payloads reject invalid view-projection matrices"
     fixum scene.SceneStore ∪ nihil shared_hidden ← scene.scene_set_visible(
         attached_store, shared_mesh_step.handle, falsum
     )
@@ -345,6 +379,14 @@ incipit {
         scene.scene_visible_mesh_resource_pair_count(shared_hidden_store, root_step.handle)
     fixum lista<scene.ResourceHandle> ∪ nihil hidden_geometry_handles ←
         scene.scene_visible_mesh_geometry_handles(shared_hidden_store, root_step.handle)
+    fixum numerus ∪ nihil hidden_transform_payload_count ←
+        scene.scene_visible_mesh_transform_payload_count(
+            shared_hidden_store, root_step.handle, view_projection
+        )
+    fixum numerus ∪ nihil hidden_transform_payload_bytes ←
+        scene.scene_visible_mesh_transform_payload_byte_count(
+            shared_hidden_store, root_step.handle, view_projection
+        )
     adfirma hidden_visible_meshes non est nihil
         et hidden_visible_mesh_count non est nihil
         et hidden_visible_resources non est nihil
@@ -358,6 +400,9 @@ incipit {
     adfirma hidden_visible_resources![0].node.index ≡ mesh_step.handle.index
         et hidden_visible_resources![0].geometry.index ≡ geometry.index,
         "visible mesh resources omit hidden mesh resources"
+    adfirma (hidden_transform_payload_count vel 999) ≡ 1
+        et (hidden_transform_payload_bytes vel 0) ≡ 128,
+        "visible mesh transform payloads omit hidden mesh nodes"
     adfirma scene.scene_find_name(shared_hidden_store, root_step.handle, "shared-mesh") non est nihil,
         "name lookup still sees hidden nodes"
     fixum scene.SceneStore ∪ nihil root_hidden ← scene.scene_set_visible(
@@ -385,6 +430,14 @@ incipit {
         scene.scene_visible_mesh_resource_pair_count(root_hidden_store, root_step.handle)
     fixum lista<scene.ResourceHandle> ∪ nihil root_hidden_geometry_handles ←
         scene.scene_visible_mesh_geometry_handles(root_hidden_store, root_step.handle)
+    fixum numerus ∪ nihil root_hidden_transform_payload_count ←
+        scene.scene_visible_mesh_transform_payload_count(
+            root_hidden_store, root_step.handle, view_projection
+        )
+    fixum numerus ∪ nihil root_hidden_transform_payload_bytes ←
+        scene.scene_visible_mesh_transform_payload_byte_count(
+            root_hidden_store, root_step.handle, view_projection
+        )
     adfirma root_hidden_meshes non est nihil
         et root_hidden_mesh_count non est nihil
         et root_hidden_resources non est nihil
@@ -393,6 +446,9 @@ incipit {
     adfirma (root_hidden_resource_pair_count vel 999) ≡ 0
         et root_hidden_geometry_handles non est nihil,
         "hidden ancestors suppress visible mesh resource projections"
+    adfirma (root_hidden_transform_payload_count vel 999) ≡ 0
+        et (root_hidden_transform_payload_bytes vel 999) ≡ 0,
+        "hidden ancestors suppress visible mesh transform payloads"
     fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }

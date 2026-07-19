@@ -75,6 +75,11 @@ genus SceneMeshResources {
     ResourceHandle material
 }
 
+genus SceneMeshTransformPayload {
+    SceneHandle node
+    triga.TransformPayload payload
+}
+
 genus SceneMeshResourceTraversal {
     lista<SceneMeshResources> resources
     numerus remaining
@@ -942,6 +947,72 @@ functio scene_visible_mesh_material_handles(
         )
     si traversal est nihil ergo redde nihil
     redde traversal!.handles
+}
+
+functio scene_visible_mesh_transform_payloads(
+    de SceneStore store,
+    de SceneHandle root,
+    de triga.Matrix4 view_projection
+) → lista<SceneMeshTransformPayload> ∪ nihil {
+    si triga.matrix4_valid(view_projection) ≡ falsum ergo redde nihil
+    fixum lista<SceneHandle> ∪ nihil handles ← scene_visible_mesh_traverse(store, root)
+    si handles est nihil ergo redde nihil
+    fixum lista<SceneHandle> empty_handles ← vacua
+    fixum lista<SceneHandle> visible_handles ← handles vel empty_handles
+    varia lista<SceneMeshTransformPayload> payloads ← vacua
+    itera ex visible_handles fixum handle {
+        fixum triga.Matrix4 ∪ nihil world ← scene_mesh_world_matrix(store, handle)
+        si world est nihil ergo redde nihil
+        fixum triga.Matrix4 world_matrix ← world vel triga.matrix4_identitas()
+        fixum triga.TransformPayload ∪ nihil payload ←
+            triga.transform_payload(world_matrix, view_projection)
+        si payload est nihil ergo redde nihil
+        fixum triga.TransformPayload transform_payload ← payload vel triga.TransformPayload {
+            values = vacua
+        }
+        payloads.appende(SceneMeshTransformPayload {
+            node = SceneHandle { index = handle.index, generation = handle.generation },
+            payload = transform_payload
+        })
+    }
+    redde payloads
+}
+
+functio scene_visible_mesh_transform_payload_count(
+    de SceneStore store,
+    de SceneHandle root,
+    de triga.Matrix4 view_projection
+) → numerus ∪ nihil {
+    fixum lista<SceneMeshTransformPayload> ∪ nihil payloads ←
+        scene_visible_mesh_transform_payloads(store, root, view_projection)
+    si payloads est nihil ergo redde nihil
+    fixum lista<SceneMeshTransformPayload> empty_payloads ← vacua
+    fixum lista<SceneMeshTransformPayload> visible_payloads ← payloads vel empty_payloads
+    varia numerus count ← 0
+    itera ex visible_payloads fixum payload {
+        count ← count + 1
+    }
+    redde count
+}
+
+functio scene_visible_mesh_transform_payload_byte_count(
+    de SceneStore store,
+    de SceneHandle root,
+    de triga.Matrix4 view_projection
+) → numerus ∪ nihil {
+    fixum lista<SceneMeshTransformPayload> ∪ nihil payloads ←
+        scene_visible_mesh_transform_payloads(store, root, view_projection)
+    si payloads est nihil ergo redde nihil
+    fixum lista<SceneMeshTransformPayload> empty_payloads ← vacua
+    fixum lista<SceneMeshTransformPayload> visible_payloads ← payloads vel empty_payloads
+    varia numerus byte_count ← 0
+    itera ex visible_payloads fixum payload {
+        fixum numerus ∪ nihil payload_bytes ← triga.transform_payload_byte_count(payload.payload)
+        si payload_bytes est nihil ergo redde nihil
+        fixum numerus bytes ← payload_bytes vel 0
+        byte_count ← byte_count + bytes
+    }
+    redde byte_count
 }
 
 functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {

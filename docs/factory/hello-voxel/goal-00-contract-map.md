@@ -73,6 +73,12 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_group_draw_commands` returns the validated draw command list for all
   groups in group order. Goal 05 can use it to submit one chunk geometry without
   host-side group inference.
+- `scene_visible_mesh_transform_payloads`,
+  `scene_visible_mesh_transform_payload_count`, and
+  `scene_visible_mesh_transform_payload_byte_count` project effectively visible
+  mesh world matrices into validated 128-byte model/view-projection payloads.
+  Goals 04 and 05 can use them to prove one transform upload per visible mesh or
+  non-empty chunk without host-side scene traversal.
 - `visible_face_vertex_count`, `visible_face_index_count`,
   `visible_face_triangle_count`, and visible-face payload byte helpers expose
   deterministic quad-face mesh accounting for chunk meshing. Goal 05 can use

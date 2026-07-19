@@ -43,9 +43,9 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   visible face directions without host-side color policy.
 - Reusable scene visibility state, effective visible traversal, visible
   mesh-handle traversal, visible mesh resource projection, visible resource-pair
-  counts, and geometry/material handle projection in `triga/src/scene.fab`,
-  plus mesh world-matrix lookup for chunk draw transforms, without host renderer
-  policy.
+  counts, geometry/material handle projection, and visible mesh transform
+  payload counts/bytes in `triga/src/scene.fab`, plus mesh world-matrix lookup
+  for chunk draw transforms, without host renderer policy.
 - No current voxel or chunk implementation exists in the examples repository.
 
 ## Stage Graph

@@ -201,7 +201,8 @@ Face-code facts now lock ray/AABB hit codes, integer face offsets, and
 direction colors for meshing and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
 single-resource lifecycle states plus batch live/current-handle evidence for
-empty and non-empty chunk remeshes.
+empty and non-empty chunk remeshes. Visible mesh transform-payload facts now
+lock one 128-byte model/view-projection upload per effectively visible mesh.
 Radix red fixtures remain pending because Radix has active foreign
 implementation work.
 
