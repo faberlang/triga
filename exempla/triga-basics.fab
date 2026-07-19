@@ -60,6 +60,21 @@ incipit {
     adfirma triga.material_depth_enabled(double_sided),
         "double-sided material preserves depth policy"
 
+    fixum triga.MeshBasicMaterial ∪ nihil unlit ← triga.mesh_basic_material(
+        "hello-voxel-unlit",
+        triga.Color { r = 1.0 ∷ f32, g = 0.5 ∷ f32, b = 0.0 ∷ f32 }
+    )
+    adfirma unlit non est nihil,
+        "mesh basic material constructor accepts named color material"
+    adfirma triga.material_valid(unlit!.base),
+        "mesh basic material preserves valid base material state"
+    adfirma triga.material_depth_enabled(unlit!.base),
+        "mesh basic material preserves opaque depth policy"
+    adfirma unlit!.color.g ≡ (0.5 ∷ f32),
+        "mesh basic material records unlit color intent"
+    adfirma triga.mesh_basic_material("", triga.Color { r = 1.0, g = 1.0, b = 1.0 }) est nihil,
+        "mesh basic material rejects invalid base material"
+
     fixum triga.Material invalid ← triga.material("")
     adfirma triga.material_valid(invalid) ≡ falsum,
         "material validation rejects empty names"
