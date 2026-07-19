@@ -90,11 +90,14 @@ format, depth compare, and color target format remains Radix-owned.
 `SceneHandle` and `ResourceHandle`. Each handle has an index and generation.
 `resource_handle_equals` and `resource_handle_next` define logical identity and
 derived-resource generation advance. Goal 07 can use this pattern for chunk mesh
-resource generations. `scene_set_visible`, `scene_visible_traverse`, and
-`scene_effective_visible` define source-level visibility filtering without host
-renderer policy. Goal 05 can use that contract for visible chunk draw filtering.
-The scene store does not define voxel storage, dirty chunk sets, or GPU lifetime
-policy. Those remain application and host facts.
+resource generations. `resource_transition_valid` and
+`resource_transitions_valid` validate single and batched logical resource
+transitions without GPU lifetime policy. `scene_set_visible`,
+`scene_visible_traverse`, and `scene_effective_visible` define source-level
+visibility filtering without host renderer policy. Goal 05 can use that
+contract for visible chunk draw filtering. The scene store does not define
+voxel storage, dirty chunk sets, or GPU lifetime policy. Those remain
+application and host facts.
 
 ## Matrix Facts
 

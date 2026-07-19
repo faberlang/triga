@@ -98,6 +98,35 @@ functio resource_transition_valid(de ResourceTransition transition) → bivalens
     redde transition.current.generation ≡ transition.previous.generation
 }
 
+functio _resource_transition_index_seen(
+    de lista<ResourceTransition> transitions,
+    numerus limit,
+    numerus resource_index
+) → bivalens {
+    varia numerus i ← 0
+    dum i < limit {
+        fixum ResourceTransition transition ← transitions[i]
+        si transition.current.index ≡ resource_index {
+            redde verum
+        }
+        i ← i + 1
+    }
+    redde falsum
+}
+
+functio resource_transitions_valid(de lista<ResourceTransition> transitions) → bivalens {
+    varia numerus i ← 0
+    dum i < transitions.longitudo() {
+        fixum ResourceTransition transition ← transitions[i]
+        si resource_transition_valid(transition) ≡ falsum ergo redde falsum
+        si _resource_transition_index_seen(transitions, i, transition.current.index) {
+            redde falsum
+        }
+        i ← i + 1
+    }
+    redde verum
+}
+
 functio scene_store() → SceneStore {
     redde SceneStore { slots = vacua }
 }

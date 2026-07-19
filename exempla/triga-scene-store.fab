@@ -47,6 +47,15 @@ incipit {
     }
     adfirma scene.resource_transition_valid(invalid_index) ≡ falsum,
         "resource transition rejects logical index changes"
+    fixum scene.ResourceTransition material_transition ← scene.resource_transition_replaced(material)
+    adfirma scene.resource_transitions_valid([stable_transition, material_transition]),
+        "resource transition batch validates unique logical resources"
+    fixum scene.ResourceTransition duplicate_transition ← scene.resource_transition_replaced(material)
+    fixum scene.ResourceTransition duplicate_second ← scene.resource_transition_unchanged(material)
+    adfirma scene.resource_transitions_valid([duplicate_transition, duplicate_second]) ≡ falsum,
+        "resource transition batch rejects duplicate logical resources"
+    adfirma scene.resource_transitions_valid([stable_transition, invalid_jump]) ≡ falsum,
+        "resource transition batch rejects invalid transitions"
     fixum scene.SceneInsert root_step ← scene.scene_insert(
         scene.scene_store(), scene.scene_group("root")
     )
