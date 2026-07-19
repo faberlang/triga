@@ -66,6 +66,14 @@ incipit {
         et changed_handles![0].index ≡ material.index
         et changed_handles![0].generation ≡ material.generation + 1,
         "resource transition batch exposes changed handles with generations"
+    fixum lista<scene.ResourceHandle> ∪ nihil current_handles ←
+        scene.resource_transition_current_handles([stable_transition, material_transition])
+    adfirma current_handles non est nihil
+        et current_handles![0].index ≡ geometry.index
+        et current_handles![0].generation ≡ geometry.generation
+        et current_handles![1].index ≡ material.index
+        et current_handles![1].generation ≡ material.generation + 1,
+        "resource transition batch exposes all current handles with generations"
     fixum lista<numerus> ∪ nihil unchanged_indices ← scene.resource_transition_unchanged_indices(
         [stable_transition, material_transition]
     )
@@ -88,6 +96,8 @@ incipit {
         "changed resource indices reject duplicate logical resources"
     adfirma scene.resource_transition_changed_handles([duplicate_transition, duplicate_second]) est nihil,
         "changed resource handles reject duplicate logical resources"
+    adfirma scene.resource_transition_current_handles([duplicate_transition, duplicate_second]) est nihil,
+        "current resource handles reject duplicate logical resources"
     adfirma scene.resource_transition_unchanged_indices([duplicate_transition, duplicate_second]) est nihil,
         "unchanged resource indices reject duplicate logical resources"
     adfirma scene.resource_transition_unchanged_handles([duplicate_transition, duplicate_second]) est nihil,

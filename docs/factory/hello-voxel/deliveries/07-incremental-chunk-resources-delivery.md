@@ -30,9 +30,12 @@ GPU buffer replacement, queue-safe retirement, and bounded lifecycle evidence.
   It also provides pure `ResourceTransition` helpers for unchanged and replaced
   logical resources, plus batch validation for unique logical resource
   transitions. Validated changed/unchanged transition counters and changed plus
-  unchanged logical-index and current-handle extraction support exact
-  affected-chunk, generation, and stable unaffected-chunk assertions without
-  GPU lifetime policy. GPU lifetime and queue completion remain host-owned.
+  unchanged logical-index extraction support exact affected-chunk assertions.
+  Current-handle extraction exposes the full post-transition generation set.
+  Changed and unchanged handle extraction separates advanced chunks from stable
+  chunks. These helpers support generation and stable unaffected-chunk
+  assertions without GPU lifetime policy. GPU lifetime and queue completion
+  remain host-owned.
 - Host buffer creation/submission: Radix browser WebGPU runtime after HV-02.
 - Existing compute runtime already owns buffer usage and queue submission; its
   semantics are evidence, not permission to duplicate graphics lifecycle code.

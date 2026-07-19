@@ -206,6 +206,23 @@ functio resource_transition_changed_handles(
     redde handles
 }
 
+functio resource_transition_current_handles(
+    de lista<ResourceTransition> transitions
+) → lista<ResourceHandle> ∪ nihil {
+    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<ResourceHandle> handles ← vacua
+    varia numerus i ← 0
+    dum i < transitions.longitudo() {
+        fixum ResourceTransition transition ← transitions[i]
+        handles.appende(ResourceHandle {
+            index = transition.current.index,
+            generation = transition.current.generation
+        })
+        i ← i + 1
+    }
+    redde handles
+}
+
 functio resource_transition_unchanged_indices(
     de lista<ResourceTransition> transitions
 ) → lista<numerus> ∪ nihil {

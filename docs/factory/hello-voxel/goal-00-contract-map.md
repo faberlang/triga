@@ -113,7 +113,9 @@ transitions without GPU lifetime policy. `resource_transition_changed_count`,
 `resource_transition_unchanged_count`, and
 `resource_transition_changed_indices`, and
 `resource_transition_changed_handles` expose validated batch facts for exact
-affected-chunk evidence in Goal 07. `resource_transition_unchanged_indices` and
+affected-chunk evidence in Goal 07. `resource_transition_current_handles`
+exposes the full validated current generation set after changed and unchanged
+transitions. `resource_transition_unchanged_indices` and
 `resource_transition_unchanged_handles` expose stable unaffected logical
 resource indices and generations for identity-preservation assertions.
 `scene_set_visible`,
