@@ -27,8 +27,8 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   `examples/hello-voxel/src/voxel.fab` and `src/meshing.fab`.
 - Reusable geometry constructors, bounds, and validation in
   `triga/src/geometry.fab`, including the validated position/color indexed
-  triangle constructor, triangle-count helper, and group draw-command helper for
-  chunk mesh payloads.
+  triangle constructor, triangle-count helper, and single/all group
+  draw-command helpers for chunk mesh payloads.
 - Reusable `Box3` construction, validation, size, center, and translation
   helpers in `triga/src/triga.fab` for chunk mesh bounds.
 - Reusable scene visibility state and effective visible traversal in

@@ -57,6 +57,9 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_group_draw_command` records the same draw facts from a validated
   geometry group. Goal 05 can reuse this for one draw per non-empty chunk
   without making each block a draw.
+- `geometry_group_draw_commands` returns the validated draw command list for all
+  groups in group order. Goal 05 can use it to submit one chunk geometry without
+  host-side group inference.
 - `geometry_valid` rejects malformed attributes, duplicate names, duplicate
   shader locations, out-of-range indices, and partial triangle draw ranges.
 - `geometry_vertex_layouts` converts valid geometry into layout records.
@@ -68,7 +71,8 @@ The current Stage 4 exemplar proves position, normal, and UV layout facts.
 `triga/exempla/hello-voxel-first-draw-facts.fab` proves the locked first-draw
 position and color pair with 8 vertices, 36 `u32` indices, a full draw range,
 and one indexed instance command. `triga/exempla/triga-geometry-attributes.fab`
-proves group-scoped draw command creation and rejection cases.
+proves group-scoped draw command creation, full group draw command lists, and
+rejection cases.
 
 ## Material Facts
 
@@ -86,15 +90,20 @@ format, depth compare, and color target format remains Radix-owned.
 `SceneHandle` and `ResourceHandle`. Each handle has an index and generation.
 `resource_handle_equals` and `resource_handle_next` define logical identity and
 derived-resource generation advance. Goal 07 can use this pattern for chunk mesh
-resource generations. The scene store does not define voxel storage, dirty chunk
-sets, or GPU lifetime policy. Those remain application and host facts.
+resource generations. `scene_set_visible`, `scene_visible_traverse`, and
+`scene_effective_visible` define source-level visibility filtering without host
+renderer policy. Goal 05 can use that contract for visible chunk draw filtering.
+The scene store does not define voxel storage, dirty chunk sets, or GPU lifetime
+policy. Those remain application and host facts.
 
 ## Matrix Facts
 
 `triga/src/triga.fab` defines `Matrix4` as `lista<f32>` and states that
 elements are column-major and multiply column vectors. It provides identity,
 translation, scale, composition, multiplication, point application, transpose,
-and affine inverse helpers.
+and affine inverse helpers. It also provides camera yaw/pitch ray construction,
+ray-to-`Box3` entry distance, and `RayBox3Hit` distance/point/normal facts for
+selection indicators. Voxel DDA remains application-owned.
 
 The first draw uses one transform storage buffer with 32 `f32` values. The
 buffer order is model matrix first and view-projection matrix second. The host

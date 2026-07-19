@@ -31,10 +31,19 @@ incipit {
         "group draw command preserves first element and base vertex"
     adfirma group_draw_result!.instance_count ≡ 2 et group_draw_result!.material_index ≡ 0,
         "group draw command preserves instance count and material index"
+    fixum lista<geometry.GeometryDrawCommand> ∪ nihil group_draws_result ←
+        geometry.geometry_group_draw_commands(triangle, 2)
+    adfirma group_draws_result non est nihil,
+        "valid geometry exposes all group draw commands"
+    adfirma group_draws_result![0].element_count ≡ 3
+        et group_draws_result![0].material_index ≡ 0,
+        "group draw command list preserves group order and material index"
     adfirma geometry.geometry_group_draw_command(triangle, 1, 1) est nihil,
         "missing geometry group rejects draw command creation"
     adfirma geometry.geometry_group_draw_command(triangle, 0, 0) est nihil,
         "empty instance count rejects group draw command creation"
+    adfirma geometry.geometry_group_draw_commands(triangle, 0) est nihil,
+        "empty instance count rejects group draw command list creation"
     fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
     adfirma bounds_result non est nihil, "valid position data produces bounds"
     fixum f32 zero ← 0.0
@@ -265,6 +274,8 @@ incipit {
     )
     adfirma geometry.geometry_valid(partial_triangle_group) ≡ falsum,
         "triangle groups must select complete primitives"
+    adfirma geometry.geometry_group_draw_commands(partial_triangle_group, 1) est nihil,
+        "invalid geometry rejects group draw command lists"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )
