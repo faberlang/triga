@@ -45,8 +45,9 @@ the first visible Faber-authored indexed 3D application.
   node/resource/transform packet and its resource and transform-upload counts
   to the host without host-side scene reconstruction.
 - Application root: `examples/hello-voxel/` exists as a package-admission
-  scaffold. HV-03 still owns frame and input runtime support before HV-04 can
-  make it render-capable.
+  scaffold with generated mount automation. HV-03 browser lifecycle support is
+  complete for the current non-GPU scope; HV-04 can consume that runtime after
+  shader and host dependencies are available.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: `radix/hosts/webgpu-browser/` after HV-02.
 - Browser lifecycle: Faber `browser-app` output after HV-03.

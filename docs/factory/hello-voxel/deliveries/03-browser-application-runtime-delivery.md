@@ -1,7 +1,7 @@
 # HV-03 Delivery: Faber Browser Application Runtime
 
 **Parent goal**: [`../goals/03-browser-application-runtime.md`](../goals/03-browser-application-runtime.md)
-**Factory admission**: READY after HV-00
+**Factory admission**: complete for current non-GPU browser runtime scope
 **Primary repo**: `faber`
 **Supporting repos**: `faber-web`, `examples`
 
@@ -31,10 +31,11 @@ interactive frame and input lifecycle through generated browser adaptation.
 - Framework source: `faber-web/src/web.fab` and `faber-web/src/dom.fab`.
 - Browser runtime effects and bindings: `faber-web/runtime/dom.ts` and
   `faber-web/bindings/ts.toml`.
-- Existing consuming proof: `examples/browser-app/`.
+- Existing consuming proof: `examples/browser-app/`, now covering generated
+  mount/failure/dispose lifecycle, frame, resize, keyboard, pointer, focus,
+  pointer-lock, and typed denied-failure behavior.
 - New application consumer: `examples/hello-voxel/`. The current scaffold
-  proves package/controller admission only. It still needs the HV-03 frame,
-  resize, keyboard, pointer, focus, and pointer-lock runtime contract.
+  proves package/controller admission and generated mount automation only.
 
 ## Stage Graph
 
@@ -49,10 +50,11 @@ contracts with TypeScript runtime coverage.
 focused `faber-web/tests/` coverage.
 **Gate**: the contract expresses every locked event without DOM object leakage.
 Frame, resize, keyboard, pointer, focus, and pointer-lock state are represented.
-Generated adapter cleanup evidence remains pending in HV-03B.
+Generated adapter cleanup evidence is complete in HV-03B.
 
 ### HV-03B - Generated Browser Adapter
 
+**Status**: complete
 **Depends on**: HV-03A
 **Output**: generated TypeScript/ESM listener, scheduling, pointer-lock, failure,
 and cleanup code from one admitted controller.
@@ -63,6 +65,7 @@ listeners on shutdown.
 
 ### HV-03C - Consuming Package Proof
 
+**Status**: complete for current non-GPU runtime scope
 **Depends on**: HV-03B
 **Output**: extend the minimal `examples/hello-voxel/` browser package so it
 receives frames and input and exposes deterministic state without rendering
@@ -100,6 +103,21 @@ fixtures can be batched after the first event pattern passes.
 - Run TypeScript checking through the existing Faber packaging command.
 - Browser checks for frame count, resize, key state, pointer movement, focus
   loss, pointer-lock denial, and listener cleanup.
+
+## Completion Evidence
+
+- `faber/src/package/product.rs` emits the browser controller lifecycle helper
+  and ambient declarations for the current `web:dom` event surface.
+- `faber/src/package_test.rs` validates generated lifecycle and event ambient
+  declarations in the browser product path.
+- `examples/browser-app/tests/run.sh` builds the package and runs a Node DOM
+  harness that proves frame, resize, keyboard, pointer, focus, pointer-lock,
+  typed denied-failure, visible state update, and cleanup behavior.
+- `examples/hello-voxel/tests/run.sh` builds the campaign package scaffold and
+  proves generated controller mount automation.
+
+This delivery remains non-GPU. It does not claim WebGPU object creation,
+shader execution, or visible direct rendering.
 
 ## Companion Skill Plan
 

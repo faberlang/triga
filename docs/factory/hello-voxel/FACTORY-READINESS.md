@@ -3,7 +3,8 @@
 **Vision source**: [`CAMPAIGN.md`](CAMPAIGN.md)
 **Goal checks**: [`GOAL-CHECKS.md`](GOAL-CHECKS.md)
 **Factory mode**: vision, production, and delivery lowering only
-**Loop status**: HV-00 Triga reusable-contract pass complete; Radix red fixtures pending
+**Loop status**: HV-00 Triga reusable-contract pass complete; HV-03 browser
+runtime complete for non-GPU scope; Radix red fixtures pending
 **Release posture**: defer release through Goal 07; Goal 08 requires an explicit
 release decision
 
@@ -63,10 +64,10 @@ into a follow-up target.
 | HV-00 Baseline and contract lock | READY | Triga reusable contracts complete; Radix red fixtures pending | [`deliveries/00-baseline-contract-lock-delivery.md`](deliveries/00-baseline-contract-lock-delivery.md) | active |
 | HV-01 Source graphics pipeline | READY | waits for HV-00 | [`deliveries/01-source-graphics-pipeline-delivery.md`](deliveries/01-source-graphics-pipeline-delivery.md) | pending |
 | HV-02 Direct WebGPU graphics host | READY | waits for HV-01 | [`deliveries/02-direct-webgpu-graphics-host-delivery.md`](deliveries/02-direct-webgpu-graphics-host-delivery.md) | pending |
-| HV-03 Browser application runtime | READY | HV-03A typed `web:dom` subscriptions complete for current scope; waits for HV-00 and generated adapter work | [`deliveries/03-browser-application-runtime-delivery.md`](deliveries/03-browser-application-runtime-delivery.md) | active |
-| HV-04 Indexed cube crossover | READY | Triga HV-04A prerequisites complete; waits for HV-01, HV-02, HV-03 | [`deliveries/04-indexed-cube-crossover-delivery.md`](deliveries/04-indexed-cube-crossover-delivery.md) | pending |
+| HV-03 Browser application runtime | READY | complete for current non-GPU browser lifecycle scope | [`deliveries/03-browser-application-runtime-delivery.md`](deliveries/03-browser-application-runtime-delivery.md) | complete |
+| HV-04 Indexed cube crossover | READY | Triga HV-04A prerequisites and HV-03 browser runtime complete; waits for HV-01 and HV-02 | [`deliveries/04-indexed-cube-crossover-delivery.md`](deliveries/04-indexed-cube-crossover-delivery.md) | pending |
 | HV-05 Voxel world and chunk meshing | READY | waits for HV-04 | [`deliveries/05-voxel-world-chunk-meshing-delivery.md`](deliveries/05-voxel-world-chunk-meshing-delivery.md) | pending |
-| HV-06 First-person interaction | READY | waits for HV-03, HV-05 | [`deliveries/06-first-person-interaction-delivery.md`](deliveries/06-first-person-interaction-delivery.md) | pending |
+| HV-06 First-person interaction | READY | HV-03 browser runtime complete; waits for HV-05 | [`deliveries/06-first-person-interaction-delivery.md`](deliveries/06-first-person-interaction-delivery.md) | pending |
 | HV-07 Incremental chunk resources | READY | waits for HV-05, HV-06 | [`deliveries/07-incremental-chunk-resources-delivery.md`](deliveries/07-incremental-chunk-resources-delivery.md) | pending |
 | HV-08 Clean break and application proof | READY | waits for HV-00 through HV-07 | [`deliveries/08-clean-break-application-proof-delivery.md`](deliveries/08-clean-break-application-proof-delivery.md) | pending |
 
@@ -79,10 +80,10 @@ HV-00 -> HV-01 -> HV-02 --+
    +--------------------------------------------------------+
 ```
 
-HV-01 and HV-03 can execute in parallel only in isolated worktrees because
-their repos are disjoint (`radix` versus `faber-web`/`faber` plus owned fixtures). HV-02
-depends on HV-01. Later units converge on shared application and host surfaces
-and should be serialized unless delivery-specific write scopes prove otherwise.
+HV-03 is complete for the current non-GPU browser lifecycle scope. HV-01 is the
+next compiler-side dependency after HV-00; HV-02 depends on HV-01. Later units
+converge on shared application and host surfaces and should be serialized
+unless delivery-specific write scopes prove otherwise.
 
 ## Factory Admission Rules
 
@@ -112,17 +113,19 @@ facts, colored mesh bounds, and line draw-batch facts for selection outlines. Th
 `triga/scripta/check-hello-voxel-contract` gate packages the Triga-owned
 executable evidence and compile viability without claiming browser rendering.
 The `examples/hello-voxel` scaffold now builds as a browser package and proves
-only package/controller admission. `faber-web` now exposes typed frame, resize,
-keyboard, pointer, focus, and pointer-lock subscription contracts with runtime
-coverage. This does not yet satisfy HV-03 generated adapter lifecycle or
-consuming browser automation gates, and it does not satisfy HV-04 rendering
-gates. HV-04A's
+package/controller admission plus generated controller mount automation. The
+Faber browser-product path now proves generated mount/failure/dispose
+lifecycle, frame and resize delivery, physical key-code delivery, pointer
+movement delivery, focus delivery, pointer-lock request/state delivery, typed
+denied failure handling, visible state updates, and generated listener/frame
+cleanup through `examples/browser-app`. This completes HV-03 for the current
+non-GPU browser runtime scope, but it does not satisfy HV-04 rendering gates.
+HV-04A's
 reusable Triga prerequisite scope is also complete for the current indexed-cube
-delivery, but HV-04 itself still waits for the shader, host, browser runtime,
-and example package dependencies to become render-capable. The first remaining
+delivery, but HV-04 itself still waits for the shader and host dependencies to
+become render-capable. The first remaining
 executable campaign gate
-is the Radix-owned HV-00B red fixture pass. No full unit is complete, and no
-release is authorized.
+is the Radix-owned HV-00B red fixture pass. No release is authorized.
 
 ## Blocking Questions
 
