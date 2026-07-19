@@ -145,8 +145,40 @@ incipit {
     adfirma ray_point.x ≡ (3.0 ∷ f32), "ray point at distance"
     fixum _ ray_hit ← triga.ray_intersecat_box3(ray, shifted_bounds, 6.0 ∷ f32)
     adfirma ray_hit non est nihil, "ray reports a box entry within maximum distance"
+    fixum triga.RayBox3Hit ∪ nihil ray_box_hit ← triga.ray_box3_hit(
+        ray, shifted_bounds, 6.0 ∷ f32
+    )
+    adfirma ray_box_hit non est nihil
+        et (ray_box_hit!.distance - 1.0).absolutum() ≤ 0.0001
+        et ray_box_hit!.normal.x ≡ (-1.0 ∷ f32)
+        et (ray_box_hit!.point.x - 1.0).absolutum() ≤ 0.0001,
+        "ray box hit records entry point and outward face normal"
+    fixum triga.Ray negative_ray ← triga.Ray {
+        origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
+        direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    }
+    fixum triga.RayBox3Hit ∪ nihil negative_hit ← triga.ray_box3_hit(
+        negative_ray, shifted_bounds, 6.0 ∷ f32
+    )
+    adfirma negative_hit non est nihil et negative_hit!.normal.x ≡ (1.0 ∷ f32),
+        "ray box hit records positive face normals"
+    fixum triga.Ray inside_ray ← triga.Ray {
+        origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
+        direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    }
+    fixum triga.RayBox3Hit ∪ nihil inside_hit ← triga.ray_box3_hit(
+        inside_ray, shifted_bounds, 6.0 ∷ f32
+    )
+    adfirma inside_hit non est nihil
+        et inside_hit!.distance ≡ (0.0 ∷ f32)
+        et inside_hit!.normal.x ≡ (0.0 ∷ f32),
+        "inside ray box hit uses zero distance and no entry normal"
     fixum _ ray_miss ← triga.ray_intersecat_box3(ray, shifted_bounds, 0.5 ∷ f32)
     adfirma ray_miss est nihil, "ray rejects hits beyond maximum distance"
+    adfirma triga.ray_box3_hit(ray, shifted_bounds, 0.5 ∷ f32) est nihil,
+        "ray box hit rejects hits beyond maximum distance"
+    adfirma triga.ray_box3_hit(ray, invalid_bounds, 6.0 ∷ f32) est nihil,
+        "ray box hit rejects invalid boxes"
     fixum triga.Ray parallel_miss ← triga.Ray {
         origin = triga.vector3(0.0 ∷ f32, 2.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)

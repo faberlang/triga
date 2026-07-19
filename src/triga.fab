@@ -91,6 +91,12 @@ genus RayInterval {
     f32 maximum
 }
 
+genus RayBox3Hit {
+    f32 distance
+    Vector3 point
+    Vector3 normal
+}
+
 # =========================================================================
 # SCENE GRAPH
 #
@@ -605,6 +611,7 @@ functio ray_intersecat_box3(
     de Box3 bounds,
     f32 max_distance
 ) → f32 ∪ nihil {
+    si box3_validum(bounds) ≡ falsum ergo redde nihil
     si max_distance < 0.0 ergo redde nihil
     fixum RayInterval ∪ nihil x_interval ← _ray_axis_interval(
         ray.origin.x, ray.direction.x, bounds.min.x, bounds.max.x
@@ -631,6 +638,44 @@ functio ray_intersecat_box3(
 
     si entry > exit ergo redde nihil
     redde entry
+}
+
+functio _ray_box3_hit_normal(de Box3 bounds, de Vector3 point) → Vector3 {
+    si (point.x - bounds.min.x).absolutum() ≤ 0.0001 {
+        redde vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    }
+    si (point.x - bounds.max.x).absolutum() ≤ 0.0001 {
+        redde vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    }
+    si (point.y - bounds.min.y).absolutum() ≤ 0.0001 {
+        redde vector3(0.0 ∷ f32, -1.0 ∷ f32, 0.0 ∷ f32)
+    }
+    si (point.y - bounds.max.y).absolutum() ≤ 0.0001 {
+        redde vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
+    }
+    si (point.z - bounds.min.z).absolutum() ≤ 0.0001 {
+        redde vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
+    }
+    si (point.z - bounds.max.z).absolutum() ≤ 0.0001 {
+        redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    }
+    redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+}
+
+functio ray_box3_hit(
+    de Ray ray,
+    de Box3 bounds,
+    f32 max_distance
+) → RayBox3Hit ∪ nihil {
+    fixum f32 ∪ nihil distance_result ← ray_intersecat_box3(ray, bounds, max_distance)
+    si distance_result est nihil ergo redde nihil
+    fixum f32 distance ← distance_result vel 0.0
+    fixum Vector3 point ← ray_punctum(ray, distance)
+    redde RayBox3Hit {
+        distance = distance,
+        point = point,
+        normal = _ray_box3_hit_normal(bounds, point)
+    }
 }
 
 functio matrix4_identitas() → Matrix4 {
