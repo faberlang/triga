@@ -3,7 +3,7 @@
 **Vision source**: [`CAMPAIGN.md`](CAMPAIGN.md)
 **Goal checks**: [`GOAL-CHECKS.md`](GOAL-CHECKS.md)
 **Factory mode**: vision, production, and delivery lowering only
-**Loop status**: started for HV-00 Triga inventory; Radix red fixtures pending
+**Loop status**: started for HV-00 Triga inventory/layout proof; Radix red fixtures pending
 **Release posture**: defer release through Goal 07; Goal 08 requires an explicit
 release decision
 
@@ -60,7 +60,7 @@ into a follow-up target.
 
 | Unit | Vision | Dependency state | Delivery spec | Factory state |
 | --- | --- | --- | --- | --- |
-| HV-00 Baseline and contract lock | READY | Triga inventory complete; Radix red fixtures pending | [`deliveries/00-baseline-contract-lock-delivery.md`](deliveries/00-baseline-contract-lock-delivery.md) | active |
+| HV-00 Baseline and contract lock | READY | Triga inventory/layout proof complete; Radix red fixtures pending | [`deliveries/00-baseline-contract-lock-delivery.md`](deliveries/00-baseline-contract-lock-delivery.md) | active |
 | HV-01 Source graphics pipeline | READY | waits for HV-00 | [`deliveries/01-source-graphics-pipeline-delivery.md`](deliveries/01-source-graphics-pipeline-delivery.md) | pending |
 | HV-02 Direct WebGPU graphics host | READY | waits for HV-01 | [`deliveries/02-direct-webgpu-graphics-host-delivery.md`](deliveries/02-direct-webgpu-graphics-host-delivery.md) | pending |
 | HV-03 Browser application runtime | READY | waits for HV-00 | [`deliveries/03-browser-application-runtime-delivery.md`](deliveries/03-browser-application-runtime-delivery.md) | pending |
@@ -102,9 +102,9 @@ and should be serialized unless delivery-specific write scopes prove otherwise.
 
 ## Pending Units
 
-All nine delivery specs exist. HV-00 is active. Its Triga-side inventory is
-complete, and its Radix red fixtures remain pending. No full unit is complete,
-and no release is authorized.
+All nine delivery specs exist. HV-00 is active. Its Triga-side inventory and
+first-draw layout proof are complete, and its Radix red fixtures remain
+pending. No full unit is complete, and no release is authorized.
 
 ## Blocking Questions
 

@@ -54,6 +54,8 @@ source and tests prove otherwise.
 
 - Triga-side executable-truth inventory is recorded in
   [`../goal-00-contract-map.md`](../goal-00-contract-map.md).
+- The locked first-draw position/color layout is checked by
+  `exempla/hello-voxel-first-draw-facts.fab`.
 - Radix red admission fixtures are still required for the full Goal 00 gate.
   They are deferred while Radix has active foreign implementation work.
 

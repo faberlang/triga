@@ -50,6 +50,9 @@ echo "check-compile: checking geometry attribute exemplar"
 echo "check-compile: checking Stage 4 source-owned facts exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-stage4-source-facts.fab"
 
+echo "check-compile: checking Hello Voxel first-draw facts exemplar"
+"$RADIX_BIN" check "$ROOT/exempla/hello-voxel-first-draw-facts.fab"
+
 echo "check-compile: checking scene-store exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
 

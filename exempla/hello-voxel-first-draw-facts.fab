@@ -1,0 +1,65 @@
++++
+term = "hello-voxel-first-draw-facts"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Hello Voxel first indexed-draw source facts for position and color layouts."
++++
+
+importa ex "triga:geometry" privata geometry
+
+
+incipit {
+    fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
+        "position", 0, 3, 8,
+        [
+            0.0, 0.0, 0.0,
+            1.0, 0.0, 0.0,
+            1.0, 1.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0,
+            1.0, 0.0, 1.0,
+            1.0, 1.0, 1.0,
+            0.0, 1.0, 1.0
+        ]
+    )
+    fixum geometry.BufferAttribute colors ← geometry.float32_attribute(
+        "color", 1, 3, 8,
+        [
+            1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0,
+            1.0, 1.0, 0.0,
+            1.0, 0.0, 1.0,
+            0.0, 1.0, 1.0,
+            1.0, 1.0, 1.0,
+            0.2, 0.2, 0.2
+        ]
+    )
+    fixum lista<u32> indices ← [
+        0, 1, 2, 0, 2, 3,
+        4, 6, 5, 4, 7, 6,
+        0, 4, 5, 0, 5, 1,
+        3, 2, 6, 3, 6, 7,
+        1, 5, 6, 1, 6, 2,
+        0, 3, 7, 0, 7, 4
+    ]
+    fixum geometry.BufferGeometry cube ← geometry.indexed_triangle_geometry(
+        8, [positions, colors], indices,
+        geometry.DrawRange { start = 0, count = 36 },
+        [geometry.GeometryGroup { start = 0, count = 36, material_index = 0 }]
+    )
+
+    adfirma geometry.geometry_valid(cube),
+        "Hello Voxel first draw uses valid indexed triangle geometry"
+    adfirma cube.indexed et cube.vertex_count ≡ 8 et cube.indices.longitudo() ≡ 36,
+        "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
+    adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,
+        "Hello Voxel first draw covers the full indexed cube range"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12),
+        "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12),
+        "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
+    adfirma geometry.geometry_vertex_layout_location(cube, 2) est nihil,
+        "Hello Voxel first draw exposes only position and color vertex layouts"
+}

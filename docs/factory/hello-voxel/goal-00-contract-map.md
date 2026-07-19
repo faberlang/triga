@@ -2,7 +2,7 @@
 
 **Goal**: [`goals/00-baseline-contract-lock.md`](goals/00-baseline-contract-lock.md)
 **Delivery**: [`deliveries/00-baseline-contract-lock-delivery.md`](deliveries/00-baseline-contract-lock-delivery.md)
-**State**: Triga-side inventory complete. Radix red fixtures are deferred to the Radix owner.
+**State**: Triga-side inventory and first-draw layout proof complete. Radix red fixtures are deferred to the Radix owner.
 **Last checked**: 2026-07-19
 
 ## Invariant
@@ -26,7 +26,7 @@ color buffer, one index buffer, and one transform buffer.
 | Fact | Locked value | Owner | Representation | State | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | Vertex buffer 0 | position, location 0, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | `geometry.VertexAttributeLayout`; `MirVertexInputReflection`; WebGPU vertex buffer descriptor | implemented in Triga; partially reflected in Radix | `triga/src/geometry.fab`; `triga/exempla/triga-stage4-source-facts.fab`; `radix/crates/radix/src/mir/abi.rs` |
-| Vertex buffer 1 | color, location 1, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | same shape as position with source name `color` | supported by generic Triga layout model; no dedicated color proof yet | `triga/src/geometry.fab`; `radix/crates/radix/src/mir/abi.rs` |
+| Vertex buffer 1 | color, location 1, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | same shape as position with source name `color` | implemented in Triga; Radix reflection pending | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab`; `radix/crates/radix/src/mir/abi.rs` |
 | Index buffer | `u32` indices | Triga source; browser platform upload | `BufferGeometry.indices`; WebGPU index buffer | implemented in Triga; direct render host absent | `triga/src/geometry.fab`; `triga/exempla/triga-geometry-attributes.fab` |
 | Topology | triangle-list | Triga source; Radix reflection | `PrimitiveTopology.TriangleList`; WebGPU primitive topology | implemented in Triga; render pipeline reflection absent | `triga/src/geometry.fab` |
 | Draw range | indexed draw start/count | Triga source; Radix draw reflection | `DrawRange`; future indexed draw fields | Triga implemented; Radix draw reflection absent | `triga/src/geometry.fab` |
@@ -55,9 +55,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
   indices. Goal 05 can reuse this as a reference for voxel face meshing, but
   the voxel world must remain in the example package until it proves reusable.
 
-The current Stage 4 exemplar proves position, normal, and UV layout facts. It
-does not prove the locked position plus color pair. Goal 01 must add or consume
-a fixture that proves `position` at location 0 and `color` at location 1.
+The current Stage 4 exemplar proves position, normal, and UV layout facts.
+`triga/exempla/hello-voxel-first-draw-facts.fab` proves the locked first-draw
+position and color pair with 8 vertices, 36 `u32` indices, and a full draw
+range.
 
 ## Scene And Resource Facts
 
@@ -99,7 +100,7 @@ This pass read the current Radix and browser surfaces without writing them.
 
 | Missing fact | Owner | Downstream goal | Required evidence |
 | --- | --- | --- | --- |
-| Color layout proof for locked first draw | Triga/Radix | Goal 01 | Faber fixture emits/reflection admits location 0 position and location 1 color |
+| Color layout reflection for locked first draw | Radix | Goal 01 | Faber fixture emits/reflection admits location 0 position and location 1 color |
 | Non-empty vertex body lowering | Radix | Goal 01 | WGSL computes clip position from transform buffer and emits color varying |
 | Fragment stage and reflection | Radix | Goal 01 | `MirKernelShaderStage` or successor model carries fragment; WGSL and JSON reflection include fragment entry |
 | Render pipeline descriptor | Radix | Goal 01/02 | reflection records vertex buffers, shader entries, primitive, target, depth, and culling |

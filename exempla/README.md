@@ -11,6 +11,7 @@ dictionary under sibling `examples/corpus/`.
 exempla/
   triga-basics.fab              # Vector3 and Matrix4 construction and field access
   triga-geometry-attributes.fab # Geometry generation and vertex-layout reflection
+  hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
   triga-stage4-source-facts.fab # Stage 4 vertex-layout handoff facts
   triga-transforms.fab          # Vector, quaternion, and matrix operations

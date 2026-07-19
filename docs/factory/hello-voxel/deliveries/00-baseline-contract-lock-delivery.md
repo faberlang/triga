@@ -1,7 +1,7 @@
 # HV-00 Delivery: Baseline And Contract Lock
 
 **Parent goal**: [`../goals/00-baseline-contract-lock.md`](../goals/00-baseline-contract-lock.md)
-**Factory admission**: ACTIVE; Triga inventory complete, Radix red fixtures pending
+**Factory admission**: ACTIVE; Triga inventory/layout proof complete, Radix red fixtures pending
 **Primary repo**: `triga` for the current pass; `radix` for deferred red fixtures
 **Supporting repos**: `triga`, `faber`
 
@@ -42,7 +42,8 @@ fixtures only where a missing capability needs an implementation entry point.
 **Write scope**: `triga/docs/factory/hello-voxel/` only.
 **Gate**: every Goal 01 locked fact maps to a live type, generated field, missing
 field, or platform-owned value.
-**Evidence**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md)
+**Evidence**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md) and
+`triga/exempla/hello-voxel-first-draw-facts.fab`
 
 ### HV-00B - Red Admission Fixtures
 
