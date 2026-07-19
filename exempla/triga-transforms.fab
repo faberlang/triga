@@ -67,6 +67,7 @@ incipit {
         "transform payload byte count rejects malformed payloads"
 
     fixum triga.Matrix4 ∪ nihil inverse ← triga.matrix4_inversa_affinis(world)
+    adfirma inverse non est nihil, "non-singular affine inverse succeeds"
     fixum triga.Matrix4 inverse_value ← triga.Matrix4 { elements = inverse!.elements }
     fixum triga.Vector3 round_trip ← triga.matrix4_applica_punctum(inverse_value, transformed)
     adfirma (round_trip.x - local.x).absolutum() ≤ 0.0001, "inverse round-trip x"
