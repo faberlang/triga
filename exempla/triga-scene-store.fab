@@ -20,6 +20,33 @@ incipit {
     adfirma geometry_next.index ≡ geometry.index et
         geometry_next.generation ≡ geometry.generation + 1,
         "resource next generation preserves logical index"
+    fixum scene.ResourceTransition stable_transition ← scene.resource_transition_unchanged(geometry)
+    adfirma scene.resource_transition_valid(stable_transition),
+        "unchanged resource transition validates"
+    adfirma stable_transition.changed ≡ falsum et
+        stable_transition.current.generation ≡ geometry.generation,
+        "unchanged resource transition preserves generation"
+    fixum scene.ResourceTransition replaced_transition ← scene.resource_transition_replaced(geometry)
+    adfirma scene.resource_transition_valid(replaced_transition),
+        "replacement resource transition validates"
+    adfirma replaced_transition.changed et
+        replaced_transition.current.index ≡ geometry.index et
+        replaced_transition.current.generation ≡ geometry.generation + 1,
+        "replacement resource transition advances only generation"
+    fixum scene.ResourceTransition invalid_jump ← scene.ResourceTransition {
+        previous = geometry,
+        current = scene.ResourceHandle { index = geometry.index, generation = geometry.generation + 2 },
+        changed = verum
+    }
+    adfirma scene.resource_transition_valid(invalid_jump) ≡ falsum,
+        "replacement resource transition rejects generation jumps"
+    fixum scene.ResourceTransition invalid_index ← scene.ResourceTransition {
+        previous = geometry,
+        current = scene.ResourceHandle { index = geometry.index + 1, generation = geometry.generation + 1 },
+        changed = verum
+    }
+    adfirma scene.resource_transition_valid(invalid_index) ≡ falsum,
+        "resource transition rejects logical index changes"
     fixum scene.SceneInsert root_step ← scene.scene_insert(
         scene.scene_store(), scene.scene_group("root")
     )

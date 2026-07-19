@@ -12,6 +12,12 @@ genus ResourceHandle {
     numerus generation
 }
 
+genus ResourceTransition {
+    ResourceHandle previous
+    ResourceHandle current
+    bivalens changed
+}
+
 discretio SceneNodeKind {
     SceneGroup { },
     SceneMesh { ResourceHandle geometry, ResourceHandle material },
@@ -59,6 +65,36 @@ functio resource_handle_equals(de ResourceHandle a, de ResourceHandle b) → biv
 
 functio resource_handle_next(de ResourceHandle handle) → ResourceHandle {
     redde ResourceHandle { index = handle.index, generation = handle.generation + 1 }
+}
+
+functio resource_transition_unchanged(de ResourceHandle handle) → ResourceTransition {
+    fixum ResourceHandle stable ← ResourceHandle {
+        index = handle.index, generation = handle.generation
+    }
+    redde ResourceTransition {
+        previous = stable,
+        current = stable,
+        changed = falsum
+    }
+}
+
+functio resource_transition_replaced(de ResourceHandle handle) → ResourceTransition {
+    fixum ResourceHandle previous ← ResourceHandle {
+        index = handle.index, generation = handle.generation
+    }
+    redde ResourceTransition {
+        previous = previous,
+        current = resource_handle_next(previous),
+        changed = verum
+    }
+}
+
+functio resource_transition_valid(de ResourceTransition transition) → bivalens {
+    si transition.previous.index ≠ transition.current.index ergo redde falsum
+    si transition.changed {
+        redde transition.current.generation ≡ transition.previous.generation + 1
+    }
+    redde transition.current.generation ≡ transition.previous.generation
 }
 
 functio scene_store() → SceneStore {
