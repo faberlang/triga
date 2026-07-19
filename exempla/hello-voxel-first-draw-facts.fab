@@ -10,32 +10,26 @@ importa ex "triga:geometry" privata geometry
 
 
 incipit {
-    fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
-        "position", 0, 3, 8,
-        [
-            0.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0,
-            1.0, 0.0, 1.0,
-            1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0
-        ]
-    )
-    fixum geometry.BufferAttribute colors ← geometry.float32_attribute(
-        "color", 1, 3, 8,
-        [
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0,
-            1.0, 1.0, 0.0,
-            1.0, 0.0, 1.0,
-            0.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            0.2, 0.2, 0.2
-        ]
-    )
+    fixum lista<f32> positions ← [
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+        1.0, 0.0, 1.0,
+        1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0
+    ]
+    fixum lista<f32> colors ← [
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+        1.0, 1.0, 0.0,
+        1.0, 0.0, 1.0,
+        0.0, 1.0, 1.0,
+        1.0, 1.0, 1.0,
+        0.2, 0.2, 0.2
+    ]
     fixum lista<u32> indices ← [
         0, 1, 2, 0, 2, 3,
         4, 6, 5, 4, 7, 6,
@@ -44,11 +38,20 @@ incipit {
         1, 5, 6, 1, 6, 2,
         0, 3, 7, 0, 7, 4
     ]
-    fixum geometry.BufferGeometry cube ← geometry.indexed_triangle_geometry(
-        8, [positions, colors], indices,
-        geometry.DrawRange { start = 0, count = 36 },
-        [geometry.GeometryGroup { start = 0, count = 36, material_index = 0 }]
+    fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_triangle_geometry(
+        8, positions, colors, indices
     )
+    adfirma cube_result non est nihil,
+        "Hello Voxel first draw creates a colored indexed triangle geometry"
+    fixum geometry.BufferGeometry cube ← geometry.BufferGeometry {
+        topology = cube_result!.topology,
+        vertex_count = cube_result!.vertex_count,
+        attributes = cube_result!.attributes,
+        indexed = cube_result!.indexed,
+        indices = cube_result!.indices,
+        draw_range = cube_result!.draw_range,
+        groups = cube_result!.groups
+    }
 
     adfirma geometry.geometry_valid(cube),
         "Hello Voxel first draw uses valid indexed triangle geometry"
@@ -62,4 +65,6 @@ incipit {
         "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
     adfirma geometry.geometry_vertex_layout_location(cube, 2) est nihil,
         "Hello Voxel first draw exposes only position and color vertex layouts"
+    adfirma geometry.colored_indexed_triangle_geometry(8, positions, colors, [0, 1]) est nihil,
+        "colored indexed triangle geometry rejects incomplete triangle indices"
 }

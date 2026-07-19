@@ -131,6 +131,27 @@ functio triangle_geometry(
     }
 }
 
+functio colored_indexed_triangle_geometry(
+    numerus vertex_count,
+    lista<f32> positions,
+    lista<f32> colors,
+    lista<u32> indices
+) → BufferGeometry ∪ nihil {
+    fixum BufferAttribute position_attribute ← float32_attribute(
+        "position", 0, 3, vertex_count, positions
+    )
+    fixum BufferAttribute color_attribute ← float32_attribute(
+        "color", 1, 3, vertex_count, colors
+    )
+    fixum BufferGeometry geometry ← indexed_triangle_geometry(
+        vertex_count, [position_attribute, color_attribute], indices,
+        DrawRange { start = 0, count = indices.longitudo() },
+        [GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
+    )
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    redde geometry
+}
+
 functio attribute_scalar_count(de BufferAttribute attribute) → numerus {
     discerne attribute.data {
         casu Float32Attribute fixum values { redde values.longitudo() }

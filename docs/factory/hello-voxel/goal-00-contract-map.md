@@ -26,7 +26,7 @@ color buffer, one index buffer, and one transform buffer.
 | Fact | Locked value | Owner | Representation | State | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | Vertex buffer 0 | position, location 0, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | `geometry.VertexAttributeLayout`; `MirVertexInputReflection`; WebGPU vertex buffer descriptor | implemented in Triga; partially reflected in Radix | `triga/src/geometry.fab`; `triga/exempla/triga-stage4-source-facts.fab`; `radix/crates/radix/src/mir/abi.rs` |
-| Vertex buffer 1 | color, location 1, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | same shape as position with source name `color` | implemented in Triga; Radix reflection pending | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab`; `radix/crates/radix/src/mir/abi.rs` |
+| Vertex buffer 1 | color, location 1, `float32x3`, offset 0, stride 12, vertex step | Triga source, then Radix reflection | `colored_indexed_triangle_geometry`; same shape as position with source name `color` | implemented in Triga; Radix reflection pending | `triga/src/geometry.fab`; `triga/exempla/hello-voxel-first-draw-facts.fab`; `radix/crates/radix/src/mir/abi.rs` |
 | Index buffer | `u32` indices | Triga source; browser platform upload | `BufferGeometry.indices`; WebGPU index buffer | implemented in Triga; direct render host absent | `triga/src/geometry.fab`; `triga/exempla/triga-geometry-attributes.fab` |
 | Topology | triangle-list | Triga source; Radix reflection | `PrimitiveTopology.TriangleList`; WebGPU primitive topology | implemented in Triga; render pipeline reflection absent | `triga/src/geometry.fab` |
 | Draw range | indexed draw start/count | Triga source; Radix draw reflection | `DrawRange`; future indexed draw fields | Triga implemented; Radix draw reflection absent | `triga/src/geometry.fab` |
@@ -48,6 +48,8 @@ Triga already provides the source-owned geometry data needed by the first draw:
   offset, stride, and step mode.
 - `indexed_triangle_geometry` records indexed triangle geometry with `u32`
   indices and a `DrawRange`.
+- `colored_indexed_triangle_geometry` records the Goal 01 position/color
+  layout shape and returns `nihil` if the geometry does not validate.
 - `geometry_valid` rejects malformed attributes, duplicate names, duplicate
   shader locations, out-of-range indices, and partial triangle draw ranges.
 - `geometry_vertex_layouts` converts valid geometry into layout records.

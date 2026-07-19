@@ -24,7 +24,8 @@ the first visible Faber-authored indexed 3D application.
 - Triga math: `triga/src/triga.fab` and transform exemplar. It now includes
   perspective projection and look-at view matrix helpers for the crossover
   camera.
-- Triga geometry: `triga/src/geometry.fab` and geometry exemplar.
+- Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
+  validated colored indexed triangle constructor for position/color payloads.
 - Application root: `examples/hello-voxel/` created by HV-03.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: `radix/hosts/webgpu-browser/` after HV-02.
