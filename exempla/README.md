@@ -9,7 +9,7 @@ dictionary under sibling `examples/corpus/`.
 
 ```text
 exempla/
-  triga-basics.fab              # Vector3 and Matrix4 construction and field access
+  triga-basics.fab              # Vector3, Matrix4, and material basics
   triga-geometry-attributes.fab # Geometry generation and vertex-layout reflection
   hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms

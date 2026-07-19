@@ -3,13 +3,13 @@ term = "triga"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Triga math types: Vector3 and Matrix4 construction and field access."
+summary = "Triga math and material basics."
 syntax = "importa ex \"triga:triga\" privata triga"
 related = ["genus", "vector", "lista", "numerus"]
 +++
 
 
-# exempla/triga-basics — core triga type instantiation and field access
+# exempla/triga-basics — core triga type instantiation, field access, and material state
 #
 # STYLE: numeric sugar (f32, u32) — all triga types are geometric/mathematical
 #
@@ -47,4 +47,20 @@ incipit {
     }
 
     nota matrix.elements.longitudo()
+
+    fixum triga.Material base_material ← triga.material("hello-voxel")
+    adfirma triga.material_valid(base_material),
+        "material constructor creates valid material state"
+    adfirma triga.material_depth_enabled(base_material),
+        "material defaults keep depth testing enabled"
+
+    fixum triga.Material double_sided ← triga.material_double_sided(base_material)
+    adfirma triga.material_est_double_sided(double_sided),
+        "double-sided material records disabled face culling intent"
+    adfirma triga.material_depth_enabled(double_sided),
+        "double-sided material preserves depth policy"
+
+    fixum triga.Material invalid ← triga.material("")
+    adfirma triga.material_valid(invalid) ≡ falsum,
+        "material validation rejects empty names"
 }

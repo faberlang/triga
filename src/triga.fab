@@ -227,6 +227,46 @@ genus Mesh {
     MeshStandardMaterial ∪ MeshBasicMaterial ∪ MeshPhongMaterial material sponte
 }
 
+functio material(textus name) → Material {
+    redde Material {
+        name = name,
+        side = 0,
+        transparent = falsum,
+        opacity = 1.0,
+        depth_write = verum,
+        depth_test = verum,
+        alpha_test = 0.0
+    }
+}
+
+functio material_valid(de Material value) → bivalens {
+    si value.name ≡ "" ergo redde falsum
+    si value.side > 2 ergo redde falsum
+    si value.opacity < 0.0 aut value.opacity > 1.0 ergo redde falsum
+    si value.alpha_test < 0.0 aut value.alpha_test > 1.0 ergo redde falsum
+    redde verum
+}
+
+functio material_double_sided(de Material value) → Material {
+    redde Material {
+        name = value.name,
+        side = 2,
+        transparent = value.transparent,
+        opacity = value.opacity,
+        depth_write = value.depth_write,
+        depth_test = value.depth_test,
+        alpha_test = value.alpha_test
+    }
+}
+
+functio material_est_double_sided(de Material value) → bivalens {
+    redde value.side ≡ (2 ↦ numerus<u32>)
+}
+
+functio material_depth_enabled(de Material value) → bivalens {
+    redde value.depth_test et value.depth_write
+}
+
 # =========================================================================
 # TEXTURE (minimal placeholder)
 #

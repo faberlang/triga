@@ -64,6 +64,16 @@ The current Stage 4 exemplar proves position, normal, and UV layout facts.
 position and color pair with 8 vertices, 36 `u32` indices, and a full draw
 range.
 
+## Material Facts
+
+`triga/src/triga.fab` provides `Material` and material-family records for
+source-owned material data. `material` records default opaque material state,
+`material_double_sided` records disabled face culling intent through `side = 2`,
+`material_est_double_sided` checks that intent, `material_depth_enabled` checks
+depth-test and depth-write policy, and `material_valid` rejects empty names and
+out-of-range material scalars. The pipeline reflection for culling, depth target
+format, depth compare, and color target format remains Radix-owned.
+
 ## Scene And Resource Facts
 
 `triga/src/scene.fab` provides stable logical identity through

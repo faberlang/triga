@@ -24,6 +24,9 @@ the first visible Faber-authored indexed 3D application.
 - Triga math: `triga/src/triga.fab` and transform exemplar. It now includes
   perspective projection and look-at view matrix helpers for the crossover
   camera.
+- Triga material: `triga/src/triga.fab` and basics exemplar. It includes a
+  validated material constructor, depth-policy check, and double-sided material
+  helper.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
   validated colored indexed triangle constructor for position/color payloads.
 - Application root: `examples/hello-voxel/` created by HV-03.
@@ -35,8 +38,8 @@ the first visible Faber-authored indexed 3D application.
 
 ### HV-04A - Reusable Triga Prerequisites
 
-**Output**: only missing generic matrix/camera/geometry helpers with focused
-Triga exempla.
+**Output**: only missing generic matrix/camera/material/geometry helpers with
+focused Triga exempla.
 **Write scope**: `triga/src/` and `triga/exempla/`.
 **Gate**: helpers compile and emit through existing Triga checks; no cube-specific
 state enters Triga.
