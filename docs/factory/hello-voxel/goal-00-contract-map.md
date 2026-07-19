@@ -115,8 +115,8 @@ application and host facts.
 `triga/src/triga.fab` defines `Matrix4` as `lista<f32>` and states that
 elements are column-major and multiply column vectors. It provides identity,
 translation, scale, composition, multiplication, point application, transpose,
-and affine inverse helpers. It also provides min-size and center-size `Box3`
-construction, point and box containment, `Box3` overlap extents for
+and affine inverse helpers. It also provides min-max, min-size, and center-size
+`Box3` construction, point and box containment, `Box3` overlap extents for
 axis-ordered collision fixtures, `Box3` union for aggregate chunk or selection
 bounds, `Box3` inflation for source-owned selection and collision tolerances,
 camera yaw/pitch ray construction, yaw-derived horizontal movement basis

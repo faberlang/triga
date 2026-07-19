@@ -105,6 +105,14 @@ incipit {
         max = triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
     }
     adfirma triga.box3_validum(bounds), "box validates ordered extents"
+    fixum triga.Box3 ∪ nihil minmax_bounds ← triga.box3_ex_minimo_et_maximo(
+        triga.vector3(-2.0 ∷ f32, -3.0 ∷ f32, -4.0 ∷ f32),
+        triga.vector3(2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32)
+    )
+    adfirma minmax_bounds non est nihil
+        et minmax_bounds!.min.y ≡ (-3.0 ∷ f32)
+        et minmax_bounds!.max.z ≡ (4.0 ∷ f32),
+        "min-max box construction preserves explicit extents"
     fixum triga.Vector3 ∪ nihil bounds_size ← triga.box3_mensura(bounds)
     adfirma bounds_size non est nihil et bounds_size!.x ≡ (2.0 ∷ f32),
         "box size derives from min and max"
@@ -182,6 +190,8 @@ incipit {
     }
     adfirma triga.box3_validum(invalid_bounds) ≡ falsum,
         "box rejects inverted x extent"
+    adfirma triga.box3_ex_minimo_et_maximo(invalid_bounds.min, invalid_bounds.max) est nihil,
+        "min-max box construction rejects inverted extents"
     adfirma triga.box3_intersecat(invalid_bounds, bounds) ≡ falsum,
         "invalid boxes do not intersect"
     adfirma triga.box3_superpositio(invalid_bounds, bounds) est nihil,

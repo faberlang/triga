@@ -556,6 +556,12 @@ functio box3_validum(de Box3 bounds) → bivalens {
         bounds.min.z ≤ bounds.max.z
 }
 
+functio box3_ex_minimo_et_maximo(de Vector3 minimum, de Vector3 maximum) → Box3 ∪ nihil {
+    fixum Box3 bounds ← Box3 { min = minimum, max = maximum }
+    si box3_validum(bounds) ≡ falsum ergo redde nihil
+    redde bounds
+}
+
 functio box3_ex_minimo_et_mensura(
     de Vector3 minimum,
     de Vector3 size
