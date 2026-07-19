@@ -133,13 +133,15 @@ transitions. `resource_transition_unchanged_indices` and
 resource indices and generations for identity-preservation assertions.
 `scene_set_visible`,
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
-`scene_visible_mesh_resources`, `scene_mesh_world_matrix`, and
-`scene_effective_visible` define source-level visibility filtering and mesh
-transform access without host renderer policy. Goal 05 can use that contract
-for visible chunk draw filtering, renderable mesh resource extraction, and
-world-matrix lookup. The scene store does not define
-voxel storage, dirty chunk sets, or GPU lifetime policy. Those remain
-application and host facts.
+`scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,
+`scene_visible_mesh_geometry_handles`, `scene_visible_mesh_material_handles`,
+`scene_mesh_world_matrix`, and `scene_effective_visible` define source-level
+visibility filtering, renderable resource projection, and mesh transform access
+without host renderer policy. Goal 05 can use that contract for visible chunk
+draw filtering, resource-pair count evidence, geometry/material handle
+projection, and world-matrix lookup. The scene store does not define voxel
+storage, dirty chunk sets, or GPU lifetime policy. Those remain application and
+host facts.
 
 ## Matrix Facts
 

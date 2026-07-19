@@ -72,6 +72,11 @@ genus SceneMeshResourceTraversal {
     numerus remaining
 }
 
+genus ResourceHandleTraversal {
+    lista<ResourceHandle> handles
+    numerus remaining
+}
+
 functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
 }
@@ -674,6 +679,105 @@ functio scene_visible_mesh_resources(
         )
     si traversal est nihil ergo redde nihil
     redde traversal!.resources
+}
+
+functio scene_visible_mesh_resource_pair_count(
+    de SceneStore store,
+    de SceneHandle root
+) → numerus ∪ nihil {
+    redde scene_visible_mesh_count(store, root)
+}
+
+functio _scene_visible_mesh_resource_handles_preorder(
+    de SceneStore store,
+    de SceneHandle handle,
+    lista<ResourceHandle> handles,
+    lista<SceneHandle> seen,
+    numerus remaining,
+    bivalens parent_visible,
+    bivalens geometry_handles
+) → ResourceHandleTraversal ∪ nihil {
+    si remaining ≡ 0 ergo redde nihil
+    si _scene_traversal_contains(seen, handle) ergo redde nihil
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    fixum bivalens effective_visible ← parent_visible et node.visible
+    varia lista<SceneHandle> updated_seen ← seen
+    updated_seen.appende(SceneHandle { index = handle.index, generation = handle.generation })
+    varia lista<ResourceHandle> updated_handles ← handles
+    si effective_visible {
+        discerne node.kind {
+            casu SceneMesh fixum geometry, material {
+                si geometry_handles {
+                    updated_handles.appende(ResourceHandle {
+                        index = geometry.index, generation = geometry.generation
+                    })
+                } secus {
+                    updated_handles.appende(ResourceHandle {
+                        index = material.index, generation = material.generation
+                    })
+                }
+            }
+            casu SceneGroup { }
+            casu SceneCamera { }
+            casu SceneLight { }
+        }
+    }
+    varia ResourceHandleTraversal traversal ← ResourceHandleTraversal {
+        handles = updated_handles, remaining = remaining - 1
+    }
+    varia numerus i ← 0
+    dum i < node.children.longitudo() {
+        fixum ResourceHandleTraversal ∪ nihil current ←
+            _scene_visible_mesh_resource_handles_preorder(
+                store, node.children[i], traversal.handles, updated_seen,
+                traversal.remaining, effective_visible, geometry_handles
+            )
+        si current est nihil ergo redde nihil
+        fixum ResourceHandleTraversal current_value ← ResourceHandleTraversal {
+            handles = current!.handles, remaining = current!.remaining
+        }
+        traversal ← ResourceHandleTraversal {
+            handles = current_value.handles, remaining = current_value.remaining
+        }
+        updated_seen.appende(SceneHandle {
+            index = node.children[i].index,
+            generation = node.children[i].generation
+        })
+        i ← i + 1
+    }
+    redde traversal
+}
+
+functio scene_visible_mesh_geometry_handles(
+    de SceneStore store,
+    de SceneHandle root
+) → lista<ResourceHandle> ∪ nihil {
+    fixum ResourceHandleTraversal ∪ nihil traversal ←
+        _scene_visible_mesh_resource_handles_preorder(
+            store, root, vacua, vacua, store.slots.longitudo(), verum, verum
+        )
+    si traversal est nihil ergo redde nihil
+    redde traversal!.handles
+}
+
+functio scene_visible_mesh_material_handles(
+    de SceneStore store,
+    de SceneHandle root
+) → lista<ResourceHandle> ∪ nihil {
+    fixum ResourceHandleTraversal ∪ nihil traversal ←
+        _scene_visible_mesh_resource_handles_preorder(
+            store, root, vacua, vacua, store.slots.longitudo(), verum, falsum
+        )
+    si traversal est nihil ergo redde nihil
+    redde traversal!.handles
 }
 
 functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {

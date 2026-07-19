@@ -226,6 +226,12 @@ incipit {
     )
     fixum lista<scene.SceneMeshResources> ∪ nihil default_visible_resources ←
         scene.scene_visible_mesh_resources(attached_store, root_step.handle)
+    fixum numerus ∪ nihil default_resource_pair_count ←
+        scene.scene_visible_mesh_resource_pair_count(attached_store, root_step.handle)
+    fixum lista<scene.ResourceHandle> ∪ nihil default_geometry_handles ←
+        scene.scene_visible_mesh_geometry_handles(attached_store, root_step.handle)
+    fixum lista<scene.ResourceHandle> ∪ nihil default_material_handles ←
+        scene.scene_visible_mesh_material_handles(attached_store, root_step.handle)
     adfirma default_visible_meshes non est nihil
         et default_visible_mesh_count non est nihil
         et default_visible_resources non est nihil
@@ -233,6 +239,11 @@ incipit {
         et default_visible_meshes![0].index ≡ mesh_step.handle.index
         et default_visible_meshes![1].index ≡ shared_mesh_step.handle.index,
         "visible mesh traversal exposes renderable mesh handles in scene order"
+    adfirma default_resource_pair_count non est nihil
+        et default_geometry_handles non est nihil
+        et default_material_handles non est nihil
+        et (default_resource_pair_count vel 999) ≡ 2,
+        "visible mesh resource projections expose one pair per visible mesh"
     adfirma default_visible_resources![0].node.index ≡ mesh_step.handle.index
         et default_visible_resources![0].geometry.index ≡ geometry.index
         et default_visible_resources![0].material.index ≡ material.index
@@ -258,12 +269,20 @@ incipit {
     )
     fixum lista<scene.SceneMeshResources> ∪ nihil hidden_visible_resources ←
         scene.scene_visible_mesh_resources(shared_hidden_store, root_step.handle)
+    fixum numerus ∪ nihil hidden_resource_pair_count ←
+        scene.scene_visible_mesh_resource_pair_count(shared_hidden_store, root_step.handle)
+    fixum lista<scene.ResourceHandle> ∪ nihil hidden_geometry_handles ←
+        scene.scene_visible_mesh_geometry_handles(shared_hidden_store, root_step.handle)
     adfirma hidden_visible_meshes non est nihil
         et hidden_visible_mesh_count non est nihil
         et hidden_visible_resources non est nihil
         et (hidden_visible_mesh_count vel 999) ≡ 1
         et hidden_visible_meshes![0].index ≡ mesh_step.handle.index,
         "visible mesh traversal omits hidden mesh nodes"
+    adfirma hidden_resource_pair_count non est nihil
+        et hidden_geometry_handles non est nihil
+        et (hidden_resource_pair_count vel 999) ≡ 1,
+        "visible mesh resource projections omit hidden mesh nodes"
     adfirma hidden_visible_resources![0].node.index ≡ mesh_step.handle.index
         et hidden_visible_resources![0].geometry.index ≡ geometry.index,
         "visible mesh resources omit hidden mesh resources"
@@ -290,11 +309,18 @@ incipit {
     )
     fixum lista<scene.SceneMeshResources> ∪ nihil root_hidden_resources ←
         scene.scene_visible_mesh_resources(root_hidden_store, root_step.handle)
+    fixum numerus ∪ nihil root_hidden_resource_pair_count ←
+        scene.scene_visible_mesh_resource_pair_count(root_hidden_store, root_step.handle)
+    fixum lista<scene.ResourceHandle> ∪ nihil root_hidden_geometry_handles ←
+        scene.scene_visible_mesh_geometry_handles(root_hidden_store, root_step.handle)
     adfirma root_hidden_meshes non est nihil
         et root_hidden_mesh_count non est nihil
         et root_hidden_resources non est nihil
         et (root_hidden_mesh_count vel 999) ≡ 0,
         "visible mesh traversal respects hidden ancestors"
+    adfirma (root_hidden_resource_pair_count vel 999) ≡ 0
+        et root_hidden_geometry_handles non est nihil,
+        "hidden ancestors suppress visible mesh resource projections"
     fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }
