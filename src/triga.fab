@@ -436,6 +436,37 @@ functio radians_ex_gradibus(f32 degrees) → f32 {
     redde degrees * 0.017453292519943295
 }
 
+functio camera_pitch_coercita(f32 pitch_degrees) → f32 {
+    si pitch_degrees > 89.0 ergo redde 89.0
+    si pitch_degrees < 0.0 - 89.0 ergo redde 0.0 - 89.0
+    redde pitch_degrees
+}
+
+functio camera_directio_ex_yaw_pitch(
+    f32 yaw_degrees,
+    f32 pitch_degrees
+) → Vector3 {
+    fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
+    fixum f32 pitch ← radians_ex_gradibus(camera_pitch_coercita(pitch_degrees))
+    fixum f32 horizontal ← _cosinus_f32(pitch)
+    redde vector3_normalizata(vector3(
+        _sinus_f32(yaw) * horizontal,
+        _sinus_f32(pitch),
+        -_cosinus_f32(yaw) * horizontal
+    ))
+}
+
+functio camera_ray_ex_yaw_pitch(
+    de Vector3 origin,
+    f32 yaw_degrees,
+    f32 pitch_degrees
+) → Ray {
+    redde Ray {
+        origin = origin,
+        direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees)
+    }
+}
+
 functio euler_ad_quaternionem(de Euler rotation) → Quaternion ∪ nihil {
     si rotation.order ≠ "XYZ" ergo redde nihil
     fixum f32 hx ← rotation.x * 0.5

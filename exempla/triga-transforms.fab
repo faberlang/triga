@@ -129,6 +129,32 @@ incipit {
     }
     adfirma triga.ray_intersecat_box3(parallel_miss, shifted_bounds, 6.0 ∷ f32) est nihil,
         "parallel ray outside slab misses"
+    fixum triga.Vector3 forward_direction ← triga.camera_directio_ex_yaw_pitch(
+        0.0 ∷ f32, 0.0 ∷ f32
+    )
+    adfirma forward_direction.x.absolutum() ≤ 0.0001
+        et forward_direction.y.absolutum() ≤ 0.0001
+        et (forward_direction.z + 1.0).absolutum() ≤ 0.0001,
+        "camera yaw zero looks down negative z"
+    fixum triga.Vector3 right_direction ← triga.camera_directio_ex_yaw_pitch(
+        90.0 ∷ f32, 0.0 ∷ f32
+    )
+    adfirma (right_direction.x - 1.0).absolutum() ≤ 0.0001
+        et right_direction.z.absolutum() ≤ 0.0001,
+        "camera positive yaw turns toward positive x"
+    fixum triga.Vector3 clamped_pitch_direction ← triga.camera_directio_ex_yaw_pitch(
+        0.0 ∷ f32, 100.0 ∷ f32
+    )
+    adfirma clamped_pitch_direction.y > 0.99 et clamped_pitch_direction.y < 1.0,
+        "camera pitch clamps below vertical"
+    fixum triga.Ray camera_ray ← triga.camera_ray_ex_yaw_pitch(
+        triga.vector3(2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32),
+        0.0 ∷ f32,
+        0.0 ∷ f32
+    )
+    adfirma camera_ray.origin.y ≡ (3.0 ∷ f32)
+        et (camera_ray.direction.z + 1.0).absolutum() ≤ 0.0001,
+        "camera ray preserves origin and yaw-pitch direction"
 
     fixum triga.Color midpoint_color ← triga.color_interpolata(
         triga.Color { r = 0.0 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 },
