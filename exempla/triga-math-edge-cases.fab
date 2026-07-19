@@ -1,0 +1,124 @@
++++
+term = "triga-math-edge-cases"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Degenerate-input, boundary, and missing-negative tests for triga math."
+syntax = "importa ex \"triga:triga\" privata triga"
++++
+
+# exempla/triga-math-edge-cases — degenerate inputs, camera_view_projection,
+# and missing negative tests for color_valid.
+
+importa ex "triga:triga" privata triga
+
+incipit {
+    # Vector3 projecta with zero-length axis
+    fixum triga.Vector3 projected_point ← triga.vector3(1.0∷f32, 2.0∷f32, 3.0∷f32)
+    fixum triga.Vector3 zero_axis ← triga.vector3(0.0∷f32, 0.0∷f32, 0.0∷f32)
+    fixum triga.Vector3 projected ← triga.vector3_projecta(projected_point, zero_axis)
+    adfirma projected.x ≡ (0.0 ∷ f32)
+        et projected.y ≡ (0.0 ∷ f32)
+        et projected.z ≡ (0.0 ∷ f32),
+        "vector3_projecta returns zero vector for zero-length axis"
+
+    # Quaternion normalizata with all-zero quaternion
+    fixum triga.Quaternion zero_q ← triga.quaternion(0.0∷f32, 0.0∷f32, 0.0∷f32, 0.0∷f32)
+    fixum triga.Quaternion normalized_zero_q ← triga.quaternion_normalizata(zero_q)
+    adfirma normalized_zero_q.x ≡ (0.0 ∷ f32)
+        et normalized_zero_q.y ≡ (0.0 ∷ f32)
+        et normalized_zero_q.z ≡ (0.0 ∷ f32)
+        et normalized_zero_q.w ≡ (1.0 ∷ f32),
+        "quaternion_normalizata returns identity for degenerate zero input"
+
+    # Vector3 normalizata with all-zero input
+    fixum triga.Vector3 all_zero ← triga.vector3(0.0∷f32, 0.0∷f32, 0.0∷f32)
+    fixum triga.Vector3 zero_normalized ← triga.vector3_normalizata(all_zero)
+    adfirma zero_normalized.x ≡ (0.0 ∷ f32)
+        et zero_normalized.y ≡ (0.0 ∷ f32)
+        et zero_normalized.z ≡ (0.0 ∷ f32),
+        "vector3_normalizata returns zero for zero-length vector"
+
+    # Color valid with g and b out of range
+    fixum triga.Color bad_g ← triga.Color {
+        r = 0.5 ∷ f32, g = 0.0 ∷ f32 - 0.1, b = 0.0 ∷ f32
+    }
+    adfirma triga.color_valid(bad_g) ≡ falsum,
+        "color_valid rejects negative g component"
+    fixum triga.Color bad_high_g ← triga.Color {
+        r = 0.5 ∷ f32, g = 1.0 ∷ f32 + 0.1, b = 0.0 ∷ f32
+    }
+    adfirma triga.color_valid(bad_high_g) ≡ falsum,
+        "color_valid rejects g > 1.0"
+    fixum triga.Color bad_b ← triga.Color {
+        r = 0.5 ∷ f32, g = 0.5 ∷ f32, b = 0.0 ∷ f32 - 0.1
+    }
+    adfirma triga.color_valid(bad_b) ≡ falsum,
+        "color_valid rejects negative b component"
+    fixum triga.Color bad_high_b ← triga.Color {
+        r = 0.5 ∷ f32, g = 0.5 ∷ f32, b = 1.0 ∷ f32 + 0.1
+    }
+    adfirma triga.color_valid(bad_high_b) ≡ falsum,
+        "color_valid rejects b > 1.0"
+
+    # Ray intersect box3 with max_distance < 0
+    fixum triga.Box3 box ← triga.Box3 {
+        min = triga.vector3(-1.0∷f32, -1.0∷f32, -1.0∷f32),
+        max = triga.vector3(1.0∷f32, 1.0∷f32, 1.0∷f32)
+    }
+    fixum triga.Ray ray ← triga.Ray {
+        origin = triga.vector3(-3.0∷f32, 0.0∷f32, 0.0∷f32),
+        direction = triga.vector3(1.0∷f32, 0.0∷f32, 0.0∷f32)
+    }
+    fixum _ negative_hit ← triga.ray_intersecat_box3(ray, box, 0.0 ∷ f32 - 1.0)
+    adfirma negative_hit est nihil,
+        "ray_intersecat_box3 rejects negative max_distance"
+    adfirma triga.ray_box3_hit(ray, box, 0.0 ∷ f32 - 1.0) est nihil,
+        "ray_box3_hit rejects negative max_distance"
+
+    # Camera motus planus ex yaw with negative speed
+    fixum triga.Vector3 negative_speed_motion ← triga.camera_motus_planus_ex_yaw(
+        0.0∷f32, 1.0∷f32, 0.0∷f32, 0.0 ∷ f32 - 1.0, 1.0∷f32
+    )
+    adfirma triga.vector3_longitudo(negative_speed_motion) ≡ (0.0 ∷ f32),
+        "camera_motus_planus_ex_yaw returns zero for negative speed"
+
+    # Camera motus planus ex yaw with negative delta seconds
+    fixum triga.Vector3 negative_delta ← triga.camera_motus_planus_ex_yaw(
+        0.0∷f32, 1.0∷f32, 0.0∷f32, 1.0∷f32, 0.0 ∷ f32 - 1.0
+    )
+    adfirma triga.vector3_longitudo(negative_delta) ≡ (0.0 ∷ f32),
+        "camera_motus_planus_ex_yaw returns zero for negative delta_seconds"
+
+    # Camera pitch coercita at boundaries
+    adfirma triga.camera_pitch_coercita(89.0 ∷ f32) ≡ (89.0 ∷ f32),
+        "camera_pitch_coercita preserves 89.0 exactly"
+    adfirma triga.camera_pitch_coercita(0.0 ∷ f32) ≡ (0.0 ∷ f32),
+        "camera_pitch_coercita preserves zero"
+
+    # Camera view projection (moved to end to isolate compilation)
+    fixum triga.Object3D cam_base ← triga.Object3D {
+        position = triga.vector3(0.0∷f32, 0.0∷f32, 5.0∷f32),
+        rotation = triga.Euler{x = 0.0, y = 0.0, z = 0.0, order = "XYZ"},
+        quaternion = triga.Quaternion{x = 0.0, y = 0.0, z = 0.0, w = 1.0},
+        scale = triga.vector3(1.0∷f32, 1.0∷f32, 1.0∷f32),
+        matrix = triga.matrix4_identitas(),
+        children = vacua, visible = verum, name = "cam"
+    }
+    fixum triga.PerspectiveCamera test_camera ← triga.PerspectiveCamera {
+        base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0
+    }
+    fixum triga.Vector3 cam_eye ← triga.vector3(0.0∷f32, 0.0∷f32, 5.0∷f32)
+    fixum triga.Vector3 cam_target ← triga.vector3(0.0∷f32, 0.0∷f32, 0.0∷f32)
+    fixum triga.Vector3 cam_up ← triga.vector3(0.0∷f32, 1.0∷f32, 0.0∷f32)
+    fixum triga.Matrix4 ∪ nihil view_proj ← triga.camera_view_projection(
+        test_camera, cam_eye, cam_target, cam_up
+    )
+    adfirma view_proj non est nihil,
+        "camera_view_projection composes valid perspective and view matrices"
+    fixum triga.ViewProjectionFacts ∪ nihil vp_facts ← triga.camera_view_projection_facts(
+        test_camera, cam_eye, cam_target, cam_up
+    )
+    adfirma vp_facts non est nihil,
+        "camera_view_projection_facts produces valid facts"
+}
