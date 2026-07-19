@@ -51,6 +51,16 @@ incipit {
     fixum triga.Material base_material ← triga.material("hello-voxel")
     adfirma triga.material_valid(base_material),
         "material constructor creates valid material state"
+    fixum triga.Color valid_color ← triga.Color {
+        r = 1.0 ∷ f32, g = 0.0 ∷ f32, b = 0.5 ∷ f32
+    }
+    adfirma triga.color_valid(valid_color),
+        "color validation accepts normalized rgb values"
+    fixum triga.Color invalid_color ← triga.Color {
+        r = 1.1 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32
+    }
+    adfirma triga.color_valid(invalid_color) ≡ falsum,
+        "color validation rejects out-of-range rgb values"
     adfirma (triga.material_side_code(base_material) vel 99) ≡ 0,
         "material constructor records front-side culling intent"
     adfirma triga.material_depth_enabled(base_material),
@@ -72,24 +82,44 @@ incipit {
     adfirma triga.material_depth_write_enabled(double_sided),
         "double-sided material preserves depth writes"
 
+    fixum triga.Color unlit_color ← triga.Color {
+        r = 1.0 ∷ f32, g = 0.5 ∷ f32, b = 0.0 ∷ f32
+    }
     fixum triga.MeshBasicMaterial ∪ nihil unlit ← triga.mesh_basic_material(
-        "hello-voxel-unlit",
-        triga.Color { r = 1.0 ∷ f32, g = 0.5 ∷ f32, b = 0.0 ∷ f32 }
+        "hello-voxel-unlit", unlit_color
     )
     adfirma unlit non est nihil,
         "mesh basic material constructor accepts named color material"
-    adfirma triga.material_valid(unlit!.base),
+    fixum triga.MeshBasicMaterial unlit_value ← triga.MeshBasicMaterial {
+        base = unlit!.base,
+        color = unlit!.color
+    }
+    adfirma triga.material_valid(unlit_value.base),
         "mesh basic material preserves valid base material state"
-    adfirma triga.material_depth_enabled(unlit!.base),
+    adfirma triga.material_depth_enabled(unlit_value.base),
         "mesh basic material preserves opaque depth policy"
-    adfirma triga.material_depth_test_enabled(unlit!.base),
+    adfirma triga.material_depth_test_enabled(unlit_value.base),
         "mesh basic material exposes depth testing"
-    adfirma triga.material_depth_write_enabled(unlit!.base),
+    adfirma triga.material_depth_write_enabled(unlit_value.base),
         "mesh basic material exposes depth writes"
-    adfirma unlit!.color.g ≡ (0.5 ∷ f32),
+    adfirma unlit_value.color.g ≡ (0.5 ∷ f32),
         "mesh basic material records unlit color intent"
+    adfirma (triga.mesh_basic_material_color_r(unlit_value) vel 0.0) ≡ (1.0 ∷ f32)
+        et (triga.mesh_basic_material_color_g(unlit_value) vel 0.0) ≡ (0.5 ∷ f32)
+        et (triga.mesh_basic_material_color_b(unlit_value) vel 1.0) ≡ (0.0 ∷ f32),
+        "mesh basic material exposes validated rgb projections"
+    adfirma (triga.mesh_basic_material_alpha(unlit_value) vel 0.0) ≡ (1.0 ∷ f32),
+        "mesh basic material exposes opaque alpha"
     adfirma triga.mesh_basic_material("", triga.Color { r = 1.0, g = 1.0, b = 1.0 }) est nihil,
         "mesh basic material rejects invalid base material"
+    fixum triga.MeshBasicMaterial invalid_color_material ← triga.MeshBasicMaterial {
+        base = base_material,
+        color = triga.Color { r = -0.1 ∷ f32, g = 0.0 ∷ f32, b = 0.0 ∷ f32 }
+    }
+    adfirma triga.mesh_basic_material_valid(invalid_color_material) ≡ falsum,
+        "mesh basic material rejects invalid color"
+    adfirma triga.mesh_basic_material_color_r(invalid_color_material) est nihil,
+        "invalid mesh basic material rejects color projection"
 
     fixum triga.Material invalid ← triga.material("")
     adfirma triga.material_valid(invalid) ≡ falsum,

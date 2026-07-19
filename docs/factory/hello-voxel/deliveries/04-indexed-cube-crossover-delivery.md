@@ -27,7 +27,8 @@ the first visible Faber-authored indexed 3D application.
 - Triga material: `triga/src/triga.fab` and basics exemplar. It includes a
   validated material constructor, side-code projection, combined and per-flag
   depth-policy checks, double-sided material helper, and minimal unlit
-  `MeshBasicMaterial` constructor for source-owned cube material intent.
+  `MeshBasicMaterial` constructor with validated RGB and alpha projections for
+  source-owned cube material intent.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
   validated colored indexed constructor for position/color payloads and
   explicit layout facts for count, source name, format, stride, and vertex step

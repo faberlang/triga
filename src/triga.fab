@@ -253,6 +253,13 @@ functio material_valid(de Material value) → bivalens {
     redde verum
 }
 
+functio color_valid(de Color value) → bivalens {
+    si value.r < 0.0 aut value.r > 1.0 ergo redde falsum
+    si value.g < 0.0 aut value.g > 1.0 ergo redde falsum
+    si value.b < 0.0 aut value.b > 1.0 ergo redde falsum
+    redde verum
+}
+
 functio material_double_sided(de Material value) → Material {
     redde Material {
         name = value.name,
@@ -293,7 +300,27 @@ functio mesh_basic_material(textus name, de Color color) → MeshBasicMaterial �
 }
 
 functio mesh_basic_material_valid(de MeshBasicMaterial value) → bivalens {
-    redde material_valid(value.base)
+    redde material_valid(value.base) et color_valid(value.color)
+}
+
+functio mesh_basic_material_color_r(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
+    redde value.color.r
+}
+
+functio mesh_basic_material_color_g(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
+    redde value.color.g
+}
+
+functio mesh_basic_material_color_b(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
+    redde value.color.b
+}
+
+functio mesh_basic_material_alpha(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
+    redde value.base.opacity
 }
 
 # =========================================================================

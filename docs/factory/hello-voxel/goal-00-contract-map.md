@@ -114,9 +114,13 @@ records disabled face culling intent through `side = 2`,
 the combined depth-test and depth-write policy, `material_depth_test_enabled`
 and `material_depth_write_enabled` expose each depth flag for pipeline
 reflection, `mesh_basic_material` records minimal unlit color material intent,
-and `material_valid` plus `mesh_basic_material_valid` reject invalid base
-material state. The pipeline reflection for culling, depth target format, depth
-compare, and color target format remains Radix-owned.
+`color_valid` rejects invalid normalized RGB values, and
+`mesh_basic_material_color_r`, `mesh_basic_material_color_g`,
+`mesh_basic_material_color_b`, and `mesh_basic_material_alpha` expose validated
+fragment color and alpha facts. `material_valid` plus
+`mesh_basic_material_valid` reject invalid base material or color state. The
+pipeline reflection for culling, depth target format, depth compare, and color
+target format remains Radix-owned.
 
 ## Scene And Resource Facts
 

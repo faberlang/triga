@@ -171,7 +171,7 @@ reflection consumer admits compute kernels only.
 | Triga math and transforms | Camera, ray, AABB, collision extent, and first-person planar movement facts are locked | Preserve and consume |
 | Triga scene identity | Stable scene-store source, resource transitions, and lifecycle-state fixtures exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
 | Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, and count facts are locked | Preserve and consume |
-| Triga material policy | Opaque material, side, depth-test, and depth-write facts are locked | Preserve and consume |
+| Triga material policy | Opaque material, side, depth-test, depth-write, RGB, and alpha facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
 | Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; frame/input lifecycle is missing | Extend through Goal 03 |
@@ -192,7 +192,8 @@ browser fact required by the first indexed draw.
 **Batching**: discovery-first
 **Progress**: Triga-side executable-truth inventory is complete. Geometry now
 locks first-draw layout, topology, index format, vertex-step mode, draw, and
-count facts. Material policy now locks side, depth-test, and depth-write facts.
+count facts. Material policy now locks side, depth-test, depth-write, RGB, and
+alpha facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
 Ray/AABB hit facts now lock face codes and integer face offsets for edit
 placement derivation.

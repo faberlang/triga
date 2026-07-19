@@ -31,7 +31,8 @@ contract while preserving compute behavior.
 - Source vertex scaffold: `driver/mod.rs::emit_wgsl_vertex_source_output`.
 - WGSL contract: `mir/wgsl_text.rs` and `mir/wgsl_text_test.rs`.
 - JSON: `tool/commands/reflection.rs` and `tool_test.rs`.
-- Triga agreement: `triga/src/geometry.fab` and Stage 4 source-fact exemplar.
+- Triga agreement: `triga/src/geometry.fab` for vertex layout facts and
+  `triga/src/triga.fab` for validated material RGB/alpha facts.
 
 ## Stage Graph
 
