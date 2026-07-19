@@ -169,8 +169,8 @@ reflection consumer admits compute kernels only.
 | Track | State | Next action |
 | --- | --- | --- |
 | Triga math and transforms | Camera, ray, AABB, transform payload, collision extent, first-person planar movement, and indexed-cube view-projection facts are locked | Preserve and consume |
-| Triga scene identity | Stable scene-store source, resource transitions, lifecycle-state fixtures, visible draw packets, and draw-batch facts exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
-| Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, indexed draw batch, visible-face accounting, and colored quad append facts are locked | Preserve and consume |
+| Triga scene identity | Stable scene-store source, resource transitions, lifecycle-state fixtures, changed/removed lifecycle handles, visible draw packets, and draw-batch facts exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
+| Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, indexed draw batch, visible-face accounting, colored quad append, colored quad finalization, and colored mesh fact records are locked | Preserve and consume |
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
@@ -191,12 +191,13 @@ browser fact required by the first indexed draw.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: discovery-first
 **Progress**: Triga-side executable-truth inventory is complete. No remaining
-Triga-owned Goal 00 source gap is known. Geometry now
-locks first-draw layout, topology, index format, vertex-step mode, draw, and
-count facts plus reusable indexed draw batch and visible-face mesh fact records
-for chunk meshing. Geometry also exposes a renderer-generic colored quad append
-contract so Goal 05 meshing can append face vertices, repeated RGB values, and
-base-relative `u32` indices without duplicating that buffer pattern in each
+Triga-owned Goal 00 source gap is known. Geometry now locks first-draw layout,
+topology, index format, vertex-step mode, draw, and count facts plus reusable
+indexed draw batch and visible-face mesh fact records for chunk meshing.
+Geometry also exposes renderer-generic colored quad append, finalization,
+face-count, and mesh-fact contracts so Goal 05 meshing can append face
+vertices, repeated RGB values, base-relative `u32` indices, and validated
+position/color indexed geometry without duplicating that buffer pattern in each
 application mesher.
 Material policy now locks side, depth-test, depth-write, transparency, RGB,
 alpha, alpha-test, and reusable pipeline fact records.
@@ -208,9 +209,10 @@ Face-code facts now lock ray/AABB hit codes, normal vectors, integer face
 offsets, direction colors, and axis/opposite-face metadata for meshing,
 selection, and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
-single-resource lifecycle states plus batch live/current-handle evidence for
-empty and non-empty chunk remeshes. Visible mesh transform-payload facts now
-lock one 128-byte model/view-projection upload per effectively visible mesh.
+single-resource lifecycle states plus batch changed, removed, live, and current
+handle evidence for empty and non-empty chunk remeshes. Visible mesh
+transform-payload facts now lock one 128-byte model/view-projection upload per
+effectively visible mesh.
 Visible mesh draw packets now lock one source-owned node/resource/transform
 packet per effectively visible mesh plus batch facts that tie visible packet
 count to transform upload bytes.
