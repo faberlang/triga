@@ -100,6 +100,21 @@ incipit {
     adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4
         et plane_result!.indices.longitudo() ≡ 6,
         "plane primitive has deterministic vertex and index counts"
+    fixum geometry.BufferGeometry plane ← geometry.BufferGeometry {
+        topology = plane_result!.topology,
+        vertex_count = plane_result!.vertex_count,
+        attributes = plane_result!.attributes,
+        indexed = plane_result!.indexed,
+        indices = plane_result!.indices,
+        draw_range = plane_result!.draw_range,
+        groups = plane_result!.groups
+    }
+    fixum numerus ∪ nihil plane_triangles ← geometry.geometry_triangle_count(plane)
+    adfirma plane_triangles non est nihil,
+        "plane primitive exposes deterministic triangle count"
+    fixum numerus plane_triangle_count ← plane_triangles vel 0
+    adfirma plane_triangle_count ≡ 2,
+        "plane primitive has two triangles"
     adfirma plane_result!.attributes.longitudo() ≡ 3,
         "plane primitive provides positions, normals, and UVs"
 
@@ -154,6 +169,21 @@ incipit {
     adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
         et box_result!.indices.longitudo() ≡ 36,
         "box primitive preserves per-face normals and UV seams"
+    fixum geometry.BufferGeometry box ← geometry.BufferGeometry {
+        topology = box_result!.topology,
+        vertex_count = box_result!.vertex_count,
+        attributes = box_result!.attributes,
+        indexed = box_result!.indexed,
+        indices = box_result!.indices,
+        draw_range = box_result!.draw_range,
+        groups = box_result!.groups
+    }
+    fixum numerus ∪ nihil box_triangles ← geometry.geometry_triangle_count(box)
+    adfirma box_triangles non est nihil,
+        "box primitive exposes deterministic triangle count"
+    fixum numerus box_triangle_count ← box_triangles vel 0
+    adfirma box_triangle_count ≡ 12,
+        "box primitive has twelve triangles"
     adfirma box_result!.groups.longitudo() ≡ 1 et box_result!.groups[0].count ≡ 36,
         "box primitive exposes a complete deterministic draw group"
     adfirma box_result!.attributes.longitudo() ≡ 3,
@@ -201,6 +231,8 @@ incipit {
     )
     adfirma geometry.geometry_valid(partial_triangle_draw_range) ≡ falsum,
         "triangle draw ranges must select complete primitives"
+    adfirma geometry.geometry_triangle_count(partial_triangle_draw_range) est nihil,
+        "triangle count rejects invalid geometry"
     fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
         3, [positions], [0, 1, 2],
         geometry.DrawRange { start = 0, count = 3 },

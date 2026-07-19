@@ -59,6 +59,12 @@ incipit {
         "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
     adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,
         "Hello Voxel first draw covers the full indexed cube range"
+    fixum numerus ∪ nihil cube_triangles ← geometry.geometry_triangle_count(cube)
+    adfirma cube_triangles non est nihil,
+        "Hello Voxel first draw locks twelve indexed triangles"
+    fixum numerus cube_triangle_count ← cube_triangles vel 0
+    adfirma cube_triangle_count ≡ 12,
+        "Hello Voxel first draw has twelve triangles"
     adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12),
         "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
     adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12),

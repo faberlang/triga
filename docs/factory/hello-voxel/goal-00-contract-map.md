@@ -50,6 +50,8 @@ Triga already provides the source-owned geometry data needed by the first draw:
   indices and a `DrawRange`.
 - `colored_indexed_triangle_geometry` records the Goal 01 position/color
   layout shape and returns `nihil` if the geometry does not validate.
+- `geometry_triangle_count` exposes valid triangle element counts and returns
+  `nihil` for invalid or non-triangle geometry.
 - `geometry_valid` rejects malformed attributes, duplicate names, duplicate
   shader locations, out-of-range indices, and partial triangle draw ranges.
 - `geometry_vertex_layouts` converts valid geometry into layout records.
