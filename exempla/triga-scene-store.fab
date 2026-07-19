@@ -12,6 +12,14 @@ importa ex "triga:triga" privata triga
 incipit {
     fixum scene.ResourceHandle geometry ← scene.ResourceHandle { index = 7, generation = 2 }
     fixum scene.ResourceHandle material ← scene.ResourceHandle { index = 3, generation = 1 }
+    fixum scene.ResourceHandle geometry_next ← scene.resource_handle_next(geometry)
+    adfirma scene.resource_handle_equals(geometry, geometry),
+        "resource identity equals the same index and generation"
+    adfirma scene.resource_handle_equals(geometry, geometry_next) ≡ falsum,
+        "resource identity changes when generation advances"
+    adfirma geometry_next.index ≡ geometry.index et
+        geometry_next.generation ≡ geometry.generation + 1,
+        "resource next generation preserves logical index"
     fixum scene.SceneInsert root_step ← scene.scene_insert(
         scene.scene_store(), scene.scene_group("root")
     )

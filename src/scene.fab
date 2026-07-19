@@ -53,6 +53,14 @@ functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
 }
 
+functio resource_handle_equals(de ResourceHandle a, de ResourceHandle b) → bivalens {
+    redde a.index ≡ b.index et a.generation ≡ b.generation
+}
+
+functio resource_handle_next(de ResourceHandle handle) → ResourceHandle {
+    redde ResourceHandle { index = handle.index, generation = handle.generation + 1 }
+}
+
 functio scene_store() → SceneStore {
     redde SceneStore { slots = vacua }
 }

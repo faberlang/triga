@@ -25,6 +25,8 @@ GPU buffer replacement, queue-safe retirement, and bounded lifecycle evidence.
 - Voxel model and mesher: `examples/hello-voxel/src/voxel.fab` and
   `meshing.fab` after HV-05.
 - Edit behavior: `application.fab` after HV-06.
+- Triga scene identity provides `ResourceHandle`, `resource_handle_equals`, and
+  `resource_handle_next` for logical resource identity and generation advance.
 - Host buffer creation/submission: Radix browser WebGPU runtime after HV-02.
 - Existing compute runtime already owns buffer usage and queue submission; its
   semantics are evidence, not permission to duplicate graphics lifecycle code.

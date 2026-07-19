@@ -66,9 +66,10 @@ range.
 
 `triga/src/scene.fab` provides stable logical identity through
 `SceneHandle` and `ResourceHandle`. Each handle has an index and generation.
-Goal 07 can use this pattern for chunk mesh resource generations. The scene
-store does not define voxel storage, dirty chunk sets, or GPU lifetime policy.
-Those remain application and host facts.
+`resource_handle_equals` and `resource_handle_next` define logical identity and
+derived-resource generation advance. Goal 07 can use this pattern for chunk mesh
+resource generations. The scene store does not define voxel storage, dirty chunk
+sets, or GPU lifetime policy. Those remain application and host facts.
 
 ## Matrix Facts
 
