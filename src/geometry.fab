@@ -586,6 +586,56 @@ functio geometry_group_element_total(de BufferGeometry geometry) → numerus ∪
     redde total
 }
 
+functio visible_face_vertex_count(numerus face_count) → numerus ∪ nihil {
+    si face_count ≤ 0 ergo redde nihil
+    redde face_count * 4
+}
+
+functio visible_face_index_count(numerus face_count) → numerus ∪ nihil {
+    si face_count ≤ 0 ergo redde nihil
+    redde face_count * 6
+}
+
+functio visible_face_triangle_count(numerus face_count) → numerus ∪ nihil {
+    si face_count ≤ 0 ergo redde nihil
+    redde face_count * 2
+}
+
+functio visible_face_position_payload_byte_count(numerus face_count) → numerus ∪ nihil {
+    fixum numerus ∪ nihil vertex_count_result ← visible_face_vertex_count(face_count)
+    si vertex_count_result est nihil ergo redde nihil
+    fixum numerus vertex_count ← vertex_count_result vel 0
+    redde vertex_count * 3 * 4
+}
+
+functio visible_face_color_payload_byte_count(numerus face_count) → numerus ∪ nihil {
+    fixum numerus ∪ nihil vertex_count_result ← visible_face_vertex_count(face_count)
+    si vertex_count_result est nihil ergo redde nihil
+    fixum numerus vertex_count ← vertex_count_result vel 0
+    redde vertex_count * 3 * 4
+}
+
+functio visible_face_index_payload_byte_count(numerus face_count) → numerus ∪ nihil {
+    fixum numerus ∪ nihil index_count_result ← visible_face_index_count(face_count)
+    si index_count_result est nihil ergo redde nihil
+    fixum numerus index_count ← index_count_result vel 0
+    redde index_count * 4
+}
+
+functio visible_face_payload_byte_count(numerus face_count) → numerus ∪ nihil {
+    fixum numerus ∪ nihil position_bytes_result ←
+        visible_face_position_payload_byte_count(face_count)
+    si position_bytes_result est nihil ergo redde nihil
+    fixum numerus position_bytes ← position_bytes_result vel 0
+    fixum numerus ∪ nihil color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    si color_bytes_result est nihil ergo redde nihil
+    fixum numerus color_bytes ← color_bytes_result vel 0
+    fixum numerus ∪ nihil index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    si index_bytes_result est nihil ergo redde nihil
+    fixum numerus index_bytes ← index_bytes_result vel 0
+    redde position_bytes + color_bytes + index_bytes
+}
+
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     discerne geometry.topology {

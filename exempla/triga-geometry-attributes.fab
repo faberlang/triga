@@ -36,6 +36,26 @@ incipit {
     fixum numerus triangle_group_elements ← geometry.geometry_group_element_total(triangle) vel 0
     adfirma triangle_group_elements ≡ 3,
         "valid geometry exposes source-owned grouped element total"
+    adfirma (geometry.visible_face_vertex_count(1) vel 0) ≡ 4,
+        "one visible quad face accounts for four vertices"
+    adfirma (geometry.visible_face_index_count(1) vel 0) ≡ 6,
+        "one visible quad face accounts for six indices"
+    adfirma (geometry.visible_face_triangle_count(1) vel 0) ≡ 2,
+        "one visible quad face accounts for two triangles"
+    adfirma (geometry.visible_face_vertex_count(6) vel 0) ≡ 24,
+        "six visible quad faces account for twenty-four vertices"
+    adfirma (geometry.visible_face_index_count(6) vel 0) ≡ 36,
+        "six visible quad faces account for thirty-six indices"
+    adfirma (geometry.visible_face_position_payload_byte_count(6) vel 0) ≡ 288,
+        "visible faces expose position payload bytes"
+    adfirma (geometry.visible_face_color_payload_byte_count(6) vel 0) ≡ 288,
+        "visible faces expose color payload bytes"
+    adfirma (geometry.visible_face_index_payload_byte_count(6) vel 0) ≡ 144,
+        "visible faces expose index payload bytes"
+    adfirma (geometry.visible_face_payload_byte_count(6) vel 0) ≡ 720,
+        "visible faces expose combined mesh payload bytes"
+    adfirma geometry.visible_face_vertex_count(0) est nihil,
+        "zero visible faces reject mesh accounting"
     fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(
         triangle, "position"
     ) vel 0

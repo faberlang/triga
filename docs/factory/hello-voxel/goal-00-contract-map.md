@@ -73,6 +73,11 @@ Triga already provides the source-owned geometry data needed by the first draw:
 - `geometry_group_draw_commands` returns the validated draw command list for all
   groups in group order. Goal 05 can use it to submit one chunk geometry without
   host-side group inference.
+- `visible_face_vertex_count`, `visible_face_index_count`,
+  `visible_face_triangle_count`, and visible-face payload byte helpers expose
+  deterministic quad-face mesh accounting for chunk meshing. Goal 05 can use
+  them to prove vertex, index, triangle, and upload-size scaling before the
+  application emits concrete mesh buffers.
 - `geometry_vertex_count`, `geometry_index_count`, `geometry_group_count`,
   `geometry_group_element_total`, `geometry_attribute_scalar_count`,
   `geometry_attribute_byte_count`, `geometry_vertex_payload_byte_count`,
