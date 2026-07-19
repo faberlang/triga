@@ -527,6 +527,11 @@ functio box3_continet(de Box3 bounds, de Vector3 point) → bivalens {
         point.z ≥ bounds.min.z et point.z ≤ bounds.max.z
 }
 
+functio box3_continet_box3(de Box3 bounds, de Box3 child) → bivalens {
+    si box3_validum(bounds) ≡ falsum aut box3_validum(child) ≡ falsum ergo redde falsum
+    redde box3_continet(bounds, child.min) et box3_continet(bounds, child.max)
+}
+
 functio box3_validum(de Box3 bounds) → bivalens {
     redde bounds.min.x ≤ bounds.max.x et
         bounds.min.y ≤ bounds.max.y et

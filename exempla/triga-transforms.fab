@@ -101,14 +101,21 @@ incipit {
     )
     adfirma player_box non est nihil et player_box!.max.y ≡ (1.8 ∷ f32),
         "box construction supports player collision extents"
+    fixum triga.Vector3 centered_box_center ← triga.Vector3 {
+        x = bounds_center!.x, y = bounds_center!.y, z = bounds_center!.z
+    }
+    fixum triga.Vector3 centered_box_size ← triga.Vector3 {
+        x = bounds_size!.x, y = bounds_size!.y, z = bounds_size!.z
+    }
     fixum triga.Box3 ∪ nihil centered_cell_box ← triga.box3_ex_centro_et_mensura(
-        triga.vector3(4.5 ∷ f32, 2.5 ∷ f32, 8.5 ∷ f32),
-        triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
+        centered_box_center, centered_box_size
     )
     adfirma centered_cell_box non est nihil
-        et centered_cell_box!.min.x ≡ (4.0 ∷ f32)
-        et centered_cell_box!.max.z ≡ (9.0 ∷ f32),
+        et centered_cell_box!.min.x ≡ (-1.0 ∷ f32)
+        et centered_cell_box!.max.z ≡ (1.0 ∷ f32),
         "center-size box construction supports voxel selection bounds"
+    adfirma triga.box3_continet_box3(bounds, bounds),
+        "box containment accepts matching extents"
     adfirma triga.box3_ex_minimo_et_mensura(
         zero, triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
     ) est nihil, "box construction rejects non-positive size"
@@ -133,6 +140,8 @@ incipit {
     )
     adfirma triga.box3_intersecat(bounds, distant_bounds) ≡ falsum,
         "separated boxes do not intersect"
+    adfirma triga.box3_continet_box3(bounds, distant_bounds) ≡ falsum,
+        "box containment rejects escaped bounds"
     fixum triga.Box3 invalid_bounds ← triga.Box3 {
         min = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         max = triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
@@ -141,6 +150,8 @@ incipit {
         "box rejects inverted x extent"
     adfirma triga.box3_intersecat(invalid_bounds, bounds) ≡ falsum,
         "invalid boxes do not intersect"
+    adfirma triga.box3_continet_box3(bounds, invalid_bounds) ≡ falsum,
+        "box containment rejects invalid child bounds"
     adfirma triga.box3_unio(invalid_bounds, bounds) est nihil,
         "box union rejects invalid input"
     fixum triga.Sphere sphere ← triga.Sphere {
