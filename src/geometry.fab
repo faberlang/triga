@@ -485,6 +485,22 @@ functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihi
     redde count
 }
 
+functio geometry_line_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    discerne geometry.topology {
+        casu TriangleList { redde nihil }
+        casu LineList { }
+        casu PointList { redde nihil }
+    }
+    varia numerus remaining ← geometry_element_count(geometry)
+    varia numerus count ← 0
+    dum remaining ≥ 2 {
+        remaining ← remaining - 2
+        count ← count + 1
+    }
+    redde count
+}
+
 functio _geometry_attributes_valid(de BufferGeometry geometry) → bivalens {
     varia bivalens has_position ← falsum
     varia numerus i ← 0

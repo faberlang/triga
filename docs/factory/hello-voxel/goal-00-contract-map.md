@@ -52,6 +52,9 @@ Triga already provides the source-owned geometry data needed by the first draw:
   layout shape and returns `nihil` if the geometry does not validate.
 - `geometry_triangle_count` exposes valid triangle element counts and returns
   `nihil` for invalid or non-triangle geometry.
+- `geometry_line_count` exposes valid line element counts and returns `nihil`
+  for invalid or non-line geometry. Goal 06 can use this with
+  `box_wire_geometry` for selection-outline draw evidence.
 - `geometry_draw_command` records indexed status, element count, first element,
   base vertex, instance count, and material index for valid geometry.
 - `geometry_group_draw_command` records the same draw facts from a validated

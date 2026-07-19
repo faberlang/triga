@@ -291,6 +291,16 @@ incipit {
     adfirma box_wire_result!.indexed et box_wire_result!.vertex_count ≡ 8
         et box_wire_result!.indices.longitudo() ≡ 24,
         "wire box has deterministic corner and edge index counts"
+    fixum numerus ∪ nihil box_wire_lines ← geometry.geometry_line_count(box_wire)
+    adfirma box_wire_lines non est nihil,
+        "wire box exposes deterministic line count"
+    fixum numerus box_wire_line_count ← box_wire_lines vel 0
+    adfirma box_wire_line_count ≡ 12,
+        "wire box has twelve outline edges"
+    adfirma geometry.geometry_triangle_count(box_wire) est nihil,
+        "line geometry does not report triangle count"
+    adfirma geometry.geometry_line_count(box) est nihil,
+        "triangle geometry does not report line count"
     adfirma box_wire_result!.groups.longitudo() ≡ 1 et box_wire_result!.groups[0].count ≡ 24,
         "wire box exposes a complete deterministic line draw group"
     adfirma geometry.plane_geometry(0.0, 1.0) est nihil,

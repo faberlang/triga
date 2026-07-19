@@ -34,7 +34,8 @@ placement to the bounded world using Faber state and the authoritative model.
   and collision tolerances, and a `RayBox3Hit` result with distance, point, and
   outward face normal for selection indicators. Voxel DDA remains
   application-owned. Triga geometry also provides `box_wire_geometry` for a
-  minimal selection outline without host-side shape construction.
+  minimal selection outline and `geometry_line_count` for deterministic
+  line-list draw evidence without host-side shape construction.
 - New application state belongs in
   `examples/hello-voxel/src/application.fab`.
 
