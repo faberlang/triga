@@ -123,6 +123,11 @@ incipit {
         "box translation preserves extent"
     adfirma triga.box3_intersecat(bounds, shifted_bounds),
         "touching boxes intersect"
+    fixum triga.Box3 ∪ nihil union_bounds ← triga.box3_unio(bounds, shifted_bounds)
+    adfirma union_bounds non est nihil
+        et union_bounds!.min.x ≡ (-1.0 ∷ f32)
+        et union_bounds!.max.x ≡ (3.0 ∷ f32),
+        "box union covers both input boxes"
     fixum triga.Box3 distant_bounds ← triga.box3_translata(
         bounds, triga.vector3(3.1 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
     )
@@ -136,6 +141,8 @@ incipit {
         "box rejects inverted x extent"
     adfirma triga.box3_intersecat(invalid_bounds, bounds) ≡ falsum,
         "invalid boxes do not intersect"
+    adfirma triga.box3_unio(invalid_bounds, bounds) est nihil,
+        "box union rejects invalid input"
     fixum triga.Sphere sphere ← triga.Sphere {
         center = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         radius = 2.0 ∷ f32

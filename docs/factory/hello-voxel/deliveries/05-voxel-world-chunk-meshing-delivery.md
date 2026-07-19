@@ -31,7 +31,7 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   draw-command helpers for chunk mesh payloads. Triga also exposes group-local
   bounding boxes so chunk draw groups can carry source-owned bounds without
   host-side vertex inference.
-- Reusable `Box3` construction, validation, size, center, and translation
+- Reusable `Box3` construction, validation, size, center, union, and translation
   helpers in `triga/src/triga.fab` for chunk mesh bounds.
 - Reusable scene visibility state and effective visible traversal in
   `triga/src/scene.fab` for chunk draw filtering without host renderer policy.
