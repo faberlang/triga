@@ -86,16 +86,24 @@ incipit {
     fixum numerus cube_triangle_count ← cube_triangles vel 0
     adfirma cube_triangle_count ≡ 12,
         "Hello Voxel first draw has twelve triangles"
+    adfirma (geometry.geometry_vertex_layout_count(cube) vel 0) ≡ 2,
+        "Hello Voxel first draw exposes two vertex layouts"
     adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12),
         "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
+    adfirma (geometry.geometry_vertex_layout_source_name(cube, 0) vel "") ≡ "position",
+        "position layout exposes source name"
     adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 0) vel 0) ≡ 1,
         "position layout fixes vertex step mode"
     adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12),
         "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
+    adfirma (geometry.geometry_vertex_layout_source_name(cube, 1) vel "") ≡ "color",
+        "color layout exposes source name"
     adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 1) vel 0) ≡ 1,
         "color layout fixes vertex step mode"
     adfirma geometry.geometry_vertex_layout_location(cube, 2) est nihil,
         "Hello Voxel first draw exposes only position and color vertex layouts"
+    adfirma geometry.geometry_vertex_layout_source_name(cube, 2) est nihil,
+        "missing vertex layout has no source name"
     adfirma geometry.geometry_draw_command(cube, 0) est nihil,
         "Hello Voxel first draw rejects an empty instance draw command"
     adfirma geometry.colored_indexed_geometry(8, positions, colors, [0, 1]) est nihil,

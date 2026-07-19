@@ -260,6 +260,21 @@ functio geometry_vertex_layout_location(
     redde layout_result!.shader_location
 }
 
+functio geometry_vertex_layout_count(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    fixum numerus count ← geometry.attributes.longitudo()
+    redde count
+}
+
+functio geometry_vertex_layout_source_name(
+    de BufferGeometry geometry,
+    numerus index
+) → textus ∪ nihil {
+    fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
+    si layout_result est nihil ergo redde nihil
+    redde layout_result!.source_name
+}
+
 functio geometry_topology_code(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     redde _primitive_topology_code(geometry.topology)

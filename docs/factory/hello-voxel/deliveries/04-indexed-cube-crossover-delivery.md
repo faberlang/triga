@@ -30,9 +30,9 @@ the first visible Faber-authored indexed 3D application.
   `MeshBasicMaterial` constructor for source-owned cube material intent.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
   validated colored indexed constructor for position/color payloads and
-  explicit layout facts for format, stride, and vertex step mode, plus a source
-  draw command for indexed count, first element, base vertex, and instance
-  count.
+  explicit layout facts for count, source name, format, stride, and vertex step
+  mode, plus a source draw command for indexed count, first element, base
+  vertex, and instance count.
 - Application root: `examples/hello-voxel/` created by HV-03.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: `radix/hosts/webgpu-browser/` after HV-02.
