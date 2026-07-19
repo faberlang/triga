@@ -544,6 +544,18 @@ functio box3_ex_minimo_et_mensura(
     }
 }
 
+functio box3_ex_centro_et_mensura(
+    de Vector3 center,
+    de Vector3 size
+) → Box3 ∪ nihil {
+    si size.x ≤ 0.0 aut size.y ≤ 0.0 aut size.z ≤ 0.0 ergo redde nihil
+    fixum Vector3 half ← vector3_multiplicata(size, 0.5)
+    redde Box3 {
+        min = vector3_subtracta(center, half),
+        max = vector3_addita(center, half)
+    }
+}
+
 functio box3_mensura(de Box3 bounds) → Vector3 ∪ nihil {
     si box3_validum(bounds) ≡ falsum ergo redde nihil
     redde vector3_subtracta(bounds.max, bounds.min)

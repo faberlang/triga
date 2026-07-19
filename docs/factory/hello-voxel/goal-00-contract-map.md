@@ -107,9 +107,10 @@ application and host facts.
 `triga/src/triga.fab` defines `Matrix4` as `lista<f32>` and states that
 elements are column-major and multiply column vectors. It provides identity,
 translation, scale, composition, multiplication, point application, transpose,
-and affine inverse helpers. It also provides camera yaw/pitch ray construction,
-ray-to-`Box3` entry distance, and `RayBox3Hit` distance/point/normal facts for
-selection indicators. Voxel DDA remains application-owned.
+and affine inverse helpers. It also provides min-size and center-size `Box3`
+construction, camera yaw/pitch ray construction, ray-to-`Box3` entry distance,
+and `RayBox3Hit` distance/point/normal facts for selection indicators. Voxel
+DDA remains application-owned.
 
 The first draw uses one transform storage buffer with 32 `f32` values. The
 buffer order is model matrix first and view-projection matrix second. The host

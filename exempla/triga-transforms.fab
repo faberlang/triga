@@ -101,9 +101,20 @@ incipit {
     )
     adfirma player_box non est nihil et player_box!.max.y ≡ (1.8 ∷ f32),
         "box construction supports player collision extents"
+    fixum triga.Box3 ∪ nihil centered_cell_box ← triga.box3_ex_centro_et_mensura(
+        triga.vector3(4.5 ∷ f32, 2.5 ∷ f32, 8.5 ∷ f32),
+        triga.vector3(1.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
+    )
+    adfirma centered_cell_box non est nihil
+        et centered_cell_box!.min.x ≡ (4.0 ∷ f32)
+        et centered_cell_box!.max.z ≡ (9.0 ∷ f32),
+        "center-size box construction supports voxel selection bounds"
     adfirma triga.box3_ex_minimo_et_mensura(
         zero, triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 1.0 ∷ f32)
     ) est nihil, "box construction rejects non-positive size"
+    adfirma triga.box3_ex_centro_et_mensura(
+        zero, triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    ) est nihil, "center-size box construction rejects non-positive size"
     adfirma triga.box3_continet(bounds, zero), "box contains origin"
     fixum triga.Box3 shifted_bounds ← triga.box3_translata(
         bounds, triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
