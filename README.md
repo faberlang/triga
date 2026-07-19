@@ -86,8 +86,9 @@ The capability report is an honest campaign baseline: unsupported proofs score
 zero, while browser availability and artifact freshness are reported
 separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 The Hello Voxel contract check is a Triga-owned pre-browser gate. It validates
-source facts, exempla, capability honesty, and current renderer-dependency
-classification, but it does not claim direct WebGPU browser execution.
+source facts, exempla, compile viability, capability honesty, and current
+renderer-dependency classification, but it does not claim direct WebGPU browser
+execution.
 
 ## Next Steps
 

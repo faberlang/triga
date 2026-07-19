@@ -106,10 +106,11 @@ All nine delivery specs exist. HV-00 is active. Its Triga-side reusable
 contract pass is complete, including first-draw layout, material, transform,
 scene/resource, face-code, visible-mesh packet, and visible-face accounting
 facts. The `triga/scripta/check-hello-voxel-contract` gate packages the
-Triga-owned executable evidence without claiming browser rendering. HV-04A's
-reusable Triga prerequisite scope is also complete for the current indexed-cube
-delivery, but HV-04 itself still waits for the shader, host, browser runtime,
-and example package dependencies. The first remaining executable campaign gate
+Triga-owned executable evidence and compile viability without claiming browser
+rendering. HV-04A's reusable Triga prerequisite scope is also complete for the
+current indexed-cube delivery, but HV-04 itself still waits for the shader,
+host, browser runtime, and example package dependencies. The first remaining
+executable campaign gate
 is the Radix-owned HV-00B red fixture pass. No full unit is complete, and no
 release is authorized.
 

@@ -92,8 +92,8 @@ writes and contract freeze are serialized.
 
 - `git diff --check` in every modified repo.
 - `./scripta/check-hello-voxel-contract` from `triga` for the complete
-  Triga-owned source, exemplar, capability, and runtime-dependency inventory
-  gate.
+  Triga-owned source, exemplar, compile, capability, and runtime-dependency
+  inventory gate.
 - One filtered `cargo test -p radix <new_fragment_filter>` with an explicit
   120-second runner timeout.
 - `node hosts/webgpu-browser/public/src/product-boundary-check.mjs` for existing
