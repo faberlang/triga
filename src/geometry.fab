@@ -790,6 +790,14 @@ functio colored_quad_mesh_append(
     }
 }
 
+functio colored_quad_mesh_geometry(de ColoredQuadMesh mesh) → BufferGeometry ∪ nihil {
+    si mesh.positions.longitudo() ≠ mesh.colors.longitudo() ergo redde nihil
+    si mesh.positions.longitudo() % 3 ≠ 0 ergo redde nihil
+    si mesh.indices.longitudo() % 3 ≠ 0 ergo redde nihil
+    fixum numerus vertex_count ← mesh.positions.longitudo() / 3
+    redde colored_indexed_geometry(vertex_count, mesh.positions, mesh.colors, mesh.indices)
+}
+
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     discerne geometry.topology {

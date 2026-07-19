@@ -110,6 +110,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
   vertices, four repeated RGB triples, and six `u32` indices based on the
   current vertex count. Goal 05 can use it for simple face emission while
   voxel storage and neighbor policy stay in the application package.
+- `colored_quad_mesh_geometry` converts an accumulated colored quad mesh into
+  the canonical indexed position/color geometry with one complete draw group.
+  Goal 05 can use this to finalize chunk mesh buffers without host-side layout
+  inference or voxel policy in Triga.
 - `geometry_vertex_count`, `geometry_index_count`, `geometry_group_count`,
   `geometry_group_element_total`, `geometry_attribute_scalar_count`,
   `geometry_attribute_byte_count`, `geometry_vertex_payload_byte_count`,
