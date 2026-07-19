@@ -28,6 +28,8 @@ incipit {
     fixum numerus triangle_index_count ← geometry.geometry_index_count(triangle) vel 0
     adfirma triangle_index_count ≡ 3,
         "valid indexed geometry exposes source-owned index count"
+    adfirma (geometry.geometry_index_format_code(triangle) vel 0) ≡ 1,
+        "valid indexed geometry exposes u32 index format code"
     fixum numerus triangle_group_count ← geometry.geometry_group_count(triangle) vel 0
     adfirma triangle_group_count ≡ 1,
         "valid geometry exposes source-owned draw group count"
@@ -147,6 +149,8 @@ incipit {
     adfirma geometry.geometry_valid(nonindexed), "explicit non-indexed geometry validates"
     adfirma geometry.geometry_index_count(nonindexed) est nihil,
         "non-indexed geometry has no source-owned index payload count"
+    adfirma geometry.geometry_index_format_code(nonindexed) est nihil,
+        "non-indexed geometry has no source-owned index format"
     adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
         "non-indexed triangles produce vertex normals"
 
@@ -383,6 +387,8 @@ incipit {
         "invalid geometry rejects grouped element totals"
     adfirma geometry.geometry_topology_code(partial_triangle_group) est nihil,
         "invalid geometry rejects topology codes"
+    adfirma geometry.geometry_index_format_code(partial_triangle_group) est nihil,
+        "invalid geometry rejects index format codes"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )

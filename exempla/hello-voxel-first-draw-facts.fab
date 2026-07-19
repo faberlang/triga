@@ -57,6 +57,8 @@ incipit {
         "Hello Voxel first draw uses valid indexed triangle geometry"
     adfirma (geometry.geometry_topology_code(cube) vel 0) ≡ 1,
         "Hello Voxel first draw locks triangle-list topology"
+    adfirma (geometry.geometry_index_format_code(cube) vel 0) ≡ 1,
+        "Hello Voxel first draw locks u32 index format"
     adfirma cube.indexed et cube.vertex_count ≡ 8 et cube.indices.longitudo() ≡ 36,
         "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
     adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,

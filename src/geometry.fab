@@ -394,6 +394,12 @@ functio geometry_index_count(de BufferGeometry geometry) → numerus ∪ nihil {
     redde count
 }
 
+functio geometry_index_format_code(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    si geometry.indexed ≡ falsum ergo redde nihil
+    redde 1
+}
+
 functio geometry_group_count(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     fixum numerus count ← geometry.groups.longitudo()
