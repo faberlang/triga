@@ -334,6 +334,99 @@ functio resource_lifecycle_valid(de ResourceLifecycleTransition transition) → 
     redde transition.current!.generation ≡ transition.previous!.generation + 1
 }
 
+functio _resource_lifecycle_index_seen(
+    de lista<ResourceLifecycleTransition> transitions,
+    numerus limit,
+    numerus logical_index
+) → bivalens {
+    varia numerus i ← 0
+    dum i < limit {
+        fixum ResourceLifecycleTransition transition ← transitions[i]
+        si transition.logical_index ≡ logical_index {
+            redde verum
+        }
+        i ← i + 1
+    }
+    redde falsum
+}
+
+functio resource_lifecycles_valid(
+    de lista<ResourceLifecycleTransition> transitions
+) → bivalens {
+    varia numerus i ← 0
+    dum i < transitions.longitudo() {
+        fixum ResourceLifecycleTransition transition ← transitions[i]
+        si resource_lifecycle_valid(transition) ≡ falsum ergo redde falsum
+        si _resource_lifecycle_index_seen(transitions, i, transition.logical_index) {
+            redde falsum
+        }
+        i ← i + 1
+    }
+    redde verum
+}
+
+functio resource_lifecycle_changed_count(
+    de lista<ResourceLifecycleTransition> transitions
+) → numerus ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia numerus count ← 0
+    itera ex transitions fixum transition {
+        si transition.changed { count ← count + 1 }
+    }
+    redde count
+}
+
+functio resource_lifecycle_created_count(
+    de lista<ResourceLifecycleTransition> transitions
+) → numerus ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia numerus count ← 0
+    itera ex transitions fixum transition {
+        si transition.previous est nihil et transition.current non est nihil {
+            count ← count + 1
+        }
+    }
+    redde count
+}
+
+functio resource_lifecycle_removed_count(
+    de lista<ResourceLifecycleTransition> transitions
+) → numerus ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia numerus count ← 0
+    itera ex transitions fixum transition {
+        si transition.removed { count ← count + 1 }
+    }
+    redde count
+}
+
+functio resource_lifecycle_live_count(
+    de lista<ResourceLifecycleTransition> transitions
+) → numerus ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia numerus count ← 0
+    itera ex transitions fixum transition {
+        si transition.current non est nihil { count ← count + 1 }
+    }
+    redde count
+}
+
+functio resource_lifecycle_current_handles(
+    de lista<ResourceLifecycleTransition> transitions
+) → lista<ResourceHandle> ∪ nihil {
+    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
+    varia lista<ResourceHandle> handles ← vacua
+    itera ex transitions fixum transition {
+        si transition.current non est nihil {
+            handles.appende(ResourceHandle {
+                index = transition.current!.index,
+                generation = transition.current!.generation
+            })
+        }
+    }
+    redde handles
+}
+
 functio scene_store() → SceneStore {
     redde SceneStore { slots = vacua }
 }

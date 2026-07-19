@@ -113,8 +113,9 @@ incipit {
     fixum scene.ResourceHandle new_geometry ← scene.ResourceHandle { index = 9, generation = 0 }
     fixum scene.ResourceLifecycleTransition lifecycle_created ←
         scene.resource_lifecycle_created(new_geometry)
+    fixum scene.ResourceHandle removed_geometry ← scene.ResourceHandle { index = 11, generation = 4 }
     fixum scene.ResourceLifecycleTransition lifecycle_gone ←
-        scene.resource_lifecycle_removed(geometry_next)
+        scene.resource_lifecycle_removed(removed_geometry)
     adfirma scene.resource_lifecycle_valid(lifecycle_stable),
         "unchanged lifecycle transition validates"
     adfirma scene.resource_lifecycle_valid(lifecycle_replaced),
@@ -143,6 +144,40 @@ incipit {
     }
     adfirma scene.resource_lifecycle_valid(invalid_removed) ≡ falsum,
         "removed lifecycle rejects current handles"
+    fixum lista<scene.ResourceLifecycleTransition> lifecycle_batch ← [
+        lifecycle_stable, lifecycle_replaced, lifecycle_created, lifecycle_gone
+    ]
+    adfirma scene.resource_lifecycles_valid(lifecycle_batch),
+        "lifecycle batch validates unique logical resources"
+    adfirma (scene.resource_lifecycle_changed_count(lifecycle_batch) vel 0) ≡ 3,
+        "lifecycle batch counts changed resources"
+    adfirma (scene.resource_lifecycle_created_count(lifecycle_batch) vel 0) ≡ 1,
+        "lifecycle batch counts created resources"
+    adfirma (scene.resource_lifecycle_removed_count(lifecycle_batch) vel 0) ≡ 1,
+        "lifecycle batch counts removed resources"
+    adfirma (scene.resource_lifecycle_live_count(lifecycle_batch) vel 0) ≡ 3,
+        "lifecycle batch counts current live resources"
+    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_current_handles ←
+        scene.resource_lifecycle_current_handles(lifecycle_batch)
+    adfirma lifecycle_current_handles non est nihil,
+        "lifecycle batch exposes current handles"
+    adfirma lifecycle_current_handles![0].index ≡ geometry.index
+        et lifecycle_current_handles![0].generation ≡ geometry.generation,
+        "lifecycle batch keeps unchanged current handle"
+    adfirma lifecycle_current_handles![1].index ≡ material.index
+        et lifecycle_current_handles![1].generation ≡ material.generation + 1,
+        "lifecycle batch exposes replaced current handle"
+    adfirma lifecycle_current_handles![2].index ≡ new_geometry.index
+        et lifecycle_current_handles![2].generation ≡ new_geometry.generation,
+        "lifecycle batch exposes created current handle"
+    fixum lista<scene.ResourceLifecycleTransition> duplicate_lifecycle_batch ← [
+        scene.resource_lifecycle_replaced(material),
+        scene.resource_lifecycle_removed(material)
+    ]
+    adfirma scene.resource_lifecycles_valid(duplicate_lifecycle_batch) ≡ falsum,
+        "lifecycle batch rejects duplicate logical resources"
+    adfirma scene.resource_lifecycle_current_handles(duplicate_lifecycle_batch) est nihil,
+        "lifecycle current handles reject duplicate logical resources"
     fixum scene.SceneInsert root_step ← scene.scene_insert(
         scene.scene_store(), scene.scene_group("root")
     )

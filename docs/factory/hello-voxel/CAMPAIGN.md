@@ -200,7 +200,8 @@ payload order.
 Face-code facts now lock ray/AABB hit codes, integer face offsets, and
 direction colors for meshing and edit placement.
 Scene/resource facts now lock created, replaced, unchanged, and removed
-single-resource lifecycle states for empty and non-empty chunk remeshes.
+single-resource lifecycle states plus batch live/current-handle evidence for
+empty and non-empty chunk remeshes.
 Radix red fixtures remain pending because Radix has active foreign
 implementation work.
 

@@ -37,8 +37,10 @@ GPU buffer replacement, queue-safe retirement, and bounded lifecycle evidence.
   assertions without GPU lifetime policy. Triga also provides
   `ResourceLifecycleTransition` constructors for unchanged, replaced, created,
   and removed single-resource states, so empty chunk remeshes can be represented
-  as no-current-resource facts before host disposal. GPU lifetime and queue
-  completion remain host-owned.
+  as no-current-resource facts before host disposal. Batch lifecycle validation,
+  changed/created/removed/live counters, and current-handle extraction provide
+  exact per-chunk generation and live-resource evidence. GPU retirement,
+  destroyed counters, and queue completion remain host-owned.
 - Host buffer creation/submission: Radix browser WebGPU runtime after HV-02.
 - Existing compute runtime already owns buffer usage and queue submission; its
   semantics are evidence, not permission to duplicate graphics lifecycle code.
