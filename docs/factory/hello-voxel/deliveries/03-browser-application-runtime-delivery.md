@@ -40,11 +40,15 @@ interactive frame and input lifecycle through generated browser adaptation.
 
 ### HV-03A - Typed Platform Contract
 
+**Status**: active; `faber-web` now exposes typed frame, resize, keyboard,
+pointer, and focus subscription contracts with TypeScript runtime coverage.
 **Output**: Faber-visible event/state types and lifecycle functions in the live
 `web:web`/`web:dom` owner.
 **Write scope**: `faber-web/src/`, `runtime/dom.ts`, `bindings/ts.toml`, and
 focused `faber-web/tests/` coverage.
 **Gate**: the contract expresses every locked event without DOM object leakage.
+Frame, resize, keyboard, pointer, and focus state are represented; pointer-lock
+permission state and generated cleanup evidence remain pending.
 
 ### HV-03B - Generated Browser Adapter
 
