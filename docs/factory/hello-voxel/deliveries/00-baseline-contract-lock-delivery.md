@@ -46,7 +46,7 @@ field, or platform-owned value.
 `triga/exempla/hello-voxel-first-draw-facts.fab`. The Triga evidence now covers
 first-draw layout, material policy, transform payload order, scene resource
 lifecycle facts, visible mesh draw packets, face-code metadata, and
-visible-face mesh accounting.
+visible-face mesh fact records.
 
 ### HV-00B - Red Admission Fixtures
 

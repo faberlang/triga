@@ -193,7 +193,8 @@ browser fact required by the first indexed draw.
 **Progress**: Triga-side executable-truth inventory is complete. No remaining
 Triga-owned Goal 00 source gap is known. Geometry now
 locks first-draw layout, topology, index format, vertex-step mode, draw, and
-count facts plus visible-face mesh accounting for chunk meshing. Material
+count facts plus a reusable visible-face mesh fact record for chunk meshing.
+Material
 policy now locks side, depth-test, depth-write, RGB, and alpha facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
 Transform facts now lock the 32-float, 128-byte model then view-projection

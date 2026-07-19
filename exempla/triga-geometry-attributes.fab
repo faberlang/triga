@@ -54,8 +54,34 @@ incipit {
         "visible faces expose index payload bytes"
     adfirma (geometry.visible_face_payload_byte_count(6) vel 0) ≡ 720,
         "visible faces expose combined mesh payload bytes"
+    fixum geometry.VisibleFaceMeshFacts ∪ nihil visible_face_facts_result ←
+        geometry.visible_face_mesh_facts(6)
+    adfirma visible_face_facts_result non est nihil,
+        "visible faces expose one reusable mesh fact record"
+    fixum geometry.VisibleFaceMeshFacts visible_face_facts ← geometry.VisibleFaceMeshFacts {
+        face_count = visible_face_facts_result!.face_count,
+        vertex_count = visible_face_facts_result!.vertex_count,
+        index_count = visible_face_facts_result!.index_count,
+        triangle_count = visible_face_facts_result!.triangle_count,
+        position_payload_byte_count = visible_face_facts_result!.position_payload_byte_count,
+        color_payload_byte_count = visible_face_facts_result!.color_payload_byte_count,
+        index_payload_byte_count = visible_face_facts_result!.index_payload_byte_count,
+        total_payload_byte_count = visible_face_facts_result!.total_payload_byte_count
+    }
+    adfirma visible_face_facts.face_count ≡ 6
+        et visible_face_facts.vertex_count ≡ 24
+        et visible_face_facts.index_count ≡ 36
+        et visible_face_facts.triangle_count ≡ 12,
+        "visible face mesh facts lock draw-scale counts"
+    adfirma visible_face_facts.position_payload_byte_count ≡ 288
+        et visible_face_facts.color_payload_byte_count ≡ 288
+        et visible_face_facts.index_payload_byte_count ≡ 144
+        et visible_face_facts.total_payload_byte_count ≡ 720,
+        "visible face mesh facts lock upload byte counts"
     adfirma geometry.visible_face_vertex_count(0) est nihil,
         "zero visible faces reject mesh accounting"
+    adfirma geometry.visible_face_mesh_facts(0) est nihil,
+        "zero visible faces reject mesh fact records"
     fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(
         triangle, "position"
     ) vel 0

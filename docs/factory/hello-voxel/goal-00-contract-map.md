@@ -94,6 +94,10 @@ Triga already provides the source-owned geometry data needed by the first draw:
   deterministic quad-face mesh accounting for chunk meshing. Goal 05 can use
   them to prove vertex, index, triangle, and upload-size scaling before the
   application emits concrete mesh buffers.
+- `visible_face_mesh_facts` packages the same face, vertex, index, triangle,
+  and payload byte facts into one source-owned record. Goal 05 can use it as a
+  chunk mesh proof object without making the host recalculate draw-scale
+  accounting.
 - `geometry_vertex_count`, `geometry_index_count`, `geometry_group_count`,
   `geometry_group_element_total`, `geometry_attribute_scalar_count`,
   `geometry_attribute_byte_count`, `geometry_vertex_payload_byte_count`,

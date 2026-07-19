@@ -88,6 +88,17 @@ genus BoundingSphere {
     f32 radius
 }
 
+genus VisibleFaceMeshFacts {
+    numerus face_count
+    numerus vertex_count
+    numerus index_count
+    numerus triangle_count
+    numerus position_payload_byte_count
+    numerus color_payload_byte_count
+    numerus index_payload_byte_count
+    numerus total_payload_byte_count
+}
+
 genus BufferGeometry {
     PrimitiveTopology topology
     numerus vertex_count
@@ -634,6 +645,35 @@ functio visible_face_payload_byte_count(numerus face_count) → numerus ∪ nihi
     si index_bytes_result est nihil ergo redde nihil
     fixum numerus index_bytes ← index_bytes_result vel 0
     redde position_bytes + color_bytes + index_bytes
+}
+
+functio visible_face_mesh_facts(numerus face_count) → VisibleFaceMeshFacts ∪ nihil {
+    fixum numerus ∪ nihil vertex_count_result ← visible_face_vertex_count(face_count)
+    si vertex_count_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil index_count_result ← visible_face_index_count(face_count)
+    si index_count_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil triangle_count_result ← visible_face_triangle_count(face_count)
+    si triangle_count_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil position_bytes_result ←
+        visible_face_position_payload_byte_count(face_count)
+    si position_bytes_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    si color_bytes_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil index_bytes_result ←
+        visible_face_index_payload_byte_count(face_count)
+    si index_bytes_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil total_bytes_result ← visible_face_payload_byte_count(face_count)
+    si total_bytes_result est nihil ergo redde nihil
+    redde VisibleFaceMeshFacts {
+        face_count = face_count,
+        vertex_count = vertex_count_result vel 0,
+        index_count = index_count_result vel 0,
+        triangle_count = triangle_count_result vel 0,
+        position_payload_byte_count = position_bytes_result vel 0,
+        color_payload_byte_count = color_bytes_result vel 0,
+        index_payload_byte_count = index_bytes_result vel 0,
+        total_payload_byte_count = total_bytes_result vel 0
+    }
 }
 
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {
