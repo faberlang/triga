@@ -174,7 +174,7 @@ reflection consumer admits compute kernels only.
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
-| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold plus generated lifecycle mount automation; frame, resize, keyboard, pointer, focus, and pointer-lock subscription contracts exist in `web:dom`; generated browser entries now expose controller mount/failure/dispose lifecycle records; `examples/browser-app` now proves source-authored frame, resize, keyboard, pointer, focus, and pointer-lock delivery plus generated disposal cancellation through that helper | Extend through Goal 03 for typed failure delivery |
+| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold plus generated lifecycle mount automation; frame, resize, keyboard, pointer, focus, and pointer-lock subscription contracts exist in `web:dom`; generated browser entries now expose controller mount/failure/dispose lifecycle records; `examples/browser-app` now proves source-authored frame, resize, keyboard, pointer, focus, pointer-lock, and typed denied-failure delivery plus generated disposal cancellation through that helper | Preserve and consume in Goal 04 |
 | Voxel domain | Not implemented | Begin only after indexed-cube crossover |
 | Direct graphics proof | Not implemented | Goal 04 |
 | Runtime clean break | Not achieved | Goal 08 |
@@ -258,8 +258,13 @@ both event listeners. HV-03G now has executable focus and pointer-lock slices:
 `pointer_lock_request_controller`, and `pointer_lock_state_controller`
 functions; the Node DOM harness proves document focus delivery, pointer-lock
 request state, pointer-lock change delivery, visible state updates, and
-generated disposal of the focus and pointer-lock listeners. Goal 03 still
-needs typed browser failure coverage.
+generated disposal of the focus and pointer-lock listeners. HV-03H now has
+executable typed failure coverage: `examples/browser-app` defines
+`pointer_lock_denied_controller`, and the Node DOM harness proves an
+unsupported pointer-lock request returns a typed denied `PointerLockState` that
+source-authored Faber code handles as data. Goal 03's non-GPU browser
+lifecycle gate is complete for the current campaign scope. It does not claim
+WebGPU object creation, shader execution, or Hello Voxel rendering.
 
 ### Goal 01 - Source Graphics Pipeline
 
@@ -283,13 +288,21 @@ generated artifacts without three.js or WGSL parsing.
 
 ### Goal 03 - Faber Browser Application Runtime
 
-**Status**: planned
+**Status**: complete
 **Source**: [`goals/03-browser-application-runtime.md`](goals/03-browser-application-runtime.md)
 **Depends on**: Goal 00; can overlap Goal 01
 **Gate**: a Faber package owns frame updates, resize, keyboard, pointer, pointer
 lock, and platform-failure handling through generated browser bindings.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: split-on-boundary
+**Progress**: Complete for the current non-GPU browser runtime scope.
+`examples/browser-app` proves generated mount/failure/dispose lifecycle,
+frame and resize delivery, keyboard physical-code delivery, pointer movement
+delivery, focus delivery, pointer-lock request/state delivery, typed denied
+failure handling, visible state updates, and generated listener/frame
+cleanup. `examples/hello-voxel` proves campaign package admission and generated
+controller mount automation only; renderer integration waits for Goals 01, 02,
+and 04.
 
 ### Goal 04 - Indexed Cube Crossover
 
