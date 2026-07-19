@@ -29,6 +29,8 @@ runtime paths, update only earned evidence, and run an independent closeout audi
 - Triga three.js fixture under `triga/exempla/threejs-host-demo/`.
 - Triga capability ledger and checker under `triga/proof/` and
   `triga/scripta/check-capabilities`.
+- Triga Hello Voxel runtime dependency checker under
+  `triga/scripta/check-hello-voxel-runtime-deps`.
 - Campaign state under `triga/docs/factory/hello-voxel/` and the older Three.js
   80 breadth reference.
 - Triga runtime dependency inventory:
@@ -94,6 +96,8 @@ clean break; they must not be written speculatively in parallel.
   imports/CDN scripts/runtime references to third-party renderers.
 - Triga-owned scan expectations and historical-reference boundaries from
   [`../runtime-dependency-inventory.md`](../runtime-dependency-inventory.md).
+- `./scripta/check-hello-voxel-runtime-deps` before cleanup and
+  `./scripta/check-hello-voxel-runtime-deps --post-clean-break` after cleanup.
 - Independent `poker-face` and correctness review against Goal 08.
 
 ## Companion Skill Plan

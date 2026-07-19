@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""Check Triga-owned Hello Voxel renderer dependency boundaries."""
+
+import argparse
+from pathlib import Path
+import re
+import sys
+
+ROOT = Path(__file__).resolve().parent.parent
+PATTERN = re.compile(
+    r"import .*three|from ['\"]three|THREE\.|three@|three/addons|"
+    r"WebGLRenderer|OrbitControls"
+)
+
+SCAN_ROOTS = [
+    "exempla",
+    "docs",
+    "proof",
+    "src",
+    "README.md",
+    "AGENTS.md",
+]
+
+INVENTORY = Path("docs/factory/hello-voxel/runtime-dependency-inventory.md")
+EXECUTABLE_CURRENT = {
+    Path("exempla/threejs-host-demo/index.html"),
+    Path("exempla/threejs-host-demo/triga-three-host.js"),
+}
+REFERENCE_CURRENT = {
+    Path("exempla/threejs-host-demo/README.md"),
+    Path("exempla/threejs-host-demo/triga-scene.json"),
+    Path("README.md"),
+    Path("src/triga.fab"),
+    Path("docs/factory/hello-voxel/CAMPAIGN.md"),
+}
+
+
+def iter_files():
+    for name in SCAN_ROOTS:
+        path = ROOT / name
+        if path.is_file():
+            yield path
+            continue
+        for child in path.rglob("*"):
+            if child.is_file():
+                yield child
+
+
+def rel(path):
+    return path.relative_to(ROOT)
+
+
+def classify(path):
+    relative = rel(path)
+    if relative == INVENTORY:
+        return "inventory"
+    if relative in EXECUTABLE_CURRENT:
+        return "executable"
+    if relative in REFERENCE_CURRENT:
+        return "reference"
+    if relative.parts[:2] == ("docs", "factory"):
+        return "reference"
+    return "unknown"
+
+
+def matches():
+    for path in iter_files():
+        kind = classify(path)
+        if kind == "inventory":
+            continue
+        with path.open(encoding="utf-8") as source:
+            for line_number, line in enumerate(source, start=1):
+                if PATTERN.search(line):
+                    yield {
+                        "path": rel(path),
+                        "line_number": line_number,
+                        "line": line.rstrip(),
+                        "kind": kind,
+                    }
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--post-clean-break",
+        action="store_true",
+        help="fail if any executable third-party renderer references remain",
+    )
+    args = parser.parse_args()
+
+    found = list(matches())
+    executable = [item for item in found if item["kind"] == "executable"]
+    unknown = [item for item in found if item["kind"] == "unknown"]
+
+    print(f"hello-voxel runtime dependency scan: {len(found)} matches")
+    print(f"current executable three.js matches: {len(executable)}")
+    print(f"unknown matches: {len(unknown)}")
+
+    for item in found:
+        print(f"{item['kind']}: {item['path']}:{item['line_number']}: {item['line']}")
+
+    if unknown:
+        print("error: unknown renderer dependency references need classification", file=sys.stderr)
+        return 1
+    if args.post_clean_break and executable:
+        print("error: executable renderer dependency references remain after clean break", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

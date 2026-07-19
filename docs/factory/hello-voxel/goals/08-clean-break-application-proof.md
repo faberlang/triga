@@ -53,6 +53,9 @@ host.
 - Use the Triga-owned runtime dependency inventory at
   [`../runtime-dependency-inventory.md`](../runtime-dependency-inventory.md)
   to distinguish executable fixture imports from historical references.
+- Run `triga/scripta/check-hello-voxel-runtime-deps` before cleanup and
+  `triga/scripta/check-hello-voxel-runtime-deps --post-clean-break` after
+  cleanup.
 - Record the independent completion review under
   `docs/factory/hello-voxel/` before changing campaign status.
 

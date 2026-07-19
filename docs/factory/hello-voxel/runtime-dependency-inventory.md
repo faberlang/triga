@@ -48,20 +48,22 @@ Allowed historical/reference classes:
 Use this bounded Triga scan before HV-08B and after HV-08B:
 
 ```bash
-rg -n -g '!docs/factory/hello-voxel/runtime-dependency-inventory.md' \
-  "import .*three|from 'three|from \"three|THREE\\.|three@|three/addons|WebGLRenderer|OrbitControls" \
-  exempla docs proof src README.md AGENTS.md
+./scripta/check-hello-voxel-runtime-deps
+./scripta/check-hello-voxel-runtime-deps --post-clean-break
 ```
 
 Expected current result:
 
-- executable hits in `exempla/threejs-host-demo/index.html`;
-- executable hits in `exempla/threejs-host-demo/triga-three-host.js`;
-- historical prose hits in docs, README files, comments, and campaign plans.
+- `./scripta/check-hello-voxel-runtime-deps` passes;
+- executable hits are limited to `exempla/threejs-host-demo/index.html`;
+- executable hits are limited to `exempla/threejs-host-demo/triga-three-host.js`;
+- historical prose hits are classified as reference-only; and
+- no unclassified renderer references appear.
 
 Expected HV-08B result:
 
-- no executable hits in admitted runtime paths;
+- `./scripta/check-hello-voxel-runtime-deps --post-clean-break` passes;
+- no executable hits remain in admitted runtime paths;
 - no import map or CDN import for `three` or `three/addons/`;
 - no `THREE.*`, `WebGLRenderer`, or `OrbitControls` usage in browser code that
   remains runnable; and
