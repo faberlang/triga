@@ -195,8 +195,8 @@ Triga-owned Goal 00 source gap is known. Geometry now
 locks first-draw layout, topology, index format, vertex-step mode, draw, and
 count facts plus reusable indexed draw batch and visible-face mesh fact records
 for chunk meshing.
-Material
-policy now locks side, depth-test, depth-write, RGB, and alpha facts.
+Material policy now locks side, depth-test, depth-write, transparency, RGB,
+alpha, alpha-test, and reusable pipeline fact records.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
 Transform facts now lock the 32-float, 128-byte model then view-projection
 payload order.

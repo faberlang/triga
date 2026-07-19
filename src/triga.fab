@@ -204,6 +204,15 @@ genus Material {
     f32 alpha_test = 0.0
 }
 
+genus MaterialPipelineFacts {
+    numerus side_code
+    bivalens depth_test_enabled
+    bivalens depth_write_enabled
+    bivalens transparent
+    f32 alpha
+    f32 alpha_test
+}
+
 genus MeshStandardMaterial {
     Material base
     Color color
@@ -349,6 +358,18 @@ functio material_depth_write_enabled(de Material value) → bivalens {
     redde value.depth_write
 }
 
+functio material_pipeline_facts(de Material value) → MaterialPipelineFacts ∪ nihil {
+    si material_valid(value) ≡ falsum ergo redde nihil
+    redde MaterialPipelineFacts {
+        side_code = value.side ↦ numerus,
+        depth_test_enabled = value.depth_test,
+        depth_write_enabled = value.depth_write,
+        transparent = value.transparent,
+        alpha = value.opacity,
+        alpha_test = value.alpha_test
+    }
+}
+
 functio mesh_basic_material(textus name, de Color color) → MeshBasicMaterial ∪ nihil {
     fixum Material base ← material(name)
     si material_valid(base) ≡ falsum ergo redde nihil
@@ -377,6 +398,13 @@ functio mesh_basic_material_color_b(de MeshBasicMaterial value) → f32 ∪ nihi
 functio mesh_basic_material_alpha(de MeshBasicMaterial value) → f32 ∪ nihil {
     si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
     redde value.base.opacity
+}
+
+functio mesh_basic_material_pipeline_facts(
+    de MeshBasicMaterial value
+) → MaterialPipelineFacts ∪ nihil {
+    si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
+    redde material_pipeline_facts(value.base)
 }
 
 # =========================================================================

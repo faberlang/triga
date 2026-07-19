@@ -29,7 +29,8 @@ the first visible Faber-authored indexed 3D application.
   validated material constructor, side-code projection, combined and per-flag
   depth-policy checks, double-sided material helper, and minimal unlit
   `MeshBasicMaterial` constructor with validated RGB and alpha projections for
-  source-owned cube material intent.
+  source-owned cube material intent. It also exposes reusable material pipeline
+  facts for side, depth, transparency, alpha, and alpha-test policy.
 - Triga geometry: `triga/src/geometry.fab` and geometry exemplar. It includes a
   validated colored indexed constructor for position/color payloads and
   explicit layout facts for count, source name, format, stride, and vertex step
