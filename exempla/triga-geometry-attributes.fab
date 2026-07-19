@@ -29,6 +29,9 @@ incipit {
     fixum numerus triangle_group_count ← geometry.geometry_group_count(triangle) vel 0
     adfirma triangle_group_count ≡ 1,
         "valid geometry exposes source-owned draw group count"
+    fixum numerus triangle_group_elements ← geometry.geometry_group_element_total(triangle) vel 0
+    adfirma triangle_group_elements ≡ 3,
+        "valid geometry exposes source-owned grouped element total"
     fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(
         triangle, "position"
     ) vel 0
@@ -95,6 +98,9 @@ incipit {
     fixum geometry.BoundingBox ∪ nihil second_group_bounds ← geometry.geometry_group_bounding_box(
         split_groups, 1
     )
+    fixum numerus split_group_elements ← geometry.geometry_group_element_total(split_groups) vel 0
+    adfirma split_group_elements ≡ 6,
+        "grouped element total preserves split draw coverage"
     fixum f32 ten ← 10.0
     fixum f32 eleven ← 11.0
     adfirma second_group_bounds non est nihil
@@ -369,6 +375,8 @@ incipit {
         "triangle groups must select complete primitives"
     adfirma geometry.geometry_group_draw_commands(partial_triangle_group, 1) est nihil,
         "invalid geometry rejects group draw command lists"
+    adfirma geometry.geometry_group_element_total(partial_triangle_group) est nihil,
+        "invalid geometry rejects grouped element totals"
     fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
         "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     )

@@ -469,6 +469,17 @@ functio geometry_group_draw_commands(
     redde commands
 }
 
+functio geometry_group_element_total(de BufferGeometry geometry) → numerus ∪ nihil {
+    si geometry_valid(geometry) ≡ falsum ergo redde nihil
+    varia numerus total ← 0
+    varia numerus i ← 0
+    dum i < geometry.groups.longitudo() {
+        total ← total + geometry.groups[i].count
+        i ← i + 1
+    }
+    redde total
+}
+
 functio geometry_triangle_count(de BufferGeometry geometry) → numerus ∪ nihil {
     si geometry_valid(geometry) ≡ falsum ergo redde nihil
     discerne geometry.topology {
