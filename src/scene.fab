@@ -61,6 +61,17 @@ genus SceneCount {
     numerus remaining
 }
 
+genus SceneMeshResources {
+    SceneHandle node
+    ResourceHandle geometry
+    ResourceHandle material
+}
+
+genus SceneMeshResourceTraversal {
+    lista<SceneMeshResources> resources
+    numerus remaining
+}
+
 functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
 }
@@ -554,6 +565,86 @@ functio scene_visible_mesh_count(
     si count_result est nihil ergo redde nihil
     redde count_result!.count
 }
+
+functio _scene_traverse_visible_mesh_resources_preorder(
+    de SceneStore store,
+    de SceneHandle handle,
+    lista<SceneMeshResources> resources,
+    lista<SceneHandle> seen,
+    numerus remaining,
+    bivalens parent_visible
+) → SceneMeshResourceTraversal ∪ nihil {
+    si remaining ≡ 0 ergo redde nihil
+    si _scene_traversal_contains(seen, handle) ergo redde nihil
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    fixum bivalens effective_visible ← parent_visible et node.visible
+    varia lista<SceneHandle> updated_seen ← seen
+    updated_seen.appende(SceneHandle { index = handle.index, generation = handle.generation })
+    varia lista<SceneMeshResources> updated_resources ← resources
+    si effective_visible {
+        discerne node.kind {
+            casu SceneMesh fixum geometry, material {
+                updated_resources.appende(SceneMeshResources {
+                    node = SceneHandle { index = handle.index, generation = handle.generation },
+                    geometry = ResourceHandle {
+                        index = geometry.index, generation = geometry.generation
+                    },
+                    material = ResourceHandle {
+                        index = material.index, generation = material.generation
+                    }
+                })
+            }
+            casu SceneGroup { }
+            casu SceneCamera { }
+            casu SceneLight { }
+        }
+    }
+    varia SceneMeshResourceTraversal traversal ← SceneMeshResourceTraversal {
+        resources = updated_resources, remaining = remaining - 1
+    }
+    varia numerus i ← 0
+    dum i < node.children.longitudo() {
+        fixum SceneMeshResourceTraversal ∪ nihil current ←
+            _scene_traverse_visible_mesh_resources_preorder(
+                store, node.children[i], traversal.resources, updated_seen,
+                traversal.remaining, effective_visible
+            )
+        si current est nihil ergo redde nihil
+        fixum SceneMeshResourceTraversal current_value ← SceneMeshResourceTraversal {
+            resources = current!.resources, remaining = current!.remaining
+        }
+        traversal ← SceneMeshResourceTraversal {
+            resources = current_value.resources, remaining = current_value.remaining
+        }
+        updated_seen.appende(SceneHandle {
+            index = node.children[i].index,
+            generation = node.children[i].generation
+        })
+        i ← i + 1
+    }
+    redde traversal
+}
+
+functio scene_visible_mesh_resources(
+    de SceneStore store,
+    de SceneHandle root
+) → lista<SceneMeshResources> ∪ nihil {
+    fixum SceneMeshResourceTraversal ∪ nihil traversal ←
+        _scene_traverse_visible_mesh_resources_preorder(
+            store, root, vacua, vacua, store.slots.longitudo(), verum
+        )
+    si traversal est nihil ergo redde nihil
+    redde traversal!.resources
+}
+
 functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {
     varia SceneHandle cursor ← SceneHandle { index = handle.index, generation = handle.generation }
     varia numerus remaining ← store.slots.longitudo() + 1

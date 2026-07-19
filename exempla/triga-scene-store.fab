@@ -206,12 +206,20 @@ incipit {
     fixum numerus ∪ nihil default_visible_mesh_count ← scene.scene_visible_mesh_count(
         attached_store, root_step.handle
     )
+    fixum lista<scene.SceneMeshResources> ∪ nihil default_visible_resources ←
+        scene.scene_visible_mesh_resources(attached_store, root_step.handle)
     adfirma default_visible_meshes non est nihil
         et default_visible_mesh_count non est nihil
+        et default_visible_resources non est nihil
         et (default_visible_mesh_count vel 999) ≡ 2
         et default_visible_meshes![0].index ≡ mesh_step.handle.index
         et default_visible_meshes![1].index ≡ shared_mesh_step.handle.index,
         "visible mesh traversal exposes renderable mesh handles in scene order"
+    adfirma default_visible_resources![0].node.index ≡ mesh_step.handle.index
+        et default_visible_resources![0].geometry.index ≡ geometry.index
+        et default_visible_resources![0].material.index ≡ material.index
+        et default_visible_resources![1].node.index ≡ shared_mesh_step.handle.index,
+        "visible mesh resources expose node, geometry, and material handles"
     fixum scene.SceneStore ∪ nihil shared_hidden ← scene.scene_set_visible(
         attached_store, shared_mesh_step.handle, falsum
     )
@@ -230,11 +238,17 @@ incipit {
     fixum numerus ∪ nihil hidden_visible_mesh_count ← scene.scene_visible_mesh_count(
         shared_hidden_store, root_step.handle
     )
+    fixum lista<scene.SceneMeshResources> ∪ nihil hidden_visible_resources ←
+        scene.scene_visible_mesh_resources(shared_hidden_store, root_step.handle)
     adfirma hidden_visible_meshes non est nihil
         et hidden_visible_mesh_count non est nihil
+        et hidden_visible_resources non est nihil
         et (hidden_visible_mesh_count vel 999) ≡ 1
         et hidden_visible_meshes![0].index ≡ mesh_step.handle.index,
         "visible mesh traversal omits hidden mesh nodes"
+    adfirma hidden_visible_resources![0].node.index ≡ mesh_step.handle.index
+        et hidden_visible_resources![0].geometry.index ≡ geometry.index,
+        "visible mesh resources omit hidden mesh resources"
     adfirma scene.scene_find_name(shared_hidden_store, root_step.handle, "shared-mesh") non est nihil,
         "name lookup still sees hidden nodes"
     fixum scene.SceneStore ∪ nihil root_hidden ← scene.scene_set_visible(
@@ -256,8 +270,11 @@ incipit {
     fixum numerus ∪ nihil root_hidden_mesh_count ← scene.scene_visible_mesh_count(
         root_hidden_store, root_step.handle
     )
+    fixum lista<scene.SceneMeshResources> ∪ nihil root_hidden_resources ←
+        scene.scene_visible_mesh_resources(root_hidden_store, root_step.handle)
     adfirma root_hidden_meshes non est nihil
         et root_hidden_mesh_count non est nihil
+        et root_hidden_resources non est nihil
         et (root_hidden_mesh_count vel 999) ≡ 0,
         "visible mesh traversal respects hidden ancestors"
     fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }

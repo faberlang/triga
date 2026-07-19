@@ -36,9 +36,9 @@ derived per-chunk visible-face meshes while preserving the direct render path.
 - Reusable `Box3` min-max/min-size/center-size construction, validation, size,
   center, containment, union, and translation helpers in `triga/src/triga.fab`
   for chunk mesh bounds.
-- Reusable scene visibility state, effective visible traversal, and visible
-  mesh-handle traversal in `triga/src/scene.fab` for chunk draw filtering
-  without host renderer policy.
+- Reusable scene visibility state, effective visible traversal, visible
+  mesh-handle traversal, and visible mesh resource projection in
+  `triga/src/scene.fab` for chunk draw filtering without host renderer policy.
 - No current voxel or chunk implementation exists in the examples repository.
 
 ## Stage Graph
