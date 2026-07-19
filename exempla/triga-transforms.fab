@@ -507,6 +507,28 @@ incipit {
     adfirma camera_ray.origin.y ≡ (3.0 ∷ f32)
         et (camera_ray.direction.z + 1.0).absolutum() ≤ 0.0001,
         "camera ray preserves origin and yaw-pitch direction"
+    fixum triga.CameraYawPitchFacts camera_facts ← triga.camera_yaw_pitch_facts(
+        triga.vector3(2.0 ∷ f32, 3.0 ∷ f32, 4.0 ∷ f32),
+        90.0 ∷ f32,
+        100.0 ∷ f32
+    )
+    adfirma camera_facts.yaw_degrees ≡ (90.0 ∷ f32)
+        et camera_facts.pitch_degrees ≡ (100.0 ∷ f32)
+        et camera_facts.clamped_pitch_degrees ≡ (89.0 ∷ f32),
+        "camera yaw-pitch facts preserve input yaw and expose clamped pitch"
+    adfirma camera_facts.direction.y > 0.99
+        et camera_facts.direction.x > 0.01
+        et camera_facts.direction.z.absolutum() ≤ 0.0001,
+        "camera yaw-pitch facts expose clamped view direction"
+    adfirma camera_facts.planar_forward.x > 0.99
+        et camera_facts.planar_forward.z.absolutum() ≤ 0.0001
+        et camera_facts.planar_right.z > 0.99,
+        "camera yaw-pitch facts expose yaw-derived planar basis"
+    adfirma camera_facts.ray.origin.x ≡ (2.0 ∷ f32)
+        et camera_facts.ray.origin.y ≡ (3.0 ∷ f32)
+        et camera_facts.ray.origin.z ≡ (4.0 ∷ f32)
+        et camera_facts.ray.direction.y ≡ camera_facts.direction.y,
+        "camera yaw-pitch facts expose a matching camera ray"
     fixum triga.Vector3 forward_motion ← triga.camera_motus_planus_ex_yaw(
         0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32, 4.0 ∷ f32, 0.5 ∷ f32
     )

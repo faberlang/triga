@@ -28,8 +28,11 @@ placement to the bounded world using Faber state and the authoritative model.
   ray-to-`Box3` entry checks in `triga/src/triga.fab`. Triga also provides a
   yaw/pitch camera ray helper with the locked pitch clamp, yaw-derived
   horizontal forward/right vectors, and normalized planar movement deltas with
-  speed and frame time for first-person movement. It also provides min-max/min-size
-  and center-size `Box3` construction helpers for player and selection extents,
+  speed and frame time for first-person movement. The
+  `camera_yaw_pitch_facts` record packages input yaw, input pitch, clamped
+  pitch, view direction, planar basis, and ray for one camera state. It also
+  provides min-max/min-size and center-size `Box3` construction helpers for
+  player and selection extents,
   `Box3` overlap extents plus axis-specific overlap accessors for axis-ordered
   collision fixtures, `Box3` containment and union for aggregate bounds, `Box3`
   inflation for selection and collision tolerances, and a `RayBox3Hit` result

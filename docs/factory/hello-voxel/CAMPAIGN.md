@@ -168,7 +168,7 @@ reflection consumer admits compute kernels only.
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Triga math and transforms | Camera, ray, AABB, transform payload, collision extent, first-person planar movement, face-code unit quads, and indexed-cube view-projection facts are locked | Preserve and consume |
+| Triga math and transforms | Camera yaw/pitch fact records, ray, AABB, transform payload, collision extent, first-person planar movement, face-code unit quads, and indexed-cube view-projection facts are locked | Preserve and consume |
 | Triga scene identity | Stable scene-store source, resource transitions, lifecycle-state fixtures, lifecycle batch facts, visible resource facts, changed/removed lifecycle handles, visible draw packets, and draw-batch facts exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
 | Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, count, payload-byte, indexed draw batch, line draw-batch, visible-face accounting, colored quad append, colored quad finalization, colored mesh fact records, and colored mesh draw-batch facts are locked | Preserve and consume |
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
@@ -203,7 +203,8 @@ application mesher. Line draw-batch facts now package line count, draw scale,
 and upload byte counts for Goal 06 selection outlines.
 Material policy now locks side, depth-test, depth-write, transparency, RGB,
 alpha, alpha-test, and reusable pipeline fact records.
-Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
+Interaction math now locks yaw/pitch rays, packaged camera yaw/pitch fact
+records, and normalized planar movement deltas.
 Camera and transform facts now lock perspective projection, composed
 view-projection facts, plus the 32-float, 128-byte model then view-projection
 payload order.

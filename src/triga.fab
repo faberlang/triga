@@ -101,6 +101,16 @@ genus RayBox3Hit {
     Vector3 normal
 }
 
+genus CameraYawPitchFacts {
+    f32 yaw_degrees
+    f32 pitch_degrees
+    f32 clamped_pitch_degrees
+    Vector3 direction
+    Vector3 planar_forward
+    Vector3 planar_right
+    Ray ray
+}
+
 genus FaceQuad {
     Vector3 a
     Vector3 b
@@ -726,6 +736,23 @@ functio camera_ray_ex_yaw_pitch(
     redde Ray {
         origin = origin,
         direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees)
+    }
+}
+
+functio camera_yaw_pitch_facts(
+    de Vector3 origin,
+    f32 yaw_degrees,
+    f32 pitch_degrees
+) → CameraYawPitchFacts {
+    fixum f32 clamped_pitch ← camera_pitch_coercita(pitch_degrees)
+    redde CameraYawPitchFacts {
+        yaw_degrees = yaw_degrees,
+        pitch_degrees = pitch_degrees,
+        clamped_pitch_degrees = clamped_pitch,
+        direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees),
+        planar_forward = camera_forward_planus_ex_yaw(yaw_degrees),
+        planar_right = camera_right_ex_yaw(yaw_degrees),
+        ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees)
     }
 }
 
