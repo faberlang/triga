@@ -18,6 +18,14 @@ genus ResourceTransition {
     bivalens changed
 }
 
+genus ResourceLifecycleTransition {
+    numerus logical_index
+    ResourceHandle previous sponte
+    ResourceHandle current sponte
+    bivalens changed
+    bivalens removed
+}
+
 discretio SceneNodeKind {
     SceneGroup { },
     SceneMesh { ResourceHandle geometry, ResourceHandle material },
@@ -261,6 +269,69 @@ functio resource_transition_unchanged_handles(
         i ← i + 1
     }
     redde handles
+}
+
+functio resource_lifecycle_unchanged(de ResourceHandle handle) → ResourceLifecycleTransition {
+    redde ResourceLifecycleTransition {
+        logical_index = handle.index,
+        previous = handle,
+        current = handle,
+        changed = falsum,
+        removed = falsum
+    }
+}
+
+functio resource_lifecycle_replaced(de ResourceHandle handle) → ResourceLifecycleTransition {
+    redde ResourceLifecycleTransition {
+        logical_index = handle.index,
+        previous = handle,
+        current = resource_handle_next(handle),
+        changed = verum,
+        removed = falsum
+    }
+}
+
+functio resource_lifecycle_removed(de ResourceHandle handle) → ResourceLifecycleTransition {
+    redde ResourceLifecycleTransition {
+        logical_index = handle.index,
+        previous = handle,
+        changed = verum,
+        removed = verum
+    }
+}
+
+functio resource_lifecycle_created(de ResourceHandle handle) → ResourceLifecycleTransition {
+    redde ResourceLifecycleTransition {
+        logical_index = handle.index,
+        current = handle,
+        changed = verum,
+        removed = falsum
+    }
+}
+
+functio resource_lifecycle_valid(de ResourceLifecycleTransition transition) → bivalens {
+    si transition.previous est nihil et transition.current est nihil ergo redde falsum
+    si transition.previous non est nihil {
+        si transition.previous!.index ≠ transition.logical_index ergo redde falsum
+    }
+    si transition.current non est nihil {
+        si transition.current!.index ≠ transition.logical_index ergo redde falsum
+    }
+    si transition.removed {
+        redde transition.changed
+            et transition.previous non est nihil
+            et transition.current est nihil
+    }
+    si transition.changed ≡ falsum {
+        redde transition.previous non est nihil
+            et transition.current non est nihil
+            et transition.previous!.generation ≡ transition.current!.generation
+    }
+    si transition.previous est nihil {
+        redde transition.current non est nihil
+    }
+    si transition.current est nihil ergo redde falsum
+    redde transition.current!.generation ≡ transition.previous!.generation + 1
 }
 
 functio scene_store() → SceneStore {

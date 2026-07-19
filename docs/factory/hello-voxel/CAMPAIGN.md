@@ -169,7 +169,7 @@ reflection consumer admits compute kernels only.
 | Track | State | Next action |
 | --- | --- | --- |
 | Triga math and transforms | Camera, ray, AABB, collision extent, and first-person planar movement facts are locked | Preserve and consume |
-| Triga scene identity | Stable scene-store source and acceptance fixture exist | Reuse stable handles for application objects |
+| Triga scene identity | Stable scene-store source, resource transitions, and lifecycle-state fixtures exist | Reuse stable handles and lifecycle states for application objects and chunk resources |
 | Triga geometry layouts | First-draw position/color layout, topology, index format, vertex-step mode, draw, and count facts are locked | Preserve and consume |
 | Triga material policy | Opaque material, side, depth-test, and depth-write facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
@@ -196,6 +196,8 @@ count facts. Material policy now locks side, depth-test, and depth-write facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
 Ray/AABB hit facts now lock face codes and integer face offsets for edit
 placement derivation.
+Scene/resource facts now lock created, replaced, unchanged, and removed
+single-resource lifecycle states for empty and non-empty chunk remeshes.
 Radix red fixtures remain pending because Radix has active foreign
 implementation work.
 

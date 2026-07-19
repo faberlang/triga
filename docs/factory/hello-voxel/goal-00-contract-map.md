@@ -135,6 +135,10 @@ exposes the full validated current generation set after changed and unchanged
 transitions. `resource_transition_unchanged_indices` and
 `resource_transition_unchanged_handles` expose stable unaffected logical
 resource indices and generations for identity-preservation assertions.
+`ResourceLifecycleTransition` and its constructors lock unchanged, replaced,
+created, and removed single-resource states. Goal 07 can use removed lifecycle
+states to represent empty chunk remeshes with no current GPU resource while
+keeping actual retirement and queue completion host-owned.
 `scene_set_visible`,
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
 `scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,

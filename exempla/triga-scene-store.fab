@@ -106,6 +106,43 @@ incipit {
         "resource transition batch rejects invalid transitions"
     adfirma scene.resource_transition_unchanged_count([stable_transition, invalid_jump]) est nihil,
         "unchanged resource count rejects invalid transitions"
+    fixum scene.ResourceLifecycleTransition lifecycle_stable ←
+        scene.resource_lifecycle_unchanged(geometry)
+    fixum scene.ResourceLifecycleTransition lifecycle_replaced ←
+        scene.resource_lifecycle_replaced(material)
+    fixum scene.ResourceHandle new_geometry ← scene.ResourceHandle { index = 9, generation = 0 }
+    fixum scene.ResourceLifecycleTransition lifecycle_created ←
+        scene.resource_lifecycle_created(new_geometry)
+    fixum scene.ResourceLifecycleTransition lifecycle_gone ←
+        scene.resource_lifecycle_removed(geometry_next)
+    adfirma scene.resource_lifecycle_valid(lifecycle_stable),
+        "unchanged lifecycle transition validates"
+    adfirma scene.resource_lifecycle_valid(lifecycle_replaced),
+        "replacement lifecycle transition validates"
+    adfirma scene.resource_lifecycle_valid(lifecycle_created),
+        "created lifecycle transition validates"
+    adfirma scene.resource_lifecycle_valid(lifecycle_gone),
+        "removed lifecycle transition validates"
+    adfirma lifecycle_gone.current est nihil et lifecycle_gone.previous non est nihil,
+        "removed lifecycle transition has no current handle"
+    adfirma lifecycle_stable.current non est nihil
+        et lifecycle_stable.current!.generation ≡ geometry.generation,
+        "unchanged lifecycle preserves current generation"
+    adfirma lifecycle_replaced.current non est nihil
+        et lifecycle_replaced.current!.generation ≡ material.generation + 1,
+        "replacement lifecycle advances current generation"
+    adfirma lifecycle_created.previous est nihil
+        et lifecycle_created.current non est nihil,
+        "created lifecycle has no previous handle"
+    fixum scene.ResourceLifecycleTransition invalid_removed ← scene.ResourceLifecycleTransition {
+        logical_index = material.index,
+        previous = material,
+        current = material,
+        changed = verum,
+        removed = verum
+    }
+    adfirma scene.resource_lifecycle_valid(invalid_removed) ≡ falsum,
+        "removed lifecycle rejects current handles"
     fixum scene.SceneInsert root_step ← scene.scene_insert(
         scene.scene_store(), scene.scene_group("root")
     )

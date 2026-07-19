@@ -34,8 +34,11 @@ GPU buffer replacement, queue-safe retirement, and bounded lifecycle evidence.
   Current-handle extraction exposes the full post-transition generation set.
   Changed and unchanged handle extraction separates advanced chunks from stable
   chunks. These helpers support generation and stable unaffected-chunk
-  assertions without GPU lifetime policy. GPU lifetime and queue completion
-  remain host-owned.
+  assertions without GPU lifetime policy. Triga also provides
+  `ResourceLifecycleTransition` constructors for unchanged, replaced, created,
+  and removed single-resource states, so empty chunk remeshes can be represented
+  as no-current-resource facts before host disposal. GPU lifetime and queue
+  completion remain host-owned.
 - Host buffer creation/submission: Radix browser WebGPU runtime after HV-02.
 - Existing compute runtime already owns buffer usage and queue submission; its
   semantics are evidence, not permission to duplicate graphics lifecycle code.
