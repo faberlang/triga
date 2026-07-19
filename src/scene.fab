@@ -100,6 +100,13 @@ genus SceneVisibleMeshDrawBatchFacts {
     numerus transform_payload_byte_count
 }
 
+genus SceneVisibleMeshResourceFacts {
+    numerus mesh_count
+    numerus resource_pair_count
+    numerus geometry_handle_count
+    numerus material_handle_count
+}
+
 genus SceneMeshResourceTraversal {
     lista<SceneMeshResources> resources
     numerus remaining
@@ -1063,6 +1070,41 @@ functio scene_visible_mesh_material_handles(
         )
     si traversal est nihil ergo redde nihil
     redde traversal!.handles
+}
+
+functio scene_visible_mesh_resource_facts(
+    de SceneStore store,
+    de SceneHandle root
+) → SceneVisibleMeshResourceFacts ∪ nihil {
+    fixum numerus ∪ nihil mesh_count_result ← scene_visible_mesh_count(store, root)
+    si mesh_count_result est nihil ergo redde nihil
+    fixum numerus ∪ nihil pair_count_result ← scene_visible_mesh_resource_pair_count(
+        store, root
+    )
+    si pair_count_result est nihil ergo redde nihil
+    fixum lista<ResourceHandle> ∪ nihil geometry_handles_result ←
+        scene_visible_mesh_geometry_handles(store, root)
+    si geometry_handles_result est nihil ergo redde nihil
+    fixum lista<ResourceHandle> ∪ nihil material_handles_result ←
+        scene_visible_mesh_material_handles(store, root)
+    si material_handles_result est nihil ergo redde nihil
+    fixum lista<ResourceHandle> empty_geometry_handles ← vacua
+    fixum lista<ResourceHandle> empty_material_handles ← vacua
+    fixum lista<ResourceHandle> geometry_handles ←
+        geometry_handles_result vel empty_geometry_handles
+    fixum lista<ResourceHandle> material_handles ←
+        material_handles_result vel empty_material_handles
+    fixum numerus mesh_count ← mesh_count_result vel 0
+    fixum numerus pair_count ← pair_count_result vel 0
+    si mesh_count ≠ pair_count ergo redde nihil
+    si geometry_handles.longitudo() ≠ mesh_count ergo redde nihil
+    si material_handles.longitudo() ≠ mesh_count ergo redde nihil
+    redde SceneVisibleMeshResourceFacts {
+        mesh_count = mesh_count,
+        resource_pair_count = pair_count,
+        geometry_handle_count = geometry_handles.longitudo(),
+        material_handle_count = material_handles.longitudo()
+    }
 }
 
 functio scene_visible_mesh_transform_payloads(

@@ -50,10 +50,10 @@ derived per-chunk visible-face meshes while preserving the direct render path.
   application mesher does not own a duplicate winding table.
 - Reusable scene visibility state, effective visible traversal, visible
   mesh-handle traversal, visible mesh resource projection, visible resource-pair
-  counts, geometry/material handle projection, and visible mesh transform
-  payload counts/bytes, visible mesh draw packets, and visible draw batch facts
-  in `triga/src/scene.fab`, plus mesh world-matrix lookup for chunk draw
-  transforms, without host renderer policy.
+  counts, visible resource facts, geometry/material handle projection, and
+  visible mesh transform payload counts/bytes, visible mesh draw packets, and
+  visible draw batch facts in `triga/src/scene.fab`, plus mesh world-matrix
+  lookup for chunk draw transforms, without host renderer policy.
 - No current voxel or chunk implementation exists in the examples repository.
 
 ## Stage Graph

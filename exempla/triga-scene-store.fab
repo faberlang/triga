@@ -362,6 +362,8 @@ incipit {
         scene.scene_visible_mesh_geometry_handles(attached_store, root_step.handle)
     fixum lista<scene.ResourceHandle> ∪ nihil default_material_handles ←
         scene.scene_visible_mesh_material_handles(attached_store, root_step.handle)
+    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil default_resource_facts ←
+        scene.scene_visible_mesh_resource_facts(attached_store, root_step.handle)
     fixum triga.Matrix4 view_projection ← triga.matrix4_scala(
         triga.Vector3 { x = 2.0, y = 2.0, z = 2.0 }
     )
@@ -399,6 +401,12 @@ incipit {
         et default_material_handles non est nihil
         et (default_resource_pair_count vel 999) ≡ 2,
         "visible mesh resource projections expose one pair per visible mesh"
+    adfirma default_resource_facts non est nihil
+        et default_resource_facts!.mesh_count ≡ 2
+        et default_resource_facts!.resource_pair_count ≡ 2
+        et default_resource_facts!.geometry_handle_count ≡ 2
+        et default_resource_facts!.material_handle_count ≡ 2,
+        "visible mesh resource facts package visible resource counts"
     adfirma default_visible_resources![0].node.index ≡ mesh_step.handle.index
         et default_visible_resources![0].geometry.index ≡ geometry.index
         et default_visible_resources![0].material.index ≡ material.index
@@ -470,6 +478,8 @@ incipit {
         scene.scene_visible_mesh_resource_pair_count(shared_hidden_store, root_step.handle)
     fixum lista<scene.ResourceHandle> ∪ nihil hidden_geometry_handles ←
         scene.scene_visible_mesh_geometry_handles(shared_hidden_store, root_step.handle)
+    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil hidden_resource_facts ←
+        scene.scene_visible_mesh_resource_facts(shared_hidden_store, root_step.handle)
     fixum numerus ∪ nihil hidden_transform_payload_count ←
         scene.scene_visible_mesh_transform_payload_count(
             shared_hidden_store, root_step.handle, view_projection
@@ -500,6 +510,12 @@ incipit {
         et hidden_geometry_handles non est nihil
         et (hidden_resource_pair_count vel 999) ≡ 1,
         "visible mesh resource projections omit hidden mesh nodes"
+    adfirma hidden_resource_facts non est nihil
+        et hidden_resource_facts!.mesh_count ≡ 1
+        et hidden_resource_facts!.resource_pair_count ≡ 1
+        et hidden_resource_facts!.geometry_handle_count ≡ 1
+        et hidden_resource_facts!.material_handle_count ≡ 1,
+        "visible mesh resource facts omit hidden mesh nodes"
     adfirma hidden_visible_resources![0].node.index ≡ mesh_step.handle.index
         et hidden_visible_resources![0].geometry.index ≡ geometry.index,
         "visible mesh resources omit hidden mesh resources"
@@ -541,6 +557,8 @@ incipit {
         scene.scene_visible_mesh_resource_pair_count(root_hidden_store, root_step.handle)
     fixum lista<scene.ResourceHandle> ∪ nihil root_hidden_geometry_handles ←
         scene.scene_visible_mesh_geometry_handles(root_hidden_store, root_step.handle)
+    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil root_hidden_resource_facts ←
+        scene.scene_visible_mesh_resource_facts(root_hidden_store, root_step.handle)
     fixum numerus ∪ nihil root_hidden_transform_payload_count ←
         scene.scene_visible_mesh_transform_payload_count(
             root_hidden_store, root_step.handle, view_projection
@@ -569,6 +587,12 @@ incipit {
     adfirma (root_hidden_resource_pair_count vel 999) ≡ 0
         et root_hidden_geometry_handles non est nihil,
         "hidden ancestors suppress visible mesh resource projections"
+    adfirma root_hidden_resource_facts non est nihil
+        et root_hidden_resource_facts!.mesh_count ≡ 0
+        et root_hidden_resource_facts!.resource_pair_count ≡ 0
+        et root_hidden_resource_facts!.geometry_handle_count ≡ 0
+        et root_hidden_resource_facts!.material_handle_count ≡ 0,
+        "visible mesh resource facts preserve empty hidden-root counts"
     adfirma (root_hidden_transform_payload_count vel 999) ≡ 0
         et (root_hidden_transform_payload_bytes vel 999) ≡ 0,
         "hidden ancestors suppress visible mesh transform payloads"

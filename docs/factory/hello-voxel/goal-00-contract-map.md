@@ -214,6 +214,7 @@ host-facing lifecycle evidence.
 `scene_visible_traverse`, `scene_visible_mesh_traverse`, and
 `scene_visible_mesh_resources`, `scene_visible_mesh_resource_pair_count`,
 `scene_visible_mesh_geometry_handles`, `scene_visible_mesh_material_handles`,
+`scene_visible_mesh_resource_facts`,
 `scene_visible_mesh_transform_payloads`, `scene_visible_mesh_draw_packets`,
 `scene_mesh_world_matrix`, and `scene_effective_visible` define source-level
 visibility filtering, renderable resource projection, transform payload

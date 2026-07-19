@@ -45,9 +45,9 @@ field, or platform-owned value.
 **Evidence**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md) and
 `triga/exempla/hello-voxel-first-draw-facts.fab`. The Triga evidence now covers
 first-draw layout, material policy, transform payload order, scene resource
-lifecycle handle and batch facts, visible mesh draw packets, face-code metadata,
-face-code unit quads, visible-face mesh fact records, colored quad
-finalization, and colored mesh fact derivation.
+lifecycle handle and batch facts, visible resource facts, visible mesh draw
+packets, face-code metadata, face-code unit quads, visible-face mesh fact
+records, colored quad finalization, and colored mesh fact derivation.
 
 ### HV-00B - Red Admission Fixtures
 

@@ -41,7 +41,7 @@ runtime paths, update only earned evidence, and run an independent closeout audi
 ### HV-08A - Unified Proof Harness
 
 **Output**: one build/serve/check flow and proof state containing artifact,
-pipeline, frame, interaction, dirty-chunk, and resource facts.
+pipeline, frame, interaction, dirty-chunk, visible-resource, and lifecycle facts.
 **Write scope**: Hello Voxel package/proof and narrowly required producer scripts.
 **Gate**: static checks and actual browser checks are separately labeled and
 consume the same artifact identity.
