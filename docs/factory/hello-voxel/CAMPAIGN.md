@@ -194,6 +194,8 @@ browser fact required by the first indexed draw.
 locks first-draw layout, topology, index format, vertex-step mode, draw, and
 count facts. Material policy now locks side, depth-test, and depth-write facts.
 Interaction math now locks yaw/pitch rays and normalized planar movement deltas.
+Ray/AABB hit facts now lock face codes and integer face offsets for edit
+placement derivation.
 Radix red fixtures remain pending because Radix has active foreign
 implementation work.
 

@@ -243,6 +243,10 @@ incipit {
     }
     adfirma (triga.ray_box3_hit_face_code(ray_box_hit_value) vel 0) ≡ 1,
         "ray box hit face code records negative x entry"
+    adfirma (triga.ray_box3_hit_face_offset_x(ray_box_hit_value) vel 0) ≡ -1
+        et (triga.ray_box3_hit_face_offset_y(ray_box_hit_value) vel 99) ≡ 0
+        et (triga.ray_box3_hit_face_offset_z(ray_box_hit_value) vel 99) ≡ 0,
+        "ray box hit face offset records negative x placement direction"
     fixum triga.Ray negative_ray ← triga.Ray {
         origin = triga.vector3(5.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -259,6 +263,58 @@ incipit {
     }
     adfirma (triga.ray_box3_hit_face_code(negative_hit_value) vel 0) ≡ 2,
         "ray box hit face code records positive x entry"
+    adfirma (triga.ray_box3_hit_face_offset_x(negative_hit_value) vel 0) ≡ 1
+        et (triga.ray_box3_hit_face_offset_y(negative_hit_value) vel 99) ≡ 0
+        et (triga.ray_box3_hit_face_offset_z(negative_hit_value) vel 99) ≡ 0,
+        "ray box hit face offset records positive x placement direction"
+    fixum triga.Ray y_ray ← triga.Ray {
+        origin = triga.vector3(2.0 ∷ f32, -3.0 ∷ f32, 0.0 ∷ f32),
+        direction = triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
+    }
+    fixum triga.RayBox3Hit ∪ nihil y_hit ← triga.ray_box3_hit(
+        y_ray, shifted_bounds, 6.0 ∷ f32
+    )
+    adfirma y_hit non est nihil, "ray box hit records y-axis entry"
+    fixum triga.RayBox3Hit y_hit_value ← triga.RayBox3Hit {
+        distance = y_hit!.distance,
+        point = y_hit!.point,
+        normal = y_hit!.normal
+    }
+    adfirma (triga.ray_box3_hit_face_code(y_hit_value) vel 0) ≡ 3
+        et (triga.ray_box3_hit_face_offset_y(y_hit_value) vel 0) ≡ -1,
+        "ray box hit face offset records negative y placement direction"
+    fixum triga.Ray z_ray ← triga.Ray {
+        origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 3.0 ∷ f32),
+        direction = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
+    }
+    fixum triga.RayBox3Hit ∪ nihil z_hit ← triga.ray_box3_hit(
+        z_ray, shifted_bounds, 6.0 ∷ f32
+    )
+    adfirma z_hit non est nihil, "ray box hit records z-axis entry"
+    fixum triga.RayBox3Hit z_hit_value ← triga.RayBox3Hit {
+        distance = z_hit!.distance,
+        point = z_hit!.point,
+        normal = z_hit!.normal
+    }
+    adfirma (triga.ray_box3_hit_face_code(z_hit_value) vel 0) ≡ 6
+        et (triga.ray_box3_hit_face_offset_z(z_hit_value) vel 0) ≡ 1,
+        "ray box hit face offset records positive z placement direction"
+    fixum triga.RayBox3Hit y_positive_face ← triga.RayBox3Hit {
+        distance = 1.0 ∷ f32,
+        point = zero,
+        normal = triga.vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
+    }
+    adfirma (triga.ray_box3_hit_face_code(y_positive_face) vel 0) ≡ 4
+        et (triga.ray_box3_hit_face_offset_y(y_positive_face) vel 0) ≡ 1,
+        "ray box hit face offset records positive y placement direction"
+    fixum triga.RayBox3Hit z_negative_face ← triga.RayBox3Hit {
+        distance = 1.0 ∷ f32,
+        point = zero,
+        normal = triga.vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
+    }
+    adfirma (triga.ray_box3_hit_face_code(z_negative_face) vel 0) ≡ 5
+        et (triga.ray_box3_hit_face_offset_z(z_negative_face) vel 0) ≡ -1,
+        "ray box hit face offset records negative z placement direction"
     fixum triga.Ray inside_ray ← triga.Ray {
         origin = triga.vector3(2.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32),
         direction = triga.vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
@@ -277,6 +333,10 @@ incipit {
     }
     adfirma triga.ray_box3_hit_face_code(inside_hit_value) est nihil,
         "inside ray box hit has no entry face code"
+    adfirma triga.ray_box3_hit_face_offset_x(inside_hit_value) est nihil
+        et triga.ray_box3_hit_face_offset_y(inside_hit_value) est nihil
+        et triga.ray_box3_hit_face_offset_z(inside_hit_value) est nihil,
+        "inside ray box hit has no edit placement offset"
     fixum _ ray_miss ← triga.ray_intersecat_box3(ray, shifted_bounds, 0.5 ∷ f32)
     adfirma ray_miss est nihil, "ray rejects hits beyond maximum distance"
     adfirma triga.ray_box3_hit(ray, shifted_bounds, 0.5 ∷ f32) est nihil,

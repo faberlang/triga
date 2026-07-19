@@ -835,6 +835,33 @@ functio ray_box3_hit_face_code(de RayBox3Hit hit) → numerus ∪ nihil {
     redde nihil
 }
 
+functio ray_box3_hit_face_offset_x(de RayBox3Hit hit) → numerus ∪ nihil {
+    fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
+    si code_result est nihil ergo redde nihil
+    fixum numerus code ← code_result vel 0
+    si code ≡ 1 ergo redde -1
+    si code ≡ 2 ergo redde 1
+    redde 0
+}
+
+functio ray_box3_hit_face_offset_y(de RayBox3Hit hit) → numerus ∪ nihil {
+    fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
+    si code_result est nihil ergo redde nihil
+    fixum numerus code ← code_result vel 0
+    si code ≡ 3 ergo redde -1
+    si code ≡ 4 ergo redde 1
+    redde 0
+}
+
+functio ray_box3_hit_face_offset_z(de RayBox3Hit hit) → numerus ∪ nihil {
+    fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
+    si code_result est nihil ergo redde nihil
+    fixum numerus code ← code_result vel 0
+    si code ≡ 5 ergo redde -1
+    si code ≡ 6 ergo redde 1
+    redde 0
+}
+
 functio matrix4_identitas() → Matrix4 {
     redde Matrix4 { elements = [
         1.0, 0.0, 0.0, 0.0,
