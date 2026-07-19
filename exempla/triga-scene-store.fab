@@ -201,6 +201,17 @@ incipit {
         "default visible traversal succeeds"
     adfirma scene.scene_effective_visible(attached_store, shared_mesh_step.handle),
         "visible traversal includes all default visible nodes"
+    fixum lista<scene.SceneHandle> ∪ nihil default_visible_meshes ←
+        scene.scene_visible_mesh_traverse(attached_store, root_step.handle)
+    fixum numerus ∪ nihil default_visible_mesh_count ← scene.scene_visible_mesh_count(
+        attached_store, root_step.handle
+    )
+    adfirma default_visible_meshes non est nihil
+        et default_visible_mesh_count non est nihil
+        et (default_visible_mesh_count vel 999) ≡ 2
+        et default_visible_meshes![0].index ≡ mesh_step.handle.index
+        et default_visible_meshes![1].index ≡ shared_mesh_step.handle.index,
+        "visible mesh traversal exposes renderable mesh handles in scene order"
     fixum scene.SceneStore ∪ nihil shared_hidden ← scene.scene_set_visible(
         attached_store, shared_mesh_step.handle, falsum
     )
@@ -214,6 +225,16 @@ incipit {
     adfirma scene.scene_effective_visible(shared_hidden_store, shared_mesh_step.handle) ≡ falsum et
         scene.scene_effective_visible(shared_hidden_store, camera_step.handle),
         "visible traversal omits explicitly hidden nodes"
+    fixum lista<scene.SceneHandle> ∪ nihil hidden_visible_meshes ←
+        scene.scene_visible_mesh_traverse(shared_hidden_store, root_step.handle)
+    fixum numerus ∪ nihil hidden_visible_mesh_count ← scene.scene_visible_mesh_count(
+        shared_hidden_store, root_step.handle
+    )
+    adfirma hidden_visible_meshes non est nihil
+        et hidden_visible_mesh_count non est nihil
+        et (hidden_visible_mesh_count vel 999) ≡ 1
+        et hidden_visible_meshes![0].index ≡ mesh_step.handle.index,
+        "visible mesh traversal omits hidden mesh nodes"
     adfirma scene.scene_find_name(shared_hidden_store, root_step.handle, "shared-mesh") non est nihil,
         "name lookup still sees hidden nodes"
     fixum scene.SceneStore ∪ nihil root_hidden ← scene.scene_set_visible(
@@ -229,6 +250,16 @@ incipit {
     adfirma scene.scene_effective_visible(root_hidden_store, root_step.handle) ≡ falsum et
         scene.scene_effective_visible(root_hidden_store, mesh_step.handle) ≡ falsum,
         "hidden parent suppresses descendants"
+    fixum lista<scene.SceneHandle> ∪ nihil root_hidden_meshes ← scene.scene_visible_mesh_traverse(
+        root_hidden_store, root_step.handle
+    )
+    fixum numerus ∪ nihil root_hidden_mesh_count ← scene.scene_visible_mesh_count(
+        root_hidden_store, root_step.handle
+    )
+    adfirma root_hidden_meshes non est nihil
+        et root_hidden_mesh_count non est nihil
+        et (root_hidden_mesh_count vel 999) ≡ 0,
+        "visible mesh traversal respects hidden ancestors"
     fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
     fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }

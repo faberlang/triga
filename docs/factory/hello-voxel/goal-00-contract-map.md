@@ -117,9 +117,10 @@ affected-chunk evidence in Goal 07. `resource_transition_unchanged_indices` and
 `resource_transition_unchanged_handles` expose stable unaffected logical
 resource indices and generations for identity-preservation assertions.
 `scene_set_visible`,
-`scene_visible_traverse`, and `scene_effective_visible` define source-level
-visibility filtering without host renderer policy. Goal 05 can use that
-contract for visible chunk draw filtering. The scene store does not define
+`scene_visible_traverse`, `scene_visible_mesh_traverse`, and
+`scene_effective_visible` define source-level visibility filtering without host
+renderer policy. Goal 05 can use that contract for visible chunk draw filtering
+and renderable mesh-handle extraction. The scene store does not define
 voxel storage, dirty chunk sets, or GPU lifetime policy. Those remain
 application and host facts.
 

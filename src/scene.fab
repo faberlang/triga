@@ -56,6 +56,11 @@ genus SceneTraversal {
     numerus remaining
 }
 
+genus SceneCount {
+    numerus count
+    numerus remaining
+}
+
 functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
 }
@@ -422,6 +427,133 @@ functio scene_visible_traverse(
     redde traversal!.handles
 }
 
+functio _scene_traverse_visible_mesh_preorder(
+    de SceneStore store,
+    de SceneHandle handle,
+    lista<SceneHandle> handles,
+    numerus remaining,
+    bivalens parent_visible
+) → SceneTraversal ∪ nihil {
+    si remaining ≡ 0 ergo redde nihil
+    si _scene_traversal_contains(handles, handle) ergo redde nihil
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    fixum bivalens effective_visible ← parent_visible et node.visible
+    varia lista<SceneHandle> updated_handles ← handles
+    si effective_visible {
+        discerne node.kind {
+            casu SceneMesh fixum geometry, material {
+                updated_handles.appende(SceneHandle {
+                    index = handle.index,
+                    generation = handle.generation
+                })
+            }
+            casu SceneGroup { }
+            casu SceneCamera { }
+            casu SceneLight { }
+        }
+    }
+    varia SceneTraversal traversal ← SceneTraversal {
+        handles = updated_handles, remaining = remaining - 1
+    }
+    varia numerus i ← 0
+    dum i < node.children.longitudo() {
+        fixum SceneTraversal ∪ nihil current ← _scene_traverse_visible_mesh_preorder(
+            store, node.children[i], traversal.handles, traversal.remaining, effective_visible
+        )
+        si current est nihil ergo redde nihil
+        fixum SceneTraversal current_value ← SceneTraversal {
+            handles = current!.handles, remaining = current!.remaining
+        }
+        traversal ← SceneTraversal {
+            handles = current_value.handles, remaining = current_value.remaining
+        }
+        i ← i + 1
+    }
+    redde traversal
+}
+
+functio scene_visible_mesh_traverse(
+    de SceneStore store,
+    de SceneHandle root
+) → lista<SceneHandle> ∪ nihil {
+    fixum SceneTraversal ∪ nihil traversal ← _scene_traverse_visible_mesh_preorder(
+        store, root, vacua, store.slots.longitudo(), verum
+    )
+    si traversal est nihil ergo redde nihil
+    redde traversal!.handles
+}
+
+functio _scene_count_visible_mesh_preorder(
+    de SceneStore store,
+    de SceneHandle handle,
+    lista<SceneHandle> seen,
+    numerus remaining,
+    bivalens parent_visible
+) → SceneCount ∪ nihil {
+    si remaining ≡ 0 ergo redde nihil
+    si _scene_traversal_contains(seen, handle) ergo redde nihil
+    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
+    si node_result est nihil ergo redde nihil
+    fixum SceneNode node ← SceneNode {
+        name = node_result!.name, kind = node_result!.kind,
+        parent = node_result!.parent, children = node_result!.children,
+        visible = node_result!.visible,
+        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
+        world_dirty = node_result!.world_dirty
+    }
+    fixum bivalens effective_visible ← parent_visible et node.visible
+    varia lista<SceneHandle> updated_seen ← seen
+    updated_seen.appende(SceneHandle { index = handle.index, generation = handle.generation })
+    varia numerus count ← 0
+    si effective_visible {
+        discerne node.kind {
+            casu SceneMesh fixum geometry, material { count ← 1 }
+            casu SceneGroup { }
+            casu SceneCamera { }
+            casu SceneLight { }
+        }
+    }
+    varia SceneCount result ← SceneCount { count = count, remaining = remaining - 1 }
+    varia numerus i ← 0
+    dum i < node.children.longitudo() {
+        fixum SceneCount ∪ nihil child_count ← _scene_count_visible_mesh_preorder(
+            store, node.children[i], updated_seen, result.remaining, effective_visible
+        )
+        si child_count est nihil ergo redde nihil
+        fixum SceneCount child_value ← SceneCount {
+            count = child_count!.count, remaining = child_count!.remaining
+        }
+        result ← SceneCount {
+            count = result.count + child_value.count,
+            remaining = child_value.remaining
+        }
+        updated_seen.appende(SceneHandle {
+            index = node.children[i].index,
+            generation = node.children[i].generation
+        })
+        i ← i + 1
+    }
+    redde result
+}
+
+functio scene_visible_mesh_count(
+    de SceneStore store,
+    de SceneHandle root
+) → numerus ∪ nihil {
+    fixum SceneCount ∪ nihil count_result ← _scene_count_visible_mesh_preorder(
+        store, root, vacua, store.slots.longitudo(), verum
+    )
+    si count_result est nihil ergo redde nihil
+    redde count_result!.count
+}
 functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {
     varia SceneHandle cursor ← SceneHandle { index = handle.index, generation = handle.generation }
     varia numerus remaining ← store.slots.longitudo() + 1
