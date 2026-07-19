@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [[ -n "${RADIX_ROOT:-}" ]]; then
+  RADIX="$RADIX_ROOT"
+elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
+  RADIX="$ROOT/../radix"
+else
+  RADIX="$ROOT/../../../radix"
+fi
+
+RADIX_BIN="$RADIX/target/debug/radix"
+if [[ ! -x "$RADIX_BIN" ]]; then
+  echo "check-hello-voxel-contract: missing radix binary at $RADIX_BIN" >&2
+  echo "build radix first or set RADIX_ROOT" >&2
+  exit 1
+fi
+
+export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
+echo "check-hello-voxel-contract: source hygiene"
+"$ROOT/scripta/check-source"
+
+echo "check-hello-voxel-contract: first-draw geometry facts"
+"$RADIX_BIN" check "$ROOT/exempla/hello-voxel-first-draw-facts.fab"
+
+echo "check-hello-voxel-contract: geometry and visible-face facts"
+"$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
+
+echo "check-hello-voxel-contract: material facts"
+"$RADIX_BIN" check "$ROOT/exempla/triga-basics.fab"
+
+echo "check-hello-voxel-contract: transform and interaction facts"
+"$RADIX_BIN" check "$ROOT/exempla/triga-transforms.fab"
+
+echo "check-hello-voxel-contract: scene/resource and draw-packet facts"
+"$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
+
+echo "check-hello-voxel-contract: runtime dependency inventory"
+"$ROOT/scripta/check-hello-voxel-runtime-deps"
+
+echo "check-hello-voxel-contract: capability ledger honesty"
+"$ROOT/scripta/check-capabilities"
+
+echo "check-hello-voxel-contract: ok"

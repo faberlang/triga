@@ -88,6 +88,8 @@ clean break; they must not be written speculatively in parallel.
 ## Validation
 
 - All named Triga source, compile, transform, inventory, and capability checks.
+- `./scripta/check-hello-voxel-contract` for the Triga-owned pre-browser
+  contract gate.
 - Radix focused compiler tests and `./scripta/webgpu-browser-proof check`.
 - Faber browser package tests and deterministic rebuild comparison.
 - Hello Voxel actual browser flow with structural and pixel evidence.

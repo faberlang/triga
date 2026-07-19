@@ -275,6 +275,7 @@ Use these checks for this Triga-side contract pass:
 
 ```bash
 git -C triga diff --check
+./scripta/check-hello-voxel-contract
 ./scripta/check-source
 ./scripta/check-compile
 ```
