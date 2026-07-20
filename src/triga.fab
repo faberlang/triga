@@ -249,8 +249,8 @@ genus MeshGeometry {
     lista<f32> colors sponte
     lista<f32> tangents sponte
     lista<u32> indices sponte
-    numerus<u32> draw_start = 0
-    numerus<u32> draw_count sponte
+    numerus draw_start = 0
+    numerus draw_count sponte
 }
 
 # =========================================================================

@@ -95,7 +95,8 @@ incipit {
         emissive_intensity = 0.0 ∷ f32
     }
     fixum triga.MeshGeometry empty_geometry ← triga.MeshGeometry {
-        positions = vacua, indices = vacua
+        positions = vacua, indices = vacua,
+        draw_start = 0
     }
     fixum triga.Mesh mesh ← triga.Mesh {
         base = standalone,
