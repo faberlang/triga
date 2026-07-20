@@ -23,7 +23,7 @@ pipeline integration remain future work.
 | -------- | ----- | ------ |
 | **Math** | `Vector2`, `Vector3`, `Vector4`, `Matrix3`, `Matrix4`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray` | THREE.Vector2 etc. |
 | **Scene Graph** | `Object3D`, `Scene`, `PerspectiveCamera`, `OrthographicCamera`, `Light`, `AmbientLight`, `DirectionalLight`, `PointLight` | THREE.Object3D etc. |
-| **Geometry** | `BufferGeometry` (SoA layout: positions, normals, uvs, indices, …) | THREE.BufferGeometry |
+| **Geometry** | `MeshGeometry` (SoA layout: positions, normals, uvs, indices, …) | THREE.BufferGeometry |
 | **Material** | `Material`, `MeshStandardMaterial` (PBR), `MeshBasicMaterial`, `MeshPhongMaterial` | THREE.Material etc. |
 | **Mesh** | `Mesh` (Object3D + geometry + material) | THREE.Mesh |
 

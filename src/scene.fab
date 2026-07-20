@@ -738,6 +738,23 @@ functio _scene_traversal_contains(
     redde falsum
 }
 
+# TRAVERSAL — Four preorder variants that share the same structural skeleton:
+# node fetch → field copy → seen-set guard → visitor action → child iteration.
+# Every variant below must keep these steps in lockstep. If you fix a bug in
+# the skeleton (e.g., seen-set disposal, remaining-counter, child iteration
+# order), apply the fix to ALL FOUR.
+#
+#   (1) _scene_traverse_preorder        — unfiltered; calls visitor callback
+#   (2) _scene_traverse_visible_preorder — filters to visible nodes only
+#   (3) _scene_traverse_visible_mesh_preorder — visible mesh-node handles
+#   (4) _scene_traverse_visible_mesh_resources_preorder — visible mesh
+#       resource handles + transition facts
+#
+# WHEN FABER GAINS CLOSURES/VISITORS: collapse these into a single
+# scene_traverse(store, root, filter, accumulator) and delete the copies.
+# Until then, treat this block as generated code — change the template, not
+# one copy. See also DEFER-121 (sub-module split gated on Faber module system).
+
 functio _scene_traverse_preorder(
     de SceneStore store,
     de SceneHandle handle,

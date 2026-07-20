@@ -3,6 +3,18 @@
 # Shapes modeled closely after three.js abstractions for LLM familiarity
 # and migration ease. Not a binding to three.js — these are native Faber
 # types that define the data contract between compiled Faber output and
+#
+# MODULE BOUNDARY (geometry.fab vs triga.fab):
+#   - geometry.fab: rendering-pipeline geometry (BufferGeometry with
+#     list-of-attributes, indexed primitives, draw commands, vertex layouts).
+#     Consumed by radix MIR for GPU buffer layout computation.
+#   - triga.fab: shape contracts (MeshGeometry/three.js mirror), spatial
+#     math (Box3/Sphere with Vector3 sub-structs), material pipeline facts.
+#     The triga.fab Bounding* family (Box3, Sphere) is for spatial queries
+#     and collision detection; geometry.fab's BoundingBox/BoundingSphere is
+#     for mesh payload computation.
+#   - Do not add render-pipeline types to triga.fab; do not add three.js
+#     mirror types to geometry.fab.
 # the GPU runtime host.
 #
 # NOTE: genus types live at file top level (the parser does not support
@@ -224,13 +236,12 @@ genus PointLight {
 # =========================================================================
 # GEOMETRY
 #
-# Mirror THREE.BufferGeometry, THREE.BufferAttribute
-#
-# Structure-of-arrays layout: each attribute is a flat lista<f32>.
-# This maps directly to WGSL storage buffers and GPU buffer uploads.
+# Mirror THREE.BufferGeometry as MeshGeometry (renamed to avoid collision with
+# geometry.fab's rendering-pipeline BufferGeometry, which uses a list-of-attributes
+# layout instead of the flat structure-of-arrays layout modeled here).
 # =========================================================================
 
-genus BufferGeometry {
+genus MeshGeometry {
     lista<f32> positions
     lista<f32> normals sponte
     lista<f32> uvs sponte
@@ -298,7 +309,7 @@ genus MeshPhongMaterial {
 
 genus Mesh {
     Object3D base
-    BufferGeometry geometry
+    MeshGeometry geometry
     MeshStandardMaterial ∪ MeshBasicMaterial ∪ MeshPhongMaterial material sponte
 }
 
@@ -1157,31 +1168,27 @@ functio ray_box3_hit_face_code(de RayBox3Hit hit) → numerus ∪ nihil {
     redde nihil
 }
 
+# Convenience: delegates to the canonical face_code_offset_* functions.
+# Prefer face_code_x_offset(code) / face_code_y_offset(code) / face_code_z_offset(code)
+# when you already have the face code. These ray_hit wrappers exist only for
+# callers that start from a RayBox3Hit.
+
 functio ray_box3_hit_face_offset_x(de RayBox3Hit hit) → numerus ∪ nihil {
     fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
     si code_result est nihil ergo redde nihil
-    fixum numerus code ← code_result vel 0
-    si code ≡ 1 ergo redde -1
-    si code ≡ 2 ergo redde 1
-    redde 0
+    redde face_code_x_offset(code_result vel 0)
 }
 
 functio ray_box3_hit_face_offset_y(de RayBox3Hit hit) → numerus ∪ nihil {
     fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
     si code_result est nihil ergo redde nihil
-    fixum numerus code ← code_result vel 0
-    si code ≡ 3 ergo redde -1
-    si code ≡ 4 ergo redde 1
-    redde 0
+    redde face_code_y_offset(code_result vel 0)
 }
 
 functio ray_box3_hit_face_offset_z(de RayBox3Hit hit) → numerus ∪ nihil {
     fixum numerus ∪ nihil code_result ← ray_box3_hit_face_code(hit)
     si code_result est nihil ergo redde nihil
-    fixum numerus code ← code_result vel 0
-    si code ≡ 5 ergo redde -1
-    si code ≡ 6 ergo redde 1
-    redde 0
+    redde face_code_z_offset(code_result vel 0)
 }
 
 functio ray_box3_hit_face_facts(de RayBox3Hit hit) → FaceCodeFacts ∪ nihil {
