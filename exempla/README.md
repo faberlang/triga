@@ -19,6 +19,7 @@ exempla/
   triga-math-edge-cases.fab     # NaN/Infinity, degenerate-input, boundary tests
   triga-scene-store-empty.fab   # Empty SceneStore edge case tests
   triga-graphics-pipeline-facts.fab # Shader stages, pipeline reflection, and Goal 01 contract facts
+  triga-vertex-fragment-stub.fab # @vertex / @fragment annotation stubs for Goal 01
   threejs-host-demo/            # Browser fixture: Triga scene data rendered by three.js
 ```
 

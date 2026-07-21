@@ -1,0 +1,74 @@
++++
+term = "triga-vertex-fragment-stub"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Minimal @vertex and @fragment function stubs for Goal 01 source graphics pipeline. Demonstrates the annotation contract that radix will lower to MirKernelShaderStage::Vertex and ::Fragment."
++++
+
+# exempla/triga-vertex-fragment-stub.fab
+#
+# Minimal @vertex / @fragment stub fixture for Goal 01 (Source Graphics Pipeline).
+#
+# These functions use the Triga geometry and material types that the shader
+# pipeline will consume. The function bodies are stubs — Goal 01 implements
+# the vertex IO (position/color inputs, builtin position + varying output)
+# and fragment IO (varying input, color target output).
+#
+# LOCKED CONTRACT (goals/01-source-graphics-pipeline.md):
+#   Vertex stage:
+#     input  loc 0: float32x3 position (stride 12, offset 0, vertex step)
+#     input  loc 1: float32x3 color    (stride 12, offset 0, vertex step)
+#     output builtin: position
+#     output loc 0: float32x3 color (varying to fragment)
+#   Fragment stage:
+#     input  loc 0: float32x3 color (varying from vertex)
+#     output loc 0: float32x4 RGBA with alpha = 1.0
+#   Resources:
+#     group 0 binding 0: storage buffer (read-only, 32 f32 values)
+#       model matrix (column-major, 16 f32) then
+#       view-projection matrix (column-major, 16 f32)
+#   Pipeline:
+#     primitive: triangle-list, no culling, one instance
+#     color target: bgra8unorm
+#     depth: depth24plus, write enabled, compare less
+#     index: u32, indexed draw
+
+importa ex "triga:triga" privata triga
+
+
+@ vertex
+functio hello_voxel_vertex() → vacuum {
+    redde
+}
+
+
+@ fragment
+functio hello_voxel_fragment() → vacuum {
+    redde
+}
+
+
+incipit {
+    adfirma verum,
+        "@vertex and @fragment stubs parse and lower without error"
+}
+
+
+#
+# These stubs validate that @vertex and @fragment annotations parse correctly
+# and lower to MirKernelShaderStage::Vertex and ::Fragment via the HIR
+# is_vertex / is_fragment flags. The empty bodies are intentional — Goal 01
+# fills in the vertex IO, builtin position emission, varying pass-through,
+# and fragment color output.
+#
+# After Goal 01:
+#   - Vertex function takes position (loc 0) and color (loc 1) inputs
+#   - Vertex returns builtin position + loc-0 varied color
+#   - Fragment takes loc-0 color input and returns loc-0 RGBA
+#
+# Validation (when radix compiles):
+#   faber run --compile exempla/triga-vertex-fragment-stub.fab
+#   radix emit exempla/triga-vertex-fragment-stub.fab --format wgsl
+#   radix emit exempla/triga-vertex-fragment-stub.fab --format json
+#
