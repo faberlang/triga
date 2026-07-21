@@ -67,8 +67,33 @@ incipit {
 #   - Vertex returns builtin position + loc-0 varied color
 #   - Fragment takes loc-0 color input and returns loc-0 RGBA
 #
-# Validation (when radix compiles):
+# CURRENT STATE (2026-07-21):
+#   radix check:  PASS (annotations parse, HIR flags set)
+#   radix mir:    PASS (three functions lowered: vertex, fragment, incipit)
+#   faber run:    PASS (compiles through triga package pipeline)
+#   radix emit --target wgsl-text: FAIL
+#     error: CODEGEN001:mir_wgsl_vertex_source_layout_missing
+#     MIR-to-WGSL unsupported: wgsl vertex entry requires source vertex
+#     layout facts
+#
+# STUB-TO-RENDER GAP:
+#   The current stubs compile and lower but cannot emit WGSL because:
+#   1. Vertex function has no typed input parameters — WGSL backend needs
+#      parameter types to generate @location(N) inputs.
+#   2. No vertex layout facts are attached — the driver needs to know
+#      buffer stride, offset, format, and step mode per input.
+#   3. Fragment function has no return type — WGSL backend needs a return
+#      type to generate @location(0) output.
+#   4. No resource bindings declared — the transform buffer (group 0
+#      binding 0) must be declared as a storage buffer parameter.
+#
+#   These gaps are all Goal 01 scope (HV-01A canonical shader roles,
+#   HV-01B graphics ABI, HV-01C WGSL emission). The stubs prove the
+#   annotation parsing path works; the IO lowering is the next unit.
+#
+# Validation:
 #   faber run --compile exempla/triga-vertex-fragment-stub.fab
-#   radix emit exempla/triga-vertex-fragment-stub.fab --format wgsl
-#   radix emit exempla/triga-vertex-fragment-stub.fab --format json
+#   radix check exempla/triga-vertex-fragment-stub.fab
+#   radix mir exempla/triga-vertex-fragment-stub.fab
+#   radix emit -t wgsl-text exempla/triga-vertex-fragment-stub.fab
 #
