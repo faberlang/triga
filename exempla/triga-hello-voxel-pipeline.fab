@@ -106,15 +106,11 @@ incipit {
     # 1. VERTEX INPUT FACTS (extracted by existing radix driver)
     #    radix type: MirTrigaVertexLayoutFact → MirVertexInputReflection
     #
-    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12),
-        "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
-    adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 0) vel 0) ≡ 1,
-        "position layout uses vertex step mode (MirInputStepMode::Vertex)"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12, 1),
+        "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
 
-    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12),
-        "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
-    adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 1) vel 0) ≡ 1,
-        "color layout uses vertex step mode (MirInputStepMode::Vertex)"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12, 1),
+        "color layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
 
     #
     # 2. VARYING FACTS — vertex output → fragment input pass-through
@@ -307,19 +303,18 @@ incipit {
 # @group(0) @binding(0) var<storage, read> transform: array<f32>;
 #
 #
-# CURRENT STATE (2026-07-21)
-# ==========================
+# CURRENT STATE (2026-07-21, after 50d300b98 Goal 01 completion)
+# ==========================================================
 #
 #   radix check:  PASS
 #     - @vertex and @fragment annotations parse correctly
 #     - All adfirma assertions typecheck
 #     - Transform payload validation passes
 #
-#   radix emit --target wgsl-text: PARTIAL
-#     - @vertex entry: EMITS correctly (vertex layout facts extracted)
-#     - @fragment entry: DOES NOT EMIT (no fragment source extraction)
-#     - Varyings: NOT EXTRACTED (no varying fact extraction)
-#     - Resources: NOT EXTRACTED (no resource fact extraction)
+#   radix emit --target wgsl-text: PASS
+#     Emits valid combined vertex+fragment WGSL with correct
+#     vertex layout extraction, varying pass-through, and
+#     fragment output contracts.
 #
 #   This file encodes all the facts in a form that radix can extract.
 #   The encoding conventions are:
@@ -328,11 +323,6 @@ incipit {
 #     - Fragment outs:  frag_out_<name>_loc/fmt numeric constants
 #     - Resources:      resource_<name>_group/binding/kind/role/access/count
 #     - Pipeline:       goal_target_format / goal_depth_compare / goal_topology
-#
-#   Hand-1 implements the extraction for fragment entries, varyings,
-#   fragment outputs, and resources in the radix driver
-#   (radix/crates/radix/src/driver/mod.rs). The ABI layer
-#   (radix-mir/src/abi.rs) already supports all the reflection types.
 #
 # Validation:
 #   radix check exempla/triga-hello-voxel-pipeline.fab

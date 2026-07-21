@@ -423,7 +423,8 @@ functio geometry_vertex_layout_matches(
     numerus shader_location,
     numerus format_code,
     numerus offset_bytes,
-    numerus stride_bytes
+    numerus stride_bytes,
+    numerus step_mode_code
 ) → bivalens {
     fixum VertexAttributeLayout ∪ nihil layout_result ← _geometry_vertex_layout_at(geometry, index)
     si layout_result est nihil ergo redde falsum
@@ -440,6 +441,7 @@ functio geometry_vertex_layout_matches(
         et _vertex_layout_format_code(layout) ≡ format_code
         et layout.offset_bytes ≡ offset_bytes
         et layout.stride_bytes ≡ stride_bytes
+        et _vertex_layout_step_mode_code(layout) ≡ step_mode_code
 }
 
 @ privata

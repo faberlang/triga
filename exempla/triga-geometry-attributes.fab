@@ -151,11 +151,11 @@ incipit {
         et (geometry.geometry_index_count(two_quad_geometry) vel 0) ≡ 12,
         "colored quad mesh finalization preserves vertex and index counts"
     adfirma geometry.geometry_vertex_layout_matches(
-        two_quad_geometry, 0, "position", 0, 3, 0, 12
+        two_quad_geometry, 0, "position", 0, 3, 0, 12, 1
     ),
         "colored quad mesh finalization preserves position layout"
     adfirma geometry.geometry_vertex_layout_matches(
-        two_quad_geometry, 1, "color", 1, 3, 0, 12
+        two_quad_geometry, 1, "color", 1, 3, 0, 12, 1
     ),
         "colored quad mesh finalization preserves color layout"
     adfirma (geometry.geometry_group_element_total(two_quad_geometry) vel 0) ≡ 12,

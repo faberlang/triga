@@ -68,27 +68,17 @@ incipit {
 # CURRENT STATE (2026-07-21):
 #   radix check:  PASS (annotations parse, HIR flags set)
 #   radix mir:    PASS (three functions lowered: vertex, fragment, incipit)
-#   faber run:    BLOCKED — radix driver has compilation error from
-#                 ea95b924d (source_vertex_entry_from_triga_layout_facts
-#                 gained a 4th resources param but the driver call site
-#                 was not updated)
-#   radix emit --target wgsl-text: FAIL
-#     error: CODEGEN001:mir_wgsl_vertex_source_layout_missing
-#     MIR-to-WGSL unsupported: wgsl vertex entry requires source vertex
-#     layout facts
+#   radix emit --target wgsl-text: FAIL (expected)
+#     This stub has no vertex layout facts in its incipit block,
+#     so the vertex source extraction pipeline cannot produce WGSL
+#     inputs. This is by design — the stub is for annotation and
+#     MIR lowering verification only.
 #
 # STUB-TO-RENDER GAP:
-#   This stub has no vertex layout facts in its incipit block, so the
-#   vertex source extraction pipeline cannot produce WGSL inputs. The
-#   sibling exemplar triga-hello-voxel-shaders.fab demonstrates vertex
-#   WGSL emission with layout facts attached.
-#
-#   Fragment WGSL emission is not yet supported at the driver level —
-#   GraphicsSourceFacts has no fragment_entries and the driver has no
-#   emit_wgsl_fragment_source_output function.
+#   The sibling exemplar triga-hello-voxel-shaders.fab demonstrates
+#   working vertex+fragment WGSL emission with layout facts attached.
 #
 # Validation:
-#   faber run --compile exempla/triga-vertex-fragment-stub.fab
 #   radix check exempla/triga-vertex-fragment-stub.fab
 #   radix mir exempla/triga-vertex-fragment-stub.fab
 #   radix emit -t wgsl-text exempla/triga-vertex-fragment-stub.fab

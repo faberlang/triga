@@ -26,3 +26,15 @@ exempla/
 ```
 
 Language keyword exempla: sibling `examples/corpus/`.
+
+## Current state (2026-07-21)
+
+All exempla pass `radix check`. WGSL emission works end-to-end on
+files with `@ vertex` annotations and vertex layout facts:
+`triga-hello-voxel-shaders.fab` emits valid combined vertex+fragment
+WGSL with reflection sidecar.
+
+Files without vertex layout facts (e.g. `triga-vertex-fragment-stub.fab`)
+correctly fail `radix emit --target wgsl-text` with
+`CODEGEN001:mir_wgsl_vertex_source_layout_missing` — this is expected,
+not a regression.
