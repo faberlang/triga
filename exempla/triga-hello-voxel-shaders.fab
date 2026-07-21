@@ -90,14 +90,10 @@ incipit {
     adfirma geometry.geometry_valid(cube),
         "Goal 01 shader exemplar uses valid indexed cube geometry"
 
-    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12),
-        "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
-    adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 0) vel 0) ≡ 1,
-        "position layout uses vertex step mode (MirInputStepMode::Vertex)"
-    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12),
-        "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
-    adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 1) vel 0) ≡ 1,
-        "color layout uses vertex step mode (MirInputStepMode::Vertex)"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12, 1),
+        "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12, 1),
+        "color layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
 
     fixum numerus color_target_bgra8_unorm ← 2
     adfirma color_target_bgra8_unorm ≡ 2,
@@ -115,46 +111,6 @@ incipit {
 
 #
 # CURRENT STATE (2026-07-21):
-#   radix check:  PASS (@vertex and @fragment annotations parse correctly)
-#   radix emit --target wgsl-text: PARTIAL
-#     - @vertex entry emits valid WGSL with position and color inputs
-#       (vertex layout facts extracted from geometry_vertex_layout_matches
-#        adfirma calls in the incipit block)
-#     - @fragment entry does NOT emit WGSL yet
-#       The driver (radix/crates/radix/src/driver/mod.rs) has
-#       emit_wgsl_vertex_source_output but no corresponding
-#       emit_wgsl_fragment_source_output. GraphicsSourceFacts has
-#       vertex_entries but no fragment_entries.
-#
-#   Fragment WGSL emission gap:
-#     1. No source-level fragment entry extraction from @fragment functions
-#     2. GraphicsSourceFacts must add fragment_entries Vec
-#     3. Driver must add emit_wgsl_fragment_source_output with:
-#        - Fragment output facts extraction (location, format)
-#        - Fragment output validation (requires at least one output)
-#        - MirKernelReflection::source_fragment_entry construction
-#        - emit_wgsl_fragment_entry_contract call
-#     4. Fragment output facts need a Triga-side encoding:
-#        - location: u32
-#        - format: MirVertexInputFormat (Float32x4 for RGBA)
-#     5. Varying pass-through (vertex color loc 0 → fragment color loc 0)
-#        requires varying facts from Triga source to radix
-#
-#   The ABI layer (radix-mir/src/abi.rs) already supports:
-#     - MirKernelReflection::source_fragment_entry (DefId, name, varyings, outputs)
-#     - MirKernelReflection::fragment_entry (MirFunctionId path)
-#     - MirVaryingReflection (location, format, source_name, interpolation)
-#     - MirFragmentOutputReflection (location, format)
-#     - emit_wgsl_fragment_entry_contract (WGSL codegen)
-#   So the missing piece is the source-level extraction pipeline in the driver,
-#   not the ABI or codegen.
-#
-#   Additionally, the radix driver currently has a compilation error from
-#   ea95b924d (source_vertex_entry_from_triga_layout_facts gained a 4th
-#   resources parameter but the driver call site was not updated). The
-#   pre-existing binary (built before ea95b924d) works for vertex emission.
-#
-# Validation:
-#   radix check exempla/triga-hello-voxel-shaders.fab
-#   radix emit -t wgsl-text exempla/triga-hello-voxel-shaders.fab
-#   faber run --manifest-path ../faber/Cargo.toml -- emit -t wgsl-text exempla/triga-hello-voxel-shaders.fab
+#   radix check: PASS
+#   faber emit -t wgsl-text: PASS (valid vertex+fragment WGSL)
+#   faber emit --reflection -t wgsl-text: PASS (full pipeline reflection)
