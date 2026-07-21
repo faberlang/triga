@@ -42,12 +42,31 @@ vertex path is a driver scaffold.
 ## Goal 02 - Reflection-Driven WebGPU Graphics Host
 
 **Verdict**: READY
-**Consumer**: delivery, then factory after Goal 01
+**Consumer**: delivery, then factory after HV-01 draw-fact decision
+**Re-grounded**: 2026-07-21 (head-ceo pass against a fresh `faber` build)
 
-The existing browser host is canonical. Descriptor admission, WebGPU effects,
-artifact inputs, canvas/depth formats, resize behavior, proof state, compute
-regression requirement, and no-WGSL-parsing boundary are specific. WebGL and
-third-party renderer fallbacks are excluded.
+HV-01 now emits verified artifacts: one WGSL module with `@vertex` and
+`@fragment` entrypoints, and a reflection carrying vertex inputs (position
+location 0, color location 1, both `float32x3` stride 12), the group-0 binding-0
+read-only transform buffer, and a pipeline block (`bgra8unorm`,
+`triangle-list`, `vertex_count: 36`, depth write + compare less). The graphics
+reflection uses the same `launch.webgpu_adapter` descriptor shape as the compute
+proof, so HV-02A generalizes the existing compute parser rather than writing a
+parallel one.
+
+The existing browser host is canonical at `hosts/webgpu-browser/` (sibling
+monorepo; the goal doc's `radix/hosts/` path is stale and corrected in the
+delivery). Descriptor admission, WebGPU effects, artifact inputs, canvas/depth
+formats, resize behavior, proof state, compute regression requirement, and the
+no-WGSL-parsing boundary are specific. WebGL and third-party renderer fallbacks
+are excluded.
+
+One cross-goal dependency does not block the delivery but must be decided
+before HV-02A executes: HV-01's indexed-draw reflection (index format, index
+count, instance count, base vertex) is incomplete versus HV-01's own Gate. The
+delivery specifies a default (generated draw manifest) so the runtime host
+never owns draw policy. See the delivery's Cross-Goal Dependency and Open
+Questions.
 
 ## Goal 03 - Faber Browser Application Runtime
 
