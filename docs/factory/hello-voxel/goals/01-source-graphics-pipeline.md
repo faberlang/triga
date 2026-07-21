@@ -1,6 +1,6 @@
 # Goal 01: Source Graphics Pipeline
 
-**Status**: in-progress
+**Status**: complete
 **Last updated**: 2026-07-21 (hand-1 acceptance verification after cc75ccc4a fragment extraction)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Delivery**: [`../deliveries/01-source-graphics-pipeline-delivery.md`](../deliveries/01-source-graphics-pipeline-delivery.md)

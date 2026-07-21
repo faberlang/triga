@@ -100,13 +100,13 @@ compile_allowlist_reason() {
       echo "pipeline facts are annotation-only; no generated-code path"
       ;;
     exempla/triga-vertex-fragment-stub.fab)
-      echo "vertex-fragment stub is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
+      echo "vertex-fragment stub is annotation-only; no generated-code path"
       ;;
     exempla/triga-hello-voxel-shaders.fab)
-      echo "shader exemplar is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
+      echo "shader exemplar is annotation-only; no generated-code path"
       ;;
     exempla/triga-hello-voxel-pipeline.fab)
-      echo "pipeline exemplar is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
+      echo "pipeline exemplar is annotation-only; no generated-code path"
       ;;
     *)
       return 1
