@@ -62,6 +62,6 @@ locked first-pipeline contract for direct WebGPU:
 
 | Field | Demo (three.js) | Locked contract | Radix status |
 | --- | --- | --- | --- |
-| `color_target_formats` | `Rgba8Unorm` (canvas default) | `bgra8unorm` | `MirColorTargetFormat` has `Rgba8Unorm` and `Bgra8UnormSrgb`; `Bgra8Unorm` is missing |
+| `color_target_formats` | `Rgba8Unorm` (canvas default) | `bgra8unorm` | ✅ `MirColorTargetFormat::Bgra8Unorm` landed (`ea95b924d`) |
 
-These gaps are compiler-owned (radix). Triga source facts are complete.
+Triga source facts are complete. All known radix ABI gaps are closed.

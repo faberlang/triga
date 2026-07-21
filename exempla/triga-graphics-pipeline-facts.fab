@@ -16,9 +16,10 @@ summary = "Triga-side facts for the Goal 01 locked graphics pipeline contract: s
 # The locked first-pipeline contract lives in
 # docs/factory/hello-voxel/goals/01-source-graphics-pipeline.md.
 #
-# Gaps documented inline: MirColorTargetFormat missing Bgra8Unorm,
-# MirInputStepMode not yet defined, MirVertexInputFormat narrower than
-# Triga VertexFormat.
+# Gaps closed (ea95b924d): MirInputStepMode landed (Vertex, Instance),
+# MirColorTargetFormat::Bgra8Unorm landed.
+# Remaining gap: MirVertexInputFormat narrower than Triga VertexFormat
+# (non-blocking for Goal 01 — only Float32x3 needed).
 
 importa ex "triga:triga" privata triga
 
@@ -61,11 +62,14 @@ incipit {
         "instance step mode code matches per-instance layout intent"
 
     fixum numerus color_target_rgba8_unorm ← 1
-    fixum numerus color_target_bgra8_unorm_srgb ← 2
+    fixum numerus color_target_bgra8_unorm ← 2
+    fixum numerus color_target_bgra8_unorm_srgb ← 3
 
     adfirma color_target_rgba8_unorm ≡ 1,
         "rgba8unorm color target code matches MirColorTargetFormat::Rgba8Unorm"
-    adfirma color_target_bgra8_unorm_srgb ≡ 2,
+    adfirma color_target_bgra8_unorm ≡ 2,
+        "bgra8unorm color target code matches MirColorTargetFormat::Bgra8Unorm"
+    adfirma color_target_bgra8_unorm_srgb ≡ 3,
         "bgra8unorm-srgb color target code matches MirColorTargetFormat::Bgra8UnormSrgb"
 
     fixum numerus depth_compare_never ← 0
