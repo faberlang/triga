@@ -30,7 +30,8 @@ outputs of the baseline rather than hidden product decisions.
 
 ## Goal 01 - Source Graphics Pipeline
 
-**Verdict**: READY
+**Verdict**: COMPLETE on tip (2026-07-21 fleet re-ground) — was READY for delivery
+**Live tip**: radix `50d300b98` … `98db3a504`
 **Consumer**: delivery, then factory after Goal 00
 
 The vertex layout, index type, transform binding, stage inputs/outputs, color
@@ -41,9 +42,11 @@ vertex path is a driver scaffold.
 
 ## Goal 02 - Reflection-Driven WebGPU Graphics Host
 
-**Verdict**: READY
+**Verdict**: COMPLETE on tip (2026-07-21 fleet re-ground) — HV-02A/B/C landed
+**Live tip**: hosts `168edcb` / `5b77ef8` / `cb3fbde`
 **Consumer**: delivery, then factory after HV-01 draw-fact decision
-**Re-grounded**: 2026-07-21 (head-ceo pass against a fresh `faber` build)
+**Re-grounded**: 2026-07-21 (head-ceo pass against a fresh `faber` build; then
+fleet memory audit confirmed host commits on main)
 
 HV-01 now emits verified artifacts: one WGSL module with `@vertex` and
 `@fragment` entrypoints, and a reflection carrying vertex inputs (position
@@ -81,8 +84,8 @@ browser effects in `runtime/dom.ts`.
 
 ## Goal 04 - Indexed Cube Crossover
 
-**Verdict**: READY
-**Consumer**: delivery, then factory after Goals 01-03
+**Verdict**: READY — **selected next stage** (2026-07-21)
+**Consumer**: delivery, then factory after Goals 01-03 (now complete)
 
 The application location, cube payload, shader/resource contract, matrix
 ownership, frame update, camera behavior, depth requirement, and visible-output

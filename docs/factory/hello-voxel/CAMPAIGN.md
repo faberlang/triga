@@ -1,10 +1,13 @@
 # Campaign: Hello Voxel
 
 **Status**: in factory
-**Selected next stage**: Goal 01 - Source Graphics Pipeline
+**Selected next stage**: Goal 04 - Indexed Cube Crossover
 **Primary owner**: `triga`
-**Target repos**: `triga`, `radix`, `faber`, `faber-web`, `examples`
+**Target repos**: `triga`, `radix`, `hosts`, `faber`, `faber-web`, `examples`
 **Process**: `campaign` -> `delivery` -> `factory`
+**Re-grounded**: 2026-07-21 — fleet memory audit; Goals 00–03 complete on tip
+  (Goal 01 radix `50d300b98`…`98db3a504`; Goal 02 hosts HV-02A/B/C
+  `168edcb`/`5b77ef8`/`cb3fbde`; Goal 03 browser runtime complete earlier).
 
 ## Summary
 
@@ -272,23 +275,29 @@ WebGPU object creation, shader execution, or Hello Voxel rendering.
 
 ### Goal 01 - Source Graphics Pipeline
 
-**Status**: active
+**Status**: complete
 **Source**: [`goals/01-source-graphics-pipeline.md`](goals/01-source-graphics-pipeline.md)
 **Depends on**: Goal 00
 **Gate**: one Faber source fixture emits admitted vertex and fragment WGSL plus
 complete reflection for the first render pipeline.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: discovery-first
+**Progress**: Complete on radix main tip (`50d300b98` pipeline-level reflection
+extraction; combined vertex+fragment WGSL; `MirInputStepMode` + `Bgra8Unorm`).
+Residual soft-gate only: compiler-emitted indexed-draw facts still route via
+generated `draw.json` for the host proof (not a reopen of this goal).
 
 ### Goal 02 - Reflection-Driven WebGPU Graphics Host
 
-**Status**: planned
+**Status**: complete
 **Source**: [`goals/02-direct-webgpu-graphics-host.md`](goals/02-direct-webgpu-graphics-host.md)
 **Depends on**: Goal 01
 **Gate**: the browser host creates and executes an indexed render pass using
 generated artifacts without three.js or WGSL parsing.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: discovery-first, then batch descriptor families
+**Progress**: Complete on hosts main tip — HV-02A admission (`168edcb`), HV-02B
+effects (`5b77ef8`), HV-02C harness + fixtures (`cb3fbde`).
 
 ### Goal 03 - Faber Browser Application Runtime
 
@@ -310,13 +319,16 @@ and 04.
 
 ### Goal 04 - Indexed Cube Crossover
 
-**Status**: planned
+**Status**: active
 **Source**: [`goals/04-indexed-cube-crossover.md`](goals/04-indexed-cube-crossover.md)
 **Depends on**: Goals 01-03
 **Gate**: a Faber-authored rotating indexed cube renders with a perspective
 camera and depth testing through direct WebGPU.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: one coherent vertical slice
+**Progress**: Selected next stage as of 2026-07-21 re-ground. Prerequisites
+Goals 00–03 complete. Delivery artifact:
+[`deliveries/04-indexed-cube-crossover-delivery.md`](deliveries/04-indexed-cube-crossover-delivery.md).
 **Progress**: HV-04A reusable Triga prerequisites are complete for the current
 source scope. The full crossover remains pending on HV-01 shader/reflection,
 HV-02 direct graphics host, HV-03 browser runtime, and the example package.
@@ -404,7 +416,8 @@ This campaign artifact is ready for downstream work when:
 
 - every active goal has a source document, dependency, gate, lowering path, and
   batching posture;
-- Goal 00 is selected as the next stage;
+- the selected next stage matches live tip (Goal 04 as of 2026-07-21 re-ground;
+  Goals 00–03 complete);
 - cross-repo ownership and Three.js 80 overlap rules are explicit;
 - the bounded voxel application and all follow-up targets are separated;
 - clean-break, generated-host, and evidence rules prevent proxy success; and
