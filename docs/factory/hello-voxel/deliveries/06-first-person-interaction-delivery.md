@@ -5,6 +5,19 @@
 **Primary repo**: `examples`
 **Supporting repos**: `triga`, `faber`
 
+## Tip re-ground (2026-07-21 lower)
+
+| Surface | Tip / evidence |
+| --- | --- |
+| examples (HV-05 theme) | `59e6326` HV-05A · `810e8d2` HV-05B · `34eec9b` HV-05C (HEAD) |
+| triga helpers | `7ccbe70` — yaw/pitch facts, planar motion, Box3 overlap, ray-box hit faces, box wire draw batch |
+| faber | `d008ed3` (adapter only if HV-06C hits a missing generic event surface) |
+| hosts | `4f1922f` — multi-draw residual from HV-05C is a **want**, not a Goal 06 gate |
+
+**Live grounding**: `examples/hello-voxel/src/voxel.fab` exposes `world_get` / `world_set` / `fixture_world` / solid-air facts; meshing and four-chunk render path exist in `meshing.fab` + `main.fab`. No `application.fab` yet (HV-06A creates it). HV-03 typed input lives in `faber-web/src/dom.fab` (`on_frame`, `on_keyboard`, `on_pointer`, focus, pointer-lock). Voxel DDA remains application-owned.
+
+**Unit graph unchanged**: HV-06A → HV-06B → HV-06C. Delivery text below remains the Hand authority.
+
 ## Interpreted Unit
 
 Add deterministic first-person camera, collision, voxel selection, removal, and
@@ -61,7 +74,12 @@ placement to the bounded world using Faber state and the authoritative model.
 
 **Output**: time-normalized yaw/pitch/movement, gravity, axis-ordered collision,
 spawn, grounded state, and focus cleanup.
-**Write scope**: Hello Voxel application/controller modules and tests.
+**Write scope** (primary `examples`):
+- `examples/hello-voxel/src/application.fab` (create; camera + controller + player)
+- focused fixtures under `examples/hello-voxel/tests/` (pitch clamp, frame-time
+  motion, X→Y→Z collision, gravity/ground, focus clear)
+- optional consume-only of Triga helpers in `triga/src/triga.fab` (no Triga
+  product expansion unless a proven renderer-generic gap appears)
 **Gate**: deterministic frame-time and collision fixtures pass; no solid overlap
 occurs after resolution.
 
@@ -70,7 +88,13 @@ occurs after resolution.
 **Depends on**: HV-06A and HV-05 world API
 **Output**: hit/preceding result, remove/place operations, range limit, and player
 overlap rejection.
-**Write scope**: voxel query/application modules and tests.
+**Write scope** (primary `examples`):
+- `examples/hello-voxel/src/application.fab` and/or DDA helpers beside
+  `examples/hello-voxel/src/voxel.fab` (app-owned DDA; do not move voxel storage
+  into Triga)
+- mutate via existing `world_get` / `world_set`; place solid id 1 only
+- fixtures under `examples/hello-voxel/tests/` (axis, diagonal, empty, boundary,
+  range 6, remove, place, player-box overlap reject)
 **Gate**: axis, diagonal, empty, boundary, range, removal, placement, and overlap
 fixtures pass.
 
@@ -79,8 +103,15 @@ fixtures pass.
 **Depends on**: HV-06B
 **Output**: pointer-lock/input integration, visible selection, and scripted edit
 state in the browser proof.
-**Write scope**: application package and proof script; Faber adapter only for
-missing generic event behavior.
+**Write scope**:
+- `examples/hello-voxel/src/main.fab` + `application.fab` (wire controllers,
+  selection outline via Triga `box_wire_*`, structural interaction state)
+- `examples/hello-voxel/tests/` proof scripts (extend HV-05C / browser harness)
+- `faber` / `faber-web` **only** if a generic event surface is missing (narrow
+  adapter; no app logic in host JS)
+**Non-blocking residual**: host multi-draw for per-chunk resource pairs remains
+the Goal 05 want; HV-06C may keep the concatenated residual path for visible
+proof. Do not block Goal 06 on multi-draw.
 **Gate**: scripted input changes Faber state and authoritative blocks; focus loss
 clears movement.
 
