@@ -105,6 +105,9 @@ compile_allowlist_reason() {
     exempla/triga-hello-voxel-shaders.fab)
       echo "shader exemplar is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
       ;;
+    exempla/triga-hello-voxel-pipeline.fab)
+      echo "pipeline exemplar is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
+      ;;
     *)
       return 1
       ;;

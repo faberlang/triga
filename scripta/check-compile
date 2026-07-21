@@ -56,6 +56,9 @@ echo "check-compile: checking Hello Voxel first-draw facts exemplar"
 echo "check-compile: checking Hello Voxel shaders exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-hello-voxel-shaders.fab"
 
+echo "check-compile: checking Hello Voxel pipeline exemplar"
+"$RADIX_BIN" check "$ROOT/exempla/triga-hello-voxel-pipeline.fab"
+
 echo "check-compile: checking vertex-fragment stub"
 "$RADIX_BIN" check "$ROOT/exempla/triga-vertex-fragment-stub.fab"
 

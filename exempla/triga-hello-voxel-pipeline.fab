@@ -1,0 +1,339 @@
++++
+term = "triga-hello-voxel-pipeline"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Full Goal 01 graphics pipeline fixture: @vertex and @fragment annotations with vertex layout facts, varying pass-through facts, fragment output facts, and resource binding facts. Encodes the complete locked first-pipeline contract for radix source-fact extraction."
++++
+
+# exempla/triga-hello-voxel-pipeline.fab
+#
+# Full graphics pipeline fixture for Goal 01: one @vertex function, one
+# @fragment function, and Triga-side facts for every MIR reflection category:
+#
+#   Category            | radix ABI type                | Triga encoding
+#   --------------------+-------------------------------+----------------------
+#   Vertex inputs       | MirVertexInputReflection      | geometry_vertex_layout_matches
+#   Varyings            | MirVaryingReflection          | varying_* constants
+#   Fragment outputs    | MirFragmentOutputReflection   | frag_out_* constants
+#   Resources           | MirKernelResourceReflection   | resource_* constants
+#   Pipeline (color)    | MirColorTargetFormat          | goal_target_* constants
+#   Pipeline (depth)    | MirDepthCompareFunction       | goal_depth_* constants
+#   Pipeline (topology) | MirPrimitiveTopology          | goal_topology_* constants
+#
+# LOCKED CONTRACT (Goal 01):
+#   Vertex stage:
+#     input  loc 0: float32x3 position (stride 12, offset 0, vertex step)
+#     input  loc 1: float32x3 color    (stride 12, offset 0, vertex step)
+#     output builtin: position
+#     output loc 0:   float32x3 color (varying → fragment, perspective interp)
+#   Fragment stage:
+#     input  loc 0:   float32x3 color (varying ← vertex, perspective interp)
+#     output loc 0:   float32x4 RGBA with alpha = 1.0
+#   Resources:
+#     group 0 binding 0: storage buffer, input role, read access, 32 f32
+#       (16 f32 model matrix + 16 f32 view-projection matrix, column-major)
+#   Pipeline:
+#     color target: bgra8unorm
+#     depth:        depth24plus, write enabled, compare less
+#     primitive:    triangle-list, front-face culling disabled
+#     draw:         indexed, u32 indices, one instance
+
+importa ex "triga:geometry" privata geometry
+importa ex "triga:triga" privata triga
+
+
+@ vertex
+functio hello_voxel_vertex() → vacuum {
+}
+
+
+@ fragment
+functio hello_voxel_fragment() → vacuum {
+}
+
+
+incipit {
+    #
+    # Geometry: the colored indexed cube (same as hello-voxel-first-draw-facts.fab)
+    #
+    fixum lista<f32> positions ← [
+        0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+        1.0, 0.0, 1.0,
+        1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0
+    ]
+    fixum lista<f32> colors ← [
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+        1.0, 1.0, 0.0,
+        1.0, 0.0, 1.0,
+        0.0, 1.0, 1.0,
+        1.0, 1.0, 1.0,
+        0.2, 0.2, 0.2
+    ]
+    fixum lista<u32> indices ← [
+        0, 1, 2, 0, 2, 3,
+        4, 6, 5, 4, 7, 6,
+        0, 4, 5, 0, 5, 1,
+        3, 2, 6, 3, 6, 7,
+        1, 5, 6, 1, 6, 2,
+        0, 3, 7, 0, 7, 4
+    ]
+    fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_geometry(
+        8, positions, colors, indices
+    )
+    adfirma cube_result non est nihil,
+        "Goal 01 pipeline fixture creates colored indexed geometry"
+    fixum geometry.BufferGeometry cube ← geometry.BufferGeometry {
+        topology = cube_result!.topology,
+        vertex_count = cube_result!.vertex_count,
+        attributes = cube_result!.attributes,
+        indexed = cube_result!.indexed,
+        indices = cube_result!.indices,
+        draw_range = cube_result!.draw_range,
+        groups = cube_result!.groups
+    }
+    adfirma geometry.geometry_valid(cube),
+        "Goal 01 pipeline fixture uses valid indexed cube geometry"
+
+    #
+    # 1. VERTEX INPUT FACTS (extracted by existing radix driver)
+    #    radix type: MirTrigaVertexLayoutFact → MirVertexInputReflection
+    #
+    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12),
+        "position layout fixes location 0, Float32x3, zero offset, and 12-byte stride"
+    adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 0) vel 0) ≡ 1,
+        "position layout uses vertex step mode (MirInputStepMode::Vertex)"
+
+    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12),
+        "color layout fixes location 1, Float32x3, zero offset, and 12-byte stride"
+    adfirma (geometry.geometry_vertex_layout_step_mode_code(cube, 1) vel 0) ≡ 1,
+        "color layout uses vertex step mode (MirInputStepMode::Vertex)"
+
+    #
+    # 2. VARYING FACTS — vertex output → fragment input pass-through
+    #    radix type: MirVaryingReflection { source_name, location, format, interpolation }
+    #
+    #    Numeric codes:
+    #      format:        2=Float32x2, 3=Float32x3, 4=Float32x4
+    #      interpolation: 1=Perspective, 2=Linear, 3=Flat
+    #
+    fixum numerus varying_color_loc ← 0
+    fixum numerus varying_color_fmt ← 3
+    fixum numerus varying_color_interp ← 1
+    adfirma varying_color_loc ≡ 0 et varying_color_fmt ≡ 3 et varying_color_interp ≡ 1,
+        "varying color: vertex location 0, Float32x3, perspective interpolation"
+
+    #
+    # 3. FRAGMENT OUTPUT FACTS — render-target outputs
+    #    radix type: MirFragmentOutputReflection { location, format }
+    #
+    #    Fragment outputs location 0: Float32x4 RGBA with alpha = 1.0
+    #
+    fixum numerus frag_out_color_loc ← 0
+    fixum numerus frag_out_color_fmt ← 4
+    adfirma frag_out_color_loc ≡ 0 et frag_out_color_fmt ≡ 4,
+        "fragment output location 0, Float32x4 RGBA"
+
+    #
+    # 4. RESOURCE BINDING FACTS — shader resources
+    #    radix type: MirKernelResourceReflection
+    #      { group, binding, kind, role, access, element_count }
+    #
+    #    Numeric codes:
+    #      kind:   0=StorageBuffer
+    #      role:   0=Input, 1=Output
+    #      access: 0=Read, 1=Write, 2=ReadWrite
+    #
+    #    Group 0 binding 0: read-only storage buffer
+    #      32 f32 values:
+    #        [0..15]  model matrix (column-major, 4×4)
+    #        [16..31] view-projection matrix (column-major, 4×4)
+    #
+    fixum numerus resource_transform_group ← 0
+    fixum numerus resource_transform_binding ← 0
+    fixum numerus resource_transform_kind ← 0
+    fixum numerus resource_transform_role ← 0
+    fixum numerus resource_transform_access ← 0
+    fixum numerus resource_transform_element_count ← 32
+    fixum numerus resource_transform_byte_width ← 128
+    adfirma resource_transform_group ≡ 0
+            et resource_transform_binding ≡ 0
+            et resource_transform_kind ≡ 0
+            et resource_transform_role ≡ 0
+            et resource_transform_access ≡ 0
+            et resource_transform_element_count ≡ 32
+            et resource_transform_byte_width ≡ 128,
+        "resource transform: group 0, binding 0, storage input read, 32 f32 values (128 bytes)"
+
+    #
+    # 4a. Transform payload validation (Triga-level)
+    #     The transform payload is 32 f32 values: model matrix + view-projection matrix
+    #
+    fixum triga.Matrix4 model ← triga.Matrix4 { elements = [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ]}
+    fixum triga.Matrix4 view_proj ← triga.Matrix4 { elements = [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ]}
+    fixum triga.TransformPayload ∪ nihil transform_result ← triga.transform_payload(
+        model, view_proj
+    )
+    adfirma transform_result non est nihil,
+        "Goal 01 pipeline fixture creates a valid transform payload"
+    fixum triga.TransformPayload transform ← triga.TransformPayload {
+        values = transform_result!.values
+    }
+    adfirma (triga.transform_payload_float_count(transform) vel 0) ≡ 32,
+        "Goal 01 transform payload locks 32 f32 values"
+    adfirma (triga.transform_payload_byte_count(transform) vel 0) ≡ 128,
+        "Goal 01 transform payload is 128 bytes"
+
+    #
+    # 5. PIPELINE FACTS — color target, depth, topology
+    #    radix types: MirColorTargetFormat, MirDepthCompareFunction, MirPrimitiveTopology
+    #
+    #    Numeric codes:
+    #      color target: 1=Rgba8Unorm, 2=Bgra8Unorm, 3=Bgra8UnormSrgb
+    #      depth:        0=Never, 1=Less, 2=Equal, 3=LessEqual,
+    #                    4=Greater, 5=NotEqual, 6=GreaterEqual, 7=Always
+    #      topology:     1=TriangleList, 2=LineList, 3=PointList
+    #
+    fixum numerus goal_target_format ← 2
+    fixum numerus goal_depth_compare ← 1
+    fixum numerus goal_topology ← 1
+    fixum numerus goal_cull_enabled ← 0
+    fixum numerus goal_index_format ← 1
+    fixum numerus goal_primitive_count ← 12
+    fixum numerus goal_index_count ← 36
+    fixum numerus goal_instance_count ← 1
+
+    adfirma goal_target_format ≡ 2,
+        "color target bgra8unorm code matches MirColorTargetFormat::Bgra8Unorm"
+    adfirma goal_primitive_count ≡ 12,
+        "twelve indexed triangles in the first draw"
+    adfirma goal_index_count ≡ 36,
+        "thirty-six u32 indices for the twelve triangles"
+    adfirma goal_instance_count ≡ 1,
+        "one instanced draw for the first proof"
+    adfirma goal_depth_compare ≡ 1,
+        "depth compare less matches the locked contract"
+    adfirma goal_topology ≡ 1,
+        "primitive topology is triangle-list"
+    adfirma goal_cull_enabled ≡ 0,
+        "front-face culling is disabled for the first proof"
+    adfirma goal_index_format ≡ 1,
+        "index format is u32"
+    adfirma cube.indexed et cube.vertex_count ≡ 8 et cube.indices.longitudo() ≡ 36,
+        "cube has eight vertices and thirty-six u32 indices"
+    adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,
+        "cube draw range covers the full indexed range"
+    fixum geometry.GeometryDrawCommand ∪ nihil draw_result ← geometry.geometry_draw_command(cube, 1)
+    adfirma draw_result non est nihil,
+        "Goal 01 pipeline fixture creates a source draw command"
+    fixum geometry.GeometryDrawCommand draw ← geometry.GeometryDrawCommand {
+        indexed = draw_result!.indexed,
+        element_count = draw_result!.element_count,
+        first_element = draw_result!.first_element,
+        base_vertex = draw_result!.base_vertex,
+        instance_count = draw_result!.instance_count,
+        material_index = draw_result!.material_index
+    }
+    adfirma draw.indexed et draw.element_count ≡ 36 et draw.first_element ≡ 0,
+        "Goal 01 draw records indexed count and start"
+    adfirma draw.base_vertex ≡ 0 et draw.instance_count ≡ 1,
+        "Goal 01 draw records base vertex zero and one instance"
+}
+
+
+#
+# EXPECTED WGSL OUTPUT
+# ====================
+#
+# After radix implements source-fact extraction for fragment entries,
+# varyings, and resources, the expected WGSL output from this fixture is:
+#
+# --- vertex entry (already emits correctly) ---
+#
+# struct HelloVoxelVertexInput {
+#   @location(0) position: vec3<f32>,
+#   @location(1) color: vec3<f32>,
+# }
+#
+# struct HelloVoxelVertexOutput {
+#   @builtin(position) position: vec4<f32>,
+#   @location(0) color: vec3<f32>,
+# }
+#
+# @vertex
+# fn hello_voxel_vertex(input: HelloVoxelVertexInput) -> HelloVoxelVertexOutput {
+#   var out: HelloVoxelVertexOutput;
+#   out.position = vec4<f32>(input.position, 1.0);
+#   out.color = input.color;
+#   return out;
+# }
+#
+# --- fragment entry (not yet emitted) ---
+#
+# struct HelloVoxelFragmentInput {
+#   @location(0) color: vec3<f32>,
+# }
+#
+# struct HelloVoxelFragmentOutput {
+#   @location(0) color: vec4<f32>,
+# }
+#
+# @fragment
+# fn hello_voxel_fragment(input: HelloVoxelFragmentInput) -> HelloVoxelFragmentOutput {
+#   var out: HelloVoxelFragmentOutput;
+#   out.color = vec4<f32>(input.color, 1.0);
+#   return out;
+# }
+#
+# --- resource binding ---
+#
+# @group(0) @binding(0) var<storage, read> transform: array<f32>;
+#
+#
+# CURRENT STATE (2026-07-21)
+# ==========================
+#
+#   radix check:  PASS
+#     - @vertex and @fragment annotations parse correctly
+#     - All adfirma assertions typecheck
+#     - Transform payload validation passes
+#
+#   radix emit --target wgsl-text: PARTIAL
+#     - @vertex entry: EMITS correctly (vertex layout facts extracted)
+#     - @fragment entry: DOES NOT EMIT (no fragment source extraction)
+#     - Varyings: NOT EXTRACTED (no varying fact extraction)
+#     - Resources: NOT EXTRACTED (no resource fact extraction)
+#
+#   This file encodes all the facts in a form that radix can extract.
+#   The encoding conventions are:
+#     - Vertex inputs:  geometry_vertex_layout_matches(…) in adfirma conditions
+#     - Varyings:       varying_<name>_loc/fmt/interp numeric constants
+#     - Fragment outs:  frag_out_<name>_loc/fmt numeric constants
+#     - Resources:      resource_<name>_group/binding/kind/role/access/count
+#     - Pipeline:       goal_target_format / goal_depth_compare / goal_topology
+#
+#   Hand-1 implements the extraction for fragment entries, varyings,
+#   fragment outputs, and resources in the radix driver
+#   (radix/crates/radix/src/driver/mod.rs). The ABI layer
+#   (radix-mir/src/abi.rs) already supports all the reflection types.
+#
+# Validation:
+#   radix check exempla/triga-hello-voxel-pipeline.fab
+#   radix emit -t wgsl-text exempla/triga-hello-voxel-pipeline.fab

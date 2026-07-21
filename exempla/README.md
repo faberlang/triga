@@ -21,6 +21,7 @@ exempla/
   triga-graphics-pipeline-facts.fab # Shader stages, pipeline reflection, and Goal 01 contract facts
   triga-vertex-fragment-stub.fab # @vertex / @fragment annotation stubs for Goal 01
   triga-hello-voxel-shaders.fab  # @vertex + @fragment exemplar with vertex layout + fragment facts
+  triga-hello-voxel-pipeline.fab # Full Goal 01 pipeline: varyings, fragment outputs, resources
   threejs-host-demo/            # Browser fixture: Triga scene data rendered by three.js
 ```
 
