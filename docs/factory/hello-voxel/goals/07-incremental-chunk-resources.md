@@ -39,12 +39,14 @@ disposal state.
 ## Ground Truth And Implementation Path
 
 - Implement dirty-set and logical generation behavior in
-  `examples/hello-voxel/src/voxel.fab` and `meshing.fab`.
-- Extend graphics resource creation/replacement in
-  `radix/hosts/webgpu-browser/public/src/webgpu-runtime.js` or its Goal 02
-  graphics sibling. Keep queue completion and destruction in the host.
+  `examples/hello-voxel/src/voxel.fab` and `meshing.fab` (and application wiring
+  after Goal 06).
+- Extend graphics resource creation/replacement in the sibling monorepo host
+  `hosts/webgpu-browser/public/src/webgpu-runtime.js` (not `radix/hosts/…`).
+  Keep queue completion and destruction in the host.
 - Carry resource identity and payload changes through the generated artifact or
-  application-to-host contract established by Goals 02-04.
+  application-to-host contract established by Goals 02-04. Per-chunk resource
+  pairs (Goal 05 multi-draw residual) land with the host replacement path.
 - Add pure affected-set tests and a browser resource-cycle proof. Do not claim
   leak freedom without bounded live-resource counters after repeated edits.
 

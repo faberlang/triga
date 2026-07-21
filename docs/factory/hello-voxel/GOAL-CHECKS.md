@@ -113,13 +113,15 @@ picking remain excluded.
 
 ## Goal 07 - Incremental Chunk Resource Lifecycle
 
-**Verdict**: READY
-**Consumer**: delivery, then factory after Goals 05 and 06
+**Verdict**: READY — factory admission unblocked (2026-07-21 head-ceo lower)
+**Live tip**: examples Goal 06 chain ends `4536ca0`; hosts `4f1922f`; host path
+  corrected to `hosts/webgpu-browser/` (not `radix/hosts/…`)
+**Consumer**: delivery, then factory after Goals 05 and 06 (both accepted)
 
 Dirty-chunk rules, frame batching, stable logical identity, empty/non-empty
 transitions, queue completion, destruction timing, and proof counters are
 explicit. The split between Faber invalidation and browser-owned GPU disposal
-is canonical.
+is canonical. HV-05C multi-draw residual folds into HV-07B host resource path.
 
 ## Goal 08 - Clean Break And Application Proof
 
