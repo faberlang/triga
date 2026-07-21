@@ -1,6 +1,7 @@
 # Goal 00: Baseline And Contract Lock
 
-**Status**: active
+**Status**: complete
+**Completed**: 2026-07-21 — HV-00B radix red-admission gate cleared (hand-2 radix-mir-wasm fix + radix cherry-pick delivering MirKernelShaderStage Fragment variant, WGSL fragment entry contract, and graphics pipeline reflection)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Delivery**: [`../deliveries/00-baseline-contract-lock-delivery.md`](../deliveries/00-baseline-contract-lock-delivery.md)
 **Contract map**: [`../goal-00-contract-map.md`](../goal-00-contract-map.md)
@@ -50,7 +51,14 @@ source and tests prove otherwise.
   direct render execution, and third-party-runtime exclusion.
 - Record exact downstream validation commands and browser evidence boundaries.
 
-## Progress
+## Completion Evidence
+
+- HV-00A: Triga executable-truth inventory complete (contract map, first-draw facts, source checks).
+- HV-00B: Radix red-admission gate cleared. Hand-2 landed `4b1d13092 fix(wasm)` unblocking radix-mir-wasm. The radix cherry-pick (834213a16..961725982) delivered `MirKernelShaderStage::Fragment`, fragment WGSL entry contract with targets, graphics pipeline reflection with depth/stencil/multi-target, and fail-closed constructors.
+- HV-00C: Contract matrix is internally linked — Goal 01 delivery spec is dependency-ready.
+- All three Triga validation scripts pass: `check-source`, `check-compile`, `check-hello-voxel-contract`.
+
+## Progress (Archive)
 
 - Triga-side executable-truth inventory is recorded in
   [`../goal-00-contract-map.md`](../goal-00-contract-map.md).

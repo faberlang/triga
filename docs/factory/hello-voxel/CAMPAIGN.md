@@ -1,7 +1,7 @@
 # Campaign: Hello Voxel
 
 **Status**: in factory
-**Selected next stage**: Goal 00 - Baseline And Contract Lock
+**Selected next stage**: Goal 01 - Source Graphics Pipeline
 **Primary owner**: `triga`
 **Target repos**: `triga`, `radix`, `faber`, `faber-web`, `examples`
 **Process**: `campaign` -> `delivery` -> `factory`
@@ -183,7 +183,7 @@ reflection consumer admits compute kernels only.
 
 ### Goal 00 - Baseline And Contract Lock
 
-**Status**: active
+**Status**: complete
 **Source**: [`goals/00-baseline-contract-lock.md`](goals/00-baseline-contract-lock.md)
 **Contract map**: [`goal-00-contract-map.md`](goal-00-contract-map.md)
 **Gate**: one checked boundary map names every Faber, Triga, Radix, host, and
@@ -272,7 +272,7 @@ WebGPU object creation, shader execution, or Hello Voxel rendering.
 
 ### Goal 01 - Source Graphics Pipeline
 
-**Status**: planned
+**Status**: active
 **Source**: [`goals/01-source-graphics-pipeline.md`](goals/01-source-graphics-pipeline.md)
 **Depends on**: Goal 00
 **Gate**: one Faber source fixture emits admitted vertex and fragment WGSL plus
