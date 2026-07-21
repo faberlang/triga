@@ -1,0 +1,134 @@
++++
+term = "triga-graphics-pipeline-facts"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Triga-side facts for the Goal 01 locked graphics pipeline contract: shader stages, color target, depth, topology, and vertex inputs."
++++
+
+# exempla/triga-graphics-pipeline-facts
+#
+# Triga-side facts that map to the new radix MirKernelShaderStage (Fragment
+# variant), MirGraphicsPipelineReflection, MirPrimitiveTopology,
+# MirColorTargetFormat, MirDepthStencilState, and MirDepthCompareFunction
+# types landed in the Stage 4 cherry-pick.
+#
+# The locked first-pipeline contract lives in
+# docs/factory/hello-voxel/goals/01-source-graphics-pipeline.md.
+#
+# Gaps documented inline: MirColorTargetFormat missing Bgra8Unorm,
+# MirInputStepMode not yet defined, MirVertexInputFormat narrower than
+# Triga VertexFormat.
+
+importa ex "triga:triga" privata triga
+
+incipit {
+    fixum numerus shader_stage_compute ← 0
+    fixum numerus shader_stage_vertex ← 1
+    fixum numerus shader_stage_fragment ← 2
+
+    adfirma shader_stage_compute ≡ 0 et shader_stage_vertex ≡ 1 et shader_stage_fragment ≡ 2,
+        "MirKernelShaderStage code: Compute 0, Vertex 1, Fragment 2"
+    adfirma shader_stage_fragment > shader_stage_vertex,
+        "Fragment stage is distinct from vertex stage"
+    adfirma shader_stage_vertex > shader_stage_compute,
+        "Vertex stage is distinct from compute stage"
+
+    fixum numerus topology_triangle_list ← 1
+    fixum numerus topology_line_list ← 2
+    fixum numerus topology_point_list ← 3
+
+    adfirma topology_triangle_list ≡ 1,
+        "triangle-list topology code matches MirPrimitiveTopology::TriangleList"
+    adfirma topology_line_list ≡ 2,
+        "line-list topology code matches MirPrimitiveTopology::LineList"
+    adfirma topology_point_list ≡ 3,
+        "point-list topology code matches MirPrimitiveTopology::PointList"
+
+    fixum numerus vertex_format_float32x2 ← 2
+    fixum numerus vertex_format_float32x3 ← 3
+    fixum numerus vertex_format_float32x4 ← 4
+
+    adfirma vertex_format_float32x3 ≡ 3,
+        "Float32x3 vertex format matches the locked position and color layouts"
+
+    fixum numerus step_mode_vertex ← 1
+    fixum numerus step_mode_instance ← 2
+
+    adfirma step_mode_vertex ≡ 1,
+        "vertex step mode code matches per-vertex layout intent"
+    adfirma step_mode_instance ≡ 2,
+        "instance step mode code matches per-instance layout intent"
+
+    fixum numerus color_target_rgba8_unorm ← 1
+    fixum numerus color_target_bgra8_unorm_srgb ← 2
+
+    adfirma color_target_rgba8_unorm ≡ 1,
+        "rgba8unorm color target code matches MirColorTargetFormat::Rgba8Unorm"
+    adfirma color_target_bgra8_unorm_srgb ≡ 2,
+        "bgra8unorm-srgb color target code matches MirColorTargetFormat::Bgra8UnormSrgb"
+
+    fixum numerus depth_compare_never ← 0
+    fixum numerus depth_compare_less ← 1
+    fixum numerus depth_compare_equal ← 2
+    fixum numerus depth_compare_less_equal ← 3
+    fixum numerus depth_compare_greater ← 4
+    fixum numerus depth_compare_not_equal ← 5
+    fixum numerus depth_compare_greater_equal ← 6
+    fixum numerus depth_compare_always ← 7
+
+    adfirma depth_compare_less ≡ 1,
+        "depth compare less matches the locked contract depth comparison"
+    adfirma depth_compare_never ≡ 0 et depth_compare_always ≡ 7,
+        "depth compare covers the full MirDepthCompareFunction range"
+
+    fixum triga.Color goal_color ← triga.Color {
+        r = 1.0 ∷ f32,
+        g = 0.2 ∷ f32,
+        b = 0.2 ∷ f32
+    }
+    adfirma triga.color_valid(goal_color),
+        "Goal 01 locked color is valid normalized RGB"
+
+    fixum triga.MeshBasicMaterial ∪ nihil goal_material_result ← triga.mesh_basic_material(
+        "goal-material", goal_color
+    )
+    adfirma goal_material_result non est nihil,
+        "Goal 01 locked material is valid"
+    fixum triga.MeshBasicMaterial goal_material ← triga.MeshBasicMaterial {
+        base = goal_material_result!.base,
+        color = goal_material_result!.color
+    }
+    adfirma triga.mesh_basic_material_valid(goal_material),
+        "Goal 01 material passes mesh basic material validation"
+
+    fixum triga.MaterialPipelineFacts ∪ nihil goal_pipeline_result ←
+        triga.mesh_basic_material_pipeline_facts(goal_material)
+    adfirma goal_pipeline_result non est nihil,
+        "Goal 01 locked material produces pipeline facts"
+    fixum triga.MaterialPipelineFacts goal_pipeline ← triga.MaterialPipelineFacts {
+        side_code = goal_pipeline_result!.side_code,
+        depth_test_enabled = goal_pipeline_result!.depth_test_enabled,
+        depth_write_enabled = goal_pipeline_result!.depth_write_enabled,
+        transparent = goal_pipeline_result!.transparent,
+        alpha = goal_pipeline_result!.alpha,
+        alpha_test = goal_pipeline_result!.alpha_test
+    }
+    adfirma goal_pipeline.depth_test_enabled,
+        "Goal 01 draw uses depth testing"
+    adfirma goal_pipeline.depth_write_enabled,
+        "Goal 01 draw enables depth writes"
+    adfirma goal_pipeline.transparent ≡ falsum,
+        "Goal 01 draw is opaque (not transparent)"
+    adfirma goal_pipeline.side_code ≡ 0,
+        "Goal 01 draw uses front-side rendering"
+
+    adfirma topology_triangle_list > 0,
+        "primitive topology has a valid code"
+    adfirma vertex_format_float32x3 > 0,
+        "vertex format has a valid code"
+    adfirma depth_compare_less > 0,
+        "depth compare has a valid code"
+    adfirma step_mode_vertex ≡ 1,
+        "vertex layouts use per-vertex step mode"
+}

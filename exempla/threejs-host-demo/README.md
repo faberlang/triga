@@ -54,3 +54,14 @@ from MIR reflection rather than reconstructing them from scene JSON.
 These facts are **not** emitted by the demo; they describe what a MIR
 reflection would carry for this scene. The three.js host resolves them
 internally through its own renderer defaults.
+
+## Gaps vs the Goal 01 locked contract
+
+The demo uses three.js WebGL defaults which differ from the Goal 01
+locked first-pipeline contract for direct WebGPU:
+
+| Field | Demo (three.js) | Locked contract | Radix status |
+| --- | --- | --- | --- |
+| `color_target_formats` | `Rgba8Unorm` (canvas default) | `bgra8unorm` | `MirColorTargetFormat` has `Rgba8Unorm` and `Bgra8UnormSrgb`; `Bgra8Unorm` is missing |
+
+These gaps are compiler-owned (radix). Triga source facts are complete.
