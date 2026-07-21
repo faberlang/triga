@@ -11,4 +11,4 @@ source = "src"
 
 [build]
 kind = "lib"
-targets = ["rust"]
+targets = ["rust", "ts"]
