@@ -96,6 +96,15 @@ compile_allowlist_reason() {
     exempla/triga-stage4-source-facts.fab)
       echo "Stage 4 source facts depend on geometry layout helpers that share the current generated-Rust geometry lowering residuals; Radix source check remains required"
       ;;
+    exempla/triga-graphics-pipeline-facts.fab)
+      echo "pipeline facts are annotation-only; no generated-code path"
+      ;;
+    exempla/triga-vertex-fragment-stub.fab)
+      echo "vertex-fragment stub is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
+      ;;
+    exempla/triga-hello-voxel-shaders.fab)
+      echo "shader exemplar is annotation-only; radix driver compilation blocked by ea95b924d resource-param gap"
+      ;;
     *)
       return 1
       ;;

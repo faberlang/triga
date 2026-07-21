@@ -39,19 +39,17 @@ importa ex "triga:triga" privata triga
 
 @ vertex
 functio hello_voxel_vertex() → vacuum {
-    redde
 }
 
 
 @ fragment
 functio hello_voxel_fragment() → vacuum {
-    redde
 }
 
 
 incipit {
     adfirma verum,
-        "@vertex and @fragment stubs parse and lower without error"
+        "@vertex and @fragment annotations parse and lower without error"
 }
 
 
@@ -70,26 +68,24 @@ incipit {
 # CURRENT STATE (2026-07-21):
 #   radix check:  PASS (annotations parse, HIR flags set)
 #   radix mir:    PASS (three functions lowered: vertex, fragment, incipit)
-#   faber run:    PASS (compiles through triga package pipeline)
+#   faber run:    BLOCKED — radix driver has compilation error from
+#                 ea95b924d (source_vertex_entry_from_triga_layout_facts
+#                 gained a 4th resources param but the driver call site
+#                 was not updated)
 #   radix emit --target wgsl-text: FAIL
 #     error: CODEGEN001:mir_wgsl_vertex_source_layout_missing
 #     MIR-to-WGSL unsupported: wgsl vertex entry requires source vertex
 #     layout facts
 #
 # STUB-TO-RENDER GAP:
-#   The current stubs compile and lower but cannot emit WGSL because:
-#   1. Vertex function has no typed input parameters — WGSL backend needs
-#      parameter types to generate @location(N) inputs.
-#   2. No vertex layout facts are attached — the driver needs to know
-#      buffer stride, offset, format, and step mode per input.
-#   3. Fragment function has no return type — WGSL backend needs a return
-#      type to generate @location(0) output.
-#   4. No resource bindings declared — the transform buffer (group 0
-#      binding 0) must be declared as a storage buffer parameter.
+#   This stub has no vertex layout facts in its incipit block, so the
+#   vertex source extraction pipeline cannot produce WGSL inputs. The
+#   sibling exemplar triga-hello-voxel-shaders.fab demonstrates vertex
+#   WGSL emission with layout facts attached.
 #
-#   These gaps are all Goal 01 scope (HV-01A canonical shader roles,
-#   HV-01B graphics ABI, HV-01C WGSL emission). The stubs prove the
-#   annotation parsing path works; the IO lowering is the next unit.
+#   Fragment WGSL emission is not yet supported at the driver level —
+#   GraphicsSourceFacts has no fragment_entries and the driver has no
+#   emit_wgsl_fragment_source_output function.
 #
 # Validation:
 #   faber run --compile exempla/triga-vertex-fragment-stub.fab

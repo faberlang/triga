@@ -1,6 +1,7 @@
 # Goal 01: Source Graphics Pipeline
 
-**Status**: planned
+**Status**: in-progress
+**Last updated**: 2026-07-21 (hand-4 acceptance)
 **Campaign**: [`../CAMPAIGN.md`](../CAMPAIGN.md)
 **Delivery**: [`../deliveries/01-source-graphics-pipeline-delivery.md`](../deliveries/01-source-graphics-pipeline-delivery.md)
 **Target repos**: `radix`, `triga`, `examples`
@@ -85,6 +86,59 @@ shared graphics MIR, WGSL, and reflection without a parallel Triga compiler.
 Use focused Radix tests for HIR/MIR role lowering, ABI reflection, WGSL emission,
 negative diagnostics, and compute regression coverage. Use a Triga source-fact
 fixture for layout agreement.
+
+## Progress (2026-07-21)
+
+### Complete
+
+- `@ vertex` and `@ fragment` annotations parse correctly through the HIR
+  lowering path (`hir/lower/decl.rs` sets `is_vertex`/`is_fragment` flags).
+- `MirInputStepMode` and `Bgra8Unorm` landed in radix-mir ABI (ea95b924d).
+- `MirKernelReflection::source_vertex_entry_from_triga_layout_facts` constructs
+  vertex reflections from Triga `adfirma`-encoded layout facts.
+- `emit_wgsl_vertex_entry_contract` produces valid WGSL vertex entrypoints.
+- `MirKernelReflection::source_fragment_entry` and
+  `emit_wgsl_fragment_entry_contract` exist in the ABI/codegen layer (not yet
+  wired to source-level extraction).
+- `triga-hello-voxel-shaders.fab` exemplar created: one `@ vertex` + one
+  `@ fragment` function with vertex layout facts for position (loc 0,
+  Float32x3) and color (loc 1, Float32x3), plus fragment output and pipeline
+  fact encodings.
+- Vertex WGSL emits correctly from the exemplar through `radix emit -t
+  wgsl-text`: position and color inputs, builtin position output.
+
+### Gaps
+
+1. **Fragment source-level extraction missing.** `GraphicsSourceFacts` has
+   `vertex_entries` but no `fragment_entries`. The driver
+   (`radix/crates/radix/src/driver/mod.rs`) has
+   `emit_wgsl_vertex_source_output` but no fragment counterpart. The ABI and
+   WGSL codegen support fragment entries — the gap is the source-fact
+   extraction pipeline.
+
+2. **Varying pass-through not extracted.** Vertex output → fragment input
+   varyings need Triga-side encoding and radix-side extraction.
+
+3. **Radix driver compilation error.** ea95b924d added a 4th `resources`
+   parameter to `source_vertex_entry_from_triga_layout_facts` but the driver
+   call site was not updated. This blocks `faber emit` (and any path that
+   rebuilds radix).
+
+4. **Fragment output fact encoding.** Fragment outputs (location, format) need
+   a Triga-side `adfirma` convention that the compiler can extract.
+
+5. **Resource binding extraction.** The transform buffer (group 0 binding 0,
+   read-only storage) needs Triga-side declaration and radix-side extraction.
+
+### Next units (HV-01B → HV-01C)
+
+- Fix radix driver compilation (add empty `resources` vec at call site).
+- Add `fragment_entries` to `GraphicsSourceFacts` and wire the fragment
+  extraction from `@ fragment` annotated functions.
+- Add fragment output fact extraction from Triga adfirma encoding.
+- Add varying fact extraction for vertex→fragment data flow.
+- Wire `emit_wgsl_fragment_source_output` in the driver.
+- Add resource binding extraction from Triga adfirma encoding.
 
 ## Stop Conditions
 
