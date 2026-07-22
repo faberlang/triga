@@ -19,6 +19,14 @@ An admitted Hello Voxel build contains one canonical rendering path: Faber and
 Triga intent lowered by Radix and executed through the direct browser WebGPU
 host.
 
+## Proof Architecture Supplement
+
+The companion
+[`08-proof-matrix.md`](08-proof-matrix.md)
+document enumerates every evidence family with its verification method, code
+anchor, and pass criteria. It is the single source of truth for Goal 08 closeout,
+complementing this problem statement and proof contract.
+
 ## Locked Proof And Removal Contract
 
 - The canonical product is `examples/hello-voxel/` built through the Faber
@@ -35,7 +43,7 @@ host.
   pixel evidence passes.
 - Remove runtime three.js imports and import maps from
   `triga/exempla/threejs-host-demo/` and
-  `radix/hosts/webgpu-browser/public/`. Preserve only concise historical prose
+  `hosts/webgpu-browser/public/`. Preserve only concise historical prose
   when it remains accurate; do not retain an executable fallback.
 
 ## Ground Truth And Implementation Path
