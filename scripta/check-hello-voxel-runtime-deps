@@ -81,11 +81,7 @@ def matches():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--post-clean-break",
-        action="store_true",
-        help="fail if any executable third-party renderer references remain",
-    )
+
     args = parser.parse_args()
 
     found = list(matches())
@@ -102,7 +98,7 @@ def main():
     if unknown:
         print("error: unknown renderer dependency references need classification", file=sys.stderr)
         return 1
-    if args.post_clean_break and executable:
+    if executable:
         print("error: executable renderer dependency references remain after clean break", file=sys.stderr)
         return 1
     return 0
