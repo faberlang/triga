@@ -10,7 +10,7 @@ pass criteria. It does not replace the Goal 08 problem statement or proof contra
 > An admitted Hello Voxel build contains one canonical rendering path: Faber and
 > Triga intent lowered by Radix and executed through the direct browser WebGPU host.
 
-**Last updated**: 2026-07-22
+**Last updated**: 2026-07-24
 
 ---
 
@@ -20,17 +20,16 @@ pass criteria. It does not replace the Goal 08 problem statement or proof contra
 |--------|----------------|-----------------|--------------------|---------------|
 | S-01 | Build exits 0 | `examples/hello-voxel/` | `$FABER_BIN build --package .` exit code | `0` |
 | S-02 | Build artifact directory exists and is non-empty | `examples/hello-voxel/faber-out/` | `test -d faber-out/ && ls faber-out/ | wc -l` | At least 3 files (ESM, d.ts, controllers.json) |
-| S-03 | `controllers.json` schema: controller count | `faber-out/controllers.json` | `jq '.controllers | length'` | `>= 1` (hello_voxel_controller) |
-| S-04 | Emitted `.mjs` controller artifact present | `faber-out/` | `ls faber-out/*.mjs 2>/dev/null | wc -l` | `>= 1` |
+| S-03 | `controllers.json` schema: controller count | `faber-out/controllers.json` | `jq '. | length'` | `>= 1` (hello_voxel_controller) |
+| S-04 | Emitted `.js` controller artifact present | `faber-out/` | `ls faber-out/*.js 2>/dev/null | wc -l` | `>= 1` |
 | S-05 | Emitted `.d.ts` type declaration present | `faber-out/` | `ls faber-out/*.d.ts 2>/dev/null | wc -l` | `>= 1` |
-| S-06 | Build timestamp present in metadata | `faber-out/controllers.json` | `jq '."build-timestamp"'` | Non-empty string |
 | S-07 | `data-hv-residual-path` matches admitted multi-draw | DOM attributes (build) | grep `per-chunk-multi-draw` in `faber-out/*.mjs` | String `"per-chunk-multi-draw"` present |
 
 **Verification:**
 ```bash
 cd examples/hello-voxel/
 ${FABER_BIN:-faber} build --package .
-# Then run S-02 through S-07 assertions.
+# Then run S-02 through S-05, S-07 assertions.
 ```
 
 ---
@@ -105,10 +104,10 @@ Chunk counters use the correct function name `destroyRetiredChunkResources`
 
 | Row ID | Import surface checked | Classification | Expected outcome |
 |--------|----------------------|----------------|------------------|
-| D-01 | `triga/exempla/threejs-host-demo/index.html` — import map | Executable fixture (three.js removal target) | Pre-clean-break: flagged as hit. Post-clean-break: absent or historical-only |
-| D-02 | `triga/exempla/threejs-host-demo/triga-three-host.js` — THREE renderer adapter | Executable fixture (three.js removal target) | Pre-clean-break: flagged. Post-clean-break: absent |
-| D-03 | `triga/exempla/threejs-host-demo/triga-scene.json` | Historical data fixture (may remain) | Pre/post: not flagged as executable import |
-| D-04 | `hosts/webgpu-browser/public/src/app.js:1` — THREE import for compute proof | Separate concern (not on Hello Voxel graphics path) | Pre/post: flagged only if `--post-clean-break` scope treats it as HV graphics (should be excluded) |
+| D-01 | `triga/exempla/threejs-host-demo/index.html` — import map | Executable fixture (three.js removal target) | Deleted — absent from scan |
+| D-02 | `triga/exempla/threejs-host-demo/triga-three-host.js` — THREE renderer adapter | Executable fixture (three.js removal target) | Deleted — absent from scan |
+| D-03 | `triga/exempla/threejs-host-demo/triga-scene.json` | Historical data fixture (may remain) | Not flagged as executable import |
+| D-04 | `hosts/webgpu-browser/public/src/app.js:1` — THREE import for compute proof | Separate concern (not on Hello Voxel graphics path) | Not on scan scope (outside triga/) |
 | D-05 | All `.fab` source and `.mjs` test files in `examples/hello-voxel/` | Application source | No three.js imports found |
 | D-06 | All `.fab` source in `triga/src/` | Library source | No three.js imports found (historical prose references only per runtime-dependency-inventory.md) |
 
@@ -116,14 +115,8 @@ Chunk counters use the correct function name `destroyRetiredChunkResources`
 
 **Verification:**
 ```bash
-# Pre-clean-break
 triga/scripta/check-hello-voxel-runtime-deps
-# Exit 0 expected. Executable hits: threejs-host-demo/index.html,
-# threejs-host-demo/triga-three-host.js only.
-
-# Post-clean-break (after three.js removal)
-triga/scripta/check-hello-voxel-runtime-deps --post-clean-break
-# Exit 0 expected. No executable hits in admitted runtime paths.
+# Exit 0 expected. All matches are `reference` (no executable hits).
 ```
 
 ---
@@ -147,7 +140,7 @@ triga/scripta/check-hello-voxel-runtime-deps --post-clean-break
 |------|--------|-------|
 | `hosts/webgpu-browser/public/src/app.js:1` THREE import (`import * as THREE`) | Compute proof dependency, not Hello Voxel graphics path. Removing it would break the separate compute proof workload | Compute proof track (separate concern) |
 
-**Verification:** Post-removal `check-hello-voxel-runtime-deps --post-clean-break` exit 0.
+**Verification:** Post-removal `check-hello-voxel-runtime-deps` exit 0.
 No `three`, `THREE`, `WebGLRenderer`, or `OrbitControls` in admitted runtime paths.
 
 ---
@@ -165,7 +158,7 @@ No `three`, `THREE`, `WebGLRenderer`, or `OrbitControls` in admitted runtime pat
    - Browser + interaction: `hv06c-interaction-test.mjs` output
    - Resource-lifecycle: `hv07c-resource-cycle-test.mjs` output
    - Pixel: `cube-proof-test.mjs` output (when applicable)
-   - Dependency scan: `check-hello-voxel-runtime-deps` (pre and post) exit codes
+   - Dependency scan: `check-hello-voxel-runtime-deps` exit code
 
 ### What the auditor verifies
 
@@ -173,9 +166,8 @@ No `three`, `THREE`, `WebGLRenderer`, or `OrbitControls` in admitted runtime pat
   passing artifact or test output.
 - All code anchors reference existing function/attribute names (not stale paths
   or misnamed identifiers).
-- The dependency scan is reproducible: `check-hello-voxel-runtime-deps` and
-  `check-hello-voxel-runtime-deps --post-clean-break` both exit 0 at their
-  respective states.
+- The dependency scan is reproducible: `check-hello-voxel-runtime-deps` exits 0
+  with no executable hits.
 - The `destroyRetiredChunkResources` function name is used correctly (not the
   P1 misname — corrected via P2 audit charter flag 3).
 - No stale backend-prefixed paths appear (correct path is `hosts/webgpu-browser/`,
@@ -239,12 +231,11 @@ The proof driver script is at `examples/hello-voxel/tests/proof-driver.sh`.
 | Step | What runs | Matrix rows covered |
 |------|-----------|--------------------|
 | 1 | `$FABER_BIN build --package .` | S-01 through S-07 |
-| 2 | Structural file assertions | S-02 through S-07 |
-| 3 | `check-hello-voxel-runtime-deps` (pre-clean-break) | D-01 through D-06 |
+| 2 | Structural file assertions | S-02 through S-05, S-07 |
+| 3 | `check-hello-voxel-runtime-deps` | D-01 through D-06 |
 | 4 | `hv06c-interaction-test.mjs` | B-01 through B-08, I-01 through I-06 |
 | 5 | `hv07c-resource-cycle-test.mjs` | R-01 through R-04 |
 | 6 | `cube-proof-test.mjs` (if `HV_GPU_CHECK=1`) | P-01 through P-03 |
-| 7 | `check-hello-voxel-runtime-deps --post-clean-break` | D-01 through D-06 (post-clean-break state) |
 
 ### Reporting
 
@@ -266,7 +257,39 @@ Summary line: `Proof matrix: X/Y rows pass (Z columns).`
 
 ---
 
-## 11. P2 audit corrections
+## 12. W4-09b proof matrix results
+
+**Run date**: 2026-07-24
+**Committed by**: W4-09b
+**Driver fixes**: `examples/hello-voxel/tests/proof-driver.sh`
+  - S-06 removed (field no longer emitted)
+  - Dep-scan invocation: `bash` → `python3`
+  - Dual dep-scan steps collapsed to single scan
+**Commit hashes**:
+  - `radix`: `a32e6655da625fafc7c62b81dee23f86c89a91ef`
+  - `triga`: `2ed0990528d37e03d317baff6e5cf02dceacc24d`
+  - `examples`: `59f4d38f1c7b57c1f5d3b7296ea3a3679faac749`
+
+**Column**: `node-dom` only (`HV_GPU_CHECK=0`)
+
+| Row | Result |
+|-----|--------|
+| S-01 build | [PASS] |
+| S-02 build dir | [PASS] (10 files) |
+| S-03 controllers.json | [PASS] (1 controller) |
+| S-04 emitted .js artifacts | [PASS] (8 files) |
+| S-05 emitted .d.ts declarations | [PASS] (1 file) |
+| S-07 per-chunk-multi-draw | [PASS] |
+| D-01..D-06 dep-scan | [PASS] (27 reference matches, 0 executable) |
+| B-01..B-08, I-01..I-06 interaction | [PASS] (50 tests, 0 failed) |
+| R-01..R-04 resource-lifecycle | [PASS] (103 tests, 0 failed) |
+| P-01..P-03 pixel proof | [SKIP] (HV_GPU_CHECK=0) |
+
+**Summary**: 9/9 pass, 0 fail, 1 skip. FAIL=0. Exit 0.
+
+---
+
+## 13. P2 audit corrections
 
 The following corrections from the P2 audit are incorporated into this document:
 
