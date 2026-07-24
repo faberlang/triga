@@ -281,11 +281,11 @@ Summary line: `Proof matrix: X/Y rows pass (Z columns).`
 | S-05 emitted .d.ts declarations | [PASS] (1 file) |
 | S-07 per-chunk-multi-draw | [PASS] |
 | D-01..D-06 dep-scan | [PASS] (27 reference matches, 0 executable) |
-| B-01..B-08, I-01..I-06 interaction | [PASS] (50 tests, 0 failed) |
-| R-01..R-04 resource-lifecycle | [PASS] (103 tests, 0 failed) |
+| B-01..B-08, I-01..I-06 interaction | [FAIL] — `triga:` ESM URL scheme unsupported in this Node environment (pre-existing, not a W4-09b regression) |
+| R-01..R-04 resource-lifecycle | [FAIL] — same `triga:` ESM root cause |
 | P-01..P-03 pixel proof | [SKIP] (HV_GPU_CHECK=0) |
 
-**Summary**: 9/9 pass, 0 fail, 1 skip. FAIL=0. Exit 0.
+**Summary**: 7/9 pass, 2 fail, 1 skip. The 2 FAIL rows share a common root cause: the emitted `faber-esm/*.js` files use `triga:` ESM URL scheme imports which require a Node.js custom loader hook not configured in this environment. This is pre-existing and was masked by the broken dep-scan gate (fixed by W4-09a). Not a W4-09b regression.
 
 ---
 
