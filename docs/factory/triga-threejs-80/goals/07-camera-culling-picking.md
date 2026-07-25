@@ -52,3 +52,46 @@ and a general spatial database.
   explicit identity map.
 - Culling changes observable scene state instead of render selection.
 - Camera convenience work expands into a general input/control library.
+
+## Reference: fieldboard picking patterns (attached 2026-07-25)
+
+When this goal lowers, the planner should consider `~/work/ianzepp/fieldboard/canvas/`
+as a reference spec for **three transferable patterns**, sourced from a finished
+Rust 2D-canvas implementation. None of the literal code ports — fieldboard is 2D
+and uses Canvas2D — but the algorithm shapes informed a three-head fleet review
+(head-cto `b5409c51`, head-cxo `89612905`, head-ceo `512f887f`) summarized below.
+
+### Transferable patterns (adapt, do not port literally)
+
+| Pattern | fieldboard source | 3D-native adaptation |
+|---|---|---|
+| Handle-priority picking | `canvas/src/hit.rs` tests resize/rotate handles before bodies; iterates top-most-first | Out of scope for Goal 07 (editor gizmos explicitly excluded). Revisit if a future editor goal names gizmo handles. |
+| Local-space transform-then-test | `canvas/src/hit.rs` unrotates the query point into each object's local space before testing | Use triga's landed `matrix4_inversa_affinis` (`triga/src/triga.fab:1361`) + `matrix4_applica_punctum` (`:1349`). Don't port fieldboard's scalar `rotate_point`. |
+| Broad-phase culling | `canvas/src/doc.rs:350-525` uniform 256-unit 2D grid | **Defer.** First version is O(n) walk over `scene_visible_mesh_traverse`. A 3D BVH/grid is premature until scene size forces it (out of scope: "general spatial database"). |
+
+### Recommended landing (head-cto + head-cxo agreement)
+
+- **New file:** `triga/src/picking.fab`. Not in `scene.fab` (already 1100 lines, "storage/traversal" scope) or `triga.fab` ("spatial math + shape contracts" scope).
+- **Imports** `Ray`, `Box3`, `Matrix4`, `SceneHandle` from existing types the way `scene.fab` already does.
+- **Net-new primitives** (bounded, ~40 lines total per head-cto):
+  - `ray_triangle_hit` via Möller–Trumbore (the one genuinely new geometry test)
+  - `unproject_screen_to_world` (screen→world ray — fieldboard had to build its own unproject; triga already has the matrix inverses)
+  - composite `pick_object` over `scene_visible_mesh_traverse` + `ray_box3_hit` broad-phase + `ray_triangle_hit` narrow-phase
+- **Return type:** `PickResult { SceneHandle, distance, point, normal }`. Do not port fieldboard's `HitPart` enum (2D-specific: resize/rotate/edge).
+
+### 2D traps to refuse (head-cxo)
+
+| Trap | Refuse |
+|---|---|
+| Scalar `rotate_point` | Use `matrix4_inversa_affinis` |
+| `WorldBounds` AABB type | Use `Box3` |
+| Flat `sorted_objects` list | Use hierarchy `scene_visible_mesh_traverse` |
+| 256-unit 2D grid | Defer (O(n) walk first) |
+| `HitPart` / `ResizeAnchor` enums | `PickResult` struct; design gizmo handles fresh if a future goal names them |
+
+### Sequencing note (head-ceo)
+
+Fieldboard does not accelerate this goal enough to pull it forward in the spine.
+The real gaps (unproject, Möller–Trumbore, deterministic nearest-hit ordering)
+are 3D problems fieldboard's 2D code does not solve. Lower when a real consumer
+appears (editor, block-selection feature) — not as a speculative port.
