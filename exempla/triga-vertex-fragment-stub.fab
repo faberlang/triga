@@ -65,7 +65,9 @@ incipit {
 #   - Vertex returns builtin position + loc-0 varied color
 #   - Fragment takes loc-0 color input and returns loc-0 RGBA
 #
-# CURRENT STATE (2026-07-21):
+# CURRENT STATE (2026-07-26):
+#   Body lowering (U5) landed for @vertex in triga-hello-voxel-shaders.fab.
+#   This stub remains as an annotation/MIR-lowering fixture only.
 #   radix check:  PASS (annotations parse, HIR flags set)
 #   radix mir:    PASS (three functions lowered: vertex, fragment, incipit)
 #   radix emit --target wgsl-text: FAIL (expected)
