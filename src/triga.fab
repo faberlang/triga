@@ -60,6 +60,37 @@ genus Matrix4 {
     lista<f32> elements
 }
 
+# TRANSFORM PAYLOAD CONTRACT (canonical, Stage 1 freeze)
+#
+# TransformPayload encodes the model and view-projection matrices as a flat
+# 32-float column-major array consumed by the host updateGraphicsStorage seam.
+#
+#   bytes 0–63   model matrix (16 f32, column-major)
+#                Row layout in memory:
+#                  [m0, m1, m2,  m3 ]   col 0 (bytes  0–15)
+#                  [m4, m5, m6,  m7 ]   col 1 (bytes 16–31)
+#                  [m8, m9, m10, m11]   col 2 (bytes 32–47)
+#                  [m12,m13,m14, m15]   col 3 (bytes 48–63)
+#                 where m12–m14 is the translation (x, y, z).
+#
+#   bytes 64–127  view-projection matrix (16 f32, column-major)
+#                 Computed as projection × view (matrix4_multiplicata).
+#                 Row layout in memory:
+#                  [vp0,  vp1,  vp2,  vp3 ]   col 0 (bytes  64–79)
+#                  [vp4,  vp5,  vp6,  vp7 ]   col 1 (bytes  80–95)
+#                  [vp8,  vp9,  vp10, vp11]   col 2 (bytes  96–111)
+#                  [vp12, vp13, vp14, vp15]   col 3 (bytes 112–127)
+#
+# The host write order is model-first, view-projection-second.
+# The host reads values sequentially from payload.values and writes
+# to GPU storage at offset 0 with device.queue.writeBuffer.
+# Readback maps the same buffer (MAP_READ | COPY_DST) at offset 0.
+#
+# Readers: transform_payload(model, view_projection) assembles the payload.
+#          transform_payload_model_value(payload, index) reads model bytes.
+#          transform_payload_view_projection_value(payload, index) reads VP bytes.
+#          transform_payload_float_count(payload) validates 32 floats.
+#          transform_payload_byte_count(payload) returns 128.
 genus TransformPayload {
     lista<f32> values
 }
