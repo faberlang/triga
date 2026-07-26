@@ -323,15 +323,20 @@ and 04.
 **Source**: [`goals/04-indexed-cube-crossover.md`](goals/04-indexed-cube-crossover.md)
 **Depends on**: Goals 01-03
 **Gate**: a Faber-authored rotating indexed cube renders with a perspective
-camera and depth testing through direct WebGPU.
+camera and depth testing through direct WebGPU. A public, generic host operation
+updates the reflection-declared transform storage resource before submission;
+two admitted frames prove different Faber-owned transform payloads reached the
+same GPU resource without JavaScript matrix or scene policy.
 **Lowers to**: `delivery` -> `factory`
 **Batching**: one coherent vertical slice
 **Progress**: Selected next stage as of 2026-07-21 re-ground. Prerequisites
 Goals 00–03 complete. Delivery artifact:
 [`deliveries/04-indexed-cube-crossover-delivery.md`](deliveries/04-indexed-cube-crossover-delivery.md).
 **Progress**: HV-04A reusable Triga prerequisites are complete for the current
-source scope. The full crossover remains pending on HV-01 shader/reflection,
-HV-02 direct graphics host, HV-03 browser runtime, and the example package.
+source scope. HV-04B application integration and HV-04C visible proof remain.
+The host currently initializes graphics storage internally but exposes no
+public dynamic graphics-storage update seam; HV-04C must add and prove that
+generic capability rather than a Hello Voxel-specific updater.
 **Release checkpoint**: record an internal direct-render milestone; do not
 publish unless separately authorized.
 

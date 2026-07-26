@@ -20,6 +20,8 @@ the first visible Faber-authored indexed 3D application.
 - Build the locked 8-position, RGB-color, 36-index cube in Faber.
 - Produce model and view-projection matrices from Triga operations.
 - Update model rotation from Faber frame time and projection from resize state.
+- Route each changed transform through one public, reflection-addressed graphics
+  storage update operation in the direct host before frame submission.
 - Render one indexed instance with depth through the direct host.
 - Tie structural, submission, and pixel evidence to one artifact build.
 - Do not add voxel, lighting, texture, or host-side scene behavior.
@@ -55,7 +57,11 @@ the first visible Faber-authored indexed 3D application.
   shader and host dependencies are available.
 - Shader/reflection producer: HV-01 Radix fixture and artifact command.
 - Browser graphics runtime: sibling monorepo `hosts/webgpu-browser/` (HV-02
-  complete; the goal doc's `radix/hosts/` path is stale).
+  complete; the goal doc's `radix/hosts/` path is stale). The runtime can create
+  and initialize reflected graphics storage buffers, but its graphics initializer
+  is private and there is no public dynamic update operation. HV-04C owns that
+  narrowly required generic host addition; it does not reopen HV-02's completed
+  static indexed-render gate.
 - Browser lifecycle: Faber `browser-app` output (HV-03 complete).
 
 ## Stage Graph
@@ -91,10 +97,14 @@ across frames.
 ### HV-04C - Direct Visible Proof
 
 **Depends on**: HV-04B and HV-02
-**Output**: reproducible browser run with indexed submission, depth, resize, and
+**Output**: public reflection-addressed graphics storage update operation plus a
+reproducible browser run with indexed submission, depth, resize, and
 non-background pixel evidence.
 **Write scope**: example proof script and narrowly required host integration.
-**Gate**: visible result and structural state identify the same artifact build.
+**Gate**: the operation resolves only admitted input storage resources, rejects
+unknown/non-input/out-of-bounds writes before effects, and updates the same
+transform GPU resource with different Faber-owned payloads before two submitted
+frames. The visible result and structural state identify the same artifact build.
 
 ## Implementation Work
 
@@ -121,8 +131,11 @@ disjoint and the helper signatures are frozen. Browser integration follows.
 - Build/check the Hello Voxel package through sibling Faber.
 - Run Radix WGSL/reflection artifact freshness checks.
 - Execute the browser proof at two frame times and after resize.
+- Run focused host tests for successful reflected storage update plus unknown,
+  non-input, and out-of-bounds rejection before queue effects.
 - Assert 36 indexed elements, one instance, increasing frame count, changed
-  model matrix, and non-background central-region pixels.
+  model matrix, same-resource update evidence, and non-background central-region
+  pixels.
 
 ## Companion Skill Plan
 
