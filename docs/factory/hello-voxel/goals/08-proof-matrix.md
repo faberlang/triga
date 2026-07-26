@@ -10,7 +10,7 @@ pass criteria. It does not replace the Goal 08 problem statement or proof contra
 > An admitted Hello Voxel build contains one canonical rendering path: Faber and
 > Triga intent lowered by Radix and executed through the direct browser WebGPU host.
 
-**Last updated**: 2026-07-25
+**Last updated**: 2026-07-26
 
 ---
 
@@ -500,3 +500,63 @@ C1 (ESM loader hook) and C2 (`Math.trunc` sed fix) from §14 remain the two
 preconditions applied to compiled output and test environment. Neither is
 expressed in Faber source — they are compiled-output and test-harness concerns.
 A future compiler fix would make both unnecessary.
+
+---
+
+## 17. D-H-05-U1 hand-1 green proof matrix (9/9, FAIL=0)
+
+**Run date**: 2026-07-26
+**Committed by**: hand-1 (G-H-05 residual implement)
+**Delivery**: `radix/docs/factory/mir-swarm/delivery/d-h-05-hv-goal-08-playable-assembly.md`
+**Commit hashes**:
+  - `radix`: `5465a4505edd39d8f8395c27b403e58ad1710a69`
+  - `triga`: `591839ad6a15aaa4d3b29048679b3b3cad98dada`
+  - `examples`: `5d05f7d67c90b977a9c9d679f83d4c506fa91aeb`
+  - `hosts`: `d3b0c699255b63c69c31a1833bef6289b93265d1`
+
+**Column**: `node-dom` only (`HV_GPU_CHECK=0`)
+
+### Discovery pass
+
+No new defects found. The proof driver ran clean at current tip. All prior
+fixes (three.js deletion, driver repair, scanner update, ESM loader bridge,
+`Math.trunc`/`Math.floor` sed fix, build-honesty fix) were already landed by
+prior hands. The dirty `dist/` files at start included a foreign-agent
+`Math.floor()` variant of the C2 fix — semantically compatible with the
+proof-driver `sed` post-processing — and did not block the run.
+
+### Results
+
+| Row | Result |
+|-----|--------|
+| S-01 build | [PASS] |
+| S-02 build dir | [PASS] (8 files) |
+| S-03 controllers.json | [PASS] (2 controllers) |
+| S-04 emitted .js artifacts | [PASS] (10 files) |
+| S-05 emitted .d.ts declarations | [PASS] (1 file) |
+| S-07 per-chunk-multi-draw | [PASS] |
+| D-01..D-06 dep-scan | [PASS] (28 reference matches, 0 executable) |
+| B-01..B-08, I-01..I-06 interaction | [PASS] (50 assertions) |
+| R-01..R-04 resource-lifecycle | [PASS] (103 assertions, place=2 remove=2 maxLive=12) |
+| P-01..P-03 pixel proof | [SKIP] (HV_GPU_CHECK=0) |
+
+**Summary**: 9/9 pass, 0 fail, 1 skip. EXIT CODE: 0.
+
+### Done-when confirmation
+
+| # | Criterion | Result |
+|---|-----------|--------|
+| DW1 | `faber build --package .` exits 0 | PASS — exit 0, dist/ has ≥3 files |
+| DW2 | Proof driver exits 0 with FAIL=0 | PASS — 9/9, FAIL=0 |
+| DW3 | Dependency scan exit 0, 0 executable | PASS — 28 ref, 0 executable |
+| DW4 | Proof matrix updated | PASS — this section |
+| DW5 | No new features | PASS — diff: build artifacts only |
+| DW6 | `app.js:1` untouched | PASS — `import * as THREE from "three/webgpu"` |
+| DW7 | `triga-scene.json` preserved | PASS — file present, `index.html` and `triga-three-host.js` absent |
+
+### Conditions carried forward
+
+C1 (ESM loader hook) and C2 (`Math.trunc`/`Math.floor` sed fix) from §14 remain
+the two preconditions applied to compiled output and test environment. Neither
+is expressed in Faber source — they are compiled-output and test-harness
+concerns. A future compiler fix would make both unnecessary.
