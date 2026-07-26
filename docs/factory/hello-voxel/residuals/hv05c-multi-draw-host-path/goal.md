@@ -215,3 +215,19 @@ Manual inspection: open `hv04c-host-page.html` in a WebGPU browser, verify
 
 **Ready for delivery** — one stable unit, no architecture invention required,
 API surface proven by HV-07C tests.
+
+---
+
+## Closure (2026-07-26)
+
+**Goal GREEN.**
+
+| Evidence | Detail |
+|---|---|
+| hosts d3b0c69 | `createBindGroup` fix, `runChunkGraphicsFrame` texture return |
+| examples 5d05f7d | Proof app structured buffer + frame texture |
+| proof | `run-hv04c-host-proof ok=true frames=2 pixel gates green` |
+
+The multi-draw host path residual is closed. Proof script (`hv04c-host-proof-app.js`)
+uses the per-chunk-multi-draw host path; frame submits record `draw_count=4`,
+`multi_draw=true`; all pixel validation laws pass.

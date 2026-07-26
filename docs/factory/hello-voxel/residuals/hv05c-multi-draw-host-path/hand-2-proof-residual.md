@@ -3,7 +3,7 @@
 **From**: hand-1  
 **Date**: 2026-07-26  
 **Task**: b02c0a82 — proof body: HV-05C live multi-draw re-try after pure-lib P5 31f271a  
-**Status**: RED — multi-draw host proof attempted but WebGPU host runtime fails
+**Status**: GREEN — resolved by hosts d3b0c69 (createBindGroup fix + runChunkGraphicsFrame texture return)
 
 ## Summary
 
@@ -97,3 +97,12 @@ buffer bindings are valid.
 D1 (integer division) and D2 (loader hook) need upstream fixes in the Radix
 compiler and the loader hook respectively, but the tactical fixes applied in
 this unit unblock the structural test path.
+
+---
+
+## Closure (2026-07-26)
+
+**Status: GREEN**. Host-side `createBindGroup` fix and `runChunkGraphicsFrame` texture
+return landed at hosts d3b0c69. Proof script rewrite completed in examples 5d05f7d.
+Pixel proof: `run-hv04c-host-proof ok=true frames=2 pixel gates green`. The
+multi-draw host path residual is resolved.

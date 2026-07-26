@@ -3,7 +3,7 @@
 **From**: hand-1  
 **Date**: 2026-07-26  
 **Task**: ae2cf0bd → `task 2950eeec`  
-**Status**: RED — unable to complete. New residual reported.
+**Status**: GREEN — resolved. See hand-2-proof-residual.md → hosts d3b0c69.
 
 ## Evidence
 

@@ -215,3 +215,24 @@ window.faberHv04cProof.pixels.frames_rgb_differ      // true
    `runGraphicsFrameWithTexture` has no remaining callers in the examples
    repository. Should the Hand also remove it from the host runtime, or leave it
    for backward compatibility? The goal explicitly scopes this out (non-goal).
+
+---
+
+## Delivery Complete (2026-07-26)
+
+**Status: GREEN**. Delivery accepted.
+
+| Evidence | Detail |
+|---|---|
+| hosts d3b0c69 | `createBindGroup` fix in `createChunkGraphicsResources`; `runChunkGraphicsFrame` returns texture for pixel readback |
+| examples 5d05f7d | `hv04c-host-proof-app.js` rewritten to multi-draw path; structured buffer + frame texture proof |
+| proof | `run-hv04c-host-proof ok=true frames=2 pixel gates green`; `draw_count=4`, `multi_draw=true` |
+
+**Acceptance criteria verified**:
+1. ✅ Imports `createChunkGraphicsResources`, `applyChunkResourceReplace`, `runChunkGraphicsFrame`
+2. ✅ Geometry loaded from per-chunk `chunks/<slot>/` bins
+3. ✅ Four chunk resources created via `applyChunkResourceReplace`
+4. ✅ `frameState.submits[0].draw_count === 4` and `multi_draw === true`
+5. ✅ `window.faberHv04cProof.ok === true` — all pixel laws pass
+6. ✅ Resize + frame 2 works (depth texture replaced, transform updated)
+7. ✅ Clear-only control yields expected clear hex

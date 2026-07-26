@@ -121,7 +121,7 @@ picking remain excluded.
 Dirty-chunk rules, frame batching, stable logical identity, empty/non-empty
 transitions, queue completion, destruction timing, and proof counters are
 explicit. The split between Faber invalidation and browser-owned GPU disposal
-is canonical. HV-05C multi-draw residual folds into HV-07B host resource path.
+is canonical. HV-05C multi-draw residual resolved through HV-07B/C — CLOSED GREEN (hosts d3b0c69, examples 5d05f7d).
 
 ## Goal 08 - Clean Break And Application Proof
 
