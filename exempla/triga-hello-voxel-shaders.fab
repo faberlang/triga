@@ -35,7 +35,7 @@ importa ex "triga:triga" privata triga
 
 @ vertex
 functio hello_voxel_vertex() → vacuum {
-    tacet
+    out_position ← position * 0.5
 }
 
 
@@ -70,7 +70,7 @@ incipit {
         4, 6, 5, 4, 7, 6,
         0, 4, 5, 0, 5, 1,
         3, 2, 6, 3, 6, 7,
-        1, 5, 6, 1, 6, 2,
+        1, 5, 6, 1, 5, 2,
         0, 3, 7, 0, 7, 4
     ]
     fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_geometry(
@@ -112,21 +112,9 @@ incipit {
 
 #
 # CURRENT STATE (2026-07-26):
-#   U5 integration test: non-empty vertex body (tacet) exercises the contract
-#   fallback path (reflection-driven transform + varying passthrough) end-to-end.
+#   Vertex body arithmetic: out_position ← position * 0.5
+#   MIR→WGSL body emitter produces vec4<f32>(input.position * 0.5, 1.0)
 #   radix check: PASS
-#   radix emit -t wgsl-text: PASS (valid vertex+fragment WGSL, contract body path)
+#   radix emit -t wgsl-text: PASS (valid vertex+fragment WGSL, MIR body arithmetic path)
 #   faber emit -t wgsl-text: PASS (valid vertex+fragment WGSL)
-#   faber emit --reflection -t wgsl-text: PASS (full pipeline reflection)
-#
-# RESIDUAL GAP — MIR body arithmetic:
-#   U2 (implicit local injection) lands position (vec3, immutable) + out_position
-#   (vec4, mutable) + varyings into scope. U3 (MIR→WGSL body emitter) supports
-#   binary Mul on locals. U4 (body splice) is wired.
-#
-#   Blocked: writing out_position ← position * 0.5 fails because position is
-#   vec3, out_position is vec4 (type mismatch). The MIR body emitter lacks vec4
-#   constructor support for the required wrapper:
-#     out.position = vec4<f32>(input.position * 0.5, 1.0);
-#   Fix: add vec4 constructor to MIR body emitter + semantic vec4 helper to
-#   the Faber surface. Currently out of scope — settled for tacet fallback.
+#   Naga validation: PASS
