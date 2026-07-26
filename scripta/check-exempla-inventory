@@ -102,12 +102,6 @@ compile_allowlist_reason() {
     exempla/triga-vertex-fragment-stub.fab)
       echo "vertex-fragment stub is annotation-only; no generated-code path"
       ;;
-    exempla/triga-hello-voxel-shaders.fab)
-      echo "shader exemplar is annotation-only; no generated-code path"
-      ;;
-    exempla/triga-hello-voxel-pipeline.fab)
-      echo "pipeline exemplar is annotation-only; no generated-code path"
-      ;;
     *)
       return 1
       ;;

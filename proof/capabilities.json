@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "ledger_revision": 1,
   "threshold": 80,
   "evidence_levels": ["source", "rust", "mir_wgsl", "host_compute", "host_graphics"],
   "domains": [

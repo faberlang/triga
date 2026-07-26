@@ -31,7 +31,9 @@ def main():
     for domain in ledger["domains"]:
         points = sum(proof["points"] for proof in domain["proofs"])
         if points != domain["weight"]:
-            errors.append(f"{domain['id']}: proof points {points} != weight {domain['weight']}")
+            errors.append(
+                f"{domain['id']}: proof points {points} != weight {domain['weight']}"
+            )
         earned = 0
         for proof in domain["proofs"]:
             if proof["id"] in proof_ids:
@@ -40,17 +42,29 @@ def main():
             if not proof.get("owner"):
                 errors.append(f"{proof['id']}: missing owner")
             if proof["level"] not in levels:
-                errors.append(f"{proof['id']}: unknown evidence level {proof['level']}")
+                errors.append(
+                    f"{proof['id']}: unknown evidence level {proof['level']}"
+                )
             if proof["state"] not in VALID_STATES:
                 errors.append(f"{proof['id']}: unknown state {proof['state']}")
             if proof["state"] == "passed":
                 earned += proof["points"]
         score += earned
-        floor_results.append({"domain": domain["id"], "earned": earned, "floor": domain["floor"], "met": earned >= domain["floor"]})
+        floor_results.append(
+            {
+                "domain": domain["id"],
+                "earned": earned,
+                "floor": domain["floor"],
+                "met": earned >= domain["floor"],
+            }
+        )
 
     total_weight = sum(domain["weight"] for domain in ledger["domains"])
     if total_weight != 100:
         errors.append(f"domain weights total {total_weight}, expected 100")
+
+    if "ledger_revision" not in ledger:
+        errors.append("capabilities.json: missing ledger_revision")
 
     capstones = []
     for capstone_id in ledger["capstones"]:
@@ -65,12 +79,20 @@ def main():
             errors.append(f"{capstone_id}: invalid state")
         if manifest.get("required_level") not in levels:
             errors.append(f"{capstone_id}: invalid required evidence level")
+        if "ledger_revision" not in manifest:
+            errors.append(f"{capstone_id}: missing ledger_revision")
         for field in ("workload", "fixtures", "expected", "reason"):
             if field not in manifest:
                 errors.append(f"{capstone_id}: missing {field}")
-        capstones.append({"id": capstone_id, "state": manifest.get("state"), "stale": path.stat().st_mtime < LEDGER.stat().st_mtime})
-        if capstones[-1]["stale"]:
-            errors.append(f"{capstone_id}: manifest is older than capability ledger")
+        stale = manifest.get("ledger_revision") != ledger.get("ledger_revision")
+        capstones.append(
+            {"id": capstone_id, "state": manifest.get("state"), "stale": stale}
+        )
+        if stale:
+            errors.append(
+                f"{capstone_id}: ledger_revision {manifest.get('ledger_revision')}"
+                f" != ledger revision {ledger.get('ledger_revision')}"
+            )
 
     prerequisites = []
     if PREREQUISITES.exists():
@@ -86,25 +108,58 @@ def main():
             for field in ("campaign", "goal", "scope", "evidence", "limits"):
                 if field not in manifest:
                     errors.append(f"{prereq_id}: missing {field}")
-            prerequisites.append({
-                "id": prereq_id,
-                "state": manifest.get("state"),
-                "goal": manifest.get("goal"),
-                "scoring": manifest.get("scoring"),
-            })
+            prerequisites.append(
+                {
+                    "id": prereq_id,
+                    "state": manifest.get("state"),
+                    "goal": manifest.get("goal"),
+                    "scoring": manifest.get("scoring"),
+                }
+            )
 
-    browser = {"available": False, "result": "unavailable", "reason": "Stage 0 has no direct WebGPU browser runner"}
-    report = {"schema_version": 1, "score": score, "threshold": ledger["threshold"], "weights": total_weight, "floors": floor_results, "capstones": capstones, "prerequisites": prerequisites, "browser": browser, "errors": errors}
+    browser = {
+        "available": False,
+        "result": "unavailable",
+        "reason": "Stage 0 has no direct WebGPU browser runner",
+    }
+    report = {
+        "schema_version": 1,
+        "score": score,
+        "threshold": ledger["threshold"],
+        "weights": total_weight,
+        "floors": floor_results,
+        "capstones": capstones,
+        "prerequisites": prerequisites,
+        "browser": browser,
+        "errors": errors,
+    }
     if args.as_json:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
-        print(f"score: {score}/{total_weight} (threshold {ledger['threshold']})")
-        print(f"mandatory floors: {sum(item['met'] for item in floor_results)}/{len(floor_results)} met")
-        print(f"capstones: {len(capstones)}/{len(ledger['capstones'])} manifested; {sum(item['state'] == 'passed' for item in capstones)} passed")
+        print(
+            f"score: {score}/{total_weight} (threshold {ledger['threshold']})"
+        )
+        print(
+            f"mandatory floors:"
+            f" {sum(item['met'] for item in floor_results)}/{len(floor_results)} met"
+        )
+        print(
+            f"capstones: {len(capstones)}/{len(ledger['capstones'])} manifested;"
+            f" {sum(item['state'] == 'passed' for item in capstones)} passed"
+        )
         if prerequisites:
-            print(f"non-scoring prerequisites: {sum(item['state'] == 'passed' for item in prerequisites)}/{len(prerequisites)} passed")
-        print(f"browser validation: {browser['result']} — {browser['reason']}")
-        print(f"artifact freshness: {'ok' if not any(item['stale'] for item in capstones) else 'stale'}")
+            print(
+                f"non-scoring prerequisites:"
+                f" {sum(item['state'] == 'passed' for item in prerequisites)}"
+                f"/{len(prerequisites)} passed"
+            )
+        print(
+            f"browser validation: {browser['result']} — {browser['reason']}"
+        )
+        print(
+            f"artifact freshness:"
+            f" {'ok' if not any(item['stale'] for item in capstones) else 'stale'}"
+        )
         for error in errors:
             print(f"error: {error}", file=sys.stderr)
     return 1 if errors else 0

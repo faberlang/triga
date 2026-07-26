@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Test that check-capabilities detects stale capstone ledger_revision mismatch.
+
+Creates a temporary fixture with mismatched ledger_revision values and
+verifies check-capabilities reports the staleness error.
+"""
+
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+
+def test_staleness_detection() -> None:
+    with tempfile.TemporaryDirectory(prefix="triga-stale-") as tmpdir:
+        # Layout: tmpdir/scripta/check-capabilities, tmpdir/proof/capabilities.json
+        # This mirrors the real repo structure so ROOT resolves correctly.
+        scripta_dir = Path(tmpdir) / "scripta"
+        proof_dir = Path(tmpdir) / "proof"
+        capstones_dir = proof_dir / "capstones"
+        scripta_dir.mkdir(parents=True)
+        capstones_dir.mkdir(parents=True)
+
+        # Copy checker so __file__-based ROOT resolves to tmpdir
+        checker_src = Path(__file__).resolve().parent / "check-capabilities"
+        checker_dst = scripta_dir / "check-capabilities"
+        shutil.copy2(str(checker_src), str(checker_dst))
+
+        # Ledger with revision 1
+        ledger = {
+            "schema_version": 1,
+            "ledger_revision": 1,
+            "threshold": 80,
+            "evidence_levels": ["rust"],
+            "domains": [],
+            "capstones": ["test-stale"],
+        }
+        (proof_dir / "capabilities.json").write_text(json.dumps(ledger))
+
+        # Capstone with revision 0 (mismatched — creates staleness)
+        capstone = {
+            "schema_version": 1,
+            "ledger_revision": 0,
+            "id": "test-stale",
+            "required_level": "rust",
+            "workload": "test/fixture",
+            "fixtures": [],
+            "expected": {"kind": "numeric", "contract": "test"},
+            "state": "unsupported",
+            "reason": "test fixture for stale coupling detection",
+        }
+        (capstones_dir / "test-stale.json").write_text(json.dumps(capstone))
+
+        result = subprocess.run(
+            [sys.executable, str(checker_dst), "--json"],
+            capture_output=True, text=True,
+            cwd=tmpdir,
+        )
+
+        report = json.loads(result.stdout)
+
+        # Verify staleness was detected
+        stale_items = [c for c in report.get("capstones", []) if c.get("stale")]
+        assert len(stale_items) == 1, (
+            f"expected 1 stale capstone, got {len(stale_items)}"
+        )
+
+        errors = report.get("errors", [])
+        assert any(
+            "ledger_revision" in e and " != " in e for e in errors
+        ), f"expected ledger_revision mismatch error, got: {errors}"
+
+        print("PASS: stale ledger/capstone coupling correctly detected")
+
+
+if __name__ == "__main__":
+    test_staleness_detection()
+    raise SystemExit(0)
