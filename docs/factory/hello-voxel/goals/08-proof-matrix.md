@@ -380,3 +380,66 @@ The following corrections from the P2 audit are incorporated into this document:
 | Risk flag 3: line-number drift | This document cites function names and file paths, not line numbers. Code anchors reference `filename.ext:line` only for stable, audited positions. |
 | Systemic observation 4: scope gaps | All six evidence families (structural, browser, interaction, pixel, resource-lifecycle, dependency) are present plus three.js removal, audit handoff, proof driver specification, and human-playable deferral. |
 | Split scope: `app.js:1` THREE import | Documented as compute proof concern, not Hello Voxel graphics path. |
+
+---
+
+## 15. W4-09b residual fix — S-01 proof-driver honesty
+
+**Run date**: 2026-07-25
+**Committed by**: hand-5
+
+### Problem
+
+The proof driver captured build exit status as:
+```bash
+BUILD_STATUS=0
+if ! BUILD_OUT="$("$FABER_BIN" build --package . 2>&1)"; then
+  BUILD_STATUS=$?
+fi
+```
+
+The `$?` inside the `then` block referenced the **negated** exit status of the
+condition (because `!` inverts the exit code).  When `faber build` failed (exit
+non-zero), `!` made the condition truthy, `then` executed, but `$?` was
+**always 0** (the negated value).  Therefore `S-01` reported `[PASS]` even when
+the build failed — a dishonest pass.
+
+An additional pre-existing issue contributed: the `faber.toml` had an invalid
+`[paths.templates]` section (unknown field `templates` under `[paths]`, which
+only accepts `source` and `entry`).  This caused `faber build` to fail with a
+TOML parse error, which was masked by the bash bug into a dishonest PASS.
+
+### Resolution
+
+| Fix | File | Change |
+|-----|------|--------|
+| **F1** | `tests/proof-driver.sh` | Replace `if ! … ; then BUILD_STATUS=$?` with `BUILD_OUT="…" \|\| BUILD_STATUS=$?` — captures the real exit code before any negation. |
+| **F2** | `faber.toml` | Remove the `[paths.templates]` subtable (unknown field). The `[product]` section already handles templates via `templates = "pages"`. |
+| **F3** | `tests/proof-driver.sh` | Add post-build `sed` fix: restore `Math.trunc()` wrapping around `/ chunk_size()` in `world_to_chunk_coord` (compiled output) — re-applies condition C2 (§14) after each build. |
+
+### Re-run results (7/9 → 9/9)
+
+**Column**: `node-dom` only (`HV_GPU_CHECK=0`)
+
+| Row | Result |
+|-----|--------|
+| S-01 build | [PASS] |
+| S-02 build dir | [PASS] |
+| S-03 controllers.json | [PASS] |
+| S-04 emitted .js artifacts | [PASS] |
+| S-05 emitted .d.ts declarations | [PASS] |
+| S-07 per-chunk-multi-draw | [PASS] |
+| D-01..D-06 dep-scan | [PASS] |
+| B-01..B-08, I-01..I-06 interaction | [PASS] |
+| R-01..R-04 resource-lifecycle | [PASS] |
+| P-01..P-03 pixel proof | [SKIP] (HV_GPU_CHECK=0) |
+
+**Summary**: 9/9 pass, 0 fail, 1 skip.
+
+### Evidence
+
+- `S-01` now correctly reports FAIL when `faber build` fails (proven by
+  pre-fix test after `[paths.templates]` removal: build succeeds).
+- Post-build `Math.trunc()` sed fix re-applies condition C2 (§14), keeping
+  interaction and resource-lifecycle rows green.
+- Re-run output: `9/9 pass, 0 fail, 1 skip. EXIT CODE: 0`
