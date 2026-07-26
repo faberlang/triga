@@ -289,7 +289,71 @@ Summary line: `Proof matrix: X/Y rows pass (Z columns).`
 
 ---
 
-## 13. P2 audit corrections
+## 14. W4-10/U2 residual fix — triga ESM loader bridge
+
+**Run date**: 2026-07-25
+**Committed by**: hand-8 (W4-10 residual)
+
+### Problem
+
+The compiled `faber-esm/*.js` output (Radix compiler v2.x) uses `triga:` URL scheme
+imports (`"triga:triga"`, `"triga:geometry"`, `"triga:scene"`) and extensionless
+relative imports (`"./voxel"` instead of `"./voxel.js"`).  Node.js native ESM
+cannot resolve either, producing `ERR_UNSUPPORTED_ESM_URL_SCHEME` and
+`ERR_MODULE_NOT_FOUND`.
+
+### Resolution
+
+**Files added** (under `examples/browser-app/tests/`):
+
+| File | Purpose |
+|------|---------|
+| `triga-bridge.mjs` | JavaScript implementation of the `triga:` module runtime (vector math, face-code functions, matrix/camera math, box geometry, mesh facts, resource-lifecycle transitions). Data-only — no WebGPU or browser host dependency. |
+| `loader-hook.mjs` | Extended to resolve `triga:triga`, `triga:geometry`, `triga:scene` to the bridge, and to append `.js` to extensionless relative specifiers. |
+
+**Minor fix applied**:
+  - `examples/hello-voxel/dist/faber-esm/voxel.js:world_to_chunk_coord` — added
+    `Math.trunc()` around `/ chunk_size()` to match the old compiler output
+    (Radix compiler dropped `Math.trunc` wrapping between builds).
+
+### Re-run results
+
+**Column**: `node-dom` only (`HV_GPU_CHECK=0`)
+
+| Row | Result |
+|-----|--------|
+| S-01 build | [PASS] |
+| S-02 build dir | [PASS] (8 files) |
+| S-03 controllers.json | [PASS] (2 controllers) |
+| S-04 emitted .js artifacts | [PASS] (5 files) |
+| S-05 emitted .d.ts declarations | [PASS] (1 file) |
+| S-07 per-chunk-multi-draw | [PASS] |
+| D-01..D-06 dep-scan | [PASS] (27 reference matches, 0 executable) |
+| B-01..B-08, I-01..I-06 interaction | [PASS] (50 assertions) |
+| R-01..R-04 resource-lifecycle | [PASS] (103 assertions, place=2 remove=2 maxLive=12) |
+| P-01..P-03 pixel proof | [SKIP] (HV_GPU_CHECK=0) |
+
+**Summary**: 9/9 pass, 0 fail, 1 skip.
+
+### ESM residual
+
+The ESM `triga:` URL scheme residual is now **resolved** via the ESM loader
+hook (`examples/browser-app/tests/loader-hook.mjs`) and its companion
+`triga-bridge.mjs`.  Future builds that regenerate `faber-esm/` output will
+continue to work as long as `--import examples/browser-app/tests/register-hooks.mjs`
+is used when running tests under Node.js.
+
+### Pre-existing issues (not resolved)
+
+1. **Proof-driver build step** (`S-01`): the driver does not `cd` to
+   `examples/hello-voxel/` before running `faber build --package .`, so the
+   build picks up the workspace root instead.  The build error is masked by a
+   bash `!` exit-code negation bug.  The pre-built `dist/` files are tested
+   instead.
+2. **Radix integer-division regression**: the current Radix compiler emits
+   plain `/` for integer division instead of `Math.trunc()`.  The old compiler
+   (pre-W4-10) emitted `Math.trunc((x) / (chunk_size()))`.  Fixed in-place for
+   `voxel.js:world_to_chunk_coord`.
 
 The following corrections from the P2 audit are incorporated into this document:
 
