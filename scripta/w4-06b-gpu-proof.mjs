@@ -4,10 +4,11 @@
  * W4-06b Unit 2 — Headless Chrome GPU Proof Script
  *
  * Exercises real WebGPU matmul+add execution via headless Chrome with
- * SwiftShader.  Compiles the tiny-linear-device exemplar (as inline WGSL),
- * serves a proof page, launches headless Chrome via Puppeteer, captures
- * the console proof result, compares against the stepper reference, and
- * reports pass/fail.
+ * SwiftShader.  Uses hand-authored inline WGSL mirroring the
+ * tiny-linear-device exemplar — the faber compiler does not emit WGSL
+ * device code.  Serves a proof page, launches headless Chrome via
+ * Puppeteer, captures the console proof result, compares against the
+ * stepper reference, and reports pass/fail.
  *
  * Usage:
  *   node triga/scripta/w4-06b-gpu-proof.mjs
