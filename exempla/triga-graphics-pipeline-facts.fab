@@ -72,12 +72,12 @@ incipit {
     adfirma depth_compare_never ≡ 0 et depth_compare_always ≡ 7, "depth compare covers the full MirDepthCompareFunction range"
 
     fixum triga.Color goal_color ← triga.Color { r = 1.0, g = 0.2, b = 0.2 }
-    adfirma triga.color_valid(goal_color), "Goal 01 locked color is valid normalized RGB"
+    adfirma triga.color_valida(goal_color), "Goal 01 locked color is valid normalized RGB"
 
     fixum triga.MeshBasicMaterial ∪ nihil goal_material_result ← triga.mesh_basic_material("goal-material", goal_color)
     adfirma goal_material_result non est nihil, "Goal 01 locked material is valid"
     fixum triga.MeshBasicMaterial goal_material ← triga.MeshBasicMaterial { base = goal_material_result!.base, color = goal_material_result!.color }
-    adfirma triga.mesh_basic_material_valid(goal_material), "Goal 01 material passes mesh basic material validation"
+    adfirma triga.mesh_basic_material_valida(goal_material), "Goal 01 material passes mesh basic material validation"
 
     fixum triga.MaterialPipelineFacts ∪ nihil goal_pipeline_result ← triga.mesh_basic_material_pipeline_facts(goal_material)
     adfirma goal_pipeline_result non est nihil, "Goal 01 locked material produces pipeline facts"

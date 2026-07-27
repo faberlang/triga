@@ -61,11 +61,685 @@ genus SceneSlot {
 
 genus SceneStore {
     lista<SceneSlot> slots
-}
 
-genus SceneInsert {
-    SceneStore store
-    SceneHandle handle
+    # ── Mutation (Imperativus) ──────────────────────────────────────────
+
+    functio insere(SceneNode nodus) → SceneHandle {
+        fixum numerus index ← ego.slots.longitudo()
+        ego.slots.appende(SceneSlot { generation = 0, alive = verum, node = nodus })
+        redde SceneHandle { index = index, generation = 0 }
+    }
+
+    functio continet(de SceneHandle manubrium) → bivalens {
+        si manubrium.index ≥ ego.slots.longitudo() ergo redde falsum
+        fixum SceneSlot socors ← ego.slots[manubrium.index]
+        redde socors.alive et socors.generation ≡ manubrium.generation
+    }
+
+    functio cape(de SceneHandle manubrium) → SceneNode ∪ nihil {
+        si ego.continet(manubrium) ≡ falsum ergo redde nihil
+        redde ego.slots[manubrium.index].node
+    }
+
+    functio adiunge(de SceneHandle filius, de SceneHandle parens) → bivalens {
+        si ego.continet(filius) ≡ falsum ergo redde falsum
+        si ego.continet(parens) ≡ falsum ergo redde falsum
+        si ego._circuitum_faceret(filius, parens) ergo redde falsum
+        fixum SceneNode ∪ nihil filius_result ← ego.cape(filius)
+        fixum SceneNode ∪ nihil parens_result ← ego.cape(parens)
+        si filius_result est nihil vel parens_result est nihil ergo redde falsum
+        fixum SceneNode filius_nodus ← SceneNode {
+            name = filius_result!.name, kind = filius_result!.kind,
+            parent = filius_result!.parent, children = filius_result!.children,
+            visible = filius_result!.visible,
+            local_matrix = filius_result!.local_matrix, world_matrix = filius_result!.world_matrix,
+            world_dirty = filius_result!.world_dirty
+        }
+        fixum SceneNode parens_nodus ← SceneNode {
+            name = parens_result!.name, kind = parens_result!.kind,
+            parent = parens_result!.parent, children = parens_result!.children,
+            visible = parens_result!.visible,
+            local_matrix = parens_result!.local_matrix, world_matrix = parens_result!.world_matrix,
+            world_dirty = parens_result!.world_dirty
+        }
+        si filius_nodus.parent non est nihil {
+            fixum SceneHandle exsistens_parens ← SceneHandle {
+                index = filius_nodus.parent!.index, generation = filius_nodus.parent!.generation
+            }
+            si scene_handle_equals(exsistens_parens, parens) ergo redde falsum
+        }
+        # Remove child from old parent's children list if it had one
+        si filius_nodus.parent non est nihil {
+            fixum SceneHandle vetus_parens ← SceneHandle {
+                index = filius_nodus.parent!.index,
+                generation = filius_nodus.parent!.generation
+            }
+            fixum SceneNode ∪ nihil vetus_parens_result ← ego.cape(vetus_parens)
+            si vetus_parens_result est nihil ergo redde falsum
+            fixum SceneNode vetus_nodus ← SceneNode {
+                name = vetus_parens_result!.name, kind = vetus_parens_result!.kind,
+                parent = vetus_parens_result!.parent, children = vetus_parens_result!.children,
+                visible = vetus_parens_result!.visible,
+                local_matrix = vetus_parens_result!.local_matrix,
+                world_matrix = vetus_parens_result!.world_matrix,
+                world_dirty = vetus_parens_result!.world_dirty
+            }
+            ego._reple(vetus_parens, ego._sine_liberis(vetus_nodus, filius))
+        }
+        # Add child to parent's children list
+        varia lista<SceneHandle> liberi ← vacua
+        varia numerus i ← 0
+        dum i < parens_nodus.children.longitudo() {
+            fixum SceneHandle exsistens ← parens_nodus.children[i]
+            liberi.appende(SceneHandle { index = exsistens.index, generation = exsistens.generation })
+            i ← i + 1
+        }
+        liberi.appende(SceneHandle { index = filius.index, generation = filius.generation })
+        fixum SceneNode renovatus_parens ← SceneNode {
+            name = parens_nodus.name, kind = parens_nodus.kind,
+            parent = parens_nodus.parent, children = liberi,
+            visible = parens_nodus.visible,
+            local_matrix = parens_nodus.local_matrix, world_matrix = parens_nodus.world_matrix,
+            world_dirty = parens_nodus.world_dirty
+        }
+        fixum SceneNode renovatus_filius ← SceneNode {
+            name = filius_nodus.name, kind = filius_nodus.kind,
+            parent = SceneHandle { index = parens.index, generation = parens.generation },
+            children = filius_nodus.children,
+            visible = filius_nodus.visible,
+            local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix,
+            world_dirty = verum
+        }
+        ego._reple(parens, renovatus_parens)
+        ego._reple(filius, renovatus_filius)
+        ego._nota_mundum_sordidum(filius)
+        redde verum
+    }
+
+    functio seiunge(de SceneHandle filius) → bivalens {
+        si ego.continet(filius) ≡ falsum ergo redde falsum
+        fixum SceneNode ∪ nihil filius_result ← ego.cape(filius)
+        si filius_result est nihil ergo redde falsum
+        fixum SceneNode filius_nodus ← SceneNode {
+            name = filius_result!.name, kind = filius_result!.kind,
+            parent = filius_result!.parent, children = filius_result!.children,
+            visible = filius_result!.visible,
+            local_matrix = filius_result!.local_matrix, world_matrix = filius_result!.world_matrix,
+            world_dirty = filius_result!.world_dirty
+        }
+        si filius_nodus.parent est nihil ergo redde falsum
+        fixum SceneHandle parens_manubrium ← SceneHandle {
+            index = filius_nodus.parent!.index, generation = filius_nodus.parent!.generation
+        }
+        fixum SceneNode ∪ nihil parens_result ← ego.cape(parens_manubrium)
+        si parens_result est nihil ergo redde falsum
+        fixum SceneNode parens_nodus ← SceneNode {
+            name = parens_result!.name, kind = parens_result!.kind,
+            parent = parens_result!.parent, children = parens_result!.children,
+            visible = parens_result!.visible,
+            local_matrix = parens_result!.local_matrix, world_matrix = parens_result!.world_matrix,
+            world_dirty = parens_result!.world_dirty
+        }
+        fixum SceneNode seiunctus_filius ← SceneNode {
+            name = filius_nodus.name, kind = filius_nodus.kind, children = filius_nodus.children,
+            visible = filius_nodus.visible,
+            local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix,
+            world_dirty = verum
+        }
+        ego._reple(parens_manubrium, ego._sine_liberis(parens_nodus, filius))
+        ego._reple(filius, seiunctus_filius)
+        ego._nota_mundum_sordidum(filius)
+        redde verum
+    }
+
+    functio detrahe(de SceneHandle manubrium) → bivalens {
+        si ego.continet(manubrium) ≡ falsum ergo redde falsum
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde falsum
+        si nodus_result!.children.longitudo() > 0 ergo redde falsum
+        si nodus_result!.parent non est nihil {
+            fixum bivalens seiunctus ← ego.seiunge(manubrium)
+            si seiunctus ≡ falsum ergo redde falsum
+        }
+        fixum SceneSlot socors ← ego.slots[manubrium.index]
+        ego.slots[manubrium.index] ← SceneSlot {
+            generation = socors.generation + 1, alive = falsum, node = socors.node
+        }
+        redde verum
+    }
+
+    functio inveni(textus nomen) → SceneHandle ∪ nihil {
+        fixum SceneTraversal ∪ nihil result ← ego._traverse_preorder(SceneHandle { index = 0, generation = 0 }, vacua, ego.slots.longitudo())
+        si result est nihil ergo redde nihil
+        fixum SceneTraversal peragratio ← SceneTraversal {
+            handles = result!.handles, remaining = result!.remaining
+        }
+        varia numerus i ← 0
+        dum i < peragratio.handles.longitudo() {
+            fixum SceneHandle manubrium ← peragratio.handles[i]
+            fixum SceneNode ∪ nihil nodus ← ego.cape(manubrium)
+            si nodus est nihil ergo redde nihil
+            si nodus!.name ≡ nomen {
+                redde SceneHandle { index = manubrium.index, generation = manubrium.generation }
+            }
+            i ← i + 1
+        }
+        redde nihil
+    }
+
+    functio pone_visibile(de SceneHandle manubrium, bivalens valor) → bivalens {
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde falsum
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        ego._reple(manubrium, SceneNode {
+            name = nodus.name, kind = nodus.kind,
+            parent = nodus.parent, children = nodus.children,
+            visible = valor,
+            local_matrix = nodus.local_matrix, world_matrix = nodus.world_matrix,
+            world_dirty = nodus.world_dirty
+        })
+        redde verum
+    }
+
+    functio pone_matrix_localem(de SceneHandle manubrium, de triga.Matrix4 matrix) → bivalens {
+        si matrix.elements.longitudo() ≠ 16 ergo redde falsum
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde falsum
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        ego._reple(manubrium, SceneNode {
+            name = nodus.name, kind = nodus.kind,
+            parent = nodus.parent, children = nodus.children,
+            visible = nodus.visible,
+            local_matrix = matrix, world_matrix = nodus.world_matrix,
+            world_dirty = verum
+        })
+        ego._nota_mundum_sordidum(manubrium)
+        redde verum
+    }
+
+    functio matrix_mundi_mesh(de SceneHandle manubrium) → triga.Matrix4 ∪ nihil {
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde nihil
+        discerne nodus_result!.kind {
+            casu SceneMesh fixum geometry, material { redde nodus_result!.world_matrix }
+            casu SceneGroup { redde nihil }
+            casu SceneCamera { redde nihil }
+            casu SceneLight { redde nihil }
+        }
+    }
+
+    functio efficax_visibile(de SceneHandle manubrium) → bivalens {
+        varia SceneHandle cursor ← SceneHandle { index = manubrium.index, generation = manubrium.generation }
+        varia numerus remaining ← ego.slots.longitudo() + 1
+        dum remaining > 0 {
+            fixum SceneNode ∪ nihil current ← ego.cape(cursor)
+            si current est nihil ergo redde falsum
+            si current!.visible ≡ falsum ergo redde falsum
+            si current!.parent est nihil ergo redde verum
+            fixum SceneHandle parens ← SceneHandle {
+                index = current!.parent!.index, generation = current!.parent!.generation
+            }
+            cursor ← SceneHandle {
+                index = parens.index, generation = parens.generation
+            }
+            remaining ← remaining - 1
+        }
+        redde falsum
+    }
+
+    functio renova_mundum(de SceneHandle radix) → bivalens {
+        fixum SceneNode ∪ nihil radix_result ← ego.cape(radix)
+        si radix_result est nihil ergo redde falsum
+        si radix_result!.parent non est nihil ergo redde (falsum)
+        ego._renova_mundum_nodum(radix, triga.matrix4_identitas())
+        redde verum
+    }
+
+    # ── Internal helpers ────────────────────────────────────────────────
+
+    functio _traversal_continet(
+        de lista<SceneHandle> handles,
+        de SceneHandle manubrium
+    ) → bivalens {
+        varia numerus i ← 0
+        dum i < handles.longitudo() {
+            fixum SceneHandle exsistens ← handles[i]
+            si scene_handle_equals(exsistens, manubrium) ≡ verum {
+                redde verum
+            }
+            i ← i + 1
+        }
+        redde falsum
+    }
+
+    # TRAVERSAL — Four preorder variants that share the same structural skeleton:
+    # node fetch → field copy → seen-set guard → visitor action → child iteration.
+    # Every variant below must keep these steps in lockstep. If you fix a bug in
+    # the skeleton (e.g., seen-set disposal, remaining-counter, child iteration
+    # order), apply the fix to ALL FOUR.
+    #
+    #   (1) _traverse_preorder               — unfiltered; calls visitor callback
+    #   (2) _traverse_visibile_preorder      — filters to visible nodes only
+    #   (3) _traverse_visibile_rete_preorder — visible mesh-node handles
+    #   (4) _traverse_visibile_rete_opes_preorder — visible mesh
+    #       resource handles + transition facts
+    #
+    # WHEN FABER GAINS CLOSURES/VISITORS: collapse these into a single
+    # scene_traverse(store, root, filter, accumulator) and delete the copies.
+    # Until then, treat this block as generated code — change the template, not
+    # one copy. See also DEFER-121 (sub-module split gated on Faber module system).
+
+    functio _traverse_preorder(
+        de SceneHandle manubrium,
+        lista<SceneHandle> handles,
+        numerus remaining
+    ) → SceneTraversal ∪ nihil {
+        si remaining ≡ 0 ergo redde nihil
+        si ego._traversal_continet(handles, manubrium) ergo redde nihil
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde nihil
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        varia lista<SceneHandle> renovata_handles ← handles
+        renovata_handles.appende(SceneHandle { index = manubrium.index, generation = manubrium.generation })
+        varia SceneTraversal peragratio ← SceneTraversal {
+            handles = renovata_handles, remaining = remaining - 1
+        }
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            fixum SceneTraversal ∪ nihil current ← ego._traverse_preorder(
+                nodus.children[i], peragratio.handles, peragratio.remaining
+            )
+            si current est nihil ergo redde nihil
+            fixum SceneTraversal current_value ← SceneTraversal {
+                handles = current!.handles, remaining = current!.remaining
+            }
+            peragratio ← SceneTraversal {
+                handles = current_value.handles, remaining = current_value.remaining
+            }
+            i ← i + 1
+        }
+        redde peragratio
+    }
+
+    functio _traverse_visibile_preorder(
+        de SceneHandle manubrium,
+        lista<SceneHandle> handles,
+        numerus remaining,
+        bivalens parens_visibile
+    ) → SceneTraversal ∪ nihil {
+        si remaining ≡ 0 ergo redde nihil
+        si ego._traversal_continet(handles, manubrium) ergo redde nihil
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde nihil
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        fixum bivalens efficax_visibile ← parens_visibile et nodus.visible
+        varia lista<SceneHandle> renovata_handles ← handles
+        si efficax_visibile {
+            renovata_handles.appende(SceneHandle { index = manubrium.index, generation = manubrium.generation })
+        }
+        varia SceneTraversal peragratio ← SceneTraversal {
+            handles = renovata_handles, remaining = remaining - 1
+        }
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            fixum SceneTraversal ∪ nihil current ← ego._traverse_visibile_preorder(
+                nodus.children[i], peragratio.handles, peragratio.remaining, efficax_visibile
+            )
+            si current est nihil ergo redde nihil
+            fixum SceneTraversal current_value ← SceneTraversal {
+                handles = current!.handles, remaining = current!.remaining
+            }
+            peragratio ← SceneTraversal {
+                handles = current_value.handles, remaining = current_value.remaining
+            }
+            i ← i + 1
+        }
+        redde peragratio
+    }
+
+    functio _traverse_visibile_rete_preorder(
+        de SceneHandle manubrium,
+        lista<SceneHandle> handles,
+        numerus remaining,
+        bivalens parens_visibile
+    ) → SceneTraversal ∪ nihil {
+        si remaining ≡ 0 ergo redde nihil
+        si ego._traversal_continet(handles, manubrium) ergo redde nihil
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde nihil
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        fixum bivalens efficax_visibile ← parens_visibile et nodus.visible
+        varia lista<SceneHandle> renovata_handles ← handles
+        si efficax_visibile {
+            discerne nodus.kind {
+                casu SceneMesh fixum geometry, material {
+                    renovata_handles.appende(SceneHandle {
+                        index = manubrium.index,
+                        generation = manubrium.generation
+                    })
+                }
+                casu SceneGroup { }
+                casu SceneCamera { }
+                casu SceneLight { }
+            }
+        }
+        varia SceneTraversal peragratio ← SceneTraversal {
+            handles = renovata_handles, remaining = remaining - 1
+        }
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            fixum SceneTraversal ∪ nihil current ← ego._traverse_visibile_rete_preorder(
+                nodus.children[i], peragratio.handles, peragratio.remaining, efficax_visibile
+            )
+            si current est nihil ergo redde nihil
+            fixum SceneTraversal current_value ← SceneTraversal {
+                handles = current!.handles, remaining = current!.remaining
+            }
+            peragratio ← SceneTraversal {
+                handles = current_value.handles, remaining = current_value.remaining
+            }
+            i ← i + 1
+        }
+        redde peragratio
+    }
+
+    functio _traverse_visibile_rete_opes_preorder(
+        de SceneHandle manubrium,
+        lista<SceneMeshResources> resources,
+        lista<SceneHandle> seen,
+        numerus remaining,
+        bivalens parens_visibile
+    ) → SceneMeshResourceTraversal ∪ nihil {
+        si remaining ≡ 0 ergo redde nihil
+        si ego._traversal_continet(seen, manubrium) ergo redde nihil
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde nihil
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        fixum bivalens efficax_visibile ← parens_visibile et nodus.visible
+        varia lista<SceneHandle> renovata_seen ← seen
+        renovata_seen.appende(SceneHandle { index = manubrium.index, generation = manubrium.generation })
+        varia lista<SceneMeshResources> renovata_resources ← resources
+        si efficax_visibile {
+            discerne nodus.kind {
+                casu SceneMesh fixum geometry, material {
+                    renovata_resources.appende(SceneMeshResources {
+                        node = SceneHandle { index = manubrium.index, generation = manubrium.generation },
+                        geometry = ResourceHandle {
+                            index = geometry.index, generation = geometry.generation
+                        },
+                        material = ResourceHandle {
+                            index = material.index, generation = material.generation
+                        }
+                    })
+                }
+                casu SceneGroup { }
+                casu SceneCamera { }
+                casu SceneLight { }
+            }
+        }
+        varia SceneMeshResourceTraversal peragratio ← SceneMeshResourceTraversal {
+            resources = renovata_resources, remaining = remaining - 1
+        }
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            fixum SceneMeshResourceTraversal ∪ nihil current ←
+                ego._traverse_visibile_rete_opes_preorder(
+                    nodus.children[i], peragratio.resources, renovata_seen,
+                    peragratio.remaining, efficax_visibile
+                )
+            si current est nihil ergo redde nihil
+            fixum SceneMeshResourceTraversal current_value ← SceneMeshResourceTraversal {
+                resources = current!.resources, remaining = current!.remaining
+            }
+            peragratio ← SceneMeshResourceTraversal {
+                resources = current_value.resources, remaining = current_value.remaining
+            }
+            renovata_seen.appende(SceneHandle {
+                index = nodus.children[i].index,
+                generation = nodus.children[i].generation
+            })
+            i ← i + 1
+        }
+        redde peragratio
+    }
+
+    functio _visibile_rete_opes_manubria_preorder(
+        de SceneHandle manubrium,
+        lista<ResourceHandle> handles,
+        lista<SceneHandle> seen,
+        numerus remaining,
+        bivalens parens_visibile,
+        bivalens geometria_manubria
+    ) → ResourceHandleTraversal ∪ nihil {
+        si remaining ≡ 0 ergo redde nihil
+        si ego._traversal_continet(seen, manubrium) ergo redde nihil
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde nihil
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        fixum bivalens efficax_visibile ← parens_visibile et nodus.visible
+        varia lista<SceneHandle> renovata_seen ← seen
+        renovata_seen.appende(SceneHandle { index = manubrium.index, generation = manubrium.generation })
+        varia lista<ResourceHandle> renovata_handles ← handles
+        si efficax_visibile {
+            discerne nodus.kind {
+                casu SceneMesh fixum geometry, material {
+                    si geometria_manubria {
+                        renovata_handles.appende(ResourceHandle {
+                            index = geometry.index, generation = geometry.generation
+                        })
+                    } secus {
+                        renovata_handles.appende(ResourceHandle {
+                            index = material.index, generation = material.generation
+                        })
+                    }
+                }
+                casu SceneGroup { }
+                casu SceneCamera { }
+                casu SceneLight { }
+            }
+        }
+        varia ResourceHandleTraversal peragratio ← ResourceHandleTraversal {
+            handles = renovata_handles, remaining = remaining - 1
+        }
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            fixum ResourceHandleTraversal ∪ nihil current ←
+                ego._visibile_rete_opes_manubria_preorder(
+                    nodus.children[i], peragratio.handles, renovata_seen,
+                    peragratio.remaining, efficax_visibile, geometria_manubria
+                )
+            si current est nihil ergo redde nihil
+            fixum ResourceHandleTraversal current_value ← ResourceHandleTraversal {
+                handles = current!.handles, remaining = current!.remaining
+            }
+            peragratio ← ResourceHandleTraversal {
+                handles = current_value.handles, remaining = current_value.remaining
+            }
+            renovata_seen.appende(SceneHandle {
+                index = nodus.children[i].index,
+                generation = nodus.children[i].generation
+            })
+            i ← i + 1
+        }
+        redde peragratio
+    }
+
+    functio _reple(de SceneHandle manubrium, SceneNode nodus) → bivalens {
+        fixum SceneSlot socors ← ego.slots[manubrium.index]
+        ego.slots[manubrium.index] ← SceneSlot {
+            generation = socors.generation, alive = verum, node = nodus
+        }
+        redde verum
+    }
+
+    functio _sine_liberis(
+        SceneNode parens,
+        de SceneHandle filius
+    ) → SceneNode {
+        varia lista<SceneHandle> liberi ← vacua
+        varia numerus i ← 0
+        dum i < parens.children.longitudo() {
+            fixum SceneHandle exsistens ← parens.children[i]
+            si scene_handle_equals(exsistens, filius) ≡ falsum {
+                liberi.appende(SceneHandle {
+                    index = exsistens.index, generation = exsistens.generation
+                })
+            }
+            i ← i + 1
+        }
+        redde SceneNode {
+            name = parens.name, kind = parens.kind,
+            parent = parens.parent, children = liberi,
+            visible = parens.visible,
+            local_matrix = parens.local_matrix, world_matrix = parens.world_matrix,
+            world_dirty = parens.world_dirty
+        }
+    }
+
+    functio _circuitum_faceret(
+        de SceneHandle filius,
+        de SceneHandle parens
+    ) → bivalens {
+        varia SceneHandle cursor ← SceneHandle { index = parens.index, generation = parens.generation }
+        varia numerus remaining ← ego.slots.longitudo() + 1
+        dum remaining > 0 {
+            si scene_handle_equals(cursor, filius) ergo redde verum
+            fixum SceneNode ∪ nihil current ← ego.cape(cursor)
+            si current est nihil ergo redde falsum
+            fixum SceneNode current_nodus ← SceneNode {
+                name = current!.name, kind = current!.kind,
+                parent = current!.parent, children = current!.children,
+                visible = current!.visible,
+                local_matrix = current!.local_matrix, world_matrix = current!.world_matrix,
+                world_dirty = current!.world_dirty
+            }
+            si current_nodus.parent est nihil ergo redde falsum
+            fixum SceneHandle current_parens ← SceneHandle {
+                index = current_nodus.parent!.index,
+                generation = current_nodus.parent!.generation
+            }
+            cursor ← SceneHandle {
+                index = current_parens.index,
+                generation = current_parens.generation
+            }
+            remaining ← remaining - 1
+        }
+        redde verum
+    }
+
+    functio _nota_mundum_sordidum(de SceneHandle manubrium) → bivalens {
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde falsum
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        ego._reple(manubrium, SceneNode {
+            name = nodus.name, kind = nodus.kind,
+            parent = nodus.parent, children = nodus.children,
+            visible = nodus.visible,
+            local_matrix = nodus.local_matrix, world_matrix = nodus.world_matrix,
+            world_dirty = verum
+        })
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            ego._nota_mundum_sordidum(nodus.children[i])
+            i ← i + 1
+        }
+        redde verum
+    }
+
+    functio _renova_mundum_nodum(
+        de SceneHandle manubrium,
+        de triga.Matrix4 parens_mundus
+    ) → bivalens {
+        fixum SceneNode ∪ nihil nodus_result ← ego.cape(manubrium)
+        si nodus_result est nihil ergo redde falsum
+        fixum SceneNode nodus ← SceneNode {
+            name = nodus_result!.name, kind = nodus_result!.kind,
+            parent = nodus_result!.parent, children = nodus_result!.children,
+            visible = nodus_result!.visible,
+            local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix,
+            world_dirty = nodus_result!.world_dirty
+        }
+        fixum triga.Matrix4 mundus ← parens_mundus.multiplicata(nodus.local_matrix)
+        ego._reple(manubrium, SceneNode {
+            name = nodus.name, kind = nodus.kind,
+            parent = nodus.parent, children = nodus.children,
+            visible = nodus.visible,
+            local_matrix = nodus.local_matrix, world_matrix = mundus,
+            world_dirty = falsum
+        })
+        varia numerus i ← 0
+        dum i < nodus.children.longitudo() {
+            ego._renova_mundum_nodum(nodus.children[i], mundus)
+            i ← i + 1
+        }
+        redde verum
+    }
+
+    functio traverse(de SceneHandle radix) → lista<SceneHandle> ∪ nihil {
+        fixum SceneTraversal ∪ nihil peragratio ← ego._traverse_preorder(radix, vacua, ego.slots.longitudo())
+        si peragratio est nihil ergo redde nihil
+        redde peragratio!.handles
+    }
+
+    functio traverse_visibilia(de SceneHandle radix) → lista<SceneHandle> ∪ nihil {
+        fixum SceneTraversal ∪ nihil peragratio ← ego._traverse_visibile_preorder(radix, vacua, ego.slots.longitudo(), verum)
+        si peragratio est nihil ergo redde nihil
+        redde peragratio!.handles
+    }
+
+    functio traverse_visibilia_rete(de SceneHandle radix) → lista<SceneHandle> ∪ nihil {
+        fixum SceneTraversal ∪ nihil peragratio ← ego._traverse_visibile_rete_preorder(radix, vacua, ego.slots.longitudo(), verum)
+        si peragratio est nihil ergo redde nihil
+        redde peragratio!.handles
+    }
 }
 
 genus SceneTraversal {
@@ -117,6 +791,170 @@ genus ResourceHandleTraversal {
     lista<ResourceHandle> handles
     numerus remaining
 }
+
+# ── VisibiliaRetium: single-traversal visible-mesh query genus ────────
+
+genus VisibiliaRetium {
+    lista<SceneHandle> manubria = vacua
+    lista<ResourceHandle> geometria_opes = vacua
+    lista<ResourceHandle> materia_opes = vacua
+    lista<triga.TransformPayload> onera = vacua
+
+    functio numerus() → numerus {
+        redde ego.manubria.longitudo()
+    }
+
+    functio geometriae() → lista<ResourceHandle> {
+        redde ego.geometria_opes
+    }
+
+    functio materiae() → lista<ResourceHandle> {
+        redde ego.materia_opes
+    }
+
+    functio octeta() → numerus {
+        varia numerus summa ← 0
+        itera ex ego.onera fixum onus {
+            fixum numerus ∪ nihil bytes ← onus.byte_count()
+            si bytes non est nihil { summa ← summa + (bytes vel 0) }
+        }
+        redde summa
+    }
+
+    functio ductus() → lista<SceneMeshDrawPacket> {
+        varia lista<SceneMeshDrawPacket> fasciculi ← vacua
+        varia numerus i ← 0
+        dum i < ego.manubria.longitudo() {
+            fasciculi.appende(SceneMeshDrawPacket {
+                node = SceneHandle {
+                    index = ego.manubria[i].index,
+                    generation = ego.manubria[i].generation
+                },
+                geometry = ResourceHandle {
+                    index = ego.geometria_opes[i].index,
+                    generation = ego.geometria_opes[i].generation
+                },
+                material = ResourceHandle {
+                    index = ego.materia_opes[i].index,
+                    generation = ego.materia_opes[i].generation
+                },
+                transform = ego.onera[i]
+            })
+            i ← i + 1
+        }
+        redde fasciculi
+    }
+}
+
+# ── Visibilia entry point ─────────────────────────────────────────────
+
+functio visibilia(
+    de SceneStore store,
+    de SceneHandle radix,
+    de triga.Matrix4 visio_proiectio
+) → VisibiliaRetium ∪ nihil {
+    si visio_proiectio.validum() ≡ falsum ergo redde nihil
+    # Single traversal: collect all visible mesh data at once
+    fixum SceneTraversal ∪ nihil handles_result ← store._traverse_visibile_rete_preorder(
+        radix, vacua, store.slots.longitudo(), verum
+    )
+    si handles_result est nihil ergo redde nihil
+    fixum SceneTraversal peragratio ← SceneTraversal {
+        handles = handles_result!.handles, remaining = handles_result!.remaining
+    }
+    varia VisibiliaRetium retia ← VisibiliaRetium {
+        manubria = vacua,
+        geometria_opes = vacua,
+        materia_opes = vacua,
+        onera = vacua
+    }
+    itera ex peragratio.handles fixum manubrium {
+        fixum SceneNode ∪ nihil nodus_result ← store.cape(manubrium)
+        si nodus_result est nihil ergo redde (nihil)
+        retia.manubria.appende(SceneHandle {
+            index = manubrium.index, generation = manubrium.generation
+        })
+        discerne nodus_result!.kind {
+            casu SceneMesh fixum geometry, material {
+                retia.geometria_opes.appende(ResourceHandle {
+                    index = geometry.index, generation = geometry.generation
+                })
+                retia.materia_opes.appende(ResourceHandle {
+                    index = material.index, generation = material.generation
+                })
+                fixum triga.TransformPayload ∪ nihil onus ←
+                    triga.transform_payload(nodus_result!.world_matrix, visio_proiectio)
+                si onus est nihil ergo redde (nihil)
+                retia.onera.appende(onus vel triga.TransformPayload { values = vacua })
+            }
+            casu SceneGroup { }
+            casu SceneCamera { }
+            casu SceneLight { }
+        }
+    }
+    redde retia
+}
+
+# ── Free constructors ─────────────────────────────────────────────────
+
+functio scene_store() → SceneStore {
+    redde SceneStore { slots = vacua }
+}
+
+functio scene_node(textus name, SceneNodeKind kind) → SceneNode {
+    redde SceneNode {
+        name = name, kind = kind, children = vacua,
+        visible = verum,
+        local_matrix = triga.matrix4_identitas(),
+        world_matrix = triga.matrix4_identitas(),
+        world_dirty = verum
+    }
+}
+
+functio scene_group(textus name) → SceneNode {
+    redde scene_node(name, finge SceneGroup)
+}
+
+functio scene_mesh(
+    textus name,
+    de ResourceHandle geometry,
+    de ResourceHandle material
+) → SceneNode {
+    redde scene_node(name, finge SceneMesh {
+        geometry = ResourceHandle { index = geometry.index, generation = geometry.generation },
+        material = ResourceHandle { index = material.index, generation = material.generation }
+    })
+}
+
+functio scene_camera(textus name) → SceneNode {
+    redde scene_node(name, finge SceneCamera)
+}
+
+functio scene_light(textus name) → SceneNode {
+    redde scene_node(name, finge SceneLight)
+}
+
+# ── Free accessors on SceneNode ───────────────────────────────────────
+
+functio scene_mesh_geometry(de SceneNode nodus) → ResourceHandle ∪ nihil {
+    discerne nodus.kind {
+        casu SceneMesh fixum geometry, material { redde geometry }
+        casu SceneGroup { redde nihil }
+        casu SceneCamera { redde nihil }
+        casu SceneLight { redde nihil }
+    }
+}
+
+functio scene_mesh_material(de SceneNode nodus) → ResourceHandle ∪ nihil {
+    discerne nodus.kind {
+        casu SceneMesh fixum geometry, material { redde material }
+        casu SceneGroup { redde nihil }
+        casu SceneCamera { redde nihil }
+        casu SceneLight { redde nihil }
+    }
+}
+
+# ── Free utilities on handles ─────────────────────────────────────────
 
 functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
@@ -626,1094 +1464,4 @@ functio resource_lifecycle_current_handles(
         }
     }
     redde handles
-}
-
-functio scene_store() → SceneStore {
-    redde SceneStore { slots = vacua }
-}
-
-functio scene_node(textus name, SceneNodeKind kind) → SceneNode {
-    redde SceneNode {
-        name = name, kind = kind, children = vacua,
-        visible = verum,
-        local_matrix = triga.matrix4_identitas(),
-        world_matrix = triga.matrix4_identitas(),
-        world_dirty = verum
-    }
-}
-
-functio scene_group(textus name) → SceneNode {
-    redde scene_node(name, finge SceneGroup)
-}
-
-functio scene_mesh(
-    textus name,
-    de ResourceHandle geometry,
-    de ResourceHandle material
-) → SceneNode {
-    redde scene_node(name, finge SceneMesh {
-        geometry = ResourceHandle { index = geometry.index, generation = geometry.generation },
-        material = ResourceHandle { index = material.index, generation = material.generation }
-    })
-}
-
-functio scene_camera(textus name) → SceneNode {
-    redde scene_node(name, finge SceneCamera)
-}
-
-functio scene_light(textus name) → SceneNode {
-    redde scene_node(name, finge SceneLight)
-}
-
-functio scene_mesh_geometry(de SceneNode node) → ResourceHandle ∪ nihil {
-    discerne node.kind {
-        casu SceneMesh fixum geometry, material { redde geometry }
-        casu SceneGroup { redde nihil }
-        casu SceneCamera { redde nihil }
-        casu SceneLight { redde nihil }
-    }
-}
-
-functio scene_mesh_material(de SceneNode node) → ResourceHandle ∪ nihil {
-    discerne node.kind {
-        casu SceneMesh fixum geometry, material { redde material }
-        casu SceneGroup { redde nihil }
-        casu SceneCamera { redde nihil }
-        casu SceneLight { redde nihil }
-    }
-}
-
-functio scene_mesh_world_matrix(
-    de SceneStore store,
-    de SceneHandle handle
-) → triga.Matrix4 ∪ nihil {
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    discerne node_result!.kind {
-        casu SceneMesh fixum geometry, material { redde node_result!.world_matrix }
-        casu SceneGroup { redde nihil }
-        casu SceneCamera { redde nihil }
-        casu SceneLight { redde nihil }
-    }
-}
-
-functio scene_insert(SceneStore store, SceneNode node) → SceneInsert {
-    varia lista<SceneSlot> slots ← vacua
-    varia numerus i ← 0
-    dum i < store.slots.longitudo() {
-        slots.appende(store.slots[i])
-        i ← i + 1
-    }
-    fixum numerus index ← slots.longitudo()
-    slots.appende(SceneSlot { generation = 0, alive = verum, node = node })
-    redde SceneInsert {
-        store = SceneStore { slots = slots },
-        handle = SceneHandle { index = index, generation = 0 }
-    }
-}
-
-functio scene_contains(de SceneStore store, de SceneHandle handle) → bivalens {
-    si handle.index ≥ store.slots.longitudo() ergo redde falsum
-    fixum SceneSlot slot ← store.slots[handle.index]
-    redde slot.alive et slot.generation ≡ handle.generation
-}
-
-functio scene_get(de SceneStore store, de SceneHandle handle) → SceneNode ∪ nihil {
-    si scene_contains(store, handle) ≡ falsum ergo redde nihil
-    redde store.slots[handle.index].node
-}
-
-functio _scene_traversal_contains(
-    de lista<SceneHandle> handles,
-    de SceneHandle handle
-) → bivalens {
-    varia numerus i ← 0
-    dum i < handles.longitudo() {
-        fixum SceneHandle existing ← handles[i]
-        si scene_handle_equals(existing, handle) ≡ verum {
-            redde verum
-        }
-        i ← i + 1
-    }
-    redde falsum
-}
-
-# TRAVERSAL — Four preorder variants that share the same structural skeleton:
-# node fetch → field copy → seen-set guard → visitor action → child iteration.
-# Every variant below must keep these steps in lockstep. If you fix a bug in
-# the skeleton (e.g., seen-set disposal, remaining-counter, child iteration
-# order), apply the fix to ALL FOUR.
-#
-#   (1) _scene_traverse_preorder        — unfiltered; calls visitor callback
-#   (2) _scene_traverse_visible_preorder — filters to visible nodes only
-#   (3) _scene_traverse_visible_mesh_preorder — visible mesh-node handles
-#   (4) _scene_traverse_visible_mesh_resources_preorder — visible mesh
-#       resource handles + transition facts
-#
-# WHEN FABER GAINS CLOSURES/VISITORS: collapse these into a single
-# scene_traverse(store, root, filter, accumulator) and delete the copies.
-# Until then, treat this block as generated code — change the template, not
-# one copy. See also DEFER-121 (sub-module split gated on Faber module system).
-
-functio _scene_traverse_preorder(
-    de SceneStore store,
-    de SceneHandle handle,
-    lista<SceneHandle> handles,
-    numerus remaining
-) → SceneTraversal ∪ nihil {
-    si remaining ≡ 0 ergo redde nihil
-    si _scene_traversal_contains(handles, handle) ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    varia lista<SceneHandle> updated_handles ← handles
-    updated_handles.appende(SceneHandle { index = handle.index, generation = handle.generation })
-    varia SceneTraversal traversal ← SceneTraversal {
-        handles = updated_handles, remaining = remaining - 1
-    }
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneTraversal ∪ nihil current ← _scene_traverse_preorder(
-            store, node.children[i], traversal.handles, traversal.remaining
-        )
-        si current est nihil ergo redde nihil
-        fixum SceneTraversal current_value ← SceneTraversal {
-            handles = current!.handles, remaining = current!.remaining
-        }
-        traversal ← SceneTraversal {
-            handles = current_value.handles, remaining = current_value.remaining
-        }
-        i ← i + 1
-    }
-    redde traversal
-}
-
-functio scene_traverse(de SceneStore store, de SceneHandle root) → lista<SceneHandle> ∪ nihil {
-    fixum SceneTraversal ∪ nihil traversal ← _scene_traverse_preorder(
-        store, root, vacua, store.slots.longitudo()
-    )
-    si traversal est nihil ergo redde nihil
-    redde traversal!.handles
-}
-
-functio _scene_traverse_visible_preorder(
-    de SceneStore store,
-    de SceneHandle handle,
-    lista<SceneHandle> handles,
-    numerus remaining,
-    bivalens parent_visible
-) → SceneTraversal ∪ nihil {
-    si remaining ≡ 0 ergo redde nihil
-    si _scene_traversal_contains(handles, handle) ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum bivalens effective_visible ← parent_visible et node.visible
-    varia lista<SceneHandle> updated_handles ← handles
-    si effective_visible {
-        updated_handles.appende(SceneHandle { index = handle.index, generation = handle.generation })
-    }
-    varia SceneTraversal traversal ← SceneTraversal {
-        handles = updated_handles, remaining = remaining - 1
-    }
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneTraversal ∪ nihil current ← _scene_traverse_visible_preorder(
-            store, node.children[i], traversal.handles, traversal.remaining, effective_visible
-        )
-        si current est nihil ergo redde nihil
-        fixum SceneTraversal current_value ← SceneTraversal {
-            handles = current!.handles, remaining = current!.remaining
-        }
-        traversal ← SceneTraversal {
-            handles = current_value.handles, remaining = current_value.remaining
-        }
-        i ← i + 1
-    }
-    redde traversal
-}
-
-functio scene_visible_traverse(
-    de SceneStore store,
-    de SceneHandle root
-) → lista<SceneHandle> ∪ nihil {
-    fixum SceneTraversal ∪ nihil traversal ← _scene_traverse_visible_preorder(
-        store, root, vacua, store.slots.longitudo(), verum
-    )
-    si traversal est nihil ergo redde nihil
-    redde traversal!.handles
-}
-
-functio _scene_traverse_visible_mesh_preorder(
-    de SceneStore store,
-    de SceneHandle handle,
-    lista<SceneHandle> handles,
-    numerus remaining,
-    bivalens parent_visible
-) → SceneTraversal ∪ nihil {
-    si remaining ≡ 0 ergo redde nihil
-    si _scene_traversal_contains(handles, handle) ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum bivalens effective_visible ← parent_visible et node.visible
-    varia lista<SceneHandle> updated_handles ← handles
-    si effective_visible {
-        discerne node.kind {
-            casu SceneMesh fixum geometry, material {
-                updated_handles.appende(SceneHandle {
-                    index = handle.index,
-                    generation = handle.generation
-                })
-            }
-            casu SceneGroup { }
-            casu SceneCamera { }
-            casu SceneLight { }
-        }
-    }
-    varia SceneTraversal traversal ← SceneTraversal {
-        handles = updated_handles, remaining = remaining - 1
-    }
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneTraversal ∪ nihil current ← _scene_traverse_visible_mesh_preorder(
-            store, node.children[i], traversal.handles, traversal.remaining, effective_visible
-        )
-        si current est nihil ergo redde nihil
-        fixum SceneTraversal current_value ← SceneTraversal {
-            handles = current!.handles, remaining = current!.remaining
-        }
-        traversal ← SceneTraversal {
-            handles = current_value.handles, remaining = current_value.remaining
-        }
-        i ← i + 1
-    }
-    redde traversal
-}
-
-functio scene_visible_mesh_traverse(
-    de SceneStore store,
-    de SceneHandle root
-) → lista<SceneHandle> ∪ nihil {
-    fixum SceneTraversal ∪ nihil traversal ← _scene_traverse_visible_mesh_preorder(
-        store, root, vacua, store.slots.longitudo(), verum
-    )
-    si traversal est nihil ergo redde nihil
-    redde traversal!.handles
-}
-
-functio _scene_count_visible_mesh_preorder(
-    de SceneStore store,
-    de SceneHandle handle,
-    lista<SceneHandle> seen,
-    numerus remaining,
-    bivalens parent_visible
-) → SceneCount ∪ nihil {
-    si remaining ≡ 0 ergo redde nihil
-    si _scene_traversal_contains(seen, handle) ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum bivalens effective_visible ← parent_visible et node.visible
-    varia lista<SceneHandle> updated_seen ← seen
-    updated_seen.appende(SceneHandle { index = handle.index, generation = handle.generation })
-    varia numerus count ← 0
-    si effective_visible {
-        discerne node.kind {
-            casu SceneMesh fixum geometry, material { count ← 1 }
-            casu SceneGroup { }
-            casu SceneCamera { }
-            casu SceneLight { }
-        }
-    }
-    varia SceneCount result ← SceneCount { count = count, remaining = remaining - 1 }
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneCount ∪ nihil child_count ← _scene_count_visible_mesh_preorder(
-            store, node.children[i], updated_seen, result.remaining, effective_visible
-        )
-        si child_count est nihil ergo redde nihil
-        fixum SceneCount child_value ← SceneCount {
-            count = child_count!.count, remaining = child_count!.remaining
-        }
-        result ← SceneCount {
-            count = result.count + child_value.count,
-            remaining = child_value.remaining
-        }
-        updated_seen.appende(SceneHandle {
-            index = node.children[i].index,
-            generation = node.children[i].generation
-        })
-        i ← i + 1
-    }
-    redde result
-}
-
-functio scene_visible_mesh_count(
-    de SceneStore store,
-    de SceneHandle root
-) → numerus ∪ nihil {
-    fixum SceneCount ∪ nihil count_result ← _scene_count_visible_mesh_preorder(
-        store, root, vacua, store.slots.longitudo(), verum
-    )
-    si count_result est nihil ergo redde nihil
-    redde count_result!.count
-}
-
-functio _scene_traverse_visible_mesh_resources_preorder(
-    de SceneStore store,
-    de SceneHandle handle,
-    lista<SceneMeshResources> resources,
-    lista<SceneHandle> seen,
-    numerus remaining,
-    bivalens parent_visible
-) → SceneMeshResourceTraversal ∪ nihil {
-    si remaining ≡ 0 ergo redde nihil
-    si _scene_traversal_contains(seen, handle) ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum bivalens effective_visible ← parent_visible et node.visible
-    varia lista<SceneHandle> updated_seen ← seen
-    updated_seen.appende(SceneHandle { index = handle.index, generation = handle.generation })
-    varia lista<SceneMeshResources> updated_resources ← resources
-    si effective_visible {
-        discerne node.kind {
-            casu SceneMesh fixum geometry, material {
-                updated_resources.appende(SceneMeshResources {
-                    node = SceneHandle { index = handle.index, generation = handle.generation },
-                    geometry = ResourceHandle {
-                        index = geometry.index, generation = geometry.generation
-                    },
-                    material = ResourceHandle {
-                        index = material.index, generation = material.generation
-                    }
-                })
-            }
-            casu SceneGroup { }
-            casu SceneCamera { }
-            casu SceneLight { }
-        }
-    }
-    varia SceneMeshResourceTraversal traversal ← SceneMeshResourceTraversal {
-        resources = updated_resources, remaining = remaining - 1
-    }
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneMeshResourceTraversal ∪ nihil current ←
-            _scene_traverse_visible_mesh_resources_preorder(
-                store, node.children[i], traversal.resources, updated_seen,
-                traversal.remaining, effective_visible
-            )
-        si current est nihil ergo redde nihil
-        fixum SceneMeshResourceTraversal current_value ← SceneMeshResourceTraversal {
-            resources = current!.resources, remaining = current!.remaining
-        }
-        traversal ← SceneMeshResourceTraversal {
-            resources = current_value.resources, remaining = current_value.remaining
-        }
-        updated_seen.appende(SceneHandle {
-            index = node.children[i].index,
-            generation = node.children[i].generation
-        })
-        i ← i + 1
-    }
-    redde traversal
-}
-
-functio scene_visible_mesh_resources(
-    de SceneStore store,
-    de SceneHandle root
-) → lista<SceneMeshResources> ∪ nihil {
-    fixum SceneMeshResourceTraversal ∪ nihil traversal ←
-        _scene_traverse_visible_mesh_resources_preorder(
-            store, root, vacua, vacua, store.slots.longitudo(), verum
-        )
-    si traversal est nihil ergo redde nihil
-    redde traversal!.resources
-}
-
-functio scene_visible_mesh_resource_pair_count(
-    de SceneStore store,
-    de SceneHandle root
-) → numerus ∪ nihil {
-    redde scene_visible_mesh_count(store, root)
-}
-
-functio _scene_visible_mesh_resource_handles_preorder(
-    de SceneStore store,
-    de SceneHandle handle,
-    lista<ResourceHandle> handles,
-    lista<SceneHandle> seen,
-    numerus remaining,
-    bivalens parent_visible,
-    bivalens geometry_handles
-) → ResourceHandleTraversal ∪ nihil {
-    si remaining ≡ 0 ergo redde nihil
-    si _scene_traversal_contains(seen, handle) ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum bivalens effective_visible ← parent_visible et node.visible
-    varia lista<SceneHandle> updated_seen ← seen
-    updated_seen.appende(SceneHandle { index = handle.index, generation = handle.generation })
-    varia lista<ResourceHandle> updated_handles ← handles
-    si effective_visible {
-        discerne node.kind {
-            casu SceneMesh fixum geometry, material {
-                si geometry_handles {
-                    updated_handles.appende(ResourceHandle {
-                        index = geometry.index, generation = geometry.generation
-                    })
-                } secus {
-                    updated_handles.appende(ResourceHandle {
-                        index = material.index, generation = material.generation
-                    })
-                }
-            }
-            casu SceneGroup { }
-            casu SceneCamera { }
-            casu SceneLight { }
-        }
-    }
-    varia ResourceHandleTraversal traversal ← ResourceHandleTraversal {
-        handles = updated_handles, remaining = remaining - 1
-    }
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum ResourceHandleTraversal ∪ nihil current ←
-            _scene_visible_mesh_resource_handles_preorder(
-                store, node.children[i], traversal.handles, updated_seen,
-                traversal.remaining, effective_visible, geometry_handles
-            )
-        si current est nihil ergo redde nihil
-        fixum ResourceHandleTraversal current_value ← ResourceHandleTraversal {
-            handles = current!.handles, remaining = current!.remaining
-        }
-        traversal ← ResourceHandleTraversal {
-            handles = current_value.handles, remaining = current_value.remaining
-        }
-        updated_seen.appende(SceneHandle {
-            index = node.children[i].index,
-            generation = node.children[i].generation
-        })
-        i ← i + 1
-    }
-    redde traversal
-}
-
-functio scene_visible_mesh_geometry_handles(
-    de SceneStore store,
-    de SceneHandle root
-) → lista<ResourceHandle> ∪ nihil {
-    fixum ResourceHandleTraversal ∪ nihil traversal ←
-        _scene_visible_mesh_resource_handles_preorder(
-            store, root, vacua, vacua, store.slots.longitudo(), verum, verum
-        )
-    si traversal est nihil ergo redde nihil
-    redde traversal!.handles
-}
-
-functio scene_visible_mesh_material_handles(
-    de SceneStore store,
-    de SceneHandle root
-) → lista<ResourceHandle> ∪ nihil {
-    fixum ResourceHandleTraversal ∪ nihil traversal ←
-        _scene_visible_mesh_resource_handles_preorder(
-            store, root, vacua, vacua, store.slots.longitudo(), verum, falsum
-        )
-    si traversal est nihil ergo redde nihil
-    redde traversal!.handles
-}
-
-functio scene_visible_mesh_resource_facts(
-    de SceneStore store,
-    de SceneHandle root
-) → SceneVisibleMeshResourceFacts ∪ nihil {
-    fixum numerus ∪ nihil mesh_count_result ← scene_visible_mesh_count(store, root)
-    si mesh_count_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil pair_count_result ← scene_visible_mesh_resource_pair_count(
-        store, root
-    )
-    si pair_count_result est nihil ergo redde nihil
-    fixum lista<ResourceHandle> ∪ nihil geometry_handles_result ←
-        scene_visible_mesh_geometry_handles(store, root)
-    si geometry_handles_result est nihil ergo redde nihil
-    fixum lista<ResourceHandle> ∪ nihil material_handles_result ←
-        scene_visible_mesh_material_handles(store, root)
-    si material_handles_result est nihil ergo redde nihil
-    fixum lista<ResourceHandle> empty_geometry_handles ← vacua
-    fixum lista<ResourceHandle> empty_material_handles ← vacua
-    fixum lista<ResourceHandle> geometry_handles ←
-        geometry_handles_result vel empty_geometry_handles
-    fixum lista<ResourceHandle> material_handles ←
-        material_handles_result vel empty_material_handles
-    fixum numerus mesh_count ← mesh_count_result vel 0
-    fixum numerus pair_count ← pair_count_result vel 0
-    si mesh_count ≠ pair_count ergo redde nihil
-    si geometry_handles.longitudo() ≠ mesh_count ergo redde nihil
-    si material_handles.longitudo() ≠ mesh_count ergo redde nihil
-    redde SceneVisibleMeshResourceFacts {
-        mesh_count = mesh_count,
-        resource_pair_count = pair_count,
-        geometry_handle_count = geometry_handles.longitudo(),
-        material_handle_count = material_handles.longitudo()
-    }
-}
-
-functio scene_visible_mesh_transform_payloads(
-    de SceneStore store,
-    de SceneHandle root,
-    de triga.Matrix4 view_projection
-) → lista<SceneMeshTransformPayload> ∪ nihil {
-    si triga.matrix4_valid(view_projection) ≡ falsum ergo redde nihil
-    fixum lista<SceneHandle> ∪ nihil handles ← scene_visible_mesh_traverse(store, root)
-    si handles est nihil ergo redde nihil
-    fixum lista<SceneHandle> empty_handles ← vacua
-    fixum lista<SceneHandle> visible_handles ← handles vel empty_handles
-    varia lista<SceneMeshTransformPayload> payloads ← vacua
-    itera ex visible_handles fixum handle {
-        fixum triga.Matrix4 ∪ nihil world ← scene_mesh_world_matrix(store, handle)
-        si world est nihil ergo redde nihil
-        fixum triga.Matrix4 world_matrix ← world vel triga.matrix4_identitas()
-        fixum triga.TransformPayload ∪ nihil payload ←
-            triga.transform_payload(world_matrix, view_projection)
-        si payload est nihil ergo redde nihil
-        fixum triga.TransformPayload transform_payload ← payload vel triga.TransformPayload {
-            values = vacua
-        }
-        payloads.appende(SceneMeshTransformPayload {
-            node = SceneHandle { index = handle.index, generation = handle.generation },
-            payload = transform_payload
-        })
-    }
-    redde payloads
-}
-
-functio scene_visible_mesh_transform_payload_count(
-    de SceneStore store,
-    de SceneHandle root,
-    de triga.Matrix4 view_projection
-) → numerus ∪ nihil {
-    fixum lista<SceneMeshTransformPayload> ∪ nihil payloads ←
-        scene_visible_mesh_transform_payloads(store, root, view_projection)
-    si payloads est nihil ergo redde nihil
-    fixum lista<SceneMeshTransformPayload> empty_payloads ← vacua
-    fixum lista<SceneMeshTransformPayload> visible_payloads ← payloads vel empty_payloads
-    varia numerus count ← 0
-    itera ex visible_payloads fixum payload {
-        count ← count + 1
-    }
-    redde count
-}
-
-functio scene_visible_mesh_transform_payload_byte_count(
-    de SceneStore store,
-    de SceneHandle root,
-    de triga.Matrix4 view_projection
-) → numerus ∪ nihil {
-    fixum lista<SceneMeshTransformPayload> ∪ nihil payloads ←
-        scene_visible_mesh_transform_payloads(store, root, view_projection)
-    si payloads est nihil ergo redde nihil
-    fixum lista<SceneMeshTransformPayload> empty_payloads ← vacua
-    fixum lista<SceneMeshTransformPayload> visible_payloads ← payloads vel empty_payloads
-    varia numerus byte_count ← 0
-    itera ex visible_payloads fixum payload {
-        fixum numerus ∪ nihil payload_bytes ← triga.transform_payload_byte_count(payload.payload)
-        si payload_bytes est nihil ergo redde nihil
-        fixum numerus bytes ← payload_bytes vel 0
-        byte_count ← byte_count + bytes
-    }
-    redde byte_count
-}
-
-functio scene_visible_mesh_draw_packets(
-    de SceneStore store,
-    de SceneHandle root,
-    de triga.Matrix4 view_projection
-) → lista<SceneMeshDrawPacket> ∪ nihil {
-    fixum lista<SceneMeshResources> ∪ nihil resources_result ←
-        scene_visible_mesh_resources(store, root)
-    si resources_result est nihil ergo redde nihil
-    fixum lista<SceneMeshTransformPayload> ∪ nihil payloads_result ←
-        scene_visible_mesh_transform_payloads(store, root, view_projection)
-    si payloads_result est nihil ergo redde nihil
-    fixum lista<SceneMeshResources> empty_resources ← vacua
-    fixum lista<SceneMeshResources> resources ← resources_result vel empty_resources
-    fixum lista<SceneMeshTransformPayload> empty_payloads ← vacua
-    fixum lista<SceneMeshTransformPayload> payloads ← payloads_result vel empty_payloads
-    si resources.longitudo() ≠ payloads.longitudo() ergo redde nihil
-    varia lista<SceneMeshDrawPacket> packets ← vacua
-    varia numerus i ← 0
-    dum i < resources.longitudo() {
-        fixum SceneMeshResources mesh_resources ← resources[i]
-        fixum SceneMeshTransformPayload transform_payload ← payloads[i]
-        si scene_handle_equals(mesh_resources.node, transform_payload.node) ≡ falsum {
-            redde nihil
-        }
-        packets.appende(SceneMeshDrawPacket {
-            node = SceneHandle {
-                index = mesh_resources.node.index,
-                generation = mesh_resources.node.generation
-            },
-            geometry = ResourceHandle {
-                index = mesh_resources.geometry.index,
-                generation = mesh_resources.geometry.generation
-            },
-            material = ResourceHandle {
-                index = mesh_resources.material.index,
-                generation = mesh_resources.material.generation
-            },
-            transform = transform_payload.payload
-        })
-        i ← i + 1
-    }
-    redde packets
-}
-
-functio scene_visible_mesh_draw_packet_count(
-    de SceneStore store,
-    de SceneHandle root,
-    de triga.Matrix4 view_projection
-) → numerus ∪ nihil {
-    fixum lista<SceneMeshDrawPacket> ∪ nihil packets_result ←
-        scene_visible_mesh_draw_packets(store, root, view_projection)
-    si packets_result est nihil ergo redde nihil
-    fixum lista<SceneMeshDrawPacket> empty_packets ← vacua
-    fixum lista<SceneMeshDrawPacket> packets ← packets_result vel empty_packets
-    varia numerus count ← 0
-    itera ex packets fixum packet {
-        count ← count + 1
-    }
-    redde count
-}
-
-functio scene_visible_mesh_draw_batch_facts(
-    de SceneStore store,
-    de SceneHandle root,
-    de triga.Matrix4 view_projection
-) → SceneVisibleMeshDrawBatchFacts ∪ nihil {
-    fixum numerus ∪ nihil packet_count_result ← scene_visible_mesh_draw_packet_count(
-        store, root, view_projection
-    )
-    si packet_count_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil transform_bytes_result ←
-        scene_visible_mesh_transform_payload_byte_count(store, root, view_projection)
-    si transform_bytes_result est nihil ergo redde nihil
-    redde SceneVisibleMeshDrawBatchFacts {
-        packet_count = packet_count_result vel 0,
-        transform_payload_byte_count = transform_bytes_result vel 0
-    }
-}
-
-functio scene_effective_visible(de SceneStore store, de SceneHandle handle) → bivalens {
-    varia SceneHandle cursor ← SceneHandle { index = handle.index, generation = handle.generation }
-    varia numerus remaining ← store.slots.longitudo() + 1
-    dum remaining > 0 {
-        fixum SceneNode ∪ nihil current ← scene_get(store, cursor)
-        si current est nihil ergo redde falsum
-        si current!.visible ≡ falsum ergo redde falsum
-        si current!.parent est nihil ergo redde verum
-        fixum SceneHandle parent ← SceneHandle {
-            index = current!.parent!.index, generation = current!.parent!.generation
-        }
-        cursor ← SceneHandle {
-            index = parent.index, generation = parent.generation
-        }
-        remaining ← remaining - 1
-    }
-    redde falsum
-}
-
-functio scene_find_name(
-    de SceneStore store,
-    de SceneHandle root,
-    textus name
-) → SceneHandle ∪ nihil {
-    fixum SceneTraversal ∪ nihil result ← _scene_traverse_preorder(
-        store, root, vacua, store.slots.longitudo()
-    )
-    si result est nihil ergo redde nihil
-    fixum SceneTraversal traversal ← SceneTraversal {
-        handles = result!.handles, remaining = result!.remaining
-    }
-    varia numerus i ← 0
-    dum i < traversal.handles.longitudo() {
-        fixum SceneHandle handle ← traversal.handles[i]
-        fixum SceneNode ∪ nihil node ← scene_get(store, handle)
-        si node est nihil ergo redde nihil
-        si node!.name ≡ name {
-            redde SceneHandle { index = handle.index, generation = handle.generation }
-        }
-        i ← i + 1
-    }
-    redde nihil
-}
-
-functio _scene_replace(SceneStore store, de SceneHandle handle, SceneNode node) → SceneStore {
-    varia lista<SceneSlot> slots ← vacua
-    varia numerus i ← 0
-    dum i < store.slots.longitudo() {
-        fixum SceneSlot slot ← store.slots[i]
-        si i ≡ handle.index et slot.alive et slot.generation ≡ handle.generation {
-            slots.appende(SceneSlot { generation = slot.generation, alive = verum, node = node })
-        }
-        secus { slots.appende(slot) }
-        i ← i + 1
-    }
-    redde SceneStore { slots = slots }
-}
-
-functio _scene_without_child(
-    SceneNode parent,
-    de SceneHandle child
-) → SceneNode {
-    varia lista<SceneHandle> children ← vacua
-    varia numerus i ← 0
-    dum i < parent.children.longitudo() {
-        fixum SceneHandle existing ← parent.children[i]
-        si scene_handle_equals(existing, child) ≡ falsum {
-            children.appende(SceneHandle {
-                index = existing.index, generation = existing.generation
-            })
-        }
-        i ← i + 1
-    }
-    redde SceneNode {
-        name = parent.name, kind = parent.kind,
-        parent = parent.parent, children = children,
-        visible = parent.visible,
-        local_matrix = parent.local_matrix, world_matrix = parent.world_matrix,
-        world_dirty = parent.world_dirty
-    }
-}
-
-functio _scene_would_cycle(de SceneStore store, de SceneHandle child, de SceneHandle parent) → bivalens {
-    varia SceneHandle cursor ← SceneHandle { index = parent.index, generation = parent.generation }
-    varia numerus remaining ← store.slots.longitudo() + 1
-    dum remaining > 0 {
-        si scene_handle_equals(cursor, child) ergo redde verum
-        fixum SceneNode ∪ nihil current ← scene_get(store, cursor)
-        si current est nihil ergo redde falsum
-        fixum SceneNode current_node ← SceneNode {
-            name = current!.name, kind = current!.kind,
-            parent = current!.parent, children = current!.children,
-            visible = current!.visible,
-            local_matrix = current!.local_matrix, world_matrix = current!.world_matrix,
-            world_dirty = current!.world_dirty
-        }
-        si current_node.parent est nihil ergo redde falsum
-        fixum SceneHandle current_parent ← SceneHandle {
-            index = current_node.parent!.index,
-            generation = current_node.parent!.generation
-        }
-        cursor ← SceneHandle {
-            index = current_parent.index,
-            generation = current_parent.generation
-        }
-        remaining ← remaining - 1
-    }
-    redde verum
-}
-
-functio scene_attach(
-    SceneStore store,
-    de SceneHandle child,
-    de SceneHandle parent
-) → SceneStore ∪ nihil {
-    si scene_contains(store, child) ≡ falsum ergo redde nihil
-    si scene_contains(store, parent) ≡ falsum ergo redde nihil
-    si _scene_would_cycle(store, child, parent) ergo redde nihil
-    fixum SceneNode ∪ nihil child_result ← scene_get(store, child)
-    fixum SceneNode ∪ nihil parent_result ← scene_get(store, parent)
-    fixum SceneNode child_node ← SceneNode {
-        name = child_result!.name, kind = child_result!.kind,
-        parent = child_result!.parent, children = child_result!.children,
-        visible = child_result!.visible,
-        local_matrix = child_result!.local_matrix, world_matrix = child_result!.world_matrix,
-        world_dirty = child_result!.world_dirty
-    }
-    fixum SceneNode parent_node ← SceneNode {
-        name = parent_result!.name, kind = parent_result!.kind,
-        parent = parent_result!.parent, children = parent_result!.children,
-        visible = parent_result!.visible,
-        local_matrix = parent_result!.local_matrix, world_matrix = parent_result!.world_matrix,
-        world_dirty = parent_result!.world_dirty
-    }
-    si child_node.parent non est nihil {
-        fixum SceneHandle existing_parent ← SceneHandle {
-            index = child_node.parent!.index, generation = child_node.parent!.generation
-        }
-        si scene_handle_equals(existing_parent, parent) ergo redde nihil
-    }
-    varia lista<SceneHandle> children ← vacua
-    varia numerus i ← 0
-    dum i < parent_node.children.longitudo() {
-        fixum SceneHandle existing ← parent_node.children[i]
-        children.appende(SceneHandle { index = existing.index, generation = existing.generation })
-        i ← i + 1
-    }
-    children.appende(SceneHandle { index = child.index, generation = child.generation })
-    fixum SceneNode updated_parent ← SceneNode {
-        name = parent_node.name, kind = parent_node.kind,
-        parent = parent_node.parent, children = children,
-        visible = parent_node.visible,
-        local_matrix = parent_node.local_matrix, world_matrix = parent_node.world_matrix,
-        world_dirty = parent_node.world_dirty
-    }
-    fixum SceneNode updated_child ← SceneNode {
-        name = child_node.name, kind = child_node.kind,
-        parent = SceneHandle { index = parent.index, generation = parent.generation },
-        children = child_node.children,
-        visible = child_node.visible,
-        local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix,
-        world_dirty = verum
-    }
-    varia SceneStore without_old_parent ← SceneStore { slots = store.slots }
-    si child_node.parent non est nihil {
-        fixum SceneHandle old_parent_handle ← SceneHandle {
-            index = child_node.parent!.index, generation = child_node.parent!.generation
-        }
-        fixum SceneNode ∪ nihil old_parent_result ← scene_get(store, old_parent_handle)
-        si old_parent_result est nihil ergo redde nihil
-        fixum SceneNode old_parent ← SceneNode {
-            name = old_parent_result!.name, kind = old_parent_result!.kind,
-            parent = old_parent_result!.parent, children = old_parent_result!.children,
-            visible = old_parent_result!.visible,
-            local_matrix = old_parent_result!.local_matrix,
-            world_matrix = old_parent_result!.world_matrix,
-            world_dirty = old_parent_result!.world_dirty
-        }
-        without_old_parent ← _scene_replace(
-            store, old_parent_handle, _scene_without_child(old_parent, child)
-        )
-    }
-    fixum SceneStore with_parent ← _scene_replace(without_old_parent, parent, updated_parent)
-    fixum SceneStore with_child ← _scene_replace(with_parent, child, updated_child)
-    redde _scene_mark_world_dirty(with_child, child)
-}
-
-functio scene_detach(SceneStore store, de SceneHandle child) → SceneStore ∪ nihil {
-    si scene_contains(store, child) ≡ falsum ergo redde nihil
-    fixum SceneNode ∪ nihil child_result ← scene_get(store, child)
-    fixum SceneNode child_node ← SceneNode {
-        name = child_result!.name, kind = child_result!.kind,
-        parent = child_result!.parent, children = child_result!.children,
-        visible = child_result!.visible,
-        local_matrix = child_result!.local_matrix, world_matrix = child_result!.world_matrix,
-        world_dirty = child_result!.world_dirty
-    }
-    si child_node.parent est nihil ergo redde nihil
-    fixum SceneHandle parent_handle ← SceneHandle {
-        index = child_node.parent!.index, generation = child_node.parent!.generation
-    }
-    fixum SceneNode ∪ nihil parent_result ← scene_get(store, parent_handle)
-    si parent_result est nihil ergo redde nihil
-    fixum SceneNode parent_node ← SceneNode {
-        name = parent_result!.name, kind = parent_result!.kind,
-        parent = parent_result!.parent, children = parent_result!.children,
-        visible = parent_result!.visible,
-        local_matrix = parent_result!.local_matrix, world_matrix = parent_result!.world_matrix,
-        world_dirty = parent_result!.world_dirty
-    }
-    fixum SceneNode detached_child ← SceneNode {
-        name = child_node.name, kind = child_node.kind, children = child_node.children,
-        visible = child_node.visible,
-        local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix,
-        world_dirty = verum
-    }
-    fixum SceneStore without_child ← _scene_replace(
-        store, parent_handle, _scene_without_child(parent_node, child)
-    )
-    fixum SceneStore with_child ← _scene_replace(without_child, child, detached_child)
-    redde _scene_mark_world_dirty(with_child, child)
-}
-
-functio _scene_mark_world_dirty(
-    SceneStore store,
-    de SceneHandle handle
-) → SceneStore ∪ nihil {
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    varia SceneStore updated ← _scene_replace(store, handle, SceneNode {
-        name = node.name, kind = node.kind,
-        parent = node.parent, children = node.children,
-        visible = node.visible,
-        local_matrix = node.local_matrix, world_matrix = node.world_matrix,
-        world_dirty = verum
-    })
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneStore ∪ nihil current ← _scene_mark_world_dirty(updated, node.children[i])
-        si current non est nihil {
-            updated ← SceneStore { slots = current!.slots }
-        }
-        secus { redde nihil }
-        i ← i + 1
-    }
-    redde updated
-}
-
-functio scene_set_visible(
-    SceneStore store,
-    de SceneHandle handle,
-    bivalens visible
-) → SceneStore ∪ nihil {
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    redde _scene_replace(store, handle, SceneNode {
-        name = node.name, kind = node.kind,
-        parent = node.parent, children = node.children,
-        visible = visible,
-        local_matrix = node.local_matrix, world_matrix = node.world_matrix,
-        world_dirty = node.world_dirty
-    })
-}
-
-functio scene_set_local_matrix(
-    SceneStore store,
-    de SceneHandle handle,
-    de triga.Matrix4 local_matrix
-) → SceneStore ∪ nihil {
-    si local_matrix.elements.longitudo() ≠ 16 ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum SceneStore with_local ← _scene_replace(store, handle, SceneNode {
-        name = node.name, kind = node.kind,
-        parent = node.parent, children = node.children,
-        visible = node.visible,
-        local_matrix = local_matrix, world_matrix = node.world_matrix,
-        world_dirty = verum
-    })
-    redde _scene_mark_world_dirty(with_local, handle)
-}
-
-functio _scene_update_world_node(
-    SceneStore store,
-    de SceneHandle handle,
-    de triga.Matrix4 parent_world
-) → SceneStore ∪ nihil {
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result est nihil ergo redde nihil
-    fixum SceneNode node ← SceneNode {
-        name = node_result!.name, kind = node_result!.kind,
-        parent = node_result!.parent, children = node_result!.children,
-        visible = node_result!.visible,
-        local_matrix = node_result!.local_matrix, world_matrix = node_result!.world_matrix,
-        world_dirty = node_result!.world_dirty
-    }
-    fixum triga.Matrix4 world ← triga.matrix4_multiplicata(parent_world, node.local_matrix)
-    varia SceneStore updated ← _scene_replace(store, handle, SceneNode {
-        name = node.name, kind = node.kind,
-        parent = node.parent, children = node.children,
-        visible = node.visible,
-        local_matrix = node.local_matrix, world_matrix = world,
-        world_dirty = falsum
-    })
-    varia numerus i ← 0
-    dum i < node.children.longitudo() {
-        fixum SceneStore ∪ nihil current ← _scene_update_world_node(
-            updated, node.children[i], world
-        )
-        si current non est nihil {
-            updated ← SceneStore { slots = current!.slots }
-        }
-        secus { redde nihil }
-        i ← i + 1
-    }
-    redde updated
-}
-
-functio scene_update_world(
-    SceneStore store,
-    de SceneHandle root
-) → SceneStore ∪ nihil {
-    fixum SceneNode ∪ nihil root_result ← scene_get(store, root)
-    si root_result est nihil ergo redde nihil
-    si root_result!.parent non est nihil ergo redde nihil
-    redde _scene_update_world_node(store, root, triga.matrix4_identitas())
-}
-
-functio scene_remove(SceneStore store, de SceneHandle handle) → SceneStore ∪ nihil {
-    si scene_contains(store, handle) ≡ falsum ergo redde nihil
-    fixum SceneNode ∪ nihil node_result ← scene_get(store, handle)
-    si node_result!.children.longitudo() > 0 ergo redde nihil
-    varia SceneStore detached_store ← SceneStore { slots = store.slots }
-    si node_result!.parent non est nihil {
-        fixum SceneStore ∪ nihil current ← scene_detach(store, handle)
-        si current non est nihil {
-            detached_store ← SceneStore { slots = current!.slots }
-        }
-        secus { redde nihil }
-    }
-    varia lista<SceneSlot> slots ← vacua
-    varia numerus i ← 0
-    dum i < detached_store.slots.longitudo() {
-        fixum SceneSlot slot ← detached_store.slots[i]
-        si i ≡ handle.index {
-            slots.appende(SceneSlot {
-                generation = slot.generation + 1, alive = falsum, node = slot.node
-            })
-        }
-        secus { slots.appende(slot) }
-        i ← i + 1
-    }
-    redde SceneStore { slots = slots }
 }

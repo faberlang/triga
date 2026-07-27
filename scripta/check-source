@@ -30,6 +30,15 @@ while IFS= read -r -d '' file; do
     echo "check-source: retired optional genus field syntax in $file; use sponte" >&2
     status=1
   fi
+
+  # Naming lint: reject public functions with genus-type prefixes that indicate
+  # a receiver-method anti-pattern. Constructors and pure scalar helpers are
+  # exempt — they have no genus receiver. See docs/api-shape-policy.md § 5.
+  if grep -nE '^functio (vector[234]|box3|matrix[34]|quaternion|euler|sphere|plane|ray|scene|geometry|transform_payload)_[a-z]' "$file" \
+     | grep -vE '(vector[234]\(|box3_ex_|matrix[34]_(identitas|translatio|scala|composita|perspectiva|conspectus)|plane_geometry|sphere_geometry|colored_quad_mesh_append|scene_(store|node|group|mesh|camera|light|handle_equals)|camera_(pitch_coercita|directio_ex|prorsum|dextra|motus|ray_ex|yaw_pitch))'; then
+    echo "check-source: genus-prefixed function should be a receiver method (see docs/api-shape-policy.md) in $file" >&2
+    status=1
+  fi
 done < <(find "$SRC" -name '*.fab' -print0)
 
 exit "$status"

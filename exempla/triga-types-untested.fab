@@ -53,12 +53,12 @@ incipit {
     adfirma mesh.base.visible, "Mesh preserves Object3D base state"
 
     adfirma (pbr_material.roughness ≡ (0.5 ∷ f32) et pbr_material.metalness ≡ (0.8 ∷ f32)) et pbr_material.emissive.r ≡ (0.0 ∷ f32), "MeshStandardMaterial preserves explicit roughness, metalness, emissive"
-    adfirma triga.material_valid(pbr_material.base), "MeshStandardMaterial base validates for explicit material"
+    adfirma triga.material_valida(pbr_material.base), "MeshStandardMaterial base validates for explicit material"
 
     # MeshStandardMaterial defaults
     fixum triga.MeshStandardMaterial default_pbr ← triga.MeshStandardMaterial { base = triga.material("default-pbr"), color = white, roughness = 1.0, metalness = 0.0, emissive = emissive, emissive_intensity = 0.0 }
     adfirma (default_pbr.roughness ≡ (1.0 ∷ f32) et default_pbr.metalness ≡ (0.0 ∷ f32)) et default_pbr.emissive_intensity ≡ (0.0 ∷ f32), "MeshStandardMaterial preserves roughness, metalness, emissive defaults"
-    adfirma triga.material_valid(default_pbr.base), "MeshStandardMaterial base validates"
+    adfirma triga.material_valida(default_pbr.base), "MeshStandardMaterial base validates"
 
     # MeshPhongMaterial
     fixum triga.Color spec ← triga.Color { r = 0.2, g = 0.2, b = 0.2 }
@@ -66,5 +66,5 @@ incipit {
     adfirma (phong.color.r ≡ (1.0 ∷ f32) et phong.specular.g ≡ (0.2 ∷ f32)) et phong.shininess ≡ (60.0 ∷ f32), "MeshPhongMaterial preserves color, specular, and shininess"
     fixum triga.MeshPhongMaterial default_phong ← triga.MeshPhongMaterial { base = triga.material("default-phong"), color = white, specular = spec, shininess = 30.0 }
     adfirma default_phong.shininess ≡ (30.0 ∷ f32), "MeshPhongMaterial preserves default shininess"
-    adfirma triga.material_valid(default_phong.base), "MeshPhongMaterial base validates"
+    adfirma triga.material_valida(default_phong.base), "MeshPhongMaterial base validates"
 }

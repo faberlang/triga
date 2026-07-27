@@ -48,10 +48,10 @@ incipit {
     adfirma cube_result non est nihil, "Goal 01 shader exemplar creates colored indexed geometry"
     fixum geometry.BufferGeometry cube ← geometry.BufferGeometry { topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups }
 
-    adfirma geometry.geometry_valid(cube), "Goal 01 shader exemplar uses valid indexed cube geometry"
+    adfirma cube.valida(), "Goal 01 shader exemplar uses valid indexed cube geometry"
 
-    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12, 1), "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
-    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12, 1), "color layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    adfirma cube.vertex_layout_matches(0, "position", 0, 3, 0, 12, 1), "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    adfirma cube.vertex_layout_matches(1, "color", 1, 3, 0, 12, 1), "color layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
 
     fixum numerus color_target_bgra8_unorm ← 2
     adfirma color_target_bgra8_unorm ≡ 2, "color target bgra8unorm code matches MirColorTargetFormat::Bgra8Unorm"
