@@ -345,15 +345,7 @@ genus Mesh {
 }
 
 functio material(textus name) → Material {
-    redde Material {
-        name = name,
-        side = 0,
-        transparent = falsum,
-        opacity = 1.0,
-        depth_write = verum,
-        depth_test = verum,
-        alpha_test = 0.0
-    }
+    redde Material { name = name, side = 0, transparent = falsum, opacity = 1.0, depth_write = verum, depth_test = verum, alpha_test = 0.0 }
 }
 
 functio material_valid(de Material value) → bivalens {
@@ -414,22 +406,22 @@ functio face_code_z_offset(numerus code) → numerus ∪ nihil {
 }
 
 functio face_code_normal(numerus code) → Vector3 ∪ nihil {
-    si code ≡ 1 ergo redde vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
-    si code ≡ 2 ergo redde vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
-    si code ≡ 3 ergo redde vector3(0.0 ∷ f32, -1.0 ∷ f32, 0.0 ∷ f32)
-    si code ≡ 4 ergo redde vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
-    si code ≡ 5 ergo redde vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
-    si code ≡ 6 ergo redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+    si code ≡ 1 ergo redde vector3(-1.0 ∷ f32, 0.0, 0.0)
+    si code ≡ 2 ergo redde vector3(1.0, 0.0, 0.0)
+    si code ≡ 3 ergo redde vector3(0.0, -1.0 ∷ f32, 0.0)
+    si code ≡ 4 ergo redde vector3(0.0, 1.0, 0.0)
+    si code ≡ 5 ergo redde vector3(0.0, 0.0, -1.0 ∷ f32)
+    si code ≡ 6 ergo redde vector3(0.0, 0.0, 1.0)
     redde nihil
 }
 
 functio face_code_color(numerus code) → Color ∪ nihil {
-    si code ≡ 1 ergo redde Color { r = 0.8 ∷ f32, g = 0.1 ∷ f32, b = 0.1 ∷ f32 }
-    si code ≡ 2 ergo redde Color { r = 1.0 ∷ f32, g = 0.4 ∷ f32, b = 0.4 ∷ f32 }
-    si code ≡ 3 ergo redde Color { r = 0.1 ∷ f32, g = 0.7 ∷ f32, b = 0.1 ∷ f32 }
-    si code ≡ 4 ergo redde Color { r = 0.4 ∷ f32, g = 1.0 ∷ f32, b = 0.4 ∷ f32 }
-    si code ≡ 5 ergo redde Color { r = 0.1 ∷ f32, g = 0.1 ∷ f32, b = 0.8 ∷ f32 }
-    si code ≡ 6 ergo redde Color { r = 0.4 ∷ f32, g = 0.4 ∷ f32, b = 1.0 ∷ f32 }
+    si code ≡ 1 ergo redde Color { r = 0.8, g = 0.1, b = 0.1 }
+    si code ≡ 2 ergo redde Color { r = 1.0, g = 0.4, b = 0.4 }
+    si code ≡ 3 ergo redde Color { r = 0.1, g = 0.7, b = 0.1 }
+    si code ≡ 4 ergo redde Color { r = 0.4, g = 1.0, b = 0.4 }
+    si code ≡ 5 ergo redde Color { r = 0.1, g = 0.1, b = 0.8 }
+    si code ≡ 6 ergo redde Color { r = 0.4, g = 0.4, b = 1.0 }
     redde nihil
 }
 
@@ -449,112 +441,33 @@ functio face_code_facts(numerus code) → FaceCodeFacts ∪ nihil {
     si normal_result est nihil ergo redde nihil
     fixum Color ∪ nihil color_result ← face_code_color(code)
     si color_result est nihil ergo redde nihil
-    redde FaceCodeFacts {
-        code = code,
-        axis_code = axis_result vel 0,
-        opposite_code = opposite_result vel 0,
-        x_offset = x_offset_result vel 0,
-        y_offset = y_offset_result vel 0,
-        z_offset = z_offset_result vel 0,
-        normal = Vector3 {
-            x = normal_result!.x,
-            y = normal_result!.y,
-            z = normal_result!.z
-        },
-        color = Color {
-            r = color_result!.r,
-            g = color_result!.g,
-            b = color_result!.b
-        }
-    }
+    redde FaceCodeFacts { code = code, axis_code = axis_result vel 0, opposite_code = opposite_result vel 0, x_offset = x_offset_result vel 0, y_offset = y_offset_result vel 0, z_offset = z_offset_result vel 0, normal = Vector3 { x = normal_result!.x, y = normal_result!.y, z = normal_result!.z }, color = Color { r = color_result!.r, g = color_result!.g, b = color_result!.b } }
 }
 
-functio face_code_unit_quad(
-    numerus code,
-    f32 x,
-    f32 y,
-    f32 z,
-    f32 size
-) → FaceQuad ∪ nihil {
+functio face_code_unit_quad(numerus code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ nihil {
     si face_code_valid(code) ≡ falsum ergo redde nihil
     si size ≤ 0.0 ergo redde nihil
     fixum f32 x1 ← x + size
     fixum f32 y1 ← y + size
     fixum f32 z1 ← z + size
-    si code ≡ 1 ergo redde FaceQuad {
-        a = vector3(x, y, z),
-        b = vector3(x, y, z1),
-        c = vector3(x, y1, z1),
-        d = vector3(x, y1, z)
-    }
-    si code ≡ 2 ergo redde FaceQuad {
-        a = vector3(x1, y, z1),
-        b = vector3(x1, y, z),
-        c = vector3(x1, y1, z),
-        d = vector3(x1, y1, z1)
-    }
-    si code ≡ 3 ergo redde FaceQuad {
-        a = vector3(x, y, z),
-        b = vector3(x1, y, z),
-        c = vector3(x1, y, z1),
-        d = vector3(x, y, z1)
-    }
-    si code ≡ 4 ergo redde FaceQuad {
-        a = vector3(x, y1, z1),
-        b = vector3(x1, y1, z1),
-        c = vector3(x1, y1, z),
-        d = vector3(x, y1, z)
-    }
-    si code ≡ 5 ergo redde FaceQuad {
-        a = vector3(x1, y, z),
-        b = vector3(x, y, z),
-        c = vector3(x, y1, z),
-        d = vector3(x1, y1, z)
-    }
-    redde FaceQuad {
-        a = vector3(x, y, z1),
-        b = vector3(x1, y, z1),
-        c = vector3(x1, y1, z1),
-        d = vector3(x, y1, z1)
-    }
+    si code ≡ 1 ergo redde FaceQuad { a = vector3(x, y, z), b = vector3(x, y, z1), c = vector3(x, y1, z1), d = vector3(x, y1, z) }
+    si code ≡ 2 ergo redde FaceQuad { a = vector3(x1, y, z1), b = vector3(x1, y, z), c = vector3(x1, y1, z), d = vector3(x1, y1, z1) }
+    si code ≡ 3 ergo redde FaceQuad { a = vector3(x, y, z), b = vector3(x1, y, z), c = vector3(x1, y, z1), d = vector3(x, y, z1) }
+    si code ≡ 4 ergo redde FaceQuad { a = vector3(x, y1, z1), b = vector3(x1, y1, z1), c = vector3(x1, y1, z), d = vector3(x, y1, z) }
+    si code ≡ 5 ergo redde FaceQuad { a = vector3(x1, y, z), b = vector3(x, y, z), c = vector3(x, y1, z), d = vector3(x1, y1, z) }
+    redde FaceQuad { a = vector3(x, y, z1), b = vector3(x1, y, z1), c = vector3(x1, y1, z1), d = vector3(x, y1, z1) }
 }
 
-functio face_code_colored_quad_mesh_append(
-    lista<f32> positions,
-    lista<f32> colors,
-    lista<u32> indices,
-    numerus code,
-    f32 x,
-    f32 y,
-    f32 z,
-    f32 size
-) → geometry.ColoredQuadMesh ∪ nihil {
+functio face_code_colored_quad_mesh_append(lista<f32> positions, lista<f32> colors, lista<u32> indices, numerus code, f32 x, f32 y, f32 z, f32 size) → geometry.ColoredQuadMesh ∪ nihil {
     fixum FaceQuad ∪ nihil quad_result ← face_code_unit_quad(code, x, y, z, size)
     si quad_result est nihil ergo redde nihil
     fixum Color ∪ nihil color_result ← face_code_color(code)
     si color_result est nihil ergo redde nihil
-    redde geometry.colored_quad_mesh_append(
-        positions,
-        colors,
-        indices,
-        quad_result!.a.x, quad_result!.a.y, quad_result!.a.z,
-        quad_result!.b.x, quad_result!.b.y, quad_result!.b.z,
-        quad_result!.c.x, quad_result!.c.y, quad_result!.c.z,
-        quad_result!.d.x, quad_result!.d.y, quad_result!.d.z,
-        color_result!.r, color_result!.g, color_result!.b
-    )
+    redde geometry.colored_quad_mesh_append(positions, colors, indices, quad_result!.a.x, quad_result!.a.y, quad_result!.a.z, quad_result!.b.x, quad_result!.b.y, quad_result!.b.z, quad_result!.c.x, quad_result!.c.y, quad_result!.c.z, quad_result!.d.x, quad_result!.d.y, quad_result!.d.z, color_result!.r, color_result!.g, color_result!.b)
 }
 
 functio material_double_sided(de Material value) → Material {
-    redde Material {
-        name = value.name,
-        side = 2,
-        transparent = value.transparent,
-        opacity = value.opacity,
-        depth_write = value.depth_write,
-        depth_test = value.depth_test,
-        alpha_test = value.alpha_test
-    }
+    redde Material { name = value.name, side = 2, transparent = value.transparent, opacity = value.opacity, depth_write = value.depth_write, depth_test = value.depth_test, alpha_test = value.alpha_test }
 }
 
 functio material_est_double_sided(de Material value) → bivalens {
@@ -580,14 +493,7 @@ functio material_depth_write_enabled(de Material value) → bivalens {
 
 functio material_pipeline_facts(de Material value) → MaterialPipelineFacts ∪ nihil {
     si material_valid(value) ≡ falsum ergo redde nihil
-    redde MaterialPipelineFacts {
-        side_code = value.side ↦ numerus,
-        depth_test_enabled = value.depth_test,
-        depth_write_enabled = value.depth_write,
-        transparent = value.transparent,
-        alpha = value.opacity,
-        alpha_test = value.alpha_test
-    }
+    redde MaterialPipelineFacts { side_code = value.side ↦ numerus, depth_test_enabled = value.depth_test, depth_write_enabled = value.depth_write, transparent = value.transparent, alpha = value.opacity, alpha_test = value.alpha_test }
 }
 
 functio mesh_basic_material(textus name, de Color color) → MeshBasicMaterial ∪ nihil {
@@ -620,9 +526,7 @@ functio mesh_basic_material_alpha(de MeshBasicMaterial value) → f32 ∪ nihil 
     redde value.base.opacity
 }
 
-functio mesh_basic_material_pipeline_facts(
-    de MeshBasicMaterial value
-) → MaterialPipelineFacts ∪ nihil {
+functio mesh_basic_material_pipeline_facts(de MeshBasicMaterial value) → MaterialPipelineFacts ∪ nihil {
     si mesh_basic_material_valid(value) ≡ falsum ergo redde nihil
     redde material_pipeline_facts(value.base)
 }
@@ -670,15 +574,11 @@ functio vector3_multiplicata(de Vector3 v, f32 scalar) → Vector3 {
 }
 
 functio vector3_dot(de Vector3 a, de Vector3 b) → f32 {
-    redde a.x * b.x + a.y * b.y + a.z * b.z
+    redde (a.x * b.x + a.y * b.y) + a.z * b.z
 }
 
 functio vector3_cross(de Vector3 a, de Vector3 b) → Vector3 {
-    redde vector3(
-        a.y * b.z - a.z * b.y,
-        a.z * b.x - a.x * b.z,
-        a.x * b.y - a.y * b.x
-    )
+    redde vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
 }
 
 functio _radix_f32(f32 value) → f32 {
@@ -693,11 +593,11 @@ functio _radix_f32(f32 value) → f32 {
 }
 
 functio vector3_longitudo(de Vector3 v) → f32 {
-    redde _radix_f32(v.x * v.x + v.y * v.y + v.z * v.z)
+    redde _radix_f32((v.x * v.x + v.y * v.y) + v.z * v.z)
 }
 
 functio vector3_normalizata(de Vector3 v) → Vector3 {
-    fixum f32 length ← _radix_f32(v.x * v.x + v.y * v.y + v.z * v.z)
+    fixum f32 length ← _radix_f32((v.x * v.x + v.y * v.y) + v.z * v.z)
     si length ≤ 0.000001 ergo redde vector3(0.0, 0.0, 0.0)
     redde vector3(v.x / length, v.y / length, v.z / length)
 }
@@ -706,15 +606,11 @@ functio vector3_distantia(de Vector3 a, de Vector3 b) → f32 {
     fixum f32 x ← a.x - b.x
     fixum f32 y ← a.y - b.y
     fixum f32 z ← a.z - b.z
-    redde _radix_f32(x * x + y * y + z * z)
+    redde _radix_f32((x * x + y * y) + z * z)
 }
 
 functio vector3_interpolata(de Vector3 a, de Vector3 b, f32 ratio) → Vector3 {
-    redde vector3(
-        a.x + (b.x - a.x) * ratio,
-        a.y + (b.y - a.y) * ratio,
-        a.z + (b.z - a.z) * ratio
-    )
+    redde vector3(a.x + (b.x - a.x) * ratio, a.y + (b.y - a.y) * ratio, a.z + (b.z - a.z) * ratio)
 }
 
 functio vector3_projecta(de Vector3 v, de Vector3 axis) → Vector3 {
@@ -728,16 +624,11 @@ functio quaternion(f32 x, f32 y, f32 z, f32 w) → Quaternion {
 }
 
 functio quaternion_multiplicata(de Quaternion a, de Quaternion b) → Quaternion {
-    redde quaternion(
-        a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
-        a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
-        a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
-        a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z
-    )
+    redde quaternion(((a.w * b.x + a.x * b.w) + a.y * b.z) - a.z * b.y, ((a.w * b.y - a.x * b.z) + a.y * b.w) + a.z * b.x, ((a.w * b.z + a.x * b.y) - a.y * b.x) + a.z * b.w, ((a.w * b.w - a.x * b.x) - a.y * b.y) - a.z * b.z)
 }
 
 functio quaternion_normalizata(de Quaternion q) → Quaternion {
-    fixum f32 length ← _radix_f32(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w)
+    fixum f32 length ← _radix_f32(((q.x * q.x + q.y * q.y) + q.z * q.z) + q.w * q.w)
     si length ≤ 0.000001 ergo redde quaternion(0.0, 0.0, 0.0, 1.0)
     redde quaternion(q.x / length, q.y / length, q.z / length, q.w / length)
 }
@@ -747,19 +638,14 @@ functio quaternion_interpolata(de Quaternion a, de Quaternion b, f32 ratio) → 
     varia f32 by ← b.y
     varia f32 bz ← b.z
     varia f32 bw ← b.w
-    fixum f32 alignment ← a.x * bx + a.y * by + a.z * bz + a.w * bw
+    fixum f32 alignment ← ((a.x * bx + a.y * by) + a.z * bz) + a.w * bw
     si alignment < 0.0 {
         bx ← -bx
         by ← -by
         bz ← -bz
         bw ← -bw
     }
-    fixum Quaternion mixed ← quaternion(
-        a.x + (bx - a.x) * ratio,
-        a.y + (by - a.y) * ratio,
-        a.z + (bz - a.z) * ratio,
-        a.w + (bw - a.w) * ratio
-    )
+    fixum Quaternion mixed ← quaternion(a.x + (bx - a.x) * ratio, a.y + (by - a.y) * ratio, a.z + (bz - a.z) * ratio, a.w + (bw - a.w) * ratio)
     redde quaternion_normalizata(mixed)
 }
 
@@ -769,8 +655,12 @@ functio euler(f32 x, f32 y, f32 z) → Euler {
 
 functio _angulus_reductus(f32 angle) → f32 {
     varia f32 reduced ← angle
-    dum reduced > 3.14159265 { reduced ← reduced - 6.28318530 }
-    dum reduced < -3.14159265 { reduced ← reduced + 6.28318530 }
+    dum reduced > 3.14159265 {
+        reduced ← reduced - 6.2831853
+    }
+    dum reduced < -3.14159265 {
+        reduced ← reduced + 6.2831853
+    }
     redde reduced
 }
 
@@ -780,7 +670,7 @@ functio _sinus_f32(f32 angle) → f32 {
     fixum f32 x4 ← x2 * x2
     fixum f32 x6 ← x4 * x2
     fixum f32 x8 ← x6 * x2
-    redde x * (1.0 - x2 / 6.0 + x4 / 120.0 - x6 / 5040.0 + x8 / 362880.0)
+    redde x * ((((1.0 - x2 / 6.0) + x4 / 120.0) - x6 / 5040.0) + x8 / 362880.0)
 }
 
 functio _cosinus_f32(f32 angle) → f32 {
@@ -789,7 +679,7 @@ functio _cosinus_f32(f32 angle) → f32 {
     fixum f32 x4 ← x2 * x2
     fixum f32 x6 ← x4 * x2
     fixum f32 x8 ← x6 * x2
-    redde 1.0 - x2 / 2.0 + x4 / 24.0 - x6 / 720.0 + x8 / 40320.0
+    redde (((1.0 - x2 / 2.0) + x4 / 24.0) - x6 / 720.0) + x8 / 40320.0
 }
 
 functio radians_ex_gradibus(f32 degrees) → f32 {
@@ -802,82 +692,39 @@ functio camera_pitch_coercita(f32 pitch_degrees) → f32 {
     redde pitch_degrees
 }
 
-functio camera_directio_ex_yaw_pitch(
-    f32 yaw_degrees,
-    f32 pitch_degrees
-) → Vector3 {
+functio camera_directio_ex_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → Vector3 {
     fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
     fixum f32 pitch ← radians_ex_gradibus(camera_pitch_coercita(pitch_degrees))
     fixum f32 horizontal ← _cosinus_f32(pitch)
-    redde vector3_normalizata(vector3(
-        _sinus_f32(yaw) * horizontal,
-        _sinus_f32(pitch),
-        -_cosinus_f32(yaw) * horizontal
-    ))
+    redde vector3_normalizata(vector3(_sinus_f32(yaw) * horizontal, _sinus_f32(pitch), -_cosinus_f32(yaw) * horizontal))
 }
 
 functio camera_forward_planus_ex_yaw(f32 yaw_degrees) → Vector3 {
     fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    redde vector3_normalizata(vector3(
-        _sinus_f32(yaw),
-        0.0 ∷ f32,
-        -_cosinus_f32(yaw)
-    ))
+    redde vector3_normalizata(vector3(_sinus_f32(yaw), 0.0, -_cosinus_f32(yaw)))
 }
 
 functio camera_right_ex_yaw(f32 yaw_degrees) → Vector3 {
     fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    redde vector3_normalizata(vector3(
-        _cosinus_f32(yaw),
-        0.0 ∷ f32,
-        _sinus_f32(yaw)
-    ))
+    redde vector3_normalizata(vector3(_cosinus_f32(yaw), 0.0, _sinus_f32(yaw)))
 }
 
-functio camera_motus_planus_ex_yaw(
-    f32 yaw_degrees,
-    f32 forward_amount,
-    f32 right_amount,
-    f32 speed,
-    f32 delta_seconds
-) → Vector3 {
-    si speed ≤ 0.0 aut delta_seconds ≤ 0.0 ergo redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+functio camera_motus_planus_ex_yaw(f32 yaw_degrees, f32 forward_amount, f32 right_amount, f32 speed, f32 delta_seconds) → Vector3 {
+    si speed ≤ 0.0 aut delta_seconds ≤ 0.0 ergo redde vector3(0.0, 0.0, 0.0)
     fixum Vector3 forward ← camera_forward_planus_ex_yaw(yaw_degrees)
     fixum Vector3 right ← camera_right_ex_yaw(yaw_degrees)
-    fixum Vector3 mixed ← vector3_addita(
-        vector3_multiplicata(forward, forward_amount),
-        vector3_multiplicata(right, right_amount)
-    )
+    fixum Vector3 mixed ← vector3_addita(vector3_multiplicata(forward, forward_amount), vector3_multiplicata(right, right_amount))
     fixum Vector3 direction ← vector3_normalizata(mixed)
     redde vector3_multiplicata(direction, speed * delta_seconds)
 }
 
-functio camera_ray_ex_yaw_pitch(
-    de Vector3 origin,
-    f32 yaw_degrees,
-    f32 pitch_degrees
-) → Ray {
-    redde Ray {
-        origin = origin,
-        direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees)
-    }
+functio camera_ray_ex_yaw_pitch(de Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → Ray {
+    redde Ray { origin = origin, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees) }
 }
 
-functio camera_yaw_pitch_facts(
-    de Vector3 origin,
-    f32 yaw_degrees,
-    f32 pitch_degrees
-) → CameraYawPitchFacts {
+functio camera_yaw_pitch_facts(de Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → CameraYawPitchFacts {
     fixum f32 clamped_pitch ← camera_pitch_coercita(pitch_degrees)
-    redde CameraYawPitchFacts {
-        yaw_degrees = yaw_degrees,
-        pitch_degrees = pitch_degrees,
-        clamped_pitch_degrees = clamped_pitch,
-        direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees),
-        planar_forward = camera_forward_planus_ex_yaw(yaw_degrees),
-        planar_right = camera_right_ex_yaw(yaw_degrees),
-        ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees)
-    }
+    redde CameraYawPitchFacts { yaw_degrees = yaw_degrees, pitch_degrees = pitch_degrees, clamped_pitch_degrees = clamped_pitch, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees), planar_forward = camera_forward_planus_ex_yaw(yaw_degrees), planar_right = camera_right_ex_yaw(yaw_degrees), ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees) }
 }
 
 functio euler_ad_quaternionem(de Euler rotation) → Quaternion ∪ nihil {
@@ -891,12 +738,7 @@ functio euler_ad_quaternionem(de Euler rotation) → Quaternion ∪ nihil {
     fixum f32 cy ← _cosinus_f32(hy)
     fixum f32 sz ← _sinus_f32(hz)
     fixum f32 cz ← _cosinus_f32(hz)
-    redde quaternion_normalizata(quaternion(
-        sx * cy * cz + cx * sy * sz,
-        cx * sy * cz - sx * cy * sz,
-        cx * cy * sz + sx * sy * cz,
-        cx * cy * cz - sx * sy * sz
-    ))
+    redde quaternion_normalizata(quaternion((sx * cy) * cz + (cx * sy) * sz, (cx * sy) * cz - (sx * cy) * sz, (cx * cy) * sz + (sx * sy) * cz, (cx * cy) * cz - (sx * sy) * sz))
 }
 
 functio euler_composita(de Euler a, de Euler b) → Quaternion ∪ nihil {
@@ -912,26 +754,15 @@ functio euler_composita(de Euler a, de Euler b) → Quaternion ∪ nihil {
 functio euler_interpolata(de Euler a, de Euler b, f32 ratio) → Euler ∪ nihil {
     si a.order ≠ b.order ergo redde nihil
     si a.order ≠ "XYZ" ergo redde nihil
-    redde Euler {
-        x = a.x + (b.x - a.x) * ratio,
-        y = a.y + (b.y - a.y) * ratio,
-        z = a.z + (b.z - a.z) * ratio,
-        order = "XYZ"
-    }
+    redde Euler { x = a.x + (b.x - a.x) * ratio, y = a.y + (b.y - a.y) * ratio, z = a.z + (b.z - a.z) * ratio, order = "XYZ" }
 }
 
 functio color_interpolata(de Color a, de Color b, f32 ratio) → Color {
-    redde Color {
-        r = a.r + (b.r - a.r) * ratio,
-        g = a.g + (b.g - a.g) * ratio,
-        b = a.b + (b.b - a.b) * ratio
-    }
+    redde Color { r = a.r + (b.r - a.r) * ratio, g = a.g + (b.g - a.g) * ratio, b = a.b + (b.b - a.b) * ratio }
 }
 
 functio box3_continet(de Box3 bounds, de Vector3 point) → bivalens {
-    redde point.x ≥ bounds.min.x et point.x ≤ bounds.max.x et
-        point.y ≥ bounds.min.y et point.y ≤ bounds.max.y et
-        point.z ≥ bounds.min.z et point.z ≤ bounds.max.z
+    redde ((((point.x ≥ bounds.min.x et point.x ≤ bounds.max.x) et point.y ≥ bounds.min.y) et point.y ≤ bounds.max.y) et point.z ≥ bounds.min.z) et point.z ≤ bounds.max.z
 }
 
 functio box3_continet_box3(de Box3 bounds, de Box3 child) → bivalens {
@@ -940,9 +771,7 @@ functio box3_continet_box3(de Box3 bounds, de Box3 child) → bivalens {
 }
 
 functio box3_validum(de Box3 bounds) → bivalens {
-    redde bounds.min.x ≤ bounds.max.x et
-        bounds.min.y ≤ bounds.max.y et
-        bounds.min.z ≤ bounds.max.z
+    redde (bounds.min.x ≤ bounds.max.x et bounds.min.y ≤ bounds.max.y) et bounds.min.z ≤ bounds.max.z
 }
 
 functio box3_ex_minimo_et_maximo(de Vector3 minimum, de Vector3 maximum) → Box3 ∪ nihil {
@@ -951,27 +780,15 @@ functio box3_ex_minimo_et_maximo(de Vector3 minimum, de Vector3 maximum) → Box
     redde bounds
 }
 
-functio box3_ex_minimo_et_mensura(
-    de Vector3 minimum,
-    de Vector3 size
-) → Box3 ∪ nihil {
-    si size.x ≤ 0.0 aut size.y ≤ 0.0 aut size.z ≤ 0.0 ergo redde nihil
-    redde Box3 {
-        min = minimum,
-        max = vector3_addita(minimum, size)
-    }
+functio box3_ex_minimo_et_mensura(de Vector3 minimum, de Vector3 size) → Box3 ∪ nihil {
+    si (size.x ≤ 0.0 aut size.y ≤ 0.0) aut size.z ≤ 0.0 ergo redde nihil
+    redde Box3 { min = minimum, max = vector3_addita(minimum, size) }
 }
 
-functio box3_ex_centro_et_mensura(
-    de Vector3 center,
-    de Vector3 size
-) → Box3 ∪ nihil {
-    si size.x ≤ 0.0 aut size.y ≤ 0.0 aut size.z ≤ 0.0 ergo redde nihil
+functio box3_ex_centro_et_mensura(de Vector3 center, de Vector3 size) → Box3 ∪ nihil {
+    si (size.x ≤ 0.0 aut size.y ≤ 0.0) aut size.z ≤ 0.0 ergo redde nihil
     fixum Vector3 half ← vector3_multiplicata(size, 0.5)
-    redde Box3 {
-        min = vector3_subtracta(center, half),
-        max = vector3_addita(center, half)
-    }
+    redde Box3 { min = vector3_subtracta(center, half), max = vector3_addita(center, half) }
 }
 
 functio box3_mensura(de Box3 bounds) → Vector3 ∪ nihil {
@@ -1000,29 +817,32 @@ functio box3_superpositio(de Box3 a, de Box3 b) → Vector3 ∪ nihil {
     varia f32 max_x ← a.min.x
     varia f32 max_y ← a.min.y
     varia f32 max_z ← a.min.z
-    si b.max.x < min_x { min_x ← b.max.x }
-    si b.max.y < min_y { min_y ← b.max.y }
-    si b.max.z < min_z { min_z ← b.max.z }
-    si b.min.x > max_x { max_x ← b.min.x }
-    si b.min.y > max_y { max_y ← b.min.y }
-    si b.min.z > max_z { max_z ← b.min.z }
+    si b.max.x < min_x {
+        min_x ← b.max.x
+    }
+    si b.max.y < min_y {
+        min_y ← b.max.y
+    }
+    si b.max.z < min_z {
+        min_z ← b.max.z
+    }
+    si b.min.x > max_x {
+        max_x ← b.min.x
+    }
+    si b.min.y > max_y {
+        max_y ← b.min.y
+    }
+    si b.min.z > max_z {
+        max_z ← b.min.z
+    }
     redde vector3(min_x - max_x, min_y - max_y, min_z - max_z)
 }
 
 functio box3_superpositio_facta(de Box3 a, de Box3 b) → Box3OverlapFacts ∪ nihil {
     fixum Vector3 ∪ nihil overlap_result ← box3_superpositio(a, b)
     si overlap_result est nihil ergo redde nihil
-    fixum Vector3 overlap ← Vector3 {
-        x = overlap_result!.x,
-        y = overlap_result!.y,
-        z = overlap_result!.z
-    }
-    redde Box3OverlapFacts {
-        overlap = overlap,
-        x = overlap.x,
-        y = overlap.y,
-        z = overlap.z
-    }
+    fixum Vector3 overlap ← Vector3 { x = overlap_result!.x, y = overlap_result!.y, z = overlap_result!.z }
+    redde Box3OverlapFacts { overlap = overlap, x = overlap.x, y = overlap.y, z = overlap.z }
 }
 
 functio box3_superpositio_x(de Box3 a, de Box3 b) → f32 ∪ nihil {
@@ -1051,34 +871,37 @@ functio box3_unio(de Box3 a, de Box3 b) → Box3 ∪ nihil {
     varia f32 max_x ← a.max.x
     varia f32 max_y ← a.max.y
     varia f32 max_z ← a.max.z
-    si b.min.x < min_x { min_x ← b.min.x }
-    si b.min.y < min_y { min_y ← b.min.y }
-    si b.min.z < min_z { min_z ← b.min.z }
-    si b.max.x > max_x { max_x ← b.max.x }
-    si b.max.y > max_y { max_y ← b.max.y }
-    si b.max.z > max_z { max_z ← b.max.z }
-    redde Box3 {
-        min = vector3(min_x, min_y, min_z),
-        max = vector3(max_x, max_y, max_z)
+    si b.min.x < min_x {
+        min_x ← b.min.x
     }
+    si b.min.y < min_y {
+        min_y ← b.min.y
+    }
+    si b.min.z < min_z {
+        min_z ← b.min.z
+    }
+    si b.max.x > max_x {
+        max_x ← b.max.x
+    }
+    si b.max.y > max_y {
+        max_y ← b.max.y
+    }
+    si b.max.z > max_z {
+        max_z ← b.max.z
+    }
+    redde Box3 { min = vector3(min_x, min_y, min_z), max = vector3(max_x, max_y, max_z) }
 }
 
 functio box3_inflata(de Box3 bounds, f32 amount) → Box3 ∪ nihil {
     si box3_validum(bounds) ≡ falsum ergo redde nihil
-    fixum Box3 expanded ← Box3 {
-        min = vector3(bounds.min.x - amount, bounds.min.y - amount, bounds.min.z - amount),
-        max = vector3(bounds.max.x + amount, bounds.max.y + amount, bounds.max.z + amount)
-    }
+    fixum Box3 expanded ← Box3 { min = vector3(bounds.min.x - amount, bounds.min.y - amount, bounds.min.z - amount), max = vector3(bounds.max.x + amount, bounds.max.y + amount, bounds.max.z + amount) }
     si box3_validum(expanded) ≡ falsum ergo redde nihil
     redde expanded
 }
 
 functio box3_translata(de Box3 bounds, de Vector3 offset) → Box3 {
     si box3_validum(bounds) ≡ falsum ergo redde bounds
-    redde Box3 {
-        min = vector3_addita(bounds.min, offset),
-        max = vector3_addita(bounds.max, offset)
-    }
+    redde Box3 { min = vector3_addita(bounds.min, offset), max = vector3_addita(bounds.max, offset) }
 }
 
 functio sphere_continet(de Sphere sphere, de Vector3 point) → bivalens {
@@ -1094,18 +917,10 @@ functio ray_punctum(de Ray ray, f32 distance) → Vector3 {
 }
 
 @ privata
-functio _ray_axis_interval(
-    f32 origin,
-    f32 direction,
-    f32 minimum,
-    f32 maximum
-) → RayInterval ∪ nihil {
+functio _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ nihil {
     si direction.absolutum() ≤ 0.000001 {
         si origin < minimum aut origin > maximum ergo redde nihil
-        redde RayInterval {
-            minimum = -1000000000.0 ∷ f32,
-            maximum = 1000000000.0 ∷ f32
-        }
+        redde RayInterval { minimum = -1000000000.0 ∷ f32, maximum = 1000000000.0 }
     }
     varia f32 first ← (minimum - origin) / direction
     varia f32 second ← (maximum - origin) / direction
@@ -1117,35 +932,37 @@ functio _ray_axis_interval(
     redde RayInterval { minimum = first, maximum = second }
 }
 
-functio ray_intersecat_box3(
-    de Ray ray,
-    de Box3 bounds,
-    f32 max_distance
-) → f32 ∪ nihil {
+functio ray_intersecat_box3(de Ray ray, de Box3 bounds, f32 max_distance) → f32 ∪ nihil {
     si box3_validum(bounds) ≡ falsum ergo redde nihil
     si max_distance < 0.0 ergo redde nihil
-    fixum RayInterval ∪ nihil x_interval ← _ray_axis_interval(
-        ray.origin.x, ray.direction.x, bounds.min.x, bounds.max.x
-    )
+    fixum RayInterval ∪ nihil x_interval ← _ray_axis_interval(ray.origin.x, ray.direction.x, bounds.min.x, bounds.max.x)
     si x_interval est nihil ergo redde nihil
-    fixum RayInterval ∪ nihil y_interval ← _ray_axis_interval(
-        ray.origin.y, ray.direction.y, bounds.min.y, bounds.max.y
-    )
+    fixum RayInterval ∪ nihil y_interval ← _ray_axis_interval(ray.origin.y, ray.direction.y, bounds.min.y, bounds.max.y)
     si y_interval est nihil ergo redde nihil
-    fixum RayInterval ∪ nihil z_interval ← _ray_axis_interval(
-        ray.origin.z, ray.direction.z, bounds.min.z, bounds.max.z
-    )
+    fixum RayInterval ∪ nihil z_interval ← _ray_axis_interval(ray.origin.z, ray.direction.z, bounds.min.z, bounds.max.z)
     si z_interval est nihil ergo redde nihil
 
     varia f32 entry ← x_interval!.minimum
-    si y_interval!.minimum > entry { entry ← y_interval!.minimum }
-    si z_interval!.minimum > entry { entry ← z_interval!.minimum }
-    si entry < 0.0 { entry ← 0.0 }
+    si y_interval!.minimum > entry {
+        entry ← y_interval!.minimum
+    }
+    si z_interval!.minimum > entry {
+        entry ← z_interval!.minimum
+    }
+    si entry < 0.0 {
+        entry ← 0.0
+    }
 
     varia f32 exit ← x_interval!.maximum
-    si y_interval!.maximum < exit { exit ← y_interval!.maximum }
-    si z_interval!.maximum < exit { exit ← z_interval!.maximum }
-    si max_distance < exit { exit ← max_distance }
+    si y_interval!.maximum < exit {
+        exit ← y_interval!.maximum
+    }
+    si z_interval!.maximum < exit {
+        exit ← z_interval!.maximum
+    }
+    si max_distance < exit {
+        exit ← max_distance
+    }
 
     si entry > exit ergo redde nihil
     redde entry
@@ -1153,40 +970,32 @@ functio ray_intersecat_box3(
 
 functio _ray_box3_hit_normal(de Box3 bounds, de Vector3 point) → Vector3 {
     si (point.x - bounds.min.x).absolutum() ≤ 0.0001 {
-        redde vector3(-1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+        redde vector3(-1.0 ∷ f32, 0.0, 0.0)
     }
     si (point.x - bounds.max.x).absolutum() ≤ 0.0001 {
-        redde vector3(1.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+        redde vector3(1.0, 0.0, 0.0)
     }
     si (point.y - bounds.min.y).absolutum() ≤ 0.0001 {
-        redde vector3(0.0 ∷ f32, -1.0 ∷ f32, 0.0 ∷ f32)
+        redde vector3(0.0, -1.0 ∷ f32, 0.0)
     }
     si (point.y - bounds.max.y).absolutum() ≤ 0.0001 {
-        redde vector3(0.0 ∷ f32, 1.0 ∷ f32, 0.0 ∷ f32)
+        redde vector3(0.0, 1.0, 0.0)
     }
     si (point.z - bounds.min.z).absolutum() ≤ 0.0001 {
-        redde vector3(0.0 ∷ f32, 0.0 ∷ f32, -1.0 ∷ f32)
+        redde vector3(0.0, 0.0, -1.0 ∷ f32)
     }
     si (point.z - bounds.max.z).absolutum() ≤ 0.0001 {
-        redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 1.0 ∷ f32)
+        redde vector3(0.0, 0.0, 1.0)
     }
-    redde vector3(0.0 ∷ f32, 0.0 ∷ f32, 0.0 ∷ f32)
+    redde vector3(0.0, 0.0, 0.0)
 }
 
-functio ray_box3_hit(
-    de Ray ray,
-    de Box3 bounds,
-    f32 max_distance
-) → RayBox3Hit ∪ nihil {
+functio ray_box3_hit(de Ray ray, de Box3 bounds, f32 max_distance) → RayBox3Hit ∪ nihil {
     fixum f32 ∪ nihil distance_result ← ray_intersecat_box3(ray, bounds, max_distance)
     si distance_result est nihil ergo redde nihil
     fixum f32 distance ← distance_result vel 0.0
     fixum Vector3 point ← ray_punctum(ray, distance)
-    redde RayBox3Hit {
-        distance = distance,
-        point = point,
-        normal = _ray_box3_hit_normal(bounds, point)
-    }
+    redde RayBox3Hit { distance = distance, point = point, normal = _ray_box3_hit_normal(bounds, point) }
 }
 
 functio ray_box3_hit_face_code(de RayBox3Hit hit) → numerus ∪ nihil {
@@ -1229,22 +1038,14 @@ functio ray_box3_hit_face_facts(de RayBox3Hit hit) → FaceCodeFacts ∪ nihil {
 }
 
 functio matrix4_identitas() → Matrix4 {
-    redde Matrix4 { elements = [
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0,
-    ] }
+    redde Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
 }
 
 functio matrix4_valid(de Matrix4 matrix) → bivalens {
     redde matrix.elements.longitudo() ≡ 16
 }
 
-functio transform_payload(
-    de Matrix4 model,
-    de Matrix4 view_projection
-) → TransformPayload ∪ nihil {
+functio transform_payload(de Matrix4 model, de Matrix4 view_projection) → TransformPayload ∪ nihil {
     si matrix4_valid(model) ≡ falsum ergo redde nihil
     si matrix4_valid(view_projection) ≡ falsum ergo redde nihil
     varia lista<f32> values ← vacua
@@ -1268,49 +1069,29 @@ functio transform_payload_byte_count(de TransformPayload payload) → numerus �
     redde payload.values.longitudo() * 4
 }
 
-functio transform_payload_model_value(
-    de TransformPayload payload,
-    numerus index
-) → f32 ∪ nihil {
+functio transform_payload_model_value(de TransformPayload payload, numerus index) → f32 ∪ nihil {
     si payload.values.longitudo() ≠ 32 ergo redde nihil
     si index < 0 aut index ≥ 16 ergo redde nihil
-    fixum f32 value ← payload.values[index]
+    fixum f32 value ← (payload.values)[index]
     redde value
 }
 
-functio transform_payload_view_projection_value(
-    de TransformPayload payload,
-    numerus index
-) → f32 ∪ nihil {
+functio transform_payload_view_projection_value(de TransformPayload payload, numerus index) → f32 ∪ nihil {
     si payload.values.longitudo() ≠ 32 ergo redde nihil
     si index < 0 aut index ≥ 16 ergo redde nihil
-    fixum f32 value ← payload.values[index + 16]
+    fixum f32 value ← (payload.values)[index + 16]
     redde value
 }
 
 functio matrix4_translatio(de Vector3 offset) → Matrix4 {
-    redde Matrix4 { elements = [
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        offset.x, offset.y, offset.z, 1.0,
-    ] }
+    redde Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, offset.x, offset.y, offset.z, 1.0] }
 }
 
 functio matrix4_scala(de Vector3 scale) → Matrix4 {
-    redde Matrix4 { elements = [
-        scale.x, 0.0, 0.0, 0.0,
-        0.0, scale.y, 0.0, 0.0,
-        0.0, 0.0, scale.z, 0.0,
-        0.0, 0.0, 0.0, 1.0,
-    ] }
+    redde Matrix4 { elements = [scale.x, 0.0, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, 0.0, scale.z, 0.0, 0.0, 0.0, 0.0, 1.0] }
 }
 
-functio matrix4_composita(
-    de Vector3 position,
-    de Quaternion rotation,
-    de Vector3 scale
-) → Matrix4 {
+functio matrix4_composita(de Vector3 position, de Quaternion rotation, de Vector3 scale) → Matrix4 {
     fixum Quaternion q ← quaternion_normalizata(rotation)
     fixum f32 xx ← q.x * q.x
     fixum f32 yy ← q.y * q.y
@@ -1321,39 +1102,17 @@ functio matrix4_composita(
     fixum f32 wx ← q.w * q.x
     fixum f32 wy ← q.w * q.y
     fixum f32 wz ← q.w * q.z
-    redde Matrix4 { elements = [
-        (1.0 - 2.0 * (yy + zz)) * scale.x,
-        (2.0 * (xy + wz)) * scale.x,
-        (2.0 * (xz - wy)) * scale.x,
-        0.0,
-        (2.0 * (xy - wz)) * scale.y,
-        (1.0 - 2.0 * (xx + zz)) * scale.y,
-        (2.0 * (yz + wx)) * scale.y,
-        0.0,
-        (2.0 * (xz + wy)) * scale.z,
-        (2.0 * (yz - wx)) * scale.z,
-        (1.0 - 2.0 * (xx + yy)) * scale.z,
-        0.0,
-        position.x, position.y, position.z, 1.0,
-    ] }
+    redde Matrix4 { elements = [(1.0 - 2.0 * (yy + zz)) * scale.x, (2.0 * (xy + wz)) * scale.x, (2.0 * (xz - wy)) * scale.x, 0.0, (2.0 * (xy - wz)) * scale.y, (1.0 - 2.0 * (xx + zz)) * scale.y, (2.0 * (yz + wx)) * scale.y, 0.0, (2.0 * (xz + wy)) * scale.z, (2.0 * (yz - wx)) * scale.z, (1.0 - 2.0 * (xx + yy)) * scale.z, 0.0, position.x, position.y, position.z, 1.0] }
 }
 
 functio matrix4_determinans_affinis(de Matrix4 matrix) → f32 {
     fixum lista<f32> e ← matrix.elements
-    redde
-        e[0] * (e[5] * e[10] - e[9] * e[6]) -
-        e[4] * (e[1] * e[10] - e[9] * e[2]) +
-        e[8] * (e[1] * e[6] - e[5] * e[2])
+    redde (e[0] * (e[5] * e[10] - e[9] * e[6]) - e[4] * (e[1] * e[10] - e[9] * e[2])) + e[8] * (e[1] * e[6] - e[5] * e[2])
 }
 
 functio matrix4_transposita(de Matrix4 matrix) → Matrix4 {
     fixum lista<f32> e ← matrix.elements
-    redde Matrix4 { elements = [
-        e[0], e[4], e[8], e[12],
-        e[1], e[5], e[9], e[13],
-        e[2], e[6], e[10], e[14],
-        e[3], e[7], e[11], e[15],
-    ] }
+    redde Matrix4 { elements = [e[0], e[4], e[8], e[12], e[1], e[5], e[9], e[13], e[2], e[6], e[10], e[14], e[3], e[7], e[11], e[15]] }
 }
 
 functio matrix4_multiplicata(de Matrix4 a, de Matrix4 b) → Matrix4 {
@@ -1364,12 +1123,7 @@ functio matrix4_multiplicata(de Matrix4 a, de Matrix4 b) → Matrix4 {
     dum column < 4 {
         varia numerus row ← 0
         dum row < 4 {
-            result.appende(
-                ae[0 * 4 + row] * be[column * 4 + 0] +
-                ae[1 * 4 + row] * be[column * 4 + 1] +
-                ae[2 * 4 + row] * be[column * 4 + 2] +
-                ae[3 * 4 + row] * be[column * 4 + 3]
-            )
+            result.appende(((ae[0 * 4 + row] * be[column * 4 + 0] + ae[1 * 4 + row] * be[column * 4 + 1]) + ae[2 * 4 + row] * be[column * 4 + 2]) + ae[3 * 4 + row] * be[column * 4 + 3])
             row ← row + 1
         }
         column ← column + 1
@@ -1379,14 +1133,10 @@ functio matrix4_multiplicata(de Matrix4 a, de Matrix4 b) → Matrix4 {
 
 functio matrix4_applica_punctum(de Matrix4 matrix, de Vector3 point) → Vector3 {
     fixum lista<f32> e ← matrix.elements
-    fixum f32 w ← e[3] * point.x + e[7] * point.y + e[11] * point.z + e[15]
+    fixum f32 w ← ((e[3] * point.x + e[7] * point.y) + e[11] * point.z) + e[15]
     varia f32 divisor ← w
     si w.absolutum() ≤ 0.000001 ergo divisor ← 1.0
-    redde vector3(
-        (e[0] * point.x + e[4] * point.y + e[8] * point.z + e[12]) / divisor,
-        (e[1] * point.x + e[5] * point.y + e[9] * point.z + e[13]) / divisor,
-        (e[2] * point.x + e[6] * point.y + e[10] * point.z + e[14]) / divisor
-    )
+    redde vector3((((e[0] * point.x + e[4] * point.y) + e[8] * point.z) + e[12]) / divisor, (((e[1] * point.x + e[5] * point.y) + e[9] * point.z) + e[13]) / divisor, (((e[2] * point.x + e[6] * point.y) + e[10] * point.z) + e[14]) / divisor)
 }
 
 functio matrix4_inversa_affinis(de Matrix4 matrix) → Matrix4 ∪ nihil {
@@ -1416,23 +1166,10 @@ functio matrix4_inversa_affinis(de Matrix4 matrix) → Matrix4 ∪ nihil {
     fixum f32 tx ← e[12]
     fixum f32 ty ← e[13]
     fixum f32 tz ← e[14]
-    redde Matrix4 { elements = [
-        i00, i10, i20, 0.0,
-        i01, i11, i21, 0.0,
-        i02, i12, i22, 0.0,
-        -(i00 * tx + i01 * ty + i02 * tz),
-        -(i10 * tx + i11 * ty + i12 * tz),
-        -(i20 * tx + i21 * ty + i22 * tz),
-        1.0,
-    ] }
+    redde Matrix4 { elements = [i00, i10, i20, 0.0, i01, i11, i21, 0.0, i02, i12, i22, 0.0, -((i00 * tx + i01 * ty) + i02 * tz), -((i10 * tx + i11 * ty) + i12 * tz), -((i20 * tx + i21 * ty) + i22 * tz), 1.0] }
 }
 
-functio matrix4_perspectiva(
-    f32 fov_y_degrees,
-    f32 aspect,
-    f32 near,
-    f32 far
-) → Matrix4 ∪ nihil {
+functio matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Matrix4 ∪ nihil {
     si fov_y_degrees ≤ 0.0 aut fov_y_degrees ≥ 180.0 ergo redde nihil
     si aspect ≤ 0.0 ergo redde nihil
     si near ≤ 0.0 aut far ≤ near ergo redde nihil
@@ -1442,45 +1179,22 @@ functio matrix4_perspectiva(
     si sine.absolutum() ≤ 0.000001 ergo redde nihil
     fixum f32 focal ← cosine / sine
     fixum f32 depth ← far / (near - far)
-    redde Matrix4 { elements = [
-        focal / aspect, 0.0, 0.0, 0.0,
-        0.0, focal, 0.0, 0.0,
-        0.0, 0.0, depth, -1.0 ∷ f32,
-        0.0, 0.0, near * depth, 0.0,
-    ] }
+    redde Matrix4 { elements = [focal / aspect, 0.0, 0.0, 0.0, 0.0, focal, 0.0, 0.0, 0.0, 0.0, depth, -1.0 ∷ f32, 0.0, 0.0, near * depth, 0.0] }
 }
 
-functio camera_perspectiva_projection(
-    de PerspectiveCamera camera
-) → Matrix4 ∪ nihil {
+functio camera_perspectiva_projection(de PerspectiveCamera camera) → Matrix4 ∪ nihil {
     redde matrix4_perspectiva(camera.fov, camera.aspect, camera.near, camera.far)
 }
 
-functio camera_perspectiva_projection_facts(
-    de PerspectiveCamera camera
-) → PerspectiveCameraProjectionFacts ∪ nihil {
+functio camera_perspectiva_projection_facts(de PerspectiveCamera camera) → PerspectiveCameraProjectionFacts ∪ nihil {
     fixum Matrix4 ∪ nihil projection_result ← camera_perspectiva_projection(camera)
     si projection_result est nihil ergo redde nihil
     fixum Matrix4 projection ← Matrix4 { elements = projection_result!.elements }
     si matrix4_valid(projection) ≡ falsum ergo redde nihil
-    redde PerspectiveCameraProjectionFacts {
-        fov_y_degrees = camera.fov,
-        aspect = camera.aspect,
-        near = camera.near,
-        far = camera.far,
-        projection_float_count = projection.elements.longitudo(),
-        x_scale = projection.elements[0],
-        y_scale = projection.elements[5],
-        depth_scale = projection.elements[10]
-    }
+    redde PerspectiveCameraProjectionFacts { fov_y_degrees = camera.fov, aspect = camera.aspect, near = camera.near, far = camera.far, projection_float_count = projection.elements.longitudo(), x_scale = (projection.elements)[0], y_scale = (projection.elements)[5], depth_scale = (projection.elements)[10] }
 }
 
-functio camera_view_projection(
-    de PerspectiveCamera camera,
-    de Vector3 eye,
-    de Vector3 target,
-    de Vector3 up
-) → Matrix4 ∪ nihil {
+functio camera_view_projection(de PerspectiveCamera camera, de Vector3 eye, de Vector3 target, de Vector3 up) → Matrix4 ∪ nihil {
     fixum Matrix4 ∪ nihil projection_result ← camera_perspectiva_projection(camera)
     si projection_result est nihil ergo redde nihil
     fixum Matrix4 ∪ nihil view_result ← matrix4_conspectus(eye, target, up)
@@ -1490,41 +1204,19 @@ functio camera_view_projection(
     redde matrix4_multiplicata(projection, view)
 }
 
-functio camera_view_projection_facts(
-    de PerspectiveCamera camera,
-    de Vector3 eye,
-    de Vector3 target,
-    de Vector3 up
-) → ViewProjectionFacts ∪ nihil {
-    fixum Matrix4 ∪ nihil view_projection_result ←
-        camera_view_projection(camera, eye, target, up)
+functio camera_view_projection_facts(de PerspectiveCamera camera, de Vector3 eye, de Vector3 target, de Vector3 up) → ViewProjectionFacts ∪ nihil {
+    fixum Matrix4 ∪ nihil view_projection_result ← camera_view_projection(camera, eye, target, up)
     si view_projection_result est nihil ergo redde nihil
     fixum Matrix4 view_projection ← Matrix4 { elements = view_projection_result!.elements }
     si matrix4_valid(view_projection) ≡ falsum ergo redde nihil
-    redde ViewProjectionFacts {
-        float_count = view_projection.elements.longitudo(),
-        x_scale = view_projection.elements[0],
-        y_scale = view_projection.elements[5],
-        depth_scale = view_projection.elements[10],
-        view_translation_z = view_projection.elements[14]
-    }
+    redde ViewProjectionFacts { float_count = view_projection.elements.longitudo(), x_scale = (view_projection.elements)[0], y_scale = (view_projection.elements)[5], depth_scale = (view_projection.elements)[10], view_translation_z = (view_projection.elements)[14] }
 }
 
-functio matrix4_conspectus(
-    de Vector3 eye,
-    de Vector3 target,
-    de Vector3 up
-) → Matrix4 ∪ nihil {
+functio matrix4_conspectus(de Vector3 eye, de Vector3 target, de Vector3 up) → Matrix4 ∪ nihil {
     fixum Vector3 forward ← vector3_normalizata(vector3_subtracta(target, eye))
     si vector3_longitudo(forward) ≤ 0.000001 ergo redde nihil
     fixum Vector3 side ← vector3_normalizata(vector3_cross(forward, up))
     si vector3_longitudo(side) ≤ 0.000001 ergo redde nihil
     fixum Vector3 camera_up ← vector3_cross(side, forward)
-    redde Matrix4 { elements = [
-        side.x, camera_up.x, -forward.x, 0.0,
-        side.y, camera_up.y, -forward.y, 0.0,
-        side.z, camera_up.z, -forward.z, 0.0,
-        -vector3_dot(side, eye), -vector3_dot(camera_up, eye),
-        vector3_dot(forward, eye), 1.0,
-    ] }
+    redde Matrix4 { elements = [side.x, camera_up.x, -forward.x, 0.0, side.y, camera_up.y, -forward.y, 0.0, side.z, camera_up.z, -forward.z, 0.0, -vector3_dot(side, eye), -vector3_dot(camera_up, eye), vector3_dot(forward, eye), 1.0] }
 }

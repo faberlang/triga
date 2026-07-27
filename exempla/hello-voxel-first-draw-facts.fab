@@ -5,113 +5,43 @@ category = "library"
 canonical = true
 summary = "Hello Voxel first indexed-draw source facts for position and color layouts."
 +++
-
 importa ex "triga:geometry" privata geometry
 
-
 incipit {
-    fixum lista<f32> positions ← [
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 0.0, 1.0,
-        1.0, 0.0, 1.0,
-        1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0
-    ]
-    fixum lista<f32> colors ← [
-        1.0, 0.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 0.0, 1.0,
-        1.0, 1.0, 0.0,
-        1.0, 0.0, 1.0,
-        0.0, 1.0, 1.0,
-        1.0, 1.0, 1.0,
-        0.2, 0.2, 0.2
-    ]
-    fixum lista<u32> indices ← [
-        0, 1, 2, 0, 2, 3,
-        4, 6, 5, 4, 7, 6,
-        0, 4, 5, 0, 5, 1,
-        3, 2, 6, 3, 6, 7,
-        1, 5, 6, 1, 6, 2,
-        0, 3, 7, 0, 7, 4
-    ]
-    fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_geometry(
-        8, positions, colors, indices
-    )
-    adfirma cube_result non est nihil,
-        "Hello Voxel first draw creates colored indexed geometry"
-    fixum geometry.BufferGeometry cube ← geometry.BufferGeometry {
-        topology = cube_result!.topology,
-        vertex_count = cube_result!.vertex_count,
-        attributes = cube_result!.attributes,
-        indexed = cube_result!.indexed,
-        indices = cube_result!.indices,
-        draw_range = cube_result!.draw_range,
-        groups = cube_result!.groups
-    }
+    fixum lista<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0]
+    fixum lista<f32> colors ← [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
+    fixum lista<u32> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 6, 2, 0, 3, 7, 0, 7, 4]
+    fixum geometry.BufferGeometry ∪ nihil cube_result ← geometry.colored_indexed_geometry(8, positions, colors, indices)
+    adfirma cube_result non est nihil, "Hello Voxel first draw creates colored indexed geometry"
+    fixum geometry.BufferGeometry cube ← geometry.BufferGeometry { topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups }
 
-    adfirma geometry.geometry_valid(cube),
-        "Hello Voxel first draw uses valid indexed triangle geometry"
-    adfirma (geometry.geometry_topology_code(cube) vel 0) ≡ 1,
-        "Hello Voxel first draw locks triangle-list topology"
-    adfirma (geometry.geometry_index_format_code(cube) vel 0) ≡ 1,
-        "Hello Voxel first draw locks u32 index format"
-    adfirma cube.indexed et cube.vertex_count ≡ 8 et cube.indices.longitudo() ≡ 36,
-        "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
-    adfirma (geometry.geometry_attribute_byte_count(cube, "position") vel 0) ≡ 96,
-        "Hello Voxel first draw locks position payload bytes"
-    adfirma (geometry.geometry_attribute_byte_count(cube, "color") vel 0) ≡ 96,
-        "Hello Voxel first draw locks color payload bytes"
-    adfirma (geometry.geometry_vertex_payload_byte_count(cube) vel 0) ≡ 192,
-        "Hello Voxel first draw locks vertex payload bytes"
-    adfirma (geometry.geometry_index_payload_byte_count(cube) vel 0) ≡ 144,
-        "Hello Voxel first draw locks index payload bytes"
-    adfirma (geometry.geometry_payload_byte_count(cube) vel 0) ≡ 336,
-        "Hello Voxel first draw locks combined geometry payload bytes"
-    adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36,
-        "Hello Voxel first draw covers the full indexed cube range"
+    adfirma geometry.geometry_valid(cube), "Hello Voxel first draw uses valid indexed triangle geometry"
+    adfirma (geometry.geometry_topology_code(cube) vel 0) ≡ 1, "Hello Voxel first draw locks triangle-list topology"
+    adfirma (geometry.geometry_index_format_code(cube) vel 0) ≡ 1, "Hello Voxel first draw locks u32 index format"
+    adfirma (cube.indexed et cube.vertex_count ≡ 8) et cube.indices.longitudo() ≡ 36, "Hello Voxel first draw locks eight vertices and thirty-six u32 indices"
+    adfirma (geometry.geometry_attribute_byte_count(cube, "position") vel 0) ≡ 96, "Hello Voxel first draw locks position payload bytes"
+    adfirma (geometry.geometry_attribute_byte_count(cube, "color") vel 0) ≡ 96, "Hello Voxel first draw locks color payload bytes"
+    adfirma (geometry.geometry_vertex_payload_byte_count(cube) vel 0) ≡ 192, "Hello Voxel first draw locks vertex payload bytes"
+    adfirma (geometry.geometry_index_payload_byte_count(cube) vel 0) ≡ 144, "Hello Voxel first draw locks index payload bytes"
+    adfirma (geometry.geometry_payload_byte_count(cube) vel 0) ≡ 336, "Hello Voxel first draw locks combined geometry payload bytes"
+    adfirma cube.draw_range.start ≡ 0 et cube.draw_range.count ≡ 36, "Hello Voxel first draw covers the full indexed cube range"
     fixum geometry.GeometryDrawCommand ∪ nihil draw_result ← geometry.geometry_draw_command(cube, 1)
-    adfirma draw_result non est nihil,
-        "Hello Voxel first draw creates a source draw command"
-    fixum geometry.GeometryDrawCommand draw ← geometry.GeometryDrawCommand {
-        indexed = draw_result!.indexed,
-        element_count = draw_result!.element_count,
-        first_element = draw_result!.first_element,
-        base_vertex = draw_result!.base_vertex,
-        instance_count = draw_result!.instance_count,
-        material_index = draw_result!.material_index
-    }
-    adfirma draw.indexed et draw.element_count ≡ 36 et draw.first_element ≡ 0,
-        "Hello Voxel first draw records indexed count and start"
-    adfirma draw.base_vertex ≡ 0 et draw.instance_count ≡ 1,
-        "Hello Voxel first draw records base vertex zero and one instance"
-    adfirma draw.material_index ≡ 0,
-        "Hello Voxel first draw records the default material index"
+    adfirma draw_result non est nihil, "Hello Voxel first draw creates a source draw command"
+    fixum geometry.GeometryDrawCommand draw ← geometry.GeometryDrawCommand { indexed = draw_result!.indexed, element_count = draw_result!.element_count, first_element = draw_result!.first_element, base_vertex = draw_result!.base_vertex, instance_count = draw_result!.instance_count, material_index = draw_result!.material_index }
+    adfirma (draw.indexed et draw.element_count ≡ 36) et draw.first_element ≡ 0, "Hello Voxel first draw records indexed count and start"
+    adfirma draw.base_vertex ≡ 0 et draw.instance_count ≡ 1, "Hello Voxel first draw records base vertex zero and one instance"
+    adfirma draw.material_index ≡ 0, "Hello Voxel first draw records the default material index"
     fixum numerus ∪ nihil cube_triangles ← geometry.geometry_triangle_count(cube)
-    adfirma cube_triangles non est nihil,
-        "Hello Voxel first draw locks twelve indexed triangles"
+    adfirma cube_triangles non est nihil, "Hello Voxel first draw locks twelve indexed triangles"
     fixum numerus cube_triangle_count ← cube_triangles vel 0
-    adfirma cube_triangle_count ≡ 12,
-        "Hello Voxel first draw has twelve triangles"
-    adfirma (geometry.geometry_vertex_layout_count(cube) vel 0) ≡ 2,
-        "Hello Voxel first draw exposes two vertex layouts"
-    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12, 1),
-        "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
-    adfirma (geometry.geometry_vertex_layout_source_name(cube, 0) vel "") ≡ "position",
-        "position layout exposes source name"
-    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12, 1),
-        "color layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
-    adfirma (geometry.geometry_vertex_layout_source_name(cube, 1) vel "") ≡ "color",
-        "color layout exposes source name"
-    adfirma geometry.geometry_vertex_layout_location(cube, 2) est nihil,
-        "Hello Voxel first draw exposes only position and color vertex layouts"
-    adfirma geometry.geometry_vertex_layout_source_name(cube, 2) est nihil,
-        "missing vertex layout has no source name"
-    adfirma geometry.geometry_draw_command(cube, 0) est nihil,
-        "Hello Voxel first draw rejects an empty instance draw command"
-    adfirma geometry.colored_indexed_geometry(8, positions, colors, [0, 1]) est nihil,
-        "colored indexed geometry rejects incomplete triangle indices"
+    adfirma cube_triangle_count ≡ 12, "Hello Voxel first draw has twelve triangles"
+    adfirma (geometry.geometry_vertex_layout_count(cube) vel 0) ≡ 2, "Hello Voxel first draw exposes two vertex layouts"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 0, "position", 0, 3, 0, 12, 1), "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    adfirma (geometry.geometry_vertex_layout_source_name(cube, 0) vel "") ≡ "position", "position layout exposes source name"
+    adfirma geometry.geometry_vertex_layout_matches(cube, 1, "color", 1, 3, 0, 12, 1), "color layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    adfirma (geometry.geometry_vertex_layout_source_name(cube, 1) vel "") ≡ "color", "color layout exposes source name"
+    adfirma geometry.geometry_vertex_layout_location(cube, 2) est nihil, "Hello Voxel first draw exposes only position and color vertex layouts"
+    adfirma geometry.geometry_vertex_layout_source_name(cube, 2) est nihil, "missing vertex layout has no source name"
+    adfirma geometry.geometry_draw_command(cube, 0) est nihil, "Hello Voxel first draw rejects an empty instance draw command"
+    adfirma geometry.colored_indexed_geometry(8, positions, colors, [0, 1]) est nihil, "colored indexed geometry rejects incomplete triangle indices"
 }

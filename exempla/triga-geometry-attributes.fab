@@ -5,711 +5,282 @@ category = "library"
 canonical = true
 summary = "Explicit Triga attribute shape, layout, indexing, draw range, and group validation."
 +++
-
 importa ex "triga:geometry" privata geometry
 
-
 incipit {
-    fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
-        "position", 0, 3, 3,
-        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
-    )
-    fixum geometry.BufferGeometry triangle ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1, 2],
-        geometry.DrawRange { start = 0, count = 3 },
-        [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }]
-    )
+    fixum geometry.BufferAttribute positions ← geometry.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+    fixum geometry.BufferGeometry triangle ← geometry.indexed_triangle_geometry(3, [positions], [0, 1, 2], geometry.DrawRange { start = 0, count = 3 }, [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }])
     adfirma geometry.geometry_valid(triangle), "explicit indexed geometry validates"
-    adfirma (geometry.geometry_topology_code(triangle) vel 0) ≡ 1,
-        "triangle geometry exposes source-owned topology code"
+    adfirma (geometry.geometry_topology_code(triangle) vel 0) ≡ 1, "triangle geometry exposes source-owned topology code"
     fixum numerus triangle_vertex_count ← geometry.geometry_vertex_count(triangle) vel 0
-    adfirma triangle_vertex_count ≡ 3,
-        "valid geometry exposes source-owned vertex count"
+    adfirma triangle_vertex_count ≡ 3, "valid geometry exposes source-owned vertex count"
     fixum numerus triangle_index_count ← geometry.geometry_index_count(triangle) vel 0
-    adfirma triangle_index_count ≡ 3,
-        "valid indexed geometry exposes source-owned index count"
-    adfirma (geometry.geometry_index_format_code(triangle) vel 0) ≡ 1,
-        "valid indexed geometry exposes u32 index format code"
+    adfirma triangle_index_count ≡ 3, "valid indexed geometry exposes source-owned index count"
+    adfirma (geometry.geometry_index_format_code(triangle) vel 0) ≡ 1, "valid indexed geometry exposes u32 index format code"
     fixum numerus triangle_group_count ← geometry.geometry_group_count(triangle) vel 0
-    adfirma triangle_group_count ≡ 1,
-        "valid geometry exposes source-owned draw group count"
+    adfirma triangle_group_count ≡ 1, "valid geometry exposes source-owned draw group count"
     fixum numerus triangle_group_elements ← geometry.geometry_group_element_total(triangle) vel 0
-    adfirma triangle_group_elements ≡ 3,
-        "valid geometry exposes source-owned grouped element total"
-    adfirma (geometry.visible_face_vertex_count(1) vel 0) ≡ 4,
-        "one visible quad face accounts for four vertices"
-    adfirma (geometry.visible_face_index_count(1) vel 0) ≡ 6,
-        "one visible quad face accounts for six indices"
-    adfirma (geometry.visible_face_triangle_count(1) vel 0) ≡ 2,
-        "one visible quad face accounts for two triangles"
-    adfirma (geometry.visible_face_vertex_count(6) vel 0) ≡ 24,
-        "six visible quad faces account for twenty-four vertices"
-    adfirma (geometry.visible_face_index_count(6) vel 0) ≡ 36,
-        "six visible quad faces account for thirty-six indices"
-    adfirma (geometry.visible_face_position_payload_byte_count(6) vel 0) ≡ 288,
-        "visible faces expose position payload bytes"
-    adfirma (geometry.visible_face_color_payload_byte_count(6) vel 0) ≡ 288,
-        "visible faces expose color payload bytes"
-    adfirma (geometry.visible_face_index_payload_byte_count(6) vel 0) ≡ 144,
-        "visible faces expose index payload bytes"
-    adfirma (geometry.visible_face_payload_byte_count(6) vel 0) ≡ 720,
-        "visible faces expose combined mesh payload bytes"
-    fixum geometry.VisibleFaceMeshFacts ∪ nihil visible_face_facts_result ←
-        geometry.visible_face_mesh_facts(6)
-    adfirma visible_face_facts_result non est nihil,
-        "visible faces expose one reusable mesh fact record"
-    fixum geometry.VisibleFaceMeshFacts visible_face_facts ← geometry.VisibleFaceMeshFacts {
-        face_count = visible_face_facts_result!.face_count,
-        vertex_count = visible_face_facts_result!.vertex_count,
-        index_count = visible_face_facts_result!.index_count,
-        triangle_count = visible_face_facts_result!.triangle_count,
-        position_payload_byte_count = visible_face_facts_result!.position_payload_byte_count,
-        color_payload_byte_count = visible_face_facts_result!.color_payload_byte_count,
-        index_payload_byte_count = visible_face_facts_result!.index_payload_byte_count,
-        total_payload_byte_count = visible_face_facts_result!.total_payload_byte_count
-    }
-    adfirma visible_face_facts.face_count ≡ 6
-        et visible_face_facts.vertex_count ≡ 24
-        et visible_face_facts.index_count ≡ 36
-        et visible_face_facts.triangle_count ≡ 12,
-        "visible face mesh facts lock draw-scale counts"
-    adfirma visible_face_facts.position_payload_byte_count ≡ 288
-        et visible_face_facts.color_payload_byte_count ≡ 288
-        et visible_face_facts.index_payload_byte_count ≡ 144
-        et visible_face_facts.total_payload_byte_count ≡ 720,
-        "visible face mesh facts lock upload byte counts"
-    adfirma geometry.visible_face_vertex_count(0) est nihil,
-        "zero visible faces reject mesh accounting"
-    adfirma geometry.visible_face_mesh_facts(0) est nihil,
-        "zero visible faces reject mesh fact records"
-    fixum geometry.ColoredQuadMesh ∪ nihil first_quad_result ← geometry.colored_quad_mesh_append(
-        vacua,
-        vacua,
-        vacua,
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.2, 0.4, 0.6
-    )
-    adfirma first_quad_result non est nihil,
-        "colored quad append accepts empty mesh buffers"
-    adfirma first_quad_result!.positions.longitudo() ≡ 12
-        et first_quad_result!.colors.longitudo() ≡ 12,
-        "colored quad append emits four position and color vertices"
-    adfirma first_quad_result!.indices.longitudo() ≡ 6,
-        "colored quad append emits six triangle indices"
-    adfirma first_quad_result!.indices[0] ≡ (0 ↦ u32)
-        et first_quad_result!.indices[1] ≡ (1 ↦ u32)
-        et first_quad_result!.indices[2] ≡ (2 ↦ u32)
-        et first_quad_result!.indices[3] ≡ (0 ↦ u32)
-        et first_quad_result!.indices[4] ≡ (2 ↦ u32)
-        et first_quad_result!.indices[5] ≡ (3 ↦ u32),
-        "colored quad append locks outward triangle index order"
-    adfirma first_quad_result!.colors[0] ≡ (0.2 ∷ f32)
-        et first_quad_result!.colors[1] ≡ (0.4 ∷ f32)
-        et first_quad_result!.colors[2] ≡ (0.6 ∷ f32)
-        et first_quad_result!.colors[9] ≡ (0.2 ∷ f32),
-        "colored quad append repeats one RGB color across four vertices"
-    fixum geometry.ColoredQuadMesh first_quad ← geometry.ColoredQuadMesh {
-        positions = first_quad_result!.positions,
-        colors = first_quad_result!.colors,
-        indices = first_quad_result!.indices
-    }
-    fixum geometry.ColoredQuadMesh ∪ nihil second_quad_result ← geometry.colored_quad_mesh_append(
-        first_quad.positions,
-        first_quad.colors,
-        first_quad.indices,
-        2.0, 0.0, 0.0,
-        3.0, 0.0, 0.0,
-        3.0, 1.0, 0.0,
-        2.0, 1.0, 0.0,
-        0.7, 0.8, 0.9
-    )
-    adfirma second_quad_result non est nihil,
-        "colored quad append chains across existing mesh buffers"
-    adfirma second_quad_result!.indices[6] ≡ (4 ↦ u32)
-        et second_quad_result!.indices[7] ≡ (5 ↦ u32)
-        et second_quad_result!.indices[8] ≡ (6 ↦ u32)
-        et second_quad_result!.indices[9] ≡ (4 ↦ u32)
-        et second_quad_result!.indices[10] ≡ (6 ↦ u32)
-        et second_quad_result!.indices[11] ≡ (7 ↦ u32),
-        "colored quad append derives the next index base from position count"
-    fixum geometry.ColoredQuadMesh two_quad_mesh ← geometry.ColoredQuadMesh {
-        positions = second_quad_result!.positions,
-        colors = second_quad_result!.colors,
-        indices = second_quad_result!.indices
-    }
-    fixum geometry.BufferGeometry ∪ nihil two_quad_geometry_result ←
-        geometry.colored_quad_mesh_geometry(two_quad_mesh)
-    adfirma two_quad_geometry_result non est nihil,
-        "colored quad mesh finalizes as indexed position/color geometry"
+    adfirma triangle_group_elements ≡ 3, "valid geometry exposes source-owned grouped element total"
+    adfirma (geometry.visible_face_vertex_count(1) vel 0) ≡ 4, "one visible quad face accounts for four vertices"
+    adfirma (geometry.visible_face_index_count(1) vel 0) ≡ 6, "one visible quad face accounts for six indices"
+    adfirma (geometry.visible_face_triangle_count(1) vel 0) ≡ 2, "one visible quad face accounts for two triangles"
+    adfirma (geometry.visible_face_vertex_count(6) vel 0) ≡ 24, "six visible quad faces account for twenty-four vertices"
+    adfirma (geometry.visible_face_index_count(6) vel 0) ≡ 36, "six visible quad faces account for thirty-six indices"
+    adfirma (geometry.visible_face_position_payload_byte_count(6) vel 0) ≡ 288, "visible faces expose position payload bytes"
+    adfirma (geometry.visible_face_color_payload_byte_count(6) vel 0) ≡ 288, "visible faces expose color payload bytes"
+    adfirma (geometry.visible_face_index_payload_byte_count(6) vel 0) ≡ 144, "visible faces expose index payload bytes"
+    adfirma (geometry.visible_face_payload_byte_count(6) vel 0) ≡ 720, "visible faces expose combined mesh payload bytes"
+    fixum geometry.VisibleFaceMeshFacts ∪ nihil visible_face_facts_result ← geometry.visible_face_mesh_facts(6)
+    adfirma visible_face_facts_result non est nihil, "visible faces expose one reusable mesh fact record"
+    fixum geometry.VisibleFaceMeshFacts visible_face_facts ← geometry.VisibleFaceMeshFacts { face_count = visible_face_facts_result!.face_count, vertex_count = visible_face_facts_result!.vertex_count, index_count = visible_face_facts_result!.index_count, triangle_count = visible_face_facts_result!.triangle_count, position_payload_byte_count = visible_face_facts_result!.position_payload_byte_count, color_payload_byte_count = visible_face_facts_result!.color_payload_byte_count, index_payload_byte_count = visible_face_facts_result!.index_payload_byte_count, total_payload_byte_count = visible_face_facts_result!.total_payload_byte_count }
+    adfirma ((visible_face_facts.face_count ≡ 6 et visible_face_facts.vertex_count ≡ 24) et visible_face_facts.index_count ≡ 36) et visible_face_facts.triangle_count ≡ 12, "visible face mesh facts lock draw-scale counts"
+    adfirma ((visible_face_facts.position_payload_byte_count ≡ 288 et visible_face_facts.color_payload_byte_count ≡ 288) et visible_face_facts.index_payload_byte_count ≡ 144) et visible_face_facts.total_payload_byte_count ≡ 720, "visible face mesh facts lock upload byte counts"
+    adfirma geometry.visible_face_vertex_count(0) est nihil, "zero visible faces reject mesh accounting"
+    adfirma geometry.visible_face_mesh_facts(0) est nihil, "zero visible faces reject mesh fact records"
+    fixum geometry.ColoredQuadMesh ∪ nihil first_quad_result ← geometry.colored_quad_mesh_append(vacua, vacua, vacua, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.2, 0.4, 0.6)
+    adfirma first_quad_result non est nihil, "colored quad append accepts empty mesh buffers"
+    adfirma first_quad_result!.positions.longitudo() ≡ 12 et first_quad_result!.colors.longitudo() ≡ 12, "colored quad append emits four position and color vertices"
+    adfirma first_quad_result!.indices.longitudo() ≡ 6, "colored quad append emits six triangle indices"
+    adfirma (((((first_quad_result!.indices)[0] ≡ (0 ↦ u32) et (first_quad_result!.indices)[1] ≡ (1 ↦ u32)) et (first_quad_result!.indices)[2] ≡ (2 ↦ u32)) et (first_quad_result!.indices)[3] ≡ (0 ↦ u32)) et (first_quad_result!.indices)[4] ≡ (2 ↦ u32)) et (first_quad_result!.indices)[5] ≡ (3 ↦ u32), "colored quad append locks outward triangle index order"
+    adfirma (((first_quad_result!.colors)[0] ≡ (0.2 ∷ f32) et (first_quad_result!.colors)[1] ≡ (0.4 ∷ f32)) et (first_quad_result!.colors)[2] ≡ (0.6 ∷ f32)) et (first_quad_result!.colors)[9] ≡ (0.2 ∷ f32), "colored quad append repeats one RGB color across four vertices"
+    fixum geometry.ColoredQuadMesh first_quad ← geometry.ColoredQuadMesh { positions = first_quad_result!.positions, colors = first_quad_result!.colors, indices = first_quad_result!.indices }
+    fixum geometry.ColoredQuadMesh ∪ nihil second_quad_result ← geometry.colored_quad_mesh_append(first_quad.positions, first_quad.colors, first_quad.indices, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 3.0, 1.0, 0.0, 2.0, 1.0, 0.0, 0.7, 0.8, 0.9)
+    adfirma second_quad_result non est nihil, "colored quad append chains across existing mesh buffers"
+    adfirma (((((second_quad_result!.indices)[6] ≡ (4 ↦ u32) et (second_quad_result!.indices)[7] ≡ (5 ↦ u32)) et (second_quad_result!.indices)[8] ≡ (6 ↦ u32)) et (second_quad_result!.indices)[9] ≡ (4 ↦ u32)) et (second_quad_result!.indices)[10] ≡ (6 ↦ u32)) et (second_quad_result!.indices)[11] ≡ (7 ↦ u32), "colored quad append derives the next index base from position count"
+    fixum geometry.ColoredQuadMesh two_quad_mesh ← geometry.ColoredQuadMesh { positions = second_quad_result!.positions, colors = second_quad_result!.colors, indices = second_quad_result!.indices }
+    fixum geometry.BufferGeometry ∪ nihil two_quad_geometry_result ← geometry.colored_quad_mesh_geometry(two_quad_mesh)
+    adfirma two_quad_geometry_result non est nihil, "colored quad mesh finalizes as indexed position/color geometry"
     fixum geometry.BufferGeometry two_quad_geometry ← (two_quad_geometry_result vel triangle)
-    adfirma geometry.geometry_valid(two_quad_geometry),
-        "colored quad mesh finalization preserves geometry validity"
-    adfirma (geometry.geometry_vertex_count(two_quad_geometry) vel 0) ≡ 8
-        et (geometry.geometry_index_count(two_quad_geometry) vel 0) ≡ 12,
-        "colored quad mesh finalization preserves vertex and index counts"
-    adfirma geometry.geometry_vertex_layout_matches(
-        two_quad_geometry, 0, "position", 0, 3, 0, 12, 1
-    ),
-        "colored quad mesh finalization preserves position layout"
-    adfirma geometry.geometry_vertex_layout_matches(
-        two_quad_geometry, 1, "color", 1, 3, 0, 12, 1
-    ),
-        "colored quad mesh finalization preserves color layout"
-    adfirma (geometry.geometry_group_element_total(two_quad_geometry) vel 0) ≡ 12,
-        "colored quad mesh finalization creates one complete draw group"
-    adfirma (geometry.geometry_triangle_count(two_quad_geometry) vel 0) ≡ 4,
-        "colored quad mesh finalization exposes triangle count"
-    adfirma (geometry.colored_quad_mesh_face_count(two_quad_mesh) vel 0) ≡ 2,
-        "colored quad mesh exposes face count from accumulated buffers"
-    fixum geometry.VisibleFaceMeshFacts ∪ nihil two_quad_facts_result ←
-        geometry.colored_quad_mesh_facts(two_quad_mesh)
-    adfirma two_quad_facts_result non est nihil,
-        "colored quad mesh exposes visible-face facts from accumulated buffers"
-    adfirma two_quad_facts_result!.face_count ≡ 2
-        et two_quad_facts_result!.vertex_count ≡ 8
-        et two_quad_facts_result!.index_count ≡ 12
-        et two_quad_facts_result!.triangle_count ≡ 4,
-        "colored quad mesh facts preserve face-derived counts"
-    adfirma two_quad_facts_result!.total_payload_byte_count ≡ 240,
-        "colored quad mesh facts preserve face-derived payload bytes"
-    fixum geometry.IndexedGeometryDrawBatchFacts ∪ nihil two_quad_batch_result ←
-        geometry.colored_quad_mesh_draw_batch_facts(two_quad_mesh, 1)
-    adfirma two_quad_batch_result non est nihil,
-        "colored quad mesh exposes indexed draw batch facts"
-    adfirma two_quad_batch_result!.draw_count ≡ 1
-        et two_quad_batch_result!.grouped_element_total ≡ 12,
-        "colored quad mesh draw batch facts preserve draw group scale"
-    adfirma two_quad_batch_result!.vertex_payload_byte_count ≡ 192
-        et two_quad_batch_result!.index_payload_byte_count ≡ 48
-        et two_quad_batch_result!.total_payload_byte_count ≡ 240,
-        "colored quad mesh draw batch facts preserve upload byte counts"
-    adfirma geometry.colored_quad_mesh_draw_batch_facts(two_quad_mesh, 0) est nihil,
-        "colored quad mesh draw batch facts reject empty instance counts"
-    fixum geometry.BoundingBox ∪ nihil two_quad_bounds_result ←
-        geometry.colored_quad_mesh_bounding_box(two_quad_mesh)
-    adfirma two_quad_bounds_result non est nihil,
-        "colored quad mesh exposes bounds from accumulated buffers"
+    adfirma geometry.geometry_valid(two_quad_geometry), "colored quad mesh finalization preserves geometry validity"
+    adfirma (geometry.geometry_vertex_count(two_quad_geometry) vel 0) ≡ 8 et (geometry.geometry_index_count(two_quad_geometry) vel 0) ≡ 12, "colored quad mesh finalization preserves vertex and index counts"
+    adfirma geometry.geometry_vertex_layout_matches(two_quad_geometry, 0, "position", 0, 3, 0, 12, 1), "colored quad mesh finalization preserves position layout"
+    adfirma geometry.geometry_vertex_layout_matches(two_quad_geometry, 1, "color", 1, 3, 0, 12, 1), "colored quad mesh finalization preserves color layout"
+    adfirma (geometry.geometry_group_element_total(two_quad_geometry) vel 0) ≡ 12, "colored quad mesh finalization creates one complete draw group"
+    adfirma (geometry.geometry_triangle_count(two_quad_geometry) vel 0) ≡ 4, "colored quad mesh finalization exposes triangle count"
+    adfirma (geometry.colored_quad_mesh_face_count(two_quad_mesh) vel 0) ≡ 2, "colored quad mesh exposes face count from accumulated buffers"
+    fixum geometry.VisibleFaceMeshFacts ∪ nihil two_quad_facts_result ← geometry.colored_quad_mesh_facts(two_quad_mesh)
+    adfirma two_quad_facts_result non est nihil, "colored quad mesh exposes visible-face facts from accumulated buffers"
+    adfirma ((two_quad_facts_result!.face_count ≡ 2 et two_quad_facts_result!.vertex_count ≡ 8) et two_quad_facts_result!.index_count ≡ 12) et two_quad_facts_result!.triangle_count ≡ 4, "colored quad mesh facts preserve face-derived counts"
+    adfirma two_quad_facts_result!.total_payload_byte_count ≡ 240, "colored quad mesh facts preserve face-derived payload bytes"
+    fixum geometry.IndexedGeometryDrawBatchFacts ∪ nihil two_quad_batch_result ← geometry.colored_quad_mesh_draw_batch_facts(two_quad_mesh, 1)
+    adfirma two_quad_batch_result non est nihil, "colored quad mesh exposes indexed draw batch facts"
+    adfirma two_quad_batch_result!.draw_count ≡ 1 et two_quad_batch_result!.grouped_element_total ≡ 12, "colored quad mesh draw batch facts preserve draw group scale"
+    adfirma (two_quad_batch_result!.vertex_payload_byte_count ≡ 192 et two_quad_batch_result!.index_payload_byte_count ≡ 48) et two_quad_batch_result!.total_payload_byte_count ≡ 240, "colored quad mesh draw batch facts preserve upload byte counts"
+    adfirma geometry.colored_quad_mesh_draw_batch_facts(two_quad_mesh, 0) est nihil, "colored quad mesh draw batch facts reject empty instance counts"
+    fixum geometry.BoundingBox ∪ nihil two_quad_bounds_result ← geometry.colored_quad_mesh_bounding_box(two_quad_mesh)
+    adfirma two_quad_bounds_result non est nihil, "colored quad mesh exposes bounds from accumulated buffers"
     fixum f32 zero ← 0.0
     fixum f32 one ← 1.0
     fixum f32 three ← 3.0
-    adfirma two_quad_bounds_result!.min_x ≡ zero
-        et two_quad_bounds_result!.min_y ≡ zero
-        et two_quad_bounds_result!.min_z ≡ zero,
-        "colored quad mesh bounds preserve minimum position values"
-    adfirma two_quad_bounds_result!.max_x ≡ three
-        et two_quad_bounds_result!.max_y ≡ one
-        et two_quad_bounds_result!.max_z ≡ zero,
-        "colored quad mesh bounds preserve maximum position values"
-    fixum geometry.BoundingSphere ∪ nihil two_quad_sphere_result ←
-        geometry.colored_quad_mesh_bounding_sphere(two_quad_mesh)
-    adfirma two_quad_sphere_result non est nihil,
-        "colored quad mesh exposes a bounding sphere from accumulated buffers"
+    adfirma (two_quad_bounds_result!.min_x ≡ zero et two_quad_bounds_result!.min_y ≡ zero) et two_quad_bounds_result!.min_z ≡ zero, "colored quad mesh bounds preserve minimum position values"
+    adfirma (two_quad_bounds_result!.max_x ≡ three et two_quad_bounds_result!.max_y ≡ one) et two_quad_bounds_result!.max_z ≡ zero, "colored quad mesh bounds preserve maximum position values"
+    fixum geometry.BoundingSphere ∪ nihil two_quad_sphere_result ← geometry.colored_quad_mesh_bounding_sphere(two_quad_mesh)
+    adfirma two_quad_sphere_result non est nihil, "colored quad mesh exposes a bounding sphere from accumulated buffers"
     fixum f32 half ← 0.5
-    adfirma two_quad_sphere_result!.center_x > 1.4
-        et two_quad_sphere_result!.center_x < 1.6
-        et two_quad_sphere_result!.center_y ≡ half
-        et two_quad_sphere_result!.center_z ≡ zero,
-        "colored quad mesh sphere center derives from mesh bounds"
-    adfirma two_quad_sphere_result!.radius > 1.5
-        et two_quad_sphere_result!.radius < 1.6,
-        "colored quad mesh sphere radius encloses accumulated vertices"
-    adfirma geometry.colored_quad_mesh_geometry(geometry.ColoredQuadMesh {
-        positions = [0.0, 0.0],
-        colors = [0.0, 0.0],
-        indices = [0, 1, 2]
-    }) est nihil,
-        "colored quad mesh finalization rejects malformed accumulated buffers"
-    adfirma geometry.colored_quad_mesh_face_count(geometry.ColoredQuadMesh {
-        positions = [0.0, 0.0],
-        colors = [0.0, 0.0],
-        indices = [0, 1, 2]
-    }) est nihil,
-        "colored quad mesh face count rejects malformed accumulated buffers"
-    adfirma geometry.colored_quad_mesh_facts(geometry.ColoredQuadMesh {
-        positions = [0.0, 0.0],
-        colors = [0.0, 0.0],
-        indices = [0, 1, 2]
-    }) est nihil,
-        "colored quad mesh facts reject malformed accumulated buffers"
-    adfirma geometry.colored_quad_mesh_draw_batch_facts(geometry.ColoredQuadMesh {
-        positions = [0.0, 0.0],
-        colors = [0.0, 0.0],
-        indices = [0, 1, 2]
-    }, 1) est nihil,
-        "colored quad mesh draw batch facts reject malformed accumulated buffers"
-    adfirma geometry.colored_quad_mesh_bounding_box(geometry.ColoredQuadMesh {
-        positions = [0.0, 0.0],
-        colors = [0.0, 0.0],
-        indices = [0, 1, 2]
-    }) est nihil,
-        "colored quad mesh bounds reject malformed accumulated buffers"
-    adfirma geometry.colored_quad_mesh_bounding_sphere(geometry.ColoredQuadMesh {
-        positions = [0.0, 0.0],
-        colors = [0.0, 0.0],
-        indices = [0, 1, 2]
-    }) est nihil,
-        "colored quad mesh sphere rejects malformed accumulated buffers"
-    adfirma geometry.colored_quad_mesh_append(
-        [0.0, 0.0],
-        vacua,
-        vacua,
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        1.0, 1.0, 1.0
-    ) est nihil,
-        "colored quad append rejects malformed source buffers"
-    fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(
-        triangle, "position"
-    ) vel 0
-    adfirma triangle_position_scalars ≡ 9,
-        "valid geometry exposes named attribute scalar count"
-    adfirma (geometry.geometry_attribute_byte_count(triangle, "position") vel 0) ≡ 36,
-        "valid geometry exposes named attribute byte count"
-    adfirma (geometry.geometry_vertex_payload_byte_count(triangle) vel 0) ≡ 36,
-        "valid geometry exposes vertex payload byte count"
-    adfirma (geometry.geometry_index_payload_byte_count(triangle) vel 0) ≡ 12,
-        "valid indexed geometry exposes index payload byte count"
-    adfirma (geometry.geometry_payload_byte_count(triangle) vel 0) ≡ 48,
-        "valid indexed geometry exposes combined payload byte count"
-    adfirma (geometry.geometry_vertex_layout_count(triangle) vel 0) ≡ 1,
-        "valid geometry exposes vertex layout count"
-    adfirma (geometry.geometry_vertex_layout_source_name(triangle, 0) vel "") ≡ "position",
-        "valid geometry exposes vertex layout source name"
-    adfirma geometry.geometry_attribute_scalar_count(triangle, "color") est nihil,
-        "missing attribute scalar count is explicit"
-    adfirma geometry.geometry_attribute_byte_count(triangle, "color") est nihil,
-        "missing attribute byte count is explicit"
-    adfirma geometry.geometry_vertex_layout_source_name(triangle, 1) est nihil,
-        "missing vertex layout source name is explicit"
-    fixum geometry.GeometryDrawCommand ∪ nihil group_draw_result ← geometry.geometry_group_draw_command(
-        triangle, 0, 2
-    )
-    adfirma group_draw_result non est nihil,
-        "valid geometry group produces a draw command"
-    adfirma group_draw_result!.indexed et group_draw_result!.element_count ≡ 3,
-        "group draw command preserves indexed element count"
-    adfirma group_draw_result!.first_element ≡ 0 et group_draw_result!.base_vertex ≡ 0,
-        "group draw command preserves first element and base vertex"
-    adfirma group_draw_result!.instance_count ≡ 2 et group_draw_result!.material_index ≡ 0,
-        "group draw command preserves instance count and material index"
-    fixum lista<geometry.GeometryDrawCommand> ∪ nihil group_draws_result ←
-        geometry.geometry_group_draw_commands(triangle, 2)
-    adfirma group_draws_result non est nihil,
-        "valid geometry exposes all group draw commands"
-    adfirma group_draws_result![0].element_count ≡ 3
-        et group_draws_result![0].material_index ≡ 0,
-        "group draw command list preserves group order and material index"
-    fixum geometry.IndexedGeometryDrawBatchFacts ∪ nihil indexed_batch_result ←
-        geometry.indexed_geometry_draw_batch_facts(triangle, 2)
-    adfirma indexed_batch_result non est nihil,
-        "valid indexed geometry exposes draw batch facts"
-    adfirma indexed_batch_result!.draw_count ≡ 1
-        et indexed_batch_result!.grouped_element_total ≡ 3,
-        "indexed draw batch facts expose group draw count and elements"
-    adfirma indexed_batch_result!.vertex_payload_byte_count ≡ 36
-        et indexed_batch_result!.index_payload_byte_count ≡ 12
-        et indexed_batch_result!.total_payload_byte_count ≡ 48,
-        "indexed draw batch facts expose upload byte counts"
-    adfirma geometry.geometry_group_draw_command(triangle, 1, 1) est nihil,
-        "missing geometry group rejects draw command creation"
-    adfirma geometry.geometry_group_draw_command(triangle, 0, 0) est nihil,
-        "empty instance count rejects group draw command creation"
-    adfirma geometry.geometry_group_draw_commands(triangle, 0) est nihil,
-        "empty instance count rejects group draw command list creation"
-    adfirma geometry.indexed_geometry_draw_batch_facts(triangle, 0) est nihil,
-        "empty instance count rejects indexed draw batch facts"
+    adfirma ((two_quad_sphere_result!.center_x > 1.4 et two_quad_sphere_result!.center_x < 1.6) et two_quad_sphere_result!.center_y ≡ half) et two_quad_sphere_result!.center_z ≡ zero, "colored quad mesh sphere center derives from mesh bounds"
+    adfirma two_quad_sphere_result!.radius > 1.5 et two_quad_sphere_result!.radius < 1.6, "colored quad mesh sphere radius encloses accumulated vertices"
+    adfirma geometry.colored_quad_mesh_geometry(geometry.ColoredQuadMesh { positions = [0.0, 0.0], colors = [0.0, 0.0], indices = [0, 1, 2] }) est nihil, "colored quad mesh finalization rejects malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_face_count(geometry.ColoredQuadMesh { positions = [0.0, 0.0], colors = [0.0, 0.0], indices = [0, 1, 2] }) est nihil, "colored quad mesh face count rejects malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_facts(geometry.ColoredQuadMesh { positions = [0.0, 0.0], colors = [0.0, 0.0], indices = [0, 1, 2] }) est nihil, "colored quad mesh facts reject malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_draw_batch_facts(geometry.ColoredQuadMesh { positions = [0.0, 0.0], colors = [0.0, 0.0], indices = [0, 1, 2] }, 1) est nihil, "colored quad mesh draw batch facts reject malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_bounding_box(geometry.ColoredQuadMesh { positions = [0.0, 0.0], colors = [0.0, 0.0], indices = [0, 1, 2] }) est nihil, "colored quad mesh bounds reject malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_bounding_sphere(geometry.ColoredQuadMesh { positions = [0.0, 0.0], colors = [0.0, 0.0], indices = [0, 1, 2] }) est nihil, "colored quad mesh sphere rejects malformed accumulated buffers"
+    adfirma geometry.colored_quad_mesh_append([0.0, 0.0], vacua, vacua, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0) est nihil, "colored quad append rejects malformed source buffers"
+    fixum numerus triangle_position_scalars ← geometry.geometry_attribute_scalar_count(triangle, "position") vel 0
+    adfirma triangle_position_scalars ≡ 9, "valid geometry exposes named attribute scalar count"
+    adfirma (geometry.geometry_attribute_byte_count(triangle, "position") vel 0) ≡ 36, "valid geometry exposes named attribute byte count"
+    adfirma (geometry.geometry_vertex_payload_byte_count(triangle) vel 0) ≡ 36, "valid geometry exposes vertex payload byte count"
+    adfirma (geometry.geometry_index_payload_byte_count(triangle) vel 0) ≡ 12, "valid indexed geometry exposes index payload byte count"
+    adfirma (geometry.geometry_payload_byte_count(triangle) vel 0) ≡ 48, "valid indexed geometry exposes combined payload byte count"
+    adfirma (geometry.geometry_vertex_layout_count(triangle) vel 0) ≡ 1, "valid geometry exposes vertex layout count"
+    adfirma (geometry.geometry_vertex_layout_source_name(triangle, 0) vel "") ≡ "position", "valid geometry exposes vertex layout source name"
+    adfirma geometry.geometry_attribute_scalar_count(triangle, "color") est nihil, "missing attribute scalar count is explicit"
+    adfirma geometry.geometry_attribute_byte_count(triangle, "color") est nihil, "missing attribute byte count is explicit"
+    adfirma geometry.geometry_vertex_layout_source_name(triangle, 1) est nihil, "missing vertex layout source name is explicit"
+    fixum geometry.GeometryDrawCommand ∪ nihil group_draw_result ← geometry.geometry_group_draw_command(triangle, 0, 2)
+    adfirma group_draw_result non est nihil, "valid geometry group produces a draw command"
+    adfirma group_draw_result!.indexed et group_draw_result!.element_count ≡ 3, "group draw command preserves indexed element count"
+    adfirma group_draw_result!.first_element ≡ 0 et group_draw_result!.base_vertex ≡ 0, "group draw command preserves first element and base vertex"
+    adfirma group_draw_result!.instance_count ≡ 2 et group_draw_result!.material_index ≡ 0, "group draw command preserves instance count and material index"
+    fixum lista<geometry.GeometryDrawCommand> ∪ nihil group_draws_result ← geometry.geometry_group_draw_commands(triangle, 2)
+    adfirma group_draws_result non est nihil, "valid geometry exposes all group draw commands"
+    adfirma group_draws_result![0].element_count ≡ 3 et group_draws_result![0].material_index ≡ 0, "group draw command list preserves group order and material index"
+    fixum geometry.IndexedGeometryDrawBatchFacts ∪ nihil indexed_batch_result ← geometry.indexed_geometry_draw_batch_facts(triangle, 2)
+    adfirma indexed_batch_result non est nihil, "valid indexed geometry exposes draw batch facts"
+    adfirma indexed_batch_result!.draw_count ≡ 1 et indexed_batch_result!.grouped_element_total ≡ 3, "indexed draw batch facts expose group draw count and elements"
+    adfirma (indexed_batch_result!.vertex_payload_byte_count ≡ 36 et indexed_batch_result!.index_payload_byte_count ≡ 12) et indexed_batch_result!.total_payload_byte_count ≡ 48, "indexed draw batch facts expose upload byte counts"
+    adfirma geometry.geometry_group_draw_command(triangle, 1, 1) est nihil, "missing geometry group rejects draw command creation"
+    adfirma geometry.geometry_group_draw_command(triangle, 0, 0) est nihil, "empty instance count rejects group draw command creation"
+    adfirma geometry.geometry_group_draw_commands(triangle, 0) est nihil, "empty instance count rejects group draw command list creation"
+    adfirma geometry.indexed_geometry_draw_batch_facts(triangle, 0) est nihil, "empty instance count rejects indexed draw batch facts"
     fixum geometry.BoundingBox ∪ nihil bounds_result ← geometry.geometry_bounding_box(triangle)
     adfirma bounds_result non est nihil, "valid position data produces bounds"
-    adfirma bounds_result!.min_x ≡ zero et bounds_result!.min_y ≡ zero et bounds_result!.min_z ≡ zero,
-        "bounding-box minimum derives from position data"
-    adfirma bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one et bounds_result!.max_z ≡ zero,
-        "bounding-box maximum derives from position data"
-    fixum geometry.BoundingBox ∪ nihil group_bounds_result ← geometry.geometry_group_bounding_box(
-        triangle, 0
-    )
-    adfirma group_bounds_result non est nihil,
-        "valid geometry group produces bounds"
-    adfirma group_bounds_result!.min_x ≡ zero et group_bounds_result!.max_y ≡ one,
-        "single group bounds derive from group elements"
-    adfirma geometry.geometry_group_bounding_box(triangle, 1) est nihil,
-        "missing geometry group rejects bounds"
-    fixum geometry.BufferAttribute split_positions ← geometry.float32_attribute(
-        "position", 0, 3, 6,
-        [
-            0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-            10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0
-        ]
-    )
-    fixum geometry.BufferGeometry split_groups ← geometry.indexed_triangle_geometry(
-        6, [split_positions], [0, 1, 2, 3, 4, 5],
-        geometry.DrawRange { start = 0, count = 6 },
-        [
-            geometry.GeometryGroup { start = 0, count = 3, material_index = 0 },
-            geometry.GeometryGroup { start = 3, count = 3, material_index = 1 },
-        ]
-    )
-    fixum geometry.BoundingBox ∪ nihil second_group_bounds ← geometry.geometry_group_bounding_box(
-        split_groups, 1
-    )
+    adfirma (bounds_result!.min_x ≡ zero et bounds_result!.min_y ≡ zero) et bounds_result!.min_z ≡ zero, "bounding-box minimum derives from position data"
+    adfirma (bounds_result!.max_x ≡ one et bounds_result!.max_y ≡ one) et bounds_result!.max_z ≡ zero, "bounding-box maximum derives from position data"
+    fixum geometry.BoundingBox ∪ nihil group_bounds_result ← geometry.geometry_group_bounding_box(triangle, 0)
+    adfirma group_bounds_result non est nihil, "valid geometry group produces bounds"
+    adfirma group_bounds_result!.min_x ≡ zero et group_bounds_result!.max_y ≡ one, "single group bounds derive from group elements"
+    adfirma geometry.geometry_group_bounding_box(triangle, 1) est nihil, "missing geometry group rejects bounds"
+    fixum geometry.BufferAttribute split_positions ← geometry.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0])
+    fixum geometry.BufferGeometry split_groups ← geometry.indexed_triangle_geometry(6, [split_positions], [0, 1, 2, 3, 4, 5], geometry.DrawRange { start = 0, count = 6 }, [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }, geometry.GeometryGroup { start = 3, count = 3, material_index = 1 }])
+    fixum geometry.BoundingBox ∪ nihil second_group_bounds ← geometry.geometry_group_bounding_box(split_groups, 1)
     fixum numerus split_group_elements ← geometry.geometry_group_element_total(split_groups) vel 0
-    adfirma split_group_elements ≡ 6,
-        "grouped element total preserves split draw coverage"
+    adfirma split_group_elements ≡ 6, "grouped element total preserves split draw coverage"
     fixum f32 ten ← 10.0
     fixum f32 eleven ← 11.0
-    adfirma second_group_bounds non est nihil
-        et second_group_bounds!.min_x ≡ ten et second_group_bounds!.max_x ≡ eleven,
-        "group bounds stay local to the selected draw group"
+    adfirma (second_group_bounds non est nihil et second_group_bounds!.min_x ≡ ten) et second_group_bounds!.max_x ≡ eleven, "group bounds stay local to the selected draw group"
     fixum geometry.BoundingSphere ∪ nihil sphere_result ← geometry.geometry_bounding_sphere(triangle)
     adfirma sphere_result non est nihil, "valid position data produces a bounding sphere"
-    adfirma sphere_result!.center_x ≡ half et sphere_result!.center_y ≡ half
-        et sphere_result!.center_z ≡ zero,
-        "bounding-sphere center derives from the position bounds"
-    adfirma sphere_result!.radius > 0.7 et sphere_result!.radius < 0.8,
-        "bounding-sphere radius encloses every position"
-    fixum geometry.BoundingSphere ∪ nihil group_sphere_result ←
-        geometry.geometry_group_bounding_sphere(split_groups, 1)
-    adfirma group_sphere_result non est nihil,
-        "valid geometry group produces a bounding sphere"
-    adfirma group_sphere_result!.center_x > ten et group_sphere_result!.center_x < eleven
-        et group_sphere_result!.center_y ≡ half,
-        "group bounding sphere center stays local to the selected draw group"
-    adfirma group_sphere_result!.radius > 0.7 et group_sphere_result!.radius < 0.8,
-        "group bounding sphere radius encloses selected group vertices"
-    adfirma geometry.geometry_group_bounding_sphere(split_groups, 2) est nihil,
-        "missing geometry group rejects sphere bounds"
+    adfirma (sphere_result!.center_x ≡ half et sphere_result!.center_y ≡ half) et sphere_result!.center_z ≡ zero, "bounding-sphere center derives from the position bounds"
+    adfirma sphere_result!.radius > 0.7 et sphere_result!.radius < 0.8, "bounding-sphere radius encloses every position"
+    fixum geometry.BoundingSphere ∪ nihil group_sphere_result ← geometry.geometry_group_bounding_sphere(split_groups, 1)
+    adfirma group_sphere_result non est nihil, "valid geometry group produces a bounding sphere"
+    adfirma (group_sphere_result!.center_x > ten et group_sphere_result!.center_x < eleven) et group_sphere_result!.center_y ≡ half, "group bounding sphere center stays local to the selected draw group"
+    adfirma group_sphere_result!.radius > 0.7 et group_sphere_result!.radius < 0.8, "group bounding sphere radius encloses selected group vertices"
+    adfirma geometry.geometry_group_bounding_sphere(split_groups, 2) est nihil, "missing geometry group rejects sphere bounds"
     fixum _ vertex_result ← geometry.geometry_vertex_normals(triangle)
     adfirma vertex_result non est nihil, "valid triangles produce vertex normals"
-    adfirma vertex_result!.name ≡ "normal" et vertex_result!.component_width ≡ 3,
-        "generated normals preserve explicit attribute layout facts"
-    adfirma vertex_result!.element_count ≡ 3,
-        "generated normals cover every vertex"
+    adfirma vertex_result!.name ≡ "normal" et vertex_result!.component_width ≡ 3, "generated normals preserve explicit attribute layout facts"
+    adfirma vertex_result!.element_count ≡ 3, "generated normals cover every vertex"
     fixum _ uv_result ← geometry.geometry_planar_uvs(triangle)
     adfirma uv_result non est nihil, "valid planar geometry produces UVs"
-    adfirma uv_result!.name ≡ "uv" et uv_result!.component_width ≡ 2,
-        "generated UVs preserve explicit attribute layout facts"
-    adfirma uv_result!.element_count ≡ 3,
-        "generated UV layout covers every vertex"
-    adfirma geometry.attribute_stride_bytes(positions) ≡ 12,
-        "layout stride derives from explicit component facts"
-    adfirma (geometry.geometry_vertex_layout_step_mode_code(triangle, 0) vel 0) ≡ 1,
-        "valid geometry exposes vertex-step layout mode"
-    fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(
-        3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
+    adfirma uv_result!.name ≡ "uv" et uv_result!.component_width ≡ 2, "generated UVs preserve explicit attribute layout facts"
+    adfirma uv_result!.element_count ≡ 3, "generated UV layout covers every vertex"
+    adfirma geometry.attribute_stride_bytes(positions) ≡ 12, "layout stride derives from explicit component facts"
+    adfirma (geometry.geometry_vertex_layout_step_mode_code(triangle, 0) vel 0) ≡ 1, "valid geometry exposes vertex-step layout mode"
+    fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua)
     adfirma geometry.geometry_valid(nonindexed), "explicit non-indexed geometry validates"
-    adfirma geometry.geometry_index_count(nonindexed) est nihil,
-        "non-indexed geometry has no source-owned index payload count"
-    adfirma geometry.geometry_index_format_code(nonindexed) est nihil,
-        "non-indexed geometry has no source-owned index format"
-    adfirma geometry.geometry_index_payload_byte_count(nonindexed) est nihil,
-        "non-indexed geometry has no index payload bytes"
-    adfirma (geometry.geometry_payload_byte_count(nonindexed) vel 0) ≡ 36,
-        "non-indexed geometry reports only vertex payload bytes"
-    adfirma geometry.indexed_geometry_draw_batch_facts(nonindexed, 1) est nihil,
-        "non-indexed geometry rejects indexed draw batch facts"
-    adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil,
-        "non-indexed triangles produce vertex normals"
+    adfirma geometry.geometry_index_count(nonindexed) est nihil, "non-indexed geometry has no source-owned index payload count"
+    adfirma geometry.geometry_index_format_code(nonindexed) est nihil, "non-indexed geometry has no source-owned index format"
+    adfirma geometry.geometry_index_payload_byte_count(nonindexed) est nihil, "non-indexed geometry has no index payload bytes"
+    adfirma (geometry.geometry_payload_byte_count(nonindexed) vel 0) ≡ 36, "non-indexed geometry reports only vertex payload bytes"
+    adfirma geometry.indexed_geometry_draw_batch_facts(nonindexed, 1) est nihil, "non-indexed geometry rejects indexed draw batch facts"
+    adfirma geometry.geometry_vertex_normals(nonindexed) non est nihil, "non-indexed triangles produce vertex normals"
 
-    fixum geometry.BufferAttribute large_positions ← geometry.float32_attribute(
-        "position", 0, 3, 3,
-        [0.0, 0.0, 0.0, 10000000000.0, 0.0, 0.0, 0.0, 10000000000.0, 0.0]
-    )
-    fixum geometry.BufferGeometry large_triangle ← geometry.triangle_geometry(
-        3, [large_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    fixum geometry.BoundingSphere ∪ nihil large_sphere ← geometry.geometry_bounding_sphere(
-        large_triangle
-    )
-    adfirma large_sphere non est nihil et large_sphere!.radius > 7000000000.0
-        et large_sphere!.radius < 8000000000.0,
-        "bounding-sphere radius remains stable at large finite scale"
-    fixum geometry.BufferAttribute ∪ nihil large_normals ← geometry.geometry_vertex_normals(
-        large_triangle
-    )
-    adfirma large_normals non est nihil,
-        "large finite triangles produce unit vertex normals"
+    fixum geometry.BufferAttribute large_positions ← geometry.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 10000000000.0, 0.0, 0.0, 0.0, 10000000000.0, 0.0])
+    fixum geometry.BufferGeometry large_triangle ← geometry.triangle_geometry(3, [large_positions], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    fixum geometry.BoundingSphere ∪ nihil large_sphere ← geometry.geometry_bounding_sphere(large_triangle)
+    adfirma (large_sphere non est nihil et large_sphere!.radius > 7000000000.0) et large_sphere!.radius < 8000000000.0, "bounding-sphere radius remains stable at large finite scale"
+    fixum geometry.BufferAttribute ∪ nihil large_normals ← geometry.geometry_vertex_normals(large_triangle)
+    adfirma large_normals non est nihil, "large finite triangles produce unit vertex normals"
 
-    fixum geometry.BufferAttribute small_positions ← geometry.float32_attribute(
-        "position", 0, 3, 3,
-        [0.0, 0.0, 0.0, 0.0000000001, 0.0, 0.0, 0.0, 0.0000000001, 0.0]
-    )
-    fixum geometry.BufferGeometry small_triangle ← geometry.triangle_geometry(
-        3, [small_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    fixum geometry.BoundingSphere ∪ nihil small_sphere ← geometry.geometry_bounding_sphere(
-        small_triangle
-    )
-    adfirma small_sphere non est nihil et small_sphere!.radius > 0.00000000007
-        et small_sphere!.radius < 0.00000000008,
-        "bounding-sphere radius remains stable at small finite scale"
-    fixum geometry.BufferAttribute ∪ nihil small_normals ← geometry.geometry_vertex_normals(
-        small_triangle
-    )
-    adfirma small_normals non est nihil,
-        "small finite triangles produce unit vertex normals"
+    fixum geometry.BufferAttribute small_positions ← geometry.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 0.0000000001, 0.0, 0.0, 0.0, 0.0000000001, 0.0])
+    fixum geometry.BufferGeometry small_triangle ← geometry.triangle_geometry(3, [small_positions], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    fixum geometry.BoundingSphere ∪ nihil small_sphere ← geometry.geometry_bounding_sphere(small_triangle)
+    adfirma (small_sphere non est nihil et small_sphere!.radius > 0.00000000007) et small_sphere!.radius < 0.00000000008, "bounding-sphere radius remains stable at small finite scale"
+    fixum geometry.BufferAttribute ∪ nihil small_normals ← geometry.geometry_vertex_normals(small_triangle)
+    adfirma small_normals non est nihil, "small finite triangles produce unit vertex normals"
 
     fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 4.0)
     adfirma plane_result non est nihil, "positive plane dimensions produce geometry"
-    adfirma plane_result!.indexed et plane_result!.vertex_count ≡ 4
-        et plane_result!.indices.longitudo() ≡ 6,
-        "plane primitive has deterministic vertex and index counts"
-    fixum geometry.BufferGeometry plane ← geometry.BufferGeometry {
-        topology = plane_result!.topology,
-        vertex_count = plane_result!.vertex_count,
-        attributes = plane_result!.attributes,
-        indexed = plane_result!.indexed,
-        indices = plane_result!.indices,
-        draw_range = plane_result!.draw_range,
-        groups = plane_result!.groups
-    }
+    adfirma (plane_result!.indexed et plane_result!.vertex_count ≡ 4) et plane_result!.indices.longitudo() ≡ 6, "plane primitive has deterministic vertex and index counts"
+    fixum geometry.BufferGeometry plane ← geometry.BufferGeometry { topology = plane_result!.topology, vertex_count = plane_result!.vertex_count, attributes = plane_result!.attributes, indexed = plane_result!.indexed, indices = plane_result!.indices, draw_range = plane_result!.draw_range, groups = plane_result!.groups }
     fixum numerus ∪ nihil plane_triangles ← geometry.geometry_triangle_count(plane)
-    adfirma plane_triangles non est nihil,
-        "plane primitive exposes deterministic triangle count"
+    adfirma plane_triangles non est nihil, "plane primitive exposes deterministic triangle count"
     fixum numerus plane_triangle_count ← plane_triangles vel 0
-    adfirma plane_triangle_count ≡ 2,
-        "plane primitive has two triangles"
-    adfirma plane_result!.attributes.longitudo() ≡ 3,
-        "plane primitive provides positions, normals, and UVs"
+    adfirma plane_triangle_count ≡ 2, "plane primitive has two triangles"
+    adfirma plane_result!.attributes.longitudo() ≡ 3, "plane primitive provides positions, normals, and UVs"
 
     fixum geometry.BufferGeometry ∪ nihil circle_result ← geometry.circle_geometry(2.0)
     adfirma circle_result non est nihil, "positive circle radius produces geometry"
-    adfirma circle_result!.indexed et circle_result!.vertex_count ≡ 9
-        et circle_result!.indices.longitudo() ≡ 24,
-        "circle primitive has deterministic segment and index counts"
-    adfirma circle_result!.groups.longitudo() ≡ 1 et circle_result!.groups[0].count ≡ 24,
-        "circle primitive exposes a complete deterministic draw group"
-    adfirma circle_result!.attributes.longitudo() ≡ 3,
-        "circle primitive provides positions, normals, and UVs"
+    adfirma (circle_result!.indexed et circle_result!.vertex_count ≡ 9) et circle_result!.indices.longitudo() ≡ 24, "circle primitive has deterministic segment and index counts"
+    adfirma circle_result!.groups.longitudo() ≡ 1 et (circle_result!.groups)[0].count ≡ 24, "circle primitive exposes a complete deterministic draw group"
+    adfirma circle_result!.attributes.longitudo() ≡ 3, "circle primitive provides positions, normals, and UVs"
 
     fixum geometry.BufferGeometry ∪ nihil sphere_primitive ← geometry.sphere_geometry(2.0)
     adfirma sphere_primitive non est nihil, "positive sphere radius produces geometry"
-    adfirma sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24
-        et sphere_primitive!.indices.longitudo() ≡ 24,
-        "sphere primitive preserves UV seams across eight deterministic faces"
-    adfirma sphere_primitive!.groups.longitudo() ≡ 1 et sphere_primitive!.groups[0].count ≡ 24,
-        "sphere primitive exposes a complete deterministic draw group"
-    adfirma sphere_primitive!.attributes.longitudo() ≡ 3,
-        "sphere primitive provides positions, normals, and UVs"
+    adfirma (sphere_primitive!.indexed et sphere_primitive!.vertex_count ≡ 24) et sphere_primitive!.indices.longitudo() ≡ 24, "sphere primitive preserves UV seams across eight deterministic faces"
+    adfirma sphere_primitive!.groups.longitudo() ≡ 1 et (sphere_primitive!.groups)[0].count ≡ 24, "sphere primitive exposes a complete deterministic draw group"
+    adfirma sphere_primitive!.attributes.longitudo() ≡ 3, "sphere primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil cylinder_result ← geometry.cylinder_geometry(2.0, 4.0)
     adfirma cylinder_result non est nihil, "positive cylinder dimensions produce geometry"
-    adfirma cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38
-        et cylinder_result!.indices.longitudo() ≡ 96,
-        "cylinder primitive preserves side and cap seams across eight segments"
-    adfirma cylinder_result!.groups.longitudo() ≡ 1 et cylinder_result!.groups[0].count ≡ 96,
-        "cylinder primitive exposes a complete deterministic draw group"
-    adfirma cylinder_result!.attributes.longitudo() ≡ 3,
-        "cylinder primitive provides positions, normals, and UVs"
+    adfirma (cylinder_result!.indexed et cylinder_result!.vertex_count ≡ 38) et cylinder_result!.indices.longitudo() ≡ 96, "cylinder primitive preserves side and cap seams across eight segments"
+    adfirma cylinder_result!.groups.longitudo() ≡ 1 et (cylinder_result!.groups)[0].count ≡ 96, "cylinder primitive exposes a complete deterministic draw group"
+    adfirma cylinder_result!.attributes.longitudo() ≡ 3, "cylinder primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil cone_result ← geometry.cone_geometry(2.0, 4.0)
     adfirma cone_result non est nihil, "positive cone dimensions produce geometry"
-    adfirma cone_result!.indexed et cone_result!.vertex_count ≡ 28
-        et cone_result!.indices.longitudo() ≡ 48,
-        "cone primitive preserves side and cap seams across eight segments"
-    adfirma cone_result!.groups.longitudo() ≡ 1 et cone_result!.groups[0].count ≡ 48,
-        "cone primitive exposes a complete deterministic draw group"
-    adfirma cone_result!.attributes.longitudo() ≡ 3,
-        "cone primitive provides positions, normals, and UVs"
+    adfirma (cone_result!.indexed et cone_result!.vertex_count ≡ 28) et cone_result!.indices.longitudo() ≡ 48, "cone primitive preserves side and cap seams across eight segments"
+    adfirma cone_result!.groups.longitudo() ≡ 1 et (cone_result!.groups)[0].count ≡ 48, "cone primitive exposes a complete deterministic draw group"
+    adfirma cone_result!.attributes.longitudo() ≡ 3, "cone primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil torus_result ← geometry.torus_geometry(3.0, 1.0)
     adfirma torus_result non est nihil, "valid torus radii produce geometry"
-    adfirma torus_result!.indexed et torus_result!.vertex_count ≡ 45
-        et torus_result!.indices.longitudo() ≡ 192,
-        "torus primitive preserves ring and tube seams"
-    adfirma torus_result!.groups.longitudo() ≡ 1 et torus_result!.groups[0].count ≡ 192,
-        "torus primitive exposes a complete deterministic draw group"
-    adfirma torus_result!.attributes.longitudo() ≡ 3,
-        "torus primitive provides positions, normals, and UVs"
+    adfirma (torus_result!.indexed et torus_result!.vertex_count ≡ 45) et torus_result!.indices.longitudo() ≡ 192, "torus primitive preserves ring and tube seams"
+    adfirma torus_result!.groups.longitudo() ≡ 1 et (torus_result!.groups)[0].count ≡ 192, "torus primitive exposes a complete deterministic draw group"
+    adfirma torus_result!.attributes.longitudo() ≡ 3, "torus primitive provides positions, normals, and UVs"
     fixum geometry.BufferGeometry ∪ nihil box_result ← geometry.box_geometry(2.0, 4.0, 6.0)
     adfirma box_result non est nihil, "positive box dimensions produce geometry"
-    adfirma box_result!.indexed et box_result!.vertex_count ≡ 24
-        et box_result!.indices.longitudo() ≡ 36,
-        "box primitive preserves per-face normals and UV seams"
-    fixum geometry.BufferGeometry box ← geometry.BufferGeometry {
-        topology = box_result!.topology,
-        vertex_count = box_result!.vertex_count,
-        attributes = box_result!.attributes,
-        indexed = box_result!.indexed,
-        indices = box_result!.indices,
-        draw_range = box_result!.draw_range,
-        groups = box_result!.groups
-    }
+    adfirma (box_result!.indexed et box_result!.vertex_count ≡ 24) et box_result!.indices.longitudo() ≡ 36, "box primitive preserves per-face normals and UV seams"
+    fixum geometry.BufferGeometry box ← geometry.BufferGeometry { topology = box_result!.topology, vertex_count = box_result!.vertex_count, attributes = box_result!.attributes, indexed = box_result!.indexed, indices = box_result!.indices, draw_range = box_result!.draw_range, groups = box_result!.groups }
     fixum numerus ∪ nihil box_triangles ← geometry.geometry_triangle_count(box)
-    adfirma box_triangles non est nihil,
-        "box primitive exposes deterministic triangle count"
+    adfirma box_triangles non est nihil, "box primitive exposes deterministic triangle count"
     fixum numerus box_triangle_count ← box_triangles vel 0
-    adfirma box_triangle_count ≡ 12,
-        "box primitive has twelve triangles"
-    adfirma box_result!.groups.longitudo() ≡ 1 et box_result!.groups[0].count ≡ 36,
-        "box primitive exposes a complete deterministic draw group"
-    adfirma box_result!.attributes.longitudo() ≡ 3,
-        "box primitive provides positions, normals, and UVs"
-    fixum geometry.BufferGeometry ∪ nihil box_wire_result ← geometry.box_wire_geometry(
-        2.0, 4.0, 6.0
-    )
+    adfirma box_triangle_count ≡ 12, "box primitive has twelve triangles"
+    adfirma box_result!.groups.longitudo() ≡ 1 et (box_result!.groups)[0].count ≡ 36, "box primitive exposes a complete deterministic draw group"
+    adfirma box_result!.attributes.longitudo() ≡ 3, "box primitive provides positions, normals, and UVs"
+    fixum geometry.BufferGeometry ∪ nihil box_wire_result ← geometry.box_wire_geometry(2.0, 4.0, 6.0)
     adfirma box_wire_result non est nihil, "positive box dimensions produce wire geometry"
-    fixum geometry.BufferGeometry box_wire ← geometry.BufferGeometry {
-        topology = box_wire_result!.topology,
-        vertex_count = box_wire_result!.vertex_count,
-        attributes = box_wire_result!.attributes,
-        indexed = box_wire_result!.indexed,
-        indices = box_wire_result!.indices,
-        draw_range = box_wire_result!.draw_range,
-        groups = box_wire_result!.groups
-    }
-    adfirma geometry.geometry_valid(box_wire),
-        "wire box validates as indexed line geometry"
-    adfirma (geometry.geometry_topology_code(box_wire) vel 0) ≡ 2,
-        "line geometry exposes source-owned topology code"
-    adfirma box_wire_result!.indexed et box_wire_result!.vertex_count ≡ 8
-        et box_wire_result!.indices.longitudo() ≡ 24,
-        "wire box has deterministic corner and edge index counts"
+    fixum geometry.BufferGeometry box_wire ← geometry.BufferGeometry { topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups }
+    adfirma geometry.geometry_valid(box_wire), "wire box validates as indexed line geometry"
+    adfirma (geometry.geometry_topology_code(box_wire) vel 0) ≡ 2, "line geometry exposes source-owned topology code"
+    adfirma (box_wire_result!.indexed et box_wire_result!.vertex_count ≡ 8) et box_wire_result!.indices.longitudo() ≡ 24, "wire box has deterministic corner and edge index counts"
     fixum numerus ∪ nihil box_wire_lines ← geometry.geometry_line_count(box_wire)
-    adfirma box_wire_lines non est nihil,
-        "wire box exposes deterministic line count"
+    adfirma box_wire_lines non est nihil, "wire box exposes deterministic line count"
     fixum numerus box_wire_line_count ← box_wire_lines vel 0
-    adfirma box_wire_line_count ≡ 12,
-        "wire box has twelve outline edges"
-    adfirma geometry.geometry_triangle_count(box_wire) est nihil,
-        "line geometry does not report triangle count"
-    adfirma geometry.geometry_line_count(box) est nihil,
-        "triangle geometry does not report line count"
-    adfirma box_wire_result!.groups.longitudo() ≡ 1 et box_wire_result!.groups[0].count ≡ 24,
-        "wire box exposes a complete deterministic line draw group"
-    fixum geometry.LineGeometryDrawBatchFacts ∪ nihil box_wire_batch_result ←
-        geometry.line_geometry_draw_batch_facts(box_wire, 1)
-    adfirma box_wire_batch_result non est nihil,
-        "wire box exposes line draw batch facts"
-    adfirma box_wire_batch_result!.draw_count ≡ 1
-        et box_wire_batch_result!.line_count ≡ 12
-        et box_wire_batch_result!.grouped_element_total ≡ 24,
-        "line draw batch facts preserve wire draw scale"
-    adfirma box_wire_batch_result!.vertex_payload_byte_count ≡ 96
-        et box_wire_batch_result!.index_payload_byte_count ≡ 96
-        et box_wire_batch_result!.total_payload_byte_count ≡ 192,
-        "line draw batch facts preserve wire upload byte counts"
-    fixum geometry.LineGeometryDrawBatchFacts ∪ nihil box_wire_direct_batch_result ←
-        geometry.box_wire_draw_batch_facts(2.0, 4.0, 6.0, 1)
-    adfirma box_wire_direct_batch_result non est nihil,
-        "wire box exposes direct line draw batch facts"
-    adfirma box_wire_direct_batch_result!.draw_count ≡ 1
-        et box_wire_direct_batch_result!.line_count ≡ 12
-        et box_wire_direct_batch_result!.total_payload_byte_count ≡ 192,
-        "direct wire box draw batch facts preserve selection-outline scale"
-    adfirma geometry.line_geometry_draw_batch_facts(box_wire, 0) est nihil,
-        "line draw batch facts reject empty instance counts"
-    adfirma geometry.line_geometry_draw_batch_facts(box, 1) est nihil,
-        "line draw batch facts reject triangle topology"
-    adfirma geometry.box_wire_draw_batch_facts(2.0, 4.0, 6.0, 0) est nihil,
-        "wire box draw batch facts reject empty instance counts"
-    adfirma geometry.plane_geometry(0.0, 1.0) est nihil,
-        "plane primitive rejects non-positive dimensions"
-    adfirma geometry.circle_geometry(0.0) est nihil,
-        "circle primitive rejects non-positive radius"
-    adfirma geometry.sphere_geometry(0.0) est nihil,
-        "sphere primitive rejects non-positive radius"
-    adfirma geometry.cylinder_geometry(1.0, 0.0) est nihil,
-        "cylinder primitive rejects non-positive dimensions"
-    adfirma geometry.cone_geometry(0.0, 1.0) est nihil,
-        "cone primitive rejects non-positive dimensions"
-    adfirma geometry.torus_geometry(1.0, 1.0) est nihil,
-        "torus primitive rejects a tube that reaches through its center"
-    adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil,
-        "box primitive rejects non-positive dimensions"
-    adfirma geometry.box_wire_geometry(1.0, 0.0, 1.0) est nihil,
-        "wire box primitive rejects non-positive dimensions"
-    adfirma geometry.box_wire_draw_batch_facts(1.0, 0.0, 1.0, 1) est nihil,
-        "wire box draw batch facts reject non-positive dimensions"
+    adfirma box_wire_line_count ≡ 12, "wire box has twelve outline edges"
+    adfirma geometry.geometry_triangle_count(box_wire) est nihil, "line geometry does not report triangle count"
+    adfirma geometry.geometry_line_count(box) est nihil, "triangle geometry does not report line count"
+    adfirma box_wire_result!.groups.longitudo() ≡ 1 et (box_wire_result!.groups)[0].count ≡ 24, "wire box exposes a complete deterministic line draw group"
+    fixum geometry.LineGeometryDrawBatchFacts ∪ nihil box_wire_batch_result ← geometry.line_geometry_draw_batch_facts(box_wire, 1)
+    adfirma box_wire_batch_result non est nihil, "wire box exposes line draw batch facts"
+    adfirma (box_wire_batch_result!.draw_count ≡ 1 et box_wire_batch_result!.line_count ≡ 12) et box_wire_batch_result!.grouped_element_total ≡ 24, "line draw batch facts preserve wire draw scale"
+    adfirma (box_wire_batch_result!.vertex_payload_byte_count ≡ 96 et box_wire_batch_result!.index_payload_byte_count ≡ 96) et box_wire_batch_result!.total_payload_byte_count ≡ 192, "line draw batch facts preserve wire upload byte counts"
+    fixum geometry.LineGeometryDrawBatchFacts ∪ nihil box_wire_direct_batch_result ← geometry.box_wire_draw_batch_facts(2.0, 4.0, 6.0, 1)
+    adfirma box_wire_direct_batch_result non est nihil, "wire box exposes direct line draw batch facts"
+    adfirma (box_wire_direct_batch_result!.draw_count ≡ 1 et box_wire_direct_batch_result!.line_count ≡ 12) et box_wire_direct_batch_result!.total_payload_byte_count ≡ 192, "direct wire box draw batch facts preserve selection-outline scale"
+    adfirma geometry.line_geometry_draw_batch_facts(box_wire, 0) est nihil, "line draw batch facts reject empty instance counts"
+    adfirma geometry.line_geometry_draw_batch_facts(box, 1) est nihil, "line draw batch facts reject triangle topology"
+    adfirma geometry.box_wire_draw_batch_facts(2.0, 4.0, 6.0, 0) est nihil, "wire box draw batch facts reject empty instance counts"
+    adfirma geometry.plane_geometry(0.0, 1.0) est nihil, "plane primitive rejects non-positive dimensions"
+    adfirma geometry.circle_geometry(0.0) est nihil, "circle primitive rejects non-positive radius"
+    adfirma geometry.sphere_geometry(0.0) est nihil, "sphere primitive rejects non-positive radius"
+    adfirma geometry.cylinder_geometry(1.0, 0.0) est nihil, "cylinder primitive rejects non-positive dimensions"
+    adfirma geometry.cone_geometry(0.0, 1.0) est nihil, "cone primitive rejects non-positive dimensions"
+    adfirma geometry.torus_geometry(1.0, 1.0) est nihil, "torus primitive rejects a tube that reaches through its center"
+    adfirma geometry.box_geometry(1.0, 0.0, 1.0) est nihil, "box primitive rejects non-positive dimensions"
+    adfirma geometry.box_wire_geometry(1.0, 0.0, 1.0) est nihil, "wire box primitive rejects non-positive dimensions"
+    adfirma geometry.box_wire_draw_batch_facts(1.0, 0.0, 1.0, 1) est nihil, "wire box draw batch facts reject non-positive dimensions"
 
-    fixum geometry.BufferAttribute flat_positions ← geometry.float32_attribute(
-        "position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0]
-    )
-    fixum geometry.BufferGeometry degenerate ← geometry.triangle_geometry(
-        3, [flat_positions], geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    adfirma geometry.geometry_vertex_normals(degenerate) est nihil,
-        "degenerate triangles reject instead of producing invalid normals"
-    adfirma geometry.geometry_planar_uvs(degenerate) est nihil,
-        "zero-height planar geometry rejects instead of dividing by zero"
+    fixum geometry.BufferAttribute flat_positions ← geometry.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0])
+    fixum geometry.BufferGeometry degenerate ← geometry.triangle_geometry(3, [flat_positions], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    adfirma geometry.geometry_vertex_normals(degenerate) est nihil, "degenerate triangles reject instead of producing invalid normals"
+    adfirma geometry.geometry_planar_uvs(degenerate) est nihil, "zero-height planar geometry rejects instead of dividing by zero"
 
-    fixum geometry.BufferAttribute malformed ← geometry.float32_attribute(
-        "position", 0, 3, 3, [0.0, 0.0]
-    )
-    adfirma geometry.attribute_valid(malformed) ≡ falsum,
-        "malformed attribute length rejects"
-    fixum geometry.BufferGeometry out_of_range ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1, 3],
-        geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    adfirma geometry.geometry_valid(out_of_range) ≡ falsum,
-        "out-of-range index rejects"
-    fixum geometry.BufferGeometry partial_triangle_draw_range ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1, 2],
-        geometry.DrawRange { start = 0, count = 1 }, vacua
-    )
-    adfirma geometry.geometry_valid(partial_triangle_draw_range) ≡ falsum,
-        "triangle draw ranges must select complete primitives"
-    adfirma geometry.geometry_triangle_count(partial_triangle_draw_range) est nihil,
-        "triangle count rejects invalid geometry"
-    fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1, 2],
-        geometry.DrawRange { start = 0, count = 3 },
-        [
-            geometry.GeometryGroup { start = 0, count = 2, material_index = 0 },
-            geometry.GeometryGroup { start = 1, count = 2, material_index = 1 },
-        ]
-    )
-    adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum,
-        "geometry groups may not overlap"
-    fixum geometry.BufferGeometry partial_triangle_group ← geometry.indexed_triangle_geometry(
-        3, [positions], [0, 1, 2],
-        geometry.DrawRange { start = 0, count = 3 },
-        [geometry.GeometryGroup { start = 0, count = 1, material_index = 0 }]
-    )
-    adfirma geometry.geometry_valid(partial_triangle_group) ≡ falsum,
-        "triangle groups must select complete primitives"
-    adfirma geometry.geometry_group_draw_commands(partial_triangle_group, 1) est nihil,
-        "invalid geometry rejects group draw command lists"
-    adfirma geometry.geometry_group_element_total(partial_triangle_group) est nihil,
-        "invalid geometry rejects grouped element totals"
-    adfirma geometry.geometry_topology_code(partial_triangle_group) est nihil,
-        "invalid geometry rejects topology codes"
-    adfirma geometry.geometry_index_format_code(partial_triangle_group) est nihil,
-        "invalid geometry rejects index format codes"
-    fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute(
-        "position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
-    )
-    fixum geometry.BufferAttribute normals ← geometry.float32_attribute(
-        "normal", 0, 3, 3,
-        [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]
-    )
-    fixum geometry.BufferGeometry positionless ← geometry.triangle_geometry(
-        3, [normals],
-        geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    adfirma geometry.geometry_valid(positionless) ≡ falsum,
-        "geometry requires an explicit position attribute"
-    adfirma geometry.geometry_vertex_layouts(positionless) est nihil,
-        "invalid geometry cannot expose a partial vertex layout"
-    fixum geometry.BufferGeometry duplicate_location ← geometry.triangle_geometry(
-        3, [positions, normals],
-        geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    adfirma geometry.geometry_valid(duplicate_location) ≡ falsum,
-        "geometry requires unique shader locations"
-    adfirma geometry.geometry_bounding_box(positionless) est nihil,
-        "bounding boxes require valid position geometry"
-    adfirma geometry.geometry_bounding_sphere(positionless) est nihil,
-        "bounding spheres require valid position geometry"
-    adfirma geometry.geometry_vertex_normals(positionless) est nihil,
-        "vertex normals require valid position geometry"
-    adfirma geometry.geometry_planar_uvs(positionless) est nihil,
-        "invalid geometry cannot produce UVs"
-    fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(
-        3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua
-    )
-    adfirma geometry.geometry_valid(wrong_position) ≡ falsum,
-        "position attributes require three float components"
+    fixum geometry.BufferAttribute malformed ← geometry.float32_attribute("position", 0, 3, 3, [0.0, 0.0])
+    adfirma geometry.attribute_valid(malformed) ≡ falsum, "malformed attribute length rejects"
+    fixum geometry.BufferGeometry out_of_range ← geometry.indexed_triangle_geometry(3, [positions], [0, 1, 3], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    adfirma geometry.geometry_valid(out_of_range) ≡ falsum, "out-of-range index rejects"
+    fixum geometry.BufferGeometry partial_triangle_draw_range ← geometry.indexed_triangle_geometry(3, [positions], [0, 1, 2], geometry.DrawRange { start = 0, count = 1 }, vacua)
+    adfirma geometry.geometry_valid(partial_triangle_draw_range) ≡ falsum, "triangle draw ranges must select complete primitives"
+    adfirma geometry.geometry_triangle_count(partial_triangle_draw_range) est nihil, "triangle count rejects invalid geometry"
+    fixum geometry.BufferGeometry overlapping_groups ← geometry.indexed_triangle_geometry(3, [positions], [0, 1, 2], geometry.DrawRange { start = 0, count = 3 }, [geometry.GeometryGroup { start = 0, count = 2, material_index = 0 }, geometry.GeometryGroup { start = 1, count = 2, material_index = 1 }])
+    adfirma geometry.geometry_valid(overlapping_groups) ≡ falsum, "geometry groups may not overlap"
+    fixum geometry.BufferGeometry partial_triangle_group ← geometry.indexed_triangle_geometry(3, [positions], [0, 1, 2], geometry.DrawRange { start = 0, count = 3 }, [geometry.GeometryGroup { start = 0, count = 1, material_index = 0 }])
+    adfirma geometry.geometry_valid(partial_triangle_group) ≡ falsum, "triangle groups must select complete primitives"
+    adfirma geometry.geometry_group_draw_commands(partial_triangle_group, 1) est nihil, "invalid geometry rejects group draw command lists"
+    adfirma geometry.geometry_group_element_total(partial_triangle_group) est nihil, "invalid geometry rejects grouped element totals"
+    adfirma geometry.geometry_topology_code(partial_triangle_group) est nihil, "invalid geometry rejects topology codes"
+    adfirma geometry.geometry_index_format_code(partial_triangle_group) est nihil, "invalid geometry rejects index format codes"
+    fixum geometry.BufferAttribute wrong_position_shape ← geometry.float32_attribute("position", 0, 2, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0])
+    fixum geometry.BufferAttribute normals ← geometry.float32_attribute("normal", 0, 3, 3, [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0])
+    fixum geometry.BufferGeometry positionless ← geometry.triangle_geometry(3, [normals], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    adfirma geometry.geometry_valid(positionless) ≡ falsum, "geometry requires an explicit position attribute"
+    adfirma geometry.geometry_vertex_layouts(positionless) est nihil, "invalid geometry cannot expose a partial vertex layout"
+    fixum geometry.BufferGeometry duplicate_location ← geometry.triangle_geometry(3, [positions, normals], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    adfirma geometry.geometry_valid(duplicate_location) ≡ falsum, "geometry requires unique shader locations"
+    adfirma geometry.geometry_bounding_box(positionless) est nihil, "bounding boxes require valid position geometry"
+    adfirma geometry.geometry_bounding_sphere(positionless) est nihil, "bounding spheres require valid position geometry"
+    adfirma geometry.geometry_vertex_normals(positionless) est nihil, "vertex normals require valid position geometry"
+    adfirma geometry.geometry_planar_uvs(positionless) est nihil, "invalid geometry cannot produce UVs"
+    fixum geometry.BufferGeometry wrong_position ← geometry.triangle_geometry(3, [wrong_position_shape], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    adfirma geometry.geometry_valid(wrong_position) ≡ falsum, "position attributes require three float components"
 }

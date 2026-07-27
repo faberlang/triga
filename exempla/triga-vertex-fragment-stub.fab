@@ -5,7 +5,6 @@ category = "library"
 canonical = true
 summary = "Minimal @vertex and @fragment function stubs for Goal 01 source graphics pipeline. Demonstrates the annotation contract that radix will lower to MirKernelShaderStage::Vertex and ::Fragment."
 +++
-
 # exempla/triga-vertex-fragment-stub.fab
 #
 # Minimal @vertex / @fragment stub fixture for Goal 01 (Source Graphics Pipeline).
@@ -36,52 +35,14 @@ summary = "Minimal @vertex and @fragment function stubs for Goal 01 source graph
 
 importa ex "triga:triga" privata triga
 
-
 @ vertex
 functio hello_voxel_vertex() → vacuum {
 }
-
 
 @ fragment
 functio hello_voxel_fragment() → vacuum {
 }
 
-
 incipit {
-    adfirma verum,
-        "@vertex and @fragment annotations parse and lower without error"
+    adfirma verum, "@vertex and @fragment annotations parse and lower without error"
 }
-
-
-#
-# These stubs validate that @vertex and @fragment annotations parse correctly
-# and lower to MirKernelShaderStage::Vertex and ::Fragment via the HIR
-# is_vertex / is_fragment flags. The empty bodies are intentional — Goal 01
-# fills in the vertex IO, builtin position emission, varying pass-through,
-# and fragment color output.
-#
-# After Goal 01:
-#   - Vertex function takes position (loc 0) and color (loc 1) inputs
-#   - Vertex returns builtin position + loc-0 varied color
-#   - Fragment takes loc-0 color input and returns loc-0 RGBA
-#
-# CURRENT STATE (2026-07-26):
-#   Body lowering (U5) landed for @vertex in triga-hello-voxel-shaders.fab.
-#   This stub remains as an annotation/MIR-lowering fixture only.
-#   radix check:  PASS (annotations parse, HIR flags set)
-#   radix mir:    PASS (three functions lowered: vertex, fragment, incipit)
-#   radix emit --target wgsl-text: FAIL (expected)
-#     This stub has no vertex layout facts in its incipit block,
-#     so the vertex source extraction pipeline cannot produce WGSL
-#     inputs. This is by design — the stub is for annotation and
-#     MIR lowering verification only.
-#
-# STUB-TO-RENDER GAP:
-#   The sibling exemplar triga-hello-voxel-shaders.fab demonstrates
-#   working vertex+fragment WGSL emission with layout facts attached.
-#
-# Validation:
-#   radix check exempla/triga-vertex-fragment-stub.fab
-#   radix mir exempla/triga-vertex-fragment-stub.fab
-#   radix emit -t wgsl-text exempla/triga-vertex-fragment-stub.fab
-#
