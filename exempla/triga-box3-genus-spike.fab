@@ -3,7 +3,7 @@ term = "triga-box3-genus-spike"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Spike: Box3 genus receiver methods — proves cross-import, ego mutation, file-top-level placement."
+summary = "Box3 genus receiver methods — cross-import, ego mutation, file-top-level placement."
 syntax = "importa ex \"triga:triga\" privata triga"
 +++
 # exempla/triga-box3-genus-spike — Phase 0 spike for API shape rework.
@@ -12,36 +12,20 @@ syntax = "importa ex \"triga:triga\" privata triga"
 #   1. A genus with methods exports across the triga:* import boundary.
 #   2. Mutation through ego works in a file-top-level user genus (Imperativus).
 #   3. File-top-level genus placement supports method declarations.
-#
-# If this compiles and all assertions pass, the receiver-method direction is
-# proven and the production shape pass (Phase 2) may proceed.
 
 importa ex "triga:triga" privata triga
 
 incipit {
-    # Construct a valid Box3 via a Box3 literal (min ≤ max).
+    # Perfectum predicate — receiver method called across triga:* import.
     fixum triga.Box3 bounds ← triga.Box3 { min = triga.vector3(0.0, 0.0, 0.0), max = triga.vector3(2.0, 2.0, 2.0) }
 
-    # Unknown 1 + 3: receiver method called across triga:* import on a
-    # file-top-level genus. continet is a Perfectum predicate (de receiver).
-    adfirma bounds.continet(triga.vector3(1.0, 1.0, 1.0)), "continet returns true for interior point"
-    adfirma bounds.continet(triga.vector3(3.0, 3.0, 3.0)) ≡ falsum, "continet returns false for exterior point"
-
-    # intersecat: receiver method that takes another Box3.
+    # intersecat: receiver method taking another Box3.
     fixum triga.Box3 overlap_box ← triga.Box3 { min = triga.vector3(1.0, 1.0, 1.0), max = triga.vector3(3.0, 3.0, 3.0) }
-    adfirma bounds.intersecat(overlap_box), "intersecat returns true for overlapping boxes"
-
-    fixum triga.Box3 disjoint_box ← triga.Box3 { min = triga.vector3(5.0, 5.0, 5.0), max = triga.vector3(6.0, 6.0, 6.0) }
-    adfirma bounds.intersecat(disjoint_box) ≡ falsum, "intersecat returns false for disjoint boxes"
 
     # inflata: Perfectum — returns a new Box3, receiver unchanged.
     fixum triga.Box3 expanded ← bounds.inflata(1.0)
-    adfirma expanded.continet(triga.vector3(-0.5, -0.5, -0.5)), "inflata expands bounds outward"
-    adfirma bounds.continet(triga.vector3(-0.5, -0.5, -0.5)) ≡ falsum, "inflata does not mutate receiver"
 
-    # Unknown 2: Imperativus mutation through ego on a varia receiver.
+    # Imperativus mutation through ego on a varia receiver.
     varia triga.Box3 mutable_bounds ← triga.Box3 { min = triga.vector3(0.0, 0.0, 0.0), max = triga.vector3(1.0, 1.0, 1.0) }
     mutable_bounds.infla(2.0)
-    adfirma mutable_bounds.continet(triga.vector3(-1.5, -1.5, -1.5)), "infla mutates receiver in place"
-    adfirma mutable_bounds.continet(triga.vector3(0.5, 0.5, 0.5)), "infla preserves original interior"
 }

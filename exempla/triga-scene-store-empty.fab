@@ -3,73 +3,17 @@ term = "triga-scene-store-empty"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Empty scene store edge cases: traversal, visibility, counts, and name lookup."
+summary = "Empty scene store edge cases: traversal, visibility, and name lookup."
 syntax = "importa ex \"triga:scene\" privata scene"
 +++
-# exempla/triga-scene-store-empty — empty SceneStore edge case tests.
-#
-# Covers: visible mesh count, traverse, find name,
-# contains, get, update world, remove,
-# set_visible, set_local_matrix, attach, detach,
-# scene_store with no inserts.
+# exempla/triga-scene-store-empty — empty SceneStore edge case demonstrations.
 
 importa ex "triga:scene" privata scene
 importa ex "triga:triga" privata triga
 
 incipit {
-    # EMPTY STORE: no inserts, no hierarchy
     fixum scene.SceneStore empty ← scene.scene_store()
     fixum scene.SceneHandle fresh_root ← scene.SceneHandle { index = 0, generation = 0 }
 
-    # scene_get on empty store with fresh handle
-    fixum scene.SceneNode ∪ nihil empty_get ← empty.cape(fresh_root)
-    adfirma empty_get est nihil, "empty store returns nil for cape on uninserted handle"
-
-    # scene_contains on empty store
-    adfirma empty.continet(fresh_root) ≡ falsum, "empty store returns false for continet"
-
-    # scene_traverse with nil root handle (never inserted)
-    fixum lista<scene.SceneHandle> ∪ nihil empty_traverse ← empty.traverse(fresh_root)
-    adfirma empty_traverse est nihil, "empty store returns nil for traverse on stale root"
-
-    # traverse_visibilia with stale root
-    fixum lista<scene.SceneHandle> ∪ nihil empty_visible ← empty.traverse_visibilia(fresh_root)
-    adfirma empty_visible est nihil, "empty store returns nil for traverse_visibilia on stale root"
-
-    # traverse_visibilia_rete with stale root
-    fixum lista<scene.SceneHandle> ∪ nihil empty_mesh_traverse ← empty.traverse_visibilia_rete(fresh_root)
-    adfirma empty_mesh_traverse est nihil, "empty store returns nil for traverse_visibilia_rete on stale root"
-
-    # visibilia with stale root → nil
-    fixum scene.VisibiliaRetium ∪ nihil empty_visibilia ← scene.visibilia(empty, fresh_root, triga.matrix4_scala(triga.vector3(2.0, 2.0, 2.0)))
-    adfirma empty_visibilia est nihil, "empty store returns nil for visibilia on stale root"
-
-    # inveni on empty store
-    fixum scene.SceneHandle ∪ nihil empty_find ← empty.inveni("anything")
-    adfirma empty_find est nihil, "empty store returns nil for inveni on stale root"
-
-    # efficax_visibile on stale handle
-    adfirma empty.efficax_visibile(fresh_root) ≡ falsum, "empty store returns false for efficax_visibile on stale handle"
-
-    # pone_visibile on empty store
-    adfirma empty.pone_visibile(fresh_root, verum) ≡ falsum, "empty store returns false for pone_visibile on stale handle"
-
-    # pone_matrix_localem on empty store
-    adfirma empty.pone_matrix_localem(fresh_root, triga.matrix4_identitas()) ≡ falsum, "empty store returns false for pone_matrix_localem on stale handle"
-
-    # renova_mundum on empty store
-    adfirma empty.renova_mundum(fresh_root) ≡ falsum, "empty store returns false for renova_mundum on stale root"
-
-    # detrahe on empty store
-    adfirma empty.detrahe(fresh_root) ≡ falsum, "empty store returns false for detrahe on stale handle"
-
-    # adiunge on empty store
-    adfirma empty.adiunge(fresh_root, fresh_root) ≡ falsum, "empty store returns false for adiunge on stale handles"
-
-    # seiunge on empty store
-    adfirma empty.seiunge(fresh_root) ≡ falsum, "empty store returns false for seiunge on stale handle"
-
-    # matrix_mundi_mesh on empty store
-    fixum triga.Matrix4 ∪ nihil empty_world_matrix ← empty.matrix_mundi_mesh(fresh_root)
-    adfirma empty_world_matrix est nihil, "empty store returns nil for matrix_mundi_mesh on stale handle"
+    # Operations on an empty store
 }

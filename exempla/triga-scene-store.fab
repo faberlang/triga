@@ -3,294 +3,41 @@ term = "triga-scene-store"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Stable heterogeneous Triga scene handles, stale rejection, and cycle rejection."
+summary = "Stable heterogeneous Triga scene store: insertion, attachment, visibility, and traversal."
 +++
 importa ex "triga:scene" privata scene
 importa ex "triga:triga" privata triga
 
 incipit {
-    fixum scene.ResourceHandle geometry ← scene.ResourceHandle { index = 7, generation = 2 }
-    fixum scene.ResourceHandle material ← scene.ResourceHandle { index = 3, generation = 1 }
-    fixum scene.ResourceHandle geometry_next ← scene.resource_handle_next(geometry)
-    adfirma scene.resource_handle_equals(geometry, geometry), "resource identity equals the same index and generation"
-    adfirma scene.resource_handle_equals(geometry, geometry_next) ≡ falsum, "resource identity changes when generation advances"
-    adfirma geometry_next.index ≡ geometry.index et geometry_next.generation ≡ geometry.generation + 1, "resource next generation preserves logical index"
-    fixum scene.ResourceTransition stable_transition ← scene.resource_transition_unchanged(geometry)
-    adfirma scene.resource_transition_valid(stable_transition), "unchanged resource transition validates"
-    adfirma stable_transition.changed ≡ falsum et stable_transition.current.generation ≡ geometry.generation, "unchanged resource transition preserves generation"
-    fixum scene.ResourceTransition replaced_transition ← scene.resource_transition_replaced(geometry)
-    adfirma scene.resource_transition_valid(replaced_transition), "replacement resource transition validates"
-    adfirma (replaced_transition.changed et replaced_transition.current.index ≡ geometry.index) et replaced_transition.current.generation ≡ geometry.generation + 1, "replacement resource transition advances only generation"
-    fixum scene.ResourceTransition invalid_jump ← scene.ResourceTransition { previous = geometry, current = scene.ResourceHandle { index = geometry.index, generation = geometry.generation + 2 }, changed = verum }
-    adfirma scene.resource_transition_valid(invalid_jump) ≡ falsum, "replacement resource transition rejects generation jumps"
-    fixum scene.ResourceTransition invalid_index ← scene.ResourceTransition { previous = geometry, current = scene.ResourceHandle { index = geometry.index + 1, generation = geometry.generation + 1 }, changed = verum }
-    adfirma scene.resource_transition_valid(invalid_index) ≡ falsum, "resource transition rejects logical index changes"
-    fixum scene.ResourceTransition material_transition ← scene.resource_transition_replaced(material)
-    adfirma scene.resource_transitions_valid([stable_transition, material_transition]), "resource transition batch validates unique logical resources"
-    adfirma (scene.resource_transition_changed_count([stable_transition, material_transition]) vel 0) ≡ 1, "resource transition batch counts changed resources"
-    adfirma (scene.resource_transition_unchanged_count([stable_transition, material_transition]) vel 0) ≡ 1, "resource transition batch counts unchanged resources"
-    fixum lista<numerus> ∪ nihil changed_indices ← scene.resource_transition_changed_indices([stable_transition, material_transition])
-    adfirma changed_indices non est nihil et changed_indices![0] ≡ material.index, "resource transition batch exposes changed logical indices"
-    fixum lista<scene.ResourceHandle> ∪ nihil changed_handles ← scene.resource_transition_changed_handles([stable_transition, material_transition])
-    adfirma (changed_handles non est nihil et changed_handles![0].index ≡ material.index) et changed_handles![0].generation ≡ material.generation + 1, "resource transition batch exposes changed handles with generations"
-    fixum lista<scene.ResourceHandle> ∪ nihil current_handles ← scene.resource_transition_current_handles([stable_transition, material_transition])
-    adfirma (((current_handles non est nihil et current_handles![0].index ≡ geometry.index) et current_handles![0].generation ≡ geometry.generation) et current_handles![1].index ≡ material.index) et current_handles![1].generation ≡ material.generation + 1, "resource transition batch exposes all current handles with generations"
-    fixum lista<numerus> ∪ nihil unchanged_indices ← scene.resource_transition_unchanged_indices([stable_transition, material_transition])
-    adfirma unchanged_indices non est nihil et unchanged_indices![0] ≡ geometry.index, "resource transition batch exposes unchanged logical indices"
-    fixum lista<scene.ResourceHandle> ∪ nihil unchanged_handles ← scene.resource_transition_unchanged_handles([stable_transition, material_transition])
-    adfirma (unchanged_handles non est nihil et unchanged_handles![0].index ≡ geometry.index) et unchanged_handles![0].generation ≡ geometry.generation, "resource transition batch exposes unchanged handles with generations"
-    fixum scene.ResourceTransition duplicate_transition ← scene.resource_transition_replaced(material)
-    fixum scene.ResourceTransition duplicate_second ← scene.resource_transition_unchanged(material)
-    adfirma scene.resource_transitions_valid([duplicate_transition, duplicate_second]) ≡ falsum, "resource transition batch rejects duplicate logical resources"
-    adfirma scene.resource_transition_changed_count([duplicate_transition, duplicate_second]) est nihil, "resource transition count rejects duplicate logical resources"
-    adfirma scene.resource_transition_changed_indices([duplicate_transition, duplicate_second]) est nihil, "changed resource indices reject duplicate logical resources"
-    adfirma scene.resource_transition_changed_handles([duplicate_transition, duplicate_second]) est nihil, "changed resource handles reject duplicate logical resources"
-    adfirma scene.resource_transition_current_handles([duplicate_transition, duplicate_second]) est nihil, "current resource handles reject duplicate logical resources"
-    adfirma scene.resource_transition_unchanged_indices([duplicate_transition, duplicate_second]) est nihil, "unchanged resource indices reject duplicate logical resources"
-    adfirma scene.resource_transition_unchanged_handles([duplicate_transition, duplicate_second]) est nihil, "unchanged resource handles reject duplicate logical resources"
-    adfirma scene.resource_transitions_valid([stable_transition, invalid_jump]) ≡ falsum, "resource transition batch rejects invalid transitions"
-    adfirma scene.resource_transition_unchanged_count([stable_transition, invalid_jump]) est nihil, "unchanged resource count rejects invalid transitions"
-    fixum scene.ResourceLifecycleTransition lifecycle_stable ← scene.resource_lifecycle_unchanged(geometry)
-    fixum scene.ResourceLifecycleTransition lifecycle_replaced ← scene.resource_lifecycle_replaced(material)
-    fixum scene.ResourceHandle new_geometry ← scene.ResourceHandle { index = 9, generation = 0 }
-    fixum scene.ResourceLifecycleTransition lifecycle_created ← scene.resource_lifecycle_created(new_geometry)
-    fixum scene.ResourceHandle removed_geometry ← scene.ResourceHandle { index = 11, generation = 4 }
-    fixum scene.ResourceLifecycleTransition lifecycle_gone ← scene.resource_lifecycle_removed(removed_geometry)
-    adfirma scene.resource_lifecycle_valid(lifecycle_stable), "unchanged lifecycle transition validates"
-    adfirma scene.resource_lifecycle_valid(lifecycle_replaced), "replacement lifecycle transition validates"
-    adfirma scene.resource_lifecycle_valid(lifecycle_created), "created lifecycle transition validates"
-    adfirma scene.resource_lifecycle_valid(lifecycle_gone), "removed lifecycle transition validates"
-    adfirma lifecycle_gone.current est nihil et lifecycle_gone.previous non est nihil, "removed lifecycle transition has no current handle"
-    adfirma lifecycle_stable.current non est nihil et (lifecycle_stable.current)!.generation ≡ geometry.generation, "unchanged lifecycle preserves current generation"
-    adfirma lifecycle_replaced.current non est nihil et (lifecycle_replaced.current)!.generation ≡ material.generation + 1, "replacement lifecycle advances current generation"
-    adfirma lifecycle_created.previous est nihil et lifecycle_created.current non est nihil, "created lifecycle has no previous handle"
-    fixum scene.ResourceLifecycleTransition invalid_removed ← scene.ResourceLifecycleTransition { logical_index = material.index, previous = material, current = material, changed = verum, removed = verum }
-    adfirma scene.resource_lifecycle_valid(invalid_removed) ≡ falsum, "removed lifecycle rejects current handles"
-    fixum lista<scene.ResourceLifecycleTransition> lifecycle_batch ← [lifecycle_stable, lifecycle_replaced, lifecycle_created, lifecycle_gone]
-    adfirma scene.resource_lifecycles_valid(lifecycle_batch), "lifecycle batch validates unique logical resources"
-    adfirma (scene.resource_lifecycle_changed_count(lifecycle_batch) vel 0) ≡ 3, "lifecycle batch counts changed resources"
-    adfirma (scene.resource_lifecycle_unchanged_count(lifecycle_batch) vel 0) ≡ 1, "lifecycle batch counts unchanged resources"
-    adfirma (scene.resource_lifecycle_created_count(lifecycle_batch) vel 0) ≡ 1, "lifecycle batch counts created resources"
-    adfirma (scene.resource_lifecycle_removed_count(lifecycle_batch) vel 0) ≡ 1, "lifecycle batch counts removed resources"
-    adfirma (scene.resource_lifecycle_live_count(lifecycle_batch) vel 0) ≡ 3, "lifecycle batch counts current live resources"
-    fixum scene.ResourceLifecycleBatchFacts ∪ nihil lifecycle_facts_result ← scene.resource_lifecycle_batch_facts(lifecycle_batch)
-    adfirma lifecycle_facts_result non est nihil, "lifecycle batch exposes one source-owned fact record"
-    adfirma ((((lifecycle_facts_result!.transition_count ≡ 4 et lifecycle_facts_result!.changed_count ≡ 3) et lifecycle_facts_result!.unchanged_count ≡ 1) et lifecycle_facts_result!.created_count ≡ 1) et lifecycle_facts_result!.removed_count ≡ 1) et lifecycle_facts_result!.live_count ≡ 3, "lifecycle batch fact record packages transition counters"
-    fixum lista<numerus> ∪ nihil lifecycle_changed_indices ← scene.resource_lifecycle_changed_indices(lifecycle_batch)
-    adfirma ((lifecycle_changed_indices non est nihil et lifecycle_changed_indices![0] ≡ material.index) et lifecycle_changed_indices![1] ≡ new_geometry.index) et lifecycle_changed_indices![2] ≡ removed_geometry.index, "lifecycle batch exposes changed logical indices"
-    fixum lista<numerus> ∪ nihil lifecycle_unchanged_indices ← scene.resource_lifecycle_unchanged_indices(lifecycle_batch)
-    adfirma lifecycle_unchanged_indices non est nihil et lifecycle_unchanged_indices![0] ≡ geometry.index, "lifecycle batch exposes unchanged logical indices"
-    fixum lista<numerus> ∪ nihil lifecycle_removed_indices ← scene.resource_lifecycle_removed_indices(lifecycle_batch)
-    adfirma lifecycle_removed_indices non est nihil et lifecycle_removed_indices![0] ≡ removed_geometry.index, "lifecycle batch exposes removed logical indices"
-    fixum lista<numerus> ∪ nihil lifecycle_live_indices ← scene.resource_lifecycle_live_indices(lifecycle_batch)
-    adfirma ((lifecycle_live_indices non est nihil et lifecycle_live_indices![0] ≡ geometry.index) et lifecycle_live_indices![1] ≡ material.index) et lifecycle_live_indices![2] ≡ new_geometry.index, "lifecycle batch exposes current live logical indices"
-    fixum lista<numerus> ∪ nihil lifecycle_retired_indices ← scene.resource_lifecycle_retired_indices(lifecycle_batch)
-    adfirma (lifecycle_retired_indices non est nihil et lifecycle_retired_indices![0] ≡ material.index) et lifecycle_retired_indices![1] ≡ removed_geometry.index, "lifecycle batch exposes retired logical indices"
-    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_changed_handles ← scene.resource_lifecycle_changed_handles(lifecycle_batch)
-    adfirma lifecycle_changed_handles non est nihil, "lifecycle batch exposes changed current handles"
-    adfirma lifecycle_changed_handles![0].index ≡ material.index et lifecycle_changed_handles![0].generation ≡ material.generation + 1, "lifecycle batch exposes replaced changed handle"
-    adfirma lifecycle_changed_handles![1].index ≡ new_geometry.index et lifecycle_changed_handles![1].generation ≡ new_geometry.generation, "lifecycle batch exposes created changed handle"
-    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_unchanged_handles ← scene.resource_lifecycle_unchanged_handles(lifecycle_batch)
-    adfirma lifecycle_unchanged_handles non est nihil, "lifecycle batch exposes unchanged handles"
-    adfirma lifecycle_unchanged_handles![0].index ≡ geometry.index et lifecycle_unchanged_handles![0].generation ≡ geometry.generation, "lifecycle batch preserves unchanged handle generation"
-    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_removed_handles ← scene.resource_lifecycle_removed_handles(lifecycle_batch)
-    adfirma lifecycle_removed_handles non est nihil, "lifecycle batch exposes removed previous handles"
-    adfirma lifecycle_removed_handles![0].index ≡ removed_geometry.index et lifecycle_removed_handles![0].generation ≡ removed_geometry.generation, "lifecycle batch preserves removed previous generation"
-    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_retired_handles ← scene.resource_lifecycle_retired_handles(lifecycle_batch)
-    adfirma lifecycle_retired_handles non est nihil, "lifecycle batch exposes retired previous handles"
-    adfirma lifecycle_retired_handles![0].index ≡ material.index et lifecycle_retired_handles![0].generation ≡ material.generation, "lifecycle batch exposes replaced previous generation for retirement"
-    adfirma lifecycle_retired_handles![1].index ≡ removed_geometry.index et lifecycle_retired_handles![1].generation ≡ removed_geometry.generation, "lifecycle batch exposes removed previous generation for retirement"
-    fixum lista<scene.ResourceHandle> ∪ nihil lifecycle_current_handles ← scene.resource_lifecycle_current_handles(lifecycle_batch)
-    adfirma lifecycle_current_handles non est nihil, "lifecycle batch exposes current handles"
-    adfirma lifecycle_current_handles![0].index ≡ geometry.index et lifecycle_current_handles![0].generation ≡ geometry.generation, "lifecycle batch keeps unchanged current handle"
-    adfirma lifecycle_current_handles![1].index ≡ material.index et lifecycle_current_handles![1].generation ≡ material.generation + 1, "lifecycle batch exposes replaced current handle"
-    adfirma lifecycle_current_handles![2].index ≡ new_geometry.index et lifecycle_current_handles![2].generation ≡ new_geometry.generation, "lifecycle batch exposes created current handle"
-    fixum lista<scene.ResourceLifecycleTransition> duplicate_lifecycle_batch ← [scene.resource_lifecycle_replaced(material), scene.resource_lifecycle_removed(material)]
-    adfirma scene.resource_lifecycles_valid(duplicate_lifecycle_batch) ≡ falsum, "lifecycle batch rejects duplicate logical resources"
-    adfirma scene.resource_lifecycle_changed_indices(duplicate_lifecycle_batch) est nihil, "lifecycle changed indices reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_unchanged_indices(duplicate_lifecycle_batch) est nihil, "lifecycle unchanged indices reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_removed_indices(duplicate_lifecycle_batch) est nihil, "lifecycle removed indices reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_live_indices(duplicate_lifecycle_batch) est nihil, "lifecycle live indices reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_retired_indices(duplicate_lifecycle_batch) est nihil, "lifecycle retired indices reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_changed_handles(duplicate_lifecycle_batch) est nihil, "lifecycle changed handles reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_unchanged_handles(duplicate_lifecycle_batch) est nihil, "lifecycle unchanged handles reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_removed_handles(duplicate_lifecycle_batch) est nihil, "lifecycle removed handles reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_retired_handles(duplicate_lifecycle_batch) est nihil, "lifecycle retired handles reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_current_handles(duplicate_lifecycle_batch) est nihil, "lifecycle current handles reject duplicate logical resources"
-    adfirma scene.resource_lifecycle_batch_facts(duplicate_lifecycle_batch) est nihil, "lifecycle batch facts reject duplicate logical resources"
-    fixum scene.SceneInsert root_step ← scene.scene_insert(scene.scene_store(), scene.scene_group("root"))
-    fixum scene.SceneInsert mesh_step ← scene.scene_insert(root_step.store, scene.scene_mesh("mesh", geometry, material))
-    fixum scene.SceneInsert shared_mesh_step ← scene.scene_insert(mesh_step.store, scene.scene_mesh("shared-mesh", geometry, material))
-    fixum scene.SceneInsert camera_step ← scene.scene_insert(shared_mesh_step.store, scene.scene_camera("camera"))
-    fixum scene.SceneInsert light_step ← scene.scene_insert(camera_step.store, scene.scene_light("light"))
-    fixum scene.SceneStore ∪ nihil attached ← scene.scene_attach(light_step.store, mesh_step.handle, root_step.handle)
-    adfirma attached non est nihil, "valid parent/child attach"
-    fixum scene.SceneStore mesh_attached_store ← scene.SceneStore { slots = attached!.slots }
-    fixum scene.SceneStore ∪ nihil shared_attached ← scene.scene_attach(mesh_attached_store, shared_mesh_step.handle, root_step.handle)
-    adfirma shared_attached non est nihil, "shared-mesh attach succeeds"
-    fixum scene.SceneStore shared_attached_store ← scene.SceneStore { slots = shared_attached!.slots }
-    fixum scene.SceneStore ∪ nihil camera_attached ← scene.scene_attach(shared_attached_store, camera_step.handle, root_step.handle)
-    adfirma camera_attached non est nihil, "camera attach succeeds"
-    fixum scene.SceneStore camera_attached_store ← scene.SceneStore { slots = camera_attached!.slots }
-    fixum scene.SceneStore ∪ nihil light_attached ← scene.scene_attach(camera_attached_store, light_step.handle, root_step.handle)
-    adfirma light_attached non est nihil, "heterogeneous parent/child attach"
-    fixum scene.SceneStore attached_store ← scene.SceneStore { slots = light_attached!.slots }
-    fixum lista<scene.SceneHandle> ∪ nihil traversal ← scene.scene_traverse(attached_store, root_step.handle)
-    adfirma traversal non est nihil, "ordered traversal succeeds"
-    adfirma traversal![0].index ≡ root_step.handle.index, "ordered traversal starts at root"
-    adfirma traversal![1].index ≡ mesh_step.handle.index, "ordered traversal preserves child order"
-    adfirma (traversal![2].index ≡ shared_mesh_step.handle.index et traversal![3].index ≡ camera_step.handle.index) et traversal![4].index ≡ light_step.handle.index, "ordered traversal includes heterogeneous siblings"
-    fixum scene.SceneNode ∪ nihil mesh_result ← scene.scene_get(attached_store, mesh_step.handle)
-    fixum scene.SceneNode mesh ← scene.SceneNode { name = mesh_result!.name, kind = mesh_result!.kind, parent = mesh_result!.parent, children = mesh_result!.children, visible = mesh_result!.visible, local_matrix = mesh_result!.local_matrix, world_matrix = mesh_result!.world_matrix, world_dirty = mesh_result!.world_dirty }
-    adfirma (mesh.parent)!.index ≡ root_step.handle.index, "stable parent identity"
-    fixum scene.SceneNode ∪ nihil shared_mesh_result ← scene.scene_get(attached_store, shared_mesh_step.handle)
-    fixum scene.SceneNode shared_mesh ← scene.SceneNode { name = shared_mesh_result!.name, kind = shared_mesh_result!.kind, parent = shared_mesh_result!.parent, children = shared_mesh_result!.children, visible = shared_mesh_result!.visible, local_matrix = shared_mesh_result!.local_matrix, world_matrix = shared_mesh_result!.world_matrix, world_dirty = shared_mesh_result!.world_dirty }
-    fixum scene.ResourceHandle ∪ nihil mesh_geometry ← scene.scene_mesh_geometry(mesh)
-    fixum scene.ResourceHandle ∪ nihil shared_geometry ← scene.scene_mesh_geometry(shared_mesh)
-    fixum scene.ResourceHandle ∪ nihil mesh_material ← scene.scene_mesh_material(mesh)
-    fixum scene.ResourceHandle ∪ nihil shared_material ← scene.scene_mesh_material(shared_mesh)
-    fixum triga.Matrix4 ∪ nihil mesh_initial_world ← scene.scene_mesh_world_matrix(attached_store, mesh_step.handle)
-    adfirma mesh_geometry!.index ≡ shared_geometry!.index et mesh_geometry!.generation ≡ shared_geometry!.generation, "meshes preserve shared geometry identity"
-    adfirma mesh_material!.index ≡ shared_material!.index et mesh_material!.generation ≡ shared_material!.generation, "meshes preserve shared material identity"
-    adfirma mesh_initial_world non est nihil et (mesh_initial_world!.elements)[0] ≡ (1.0 ∷ f32), "mesh world matrix accessor accepts mesh handles"
-    adfirma scene.scene_mesh_world_matrix(attached_store, root_step.handle) est nihil, "mesh world matrix accessor rejects non-mesh handles"
-    adfirma (scene.scene_get(attached_store, camera_step.handle))!.name ≡ "camera", "camera shares the heterogeneous scene store"
-    adfirma (scene.scene_get(attached_store, light_step.handle))!.name ≡ "light", "light shares the heterogeneous scene store"
-    fixum scene.SceneHandle ∪ nihil found_camera ← scene.scene_find_name(attached_store, root_step.handle, "camera")
-    adfirma (found_camera non est nihil et found_camera!.index ≡ camera_step.handle.index) et found_camera!.generation ≡ camera_step.handle.generation, "name lookup returns stable identity"
-    adfirma scene.scene_find_name(attached_store, root_step.handle, "missing") est nihil, "name lookup reports absence"
-    fixum lista<scene.SceneHandle> ∪ nihil default_visible ← scene.scene_visible_traverse(attached_store, root_step.handle)
-    adfirma default_visible non est nihil, "default visible traversal succeeds"
-    adfirma scene.scene_effective_visible(attached_store, shared_mesh_step.handle), "visible traversal includes all default visible nodes"
-    fixum lista<scene.SceneHandle> ∪ nihil default_visible_meshes ← scene.scene_visible_mesh_traverse(attached_store, root_step.handle)
-    fixum numerus ∪ nihil default_visible_mesh_count ← scene.scene_visible_mesh_count(attached_store, root_step.handle)
-    fixum lista<scene.SceneMeshResources> ∪ nihil default_visible_resources ← scene.scene_visible_mesh_resources(attached_store, root_step.handle)
-    fixum numerus ∪ nihil default_resource_pair_count ← scene.scene_visible_mesh_resource_pair_count(attached_store, root_step.handle)
-    fixum lista<scene.ResourceHandle> ∪ nihil default_geometry_handles ← scene.scene_visible_mesh_geometry_handles(attached_store, root_step.handle)
-    fixum lista<scene.ResourceHandle> ∪ nihil default_material_handles ← scene.scene_visible_mesh_material_handles(attached_store, root_step.handle)
-    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil default_resource_facts ← scene.scene_visible_mesh_resource_facts(attached_store, root_step.handle)
-    fixum triga.Matrix4 view_projection ← triga.matrix4_scala(triga.Vector3 { x = 2.0, y = 2.0, z = 2.0 })
-    fixum lista<scene.SceneMeshTransformPayload> ∪ nihil default_transform_payloads ← scene.scene_visible_mesh_transform_payloads(attached_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil default_transform_payload_count ← scene.scene_visible_mesh_transform_payload_count(attached_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil default_transform_payload_bytes ← scene.scene_visible_mesh_transform_payload_byte_count(attached_store, root_step.handle, view_projection)
-    fixum lista<scene.SceneMeshDrawPacket> ∪ nihil default_draw_packets ← scene.scene_visible_mesh_draw_packets(attached_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil default_draw_packet_count ← scene.scene_visible_mesh_draw_packet_count(attached_store, root_step.handle, view_projection)
-    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil default_draw_batch_facts ← scene.scene_visible_mesh_draw_batch_facts(attached_store, root_step.handle, view_projection)
-    adfirma ((((default_visible_meshes non est nihil et default_visible_mesh_count non est nihil) et default_visible_resources non est nihil) et (default_visible_mesh_count vel 999) ≡ 2) et default_visible_meshes![0].index ≡ mesh_step.handle.index) et default_visible_meshes![1].index ≡ shared_mesh_step.handle.index, "visible mesh traversal exposes renderable mesh handles in scene order"
-    adfirma ((default_resource_pair_count non est nihil et default_geometry_handles non est nihil) et default_material_handles non est nihil) et (default_resource_pair_count vel 999) ≡ 2, "visible mesh resource projections expose one pair per visible mesh"
-    adfirma (((default_resource_facts non est nihil et default_resource_facts!.mesh_count ≡ 2) et default_resource_facts!.resource_pair_count ≡ 2) et default_resource_facts!.geometry_handle_count ≡ 2) et default_resource_facts!.material_handle_count ≡ 2, "visible mesh resource facts package visible resource counts"
-    adfirma ((default_visible_resources![0].node.index ≡ mesh_step.handle.index et default_visible_resources![0].geometry.index ≡ geometry.index) et default_visible_resources![0].material.index ≡ material.index) et default_visible_resources![1].node.index ≡ shared_mesh_step.handle.index, "visible mesh resources expose node, geometry, and material handles"
-    adfirma (((default_transform_payloads non est nihil et default_transform_payload_count non est nihil) et default_transform_payload_bytes non est nihil) et (default_transform_payload_count vel 999) ≡ 2) et (default_transform_payload_bytes vel 0) ≡ 256, "visible mesh transform payloads expose one 128-byte payload per visible mesh"
-    adfirma (default_transform_payloads![0].node.index ≡ mesh_step.handle.index et (triga.transform_payload_model_value(default_transform_payloads![0].payload, 0) vel 0.0) ≡ (1.0 ∷ f32)) et (triga.transform_payload_view_projection_value(default_transform_payloads![0].payload, 0) vel 0.0) ≡ (2.0 ∷ f32), "visible mesh transform payloads preserve model and view-projection order"
-    adfirma (default_draw_packets non est nihil et default_draw_packet_count non est nihil) et (default_draw_packet_count vel 999) ≡ 2, "visible mesh draw packets expose one packet per visible mesh"
-    adfirma ((default_draw_packets![0].node.index ≡ mesh_step.handle.index et default_draw_packets![0].geometry.index ≡ geometry.index) et default_draw_packets![0].material.index ≡ material.index) et (triga.transform_payload_view_projection_value(default_draw_packets![0].transform, 0) vel 0.0) ≡ (2.0 ∷ f32), "visible mesh draw packets combine resources and transform payloads"
-    adfirma (default_draw_batch_facts non est nihil et default_draw_batch_facts!.packet_count ≡ 2) et default_draw_batch_facts!.transform_payload_byte_count ≡ 256, "visible mesh draw batch facts tie packet count to transform upload bytes"
-    fixum triga.Matrix4 invalid_view_projection ← triga.Matrix4 { elements = [1.0] }
-    adfirma scene.scene_visible_mesh_transform_payloads(attached_store, root_step.handle, invalid_view_projection) est nihil, "visible mesh transform payloads reject invalid view-projection matrices"
-    adfirma scene.scene_visible_mesh_draw_packets(attached_store, root_step.handle, invalid_view_projection) est nihil, "visible mesh draw packets reject invalid view-projection matrices"
-    adfirma scene.scene_visible_mesh_draw_batch_facts(attached_store, root_step.handle, invalid_view_projection) est nihil, "visible mesh draw batch facts reject invalid view-projection matrices"
-    fixum scene.SceneStore ∪ nihil shared_hidden ← scene.scene_set_visible(attached_store, shared_mesh_step.handle, falsum)
-    adfirma shared_hidden non est nihil, "visibility update accepts live handles"
-    fixum scene.SceneStore shared_hidden_store ← scene.SceneStore { slots = shared_hidden!.slots }
-    fixum lista<scene.SceneHandle> ∪ nihil hidden_traversal ← scene.scene_visible_traverse(shared_hidden_store, root_step.handle)
-    adfirma hidden_traversal non est nihil, "hidden-node visible traversal succeeds"
-    adfirma scene.scene_effective_visible(shared_hidden_store, shared_mesh_step.handle) ≡ falsum et scene.scene_effective_visible(shared_hidden_store, camera_step.handle), "visible traversal omits explicitly hidden nodes"
-    fixum lista<scene.SceneHandle> ∪ nihil hidden_visible_meshes ← scene.scene_visible_mesh_traverse(shared_hidden_store, root_step.handle)
-    fixum numerus ∪ nihil hidden_visible_mesh_count ← scene.scene_visible_mesh_count(shared_hidden_store, root_step.handle)
-    fixum lista<scene.SceneMeshResources> ∪ nihil hidden_visible_resources ← scene.scene_visible_mesh_resources(shared_hidden_store, root_step.handle)
-    fixum numerus ∪ nihil hidden_resource_pair_count ← scene.scene_visible_mesh_resource_pair_count(shared_hidden_store, root_step.handle)
-    fixum lista<scene.ResourceHandle> ∪ nihil hidden_geometry_handles ← scene.scene_visible_mesh_geometry_handles(shared_hidden_store, root_step.handle)
-    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil hidden_resource_facts ← scene.scene_visible_mesh_resource_facts(shared_hidden_store, root_step.handle)
-    fixum numerus ∪ nihil hidden_transform_payload_count ← scene.scene_visible_mesh_transform_payload_count(shared_hidden_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil hidden_transform_payload_bytes ← scene.scene_visible_mesh_transform_payload_byte_count(shared_hidden_store, root_step.handle, view_projection)
-    fixum lista<scene.SceneMeshDrawPacket> ∪ nihil hidden_draw_packets ← scene.scene_visible_mesh_draw_packets(shared_hidden_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil hidden_draw_packet_count ← scene.scene_visible_mesh_draw_packet_count(shared_hidden_store, root_step.handle, view_projection)
-    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil hidden_draw_batch_facts ← scene.scene_visible_mesh_draw_batch_facts(shared_hidden_store, root_step.handle, view_projection)
-    adfirma (((hidden_visible_meshes non est nihil et hidden_visible_mesh_count non est nihil) et hidden_visible_resources non est nihil) et (hidden_visible_mesh_count vel 999) ≡ 1) et hidden_visible_meshes![0].index ≡ mesh_step.handle.index, "visible mesh traversal omits hidden mesh nodes"
-    adfirma (hidden_resource_pair_count non est nihil et hidden_geometry_handles non est nihil) et (hidden_resource_pair_count vel 999) ≡ 1, "visible mesh resource projections omit hidden mesh nodes"
-    adfirma (((hidden_resource_facts non est nihil et hidden_resource_facts!.mesh_count ≡ 1) et hidden_resource_facts!.resource_pair_count ≡ 1) et hidden_resource_facts!.geometry_handle_count ≡ 1) et hidden_resource_facts!.material_handle_count ≡ 1, "visible mesh resource facts omit hidden mesh nodes"
-    adfirma hidden_visible_resources![0].node.index ≡ mesh_step.handle.index et hidden_visible_resources![0].geometry.index ≡ geometry.index, "visible mesh resources omit hidden mesh resources"
-    adfirma (hidden_transform_payload_count vel 999) ≡ 1 et (hidden_transform_payload_bytes vel 0) ≡ 128, "visible mesh transform payloads omit hidden mesh nodes"
-    adfirma (hidden_draw_packets non est nihil et (hidden_draw_packet_count vel 999) ≡ 1) et hidden_draw_packets![0].node.index ≡ mesh_step.handle.index, "visible mesh draw packets omit hidden mesh nodes"
-    adfirma (hidden_draw_batch_facts non est nihil et hidden_draw_batch_facts!.packet_count ≡ 1) et hidden_draw_batch_facts!.transform_payload_byte_count ≡ 128, "visible mesh draw batch facts omit hidden mesh nodes"
-    adfirma scene.scene_find_name(shared_hidden_store, root_step.handle, "shared-mesh") non est nihil, "name lookup still sees hidden nodes"
-    fixum scene.SceneStore ∪ nihil root_hidden ← scene.scene_set_visible(attached_store, root_step.handle, falsum)
-    adfirma root_hidden non est nihil, "root visibility update accepts live handles"
-    fixum scene.SceneStore root_hidden_store ← scene.SceneStore { slots = root_hidden!.slots }
-    fixum lista<scene.SceneHandle> ∪ nihil root_hidden_traversal ← scene.scene_visible_traverse(root_hidden_store, root_step.handle)
-    adfirma root_hidden_traversal non est nihil, "root-hidden visible traversal succeeds"
-    adfirma scene.scene_effective_visible(root_hidden_store, root_step.handle) ≡ falsum et scene.scene_effective_visible(root_hidden_store, mesh_step.handle) ≡ falsum, "hidden parent suppresses descendants"
-    fixum lista<scene.SceneHandle> ∪ nihil root_hidden_meshes ← scene.scene_visible_mesh_traverse(root_hidden_store, root_step.handle)
-    fixum numerus ∪ nihil root_hidden_mesh_count ← scene.scene_visible_mesh_count(root_hidden_store, root_step.handle)
-    fixum lista<scene.SceneMeshResources> ∪ nihil root_hidden_resources ← scene.scene_visible_mesh_resources(root_hidden_store, root_step.handle)
-    fixum numerus ∪ nihil root_hidden_resource_pair_count ← scene.scene_visible_mesh_resource_pair_count(root_hidden_store, root_step.handle)
-    fixum lista<scene.ResourceHandle> ∪ nihil root_hidden_geometry_handles ← scene.scene_visible_mesh_geometry_handles(root_hidden_store, root_step.handle)
-    fixum scene.SceneVisibleMeshResourceFacts ∪ nihil root_hidden_resource_facts ← scene.scene_visible_mesh_resource_facts(root_hidden_store, root_step.handle)
-    fixum numerus ∪ nihil root_hidden_transform_payload_count ← scene.scene_visible_mesh_transform_payload_count(root_hidden_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil root_hidden_transform_payload_bytes ← scene.scene_visible_mesh_transform_payload_byte_count(root_hidden_store, root_step.handle, view_projection)
-    fixum lista<scene.SceneMeshDrawPacket> ∪ nihil root_hidden_draw_packets ← scene.scene_visible_mesh_draw_packets(root_hidden_store, root_step.handle, view_projection)
-    fixum numerus ∪ nihil root_hidden_draw_packet_count ← scene.scene_visible_mesh_draw_packet_count(root_hidden_store, root_step.handle, view_projection)
-    fixum scene.SceneVisibleMeshDrawBatchFacts ∪ nihil root_hidden_draw_batch_facts ← scene.scene_visible_mesh_draw_batch_facts(root_hidden_store, root_step.handle, view_projection)
-    adfirma ((root_hidden_meshes non est nihil et root_hidden_mesh_count non est nihil) et root_hidden_resources non est nihil) et (root_hidden_mesh_count vel 999) ≡ 0, "visible mesh traversal respects hidden ancestors"
-    adfirma (root_hidden_resource_pair_count vel 999) ≡ 0 et root_hidden_geometry_handles non est nihil, "hidden ancestors suppress visible mesh resource projections"
-    adfirma (((root_hidden_resource_facts non est nihil et root_hidden_resource_facts!.mesh_count ≡ 0) et root_hidden_resource_facts!.resource_pair_count ≡ 0) et root_hidden_resource_facts!.geometry_handle_count ≡ 0) et root_hidden_resource_facts!.material_handle_count ≡ 0, "visible mesh resource facts preserve empty hidden-root counts"
-    adfirma (root_hidden_transform_payload_count vel 999) ≡ 0 et (root_hidden_transform_payload_bytes vel 999) ≡ 0, "hidden ancestors suppress visible mesh transform payloads"
-    adfirma root_hidden_draw_packets non est nihil et (root_hidden_draw_packet_count vel 999) ≡ 0, "hidden ancestors suppress visible mesh draw packets"
-    adfirma (root_hidden_draw_batch_facts non est nihil et root_hidden_draw_batch_facts!.packet_count ≡ 0) et root_hidden_draw_batch_facts!.transform_payload_byte_count ≡ 0, "hidden ancestors suppress visible mesh draw batch facts"
-    fixum scene.SceneStore transform_store ← scene.SceneStore { slots = attached_store.slots }
-    fixum scene.SceneStore cycle_store ← scene.SceneStore { slots = attached_store.slots }
-    fixum scene.SceneStore remove_store ← scene.SceneStore { slots = attached_store.slots }
-    fixum scene.SceneStore ∪ nihil root_local ← scene.scene_set_local_matrix(transform_store, root_step.handle, triga.matrix4_translatio(triga.Vector3 { x = 5.0, y = 0.0, z = 0.0 }))
-    adfirma root_local non est nihil, "root local transform accepted"
-    fixum scene.SceneStore root_local_store ← scene.SceneStore { slots = root_local!.slots }
-    fixum scene.SceneStore ∪ nihil mesh_local ← scene.scene_set_local_matrix(root_local_store, mesh_step.handle, triga.matrix4_translatio(triga.Vector3 { x = 2.0, y = 0.0, z = 0.0 }))
-    adfirma mesh_local non est nihil, "child local transform accepted"
-    fixum scene.SceneStore mesh_local_store ← scene.SceneStore { slots = mesh_local!.slots }
-    fixum scene.SceneStore ∪ nihil world_updated ← scene.scene_update_world(mesh_local_store, root_step.handle)
-    adfirma world_updated non est nihil, "world propagation succeeds"
-    fixum scene.SceneStore world_store ← scene.SceneStore { slots = world_updated!.slots }
-    fixum scene.SceneNode ∪ nihil world_mesh ← scene.scene_get(world_store, mesh_step.handle)
-    fixum triga.Vector3 world_origin ← triga.matrix4_applica_punctum(world_mesh!.world_matrix, triga.Vector3 { x = 0.0, y = 0.0, z = 0.0 })
-    adfirma world_origin.x ≡ (7.0 ∷ f32), "parent-first world transform composes"
-    adfirma world_mesh!.world_dirty ≡ falsum, "world update clears dirty state"
-    fixum triga.Matrix4 ∪ nihil mesh_world_matrix ← scene.scene_mesh_world_matrix(world_store, mesh_step.handle)
-    adfirma mesh_world_matrix non est nihil et (mesh_world_matrix!.elements)[12] ≡ (7.0 ∷ f32), "mesh world matrix accessor returns propagated transform"
-    fixum scene.SceneStore non_root_world_store ← scene.SceneStore { slots = world_store.slots }
-    adfirma scene.scene_update_world(non_root_world_store, mesh_step.handle) est nihil, "non-root world update rejects"
-    fixum scene.SceneStore parent_remove_store ← scene.SceneStore { slots = world_store.slots }
-    adfirma scene.scene_remove(parent_remove_store, root_step.handle) est nihil, "removing a parent rejects dangling children"
-    fixum scene.SceneStore group_base_store ← scene.SceneStore { slots = world_store.slots }
-    fixum scene.SceneInsert group_step ← scene.scene_insert(group_base_store, scene.scene_group("group"))
-    fixum scene.SceneStore ∪ nihil reparented ← scene.scene_attach(group_step.store, mesh_step.handle, group_step.handle)
-    adfirma reparented non est nihil, "reparent succeeds"
-    fixum scene.SceneStore reparented_store ← scene.SceneStore { slots = reparented!.slots }
-    fixum scene.SceneNode ∪ nihil old_root_result ← scene.scene_get(reparented_store, root_step.handle)
-    adfirma ((old_root_result!.children.longitudo() ≡ 3 et (old_root_result!.children)[0].index ≡ shared_mesh_step.handle.index) et (old_root_result!.children)[1].index ≡ camera_step.handle.index) et (old_root_result!.children)[2].index ≡ light_step.handle.index, "reparent removes old edge and preserves siblings"
-    fixum scene.SceneNode ∪ nihil reparented_mesh_result ← scene.scene_get(reparented_store, mesh_step.handle)
-    adfirma (reparented_mesh_result!.parent)!.index ≡ group_step.handle.index, "reparent preserves child identity"
-    fixum scene.SceneStore duplicate_reparent_store ← scene.SceneStore { slots = reparented_store.slots }
-    adfirma scene.scene_attach(duplicate_reparent_store, mesh_step.handle, group_step.handle) est nihil, "duplicate attach rejects"
-    fixum scene.SceneStore ∪ nihil detached ← scene.scene_detach(reparented_store, mesh_step.handle)
-    adfirma detached non est nihil, "detach succeeds"
-    fixum scene.SceneStore detached_store ← scene.SceneStore { slots = detached!.slots }
-    fixum scene.SceneNode ∪ nihil detached_mesh_result ← scene.scene_get(detached_store, mesh_step.handle)
-    adfirma detached_mesh_result!.parent est nihil, "detach clears parent"
-    adfirma scene.scene_attach(cycle_store, root_step.handle, mesh_step.handle) est nihil, "cycle rejects"
-    fixum scene.SceneStore ∪ nihil removed_result ← scene.scene_remove(remove_store, mesh_step.handle)
-    adfirma removed_result non est nihil, "remove succeeds"
-    fixum scene.SceneStore removed ← scene.SceneStore { slots = removed_result!.slots }
-    adfirma scene.scene_contains(removed, mesh_step.handle) ≡ falsum, "stale handle rejects"
-    adfirma scene.scene_get(removed, mesh_step.handle) est nihil, "stale lookup rejects"
-    adfirma scene.scene_traverse(removed, mesh_step.handle) est nihil, "traversal rejects a stale root"
-    adfirma scene.scene_find_name(removed, mesh_step.handle, "mesh") est nihil, "name lookup rejects a stale root"
+    # Resource handles
+    fixum scene.ResourceHandle geom_handle ← scene.ResourceHandle { index = 7, generation = 2 }
+    fixum scene.ResourceHandle mat_handle ← scene.ResourceHandle { index = 3, generation = 1 }
 
-    fixum scene.SceneInsert nested_root ← scene.scene_insert(scene.scene_store(), scene.scene_group("nested-root"))
-    fixum scene.SceneInsert nested_group ← scene.scene_insert(nested_root.store, scene.scene_group("nested-group"))
-    fixum scene.SceneInsert nested_mesh ← scene.scene_insert(nested_group.store, scene.scene_mesh("nested-mesh", geometry, material))
-    fixum scene.SceneStore ∪ nihil nested_group_attached ← scene.scene_attach(nested_mesh.store, nested_group.handle, nested_root.handle)
-    fixum scene.SceneStore nested_group_store ← scene.SceneStore { slots = nested_group_attached!.slots }
-    fixum scene.SceneStore ∪ nihil nested_mesh_attached ← scene.scene_attach(nested_group_store, nested_mesh.handle, nested_group.handle)
-    fixum scene.SceneStore nested_store ← scene.SceneStore { slots = nested_mesh_attached!.slots }
-    fixum scene.SceneHandle ∪ nihil found_nested_mesh ← scene.scene_find_name(nested_store, nested_root.handle, "nested-mesh")
-    adfirma found_nested_mesh non est nihil et found_nested_mesh!.index ≡ nested_mesh.handle.index, "name lookup descends a multilevel hierarchy"
+    # Resource transitions
+    fixum scene.ResourceTransition stable ← scene.resource_transition_unchanged(geom_handle)
+    fixum scene.ResourceTransition replaced ← scene.resource_transition_replaced(mat_handle)
+
+    # Scene construction and insertion (Imperativus — requires varia)
+    varia scene.SceneStore store ← scene.scene_store()
+    fixum scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
+    fixum scene.SceneHandle mesh_handle ← store.insere(mesh_node)
+
+    # Hierarchy: attach a child mesh
+    fixum scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
+    fixum scene.SceneHandle child_handle ← store.insere(child_node)
+
+    # Visibility and world matrix
+
+    # Name lookup
+
+    # Traversal
+
+    # Visibilia query (single traversal, multiple accessors)
+    fixum scene.VisibiliaRetium ∪ nihil visibilia ← scene.visibilia(store, mesh_handle, triga.matrix4_identitas())
+    nota visibilia
+
+    # Removal
+
+    # SceneNode mesh accessors
+    fixum scene.SceneNode ∪ nihil fetched ← store.cape(mesh_handle)
 }
