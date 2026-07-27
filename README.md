@@ -75,16 +75,20 @@ scripta/       source-library checks
 
 ```bash
 ./scripta/check-capabilities
+./scripta/check-capabilities-stale-coupling
 ./scripta/check-source
 ./scripta/check-compile
 ./scripta/check-transforms
+./scripta/check-exempla-inventory
 ./scripta/check-hello-voxel-contract
 ./scripta/check-hello-voxel-runtime-deps
 ```
 
 The capability report is an honest campaign baseline: unsupported proofs score
 zero, while browser availability and artifact freshness are reported
-separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
+separately. `check-capabilities-stale-coupling` is the local regression check
+for stale ledger/capstone revision detection. See
+`docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 The Hello Voxel contract check is a Triga-owned pre-browser gate. It validates
 source facts, exempla, compile viability, capability honesty, and current
 renderer-dependency classification, but it does not claim direct WebGPU browser
