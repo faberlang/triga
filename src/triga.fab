@@ -810,21 +810,21 @@ functio face_code_opposite(numerus code) → numerus ∪ nihil {
 
 functio face_code_x_offset(numerus code) → numerus ∪ nihil {
     si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 1 ergo redde -1
+    si code ≡ 1 ergo redde 0 - 1
     si code ≡ 2 ergo redde 1
     redde 0
 }
 
 functio face_code_y_offset(numerus code) → numerus ∪ nihil {
     si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 3 ergo redde -1
+    si code ≡ 3 ergo redde 0 - 1
     si code ≡ 4 ergo redde 1
     redde 0
 }
 
 functio face_code_z_offset(numerus code) → numerus ∪ nihil {
     si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 5 ergo redde -1
+    si code ≡ 5 ergo redde 0 - 1
     si code ≡ 6 ergo redde 1
     redde 0
 }
