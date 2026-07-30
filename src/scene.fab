@@ -105,7 +105,8 @@ genus SceneStore {
         si ego._circuitum_faceret(filius, parens) ergo redde falsum
         fixum SceneNode ∪ nihil filius_result ← ego.cape(filius)
         fixum SceneNode ∪ nihil parens_result ← ego.cape(parens)
-        si filius_result est nihil vel parens_result est nihil ergo redde falsum
+        si filius_result est nihil ergo redde falsum
+        si parens_result est nihil ergo redde falsum
         fixum SceneNode filius_nodus ← SceneNode {
             name = filius_result!.name, kind = filius_result!.kind,
             parent = filius_result!.parent, children = filius_result!.children,

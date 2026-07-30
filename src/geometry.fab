@@ -369,7 +369,7 @@ genus BufferGeometry {
         redde ego.indices.longitudo()
     }
 
-    functio vertex_count() → numerus ∪ nihil {
+    functio validated_vertex_count() → numerus ∪ nihil {
         si ego.valida() ≡ falsum ergo redde nihil
         redde ego.vertex_count
     }
