@@ -6,6 +6,7 @@ canonical = true
 summary = "Triga attribute shape, layout, indexing, draw range, group validation, and primitive generators."
 +++
 importa ex "triga:geometry" privata geometry
+importa ex "triga:primitives" privata primitives
 
 incipit {
     # Indexed triangle geometry
@@ -36,6 +37,6 @@ incipit {
     # Primitive generators
 
     # Wire box (line geometry)
-    fixum geometry.BufferGeometry ∪ nihil box_wire_result ← geometry.box_wire_geometry(2.0, 4.0, 6.0)
+    fixum geometry.BufferGeometry ∪ nihil box_wire_result ← primitives.box_wire_geometry(2.0, 4.0, 6.0)
     fixum geometry.BufferGeometry box_wire ← geometry.BufferGeometry { topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups }
 }

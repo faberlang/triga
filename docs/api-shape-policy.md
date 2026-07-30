@@ -34,7 +34,8 @@ genus Vector3 {
 - **Pure scalar helpers** — no genus receiver: `_radix_f32`,
   `_sinus_f32`, `_cosinus_f32`, `radians_ex_gradibus`.
 - **Primitive generators** — build a new genus, no receiver:
-  `indexed_triangle_geometry(...)`, `sphere_geometry(...)`, `plane_geometry(...)`.
+  `indexed_triangle_geometry(...)` on `triga:geometry`; shape builders such as
+  `sphere_geometry(...)` / `plane_geometry(...)` on `triga:primitives`.
 
 ### Imperativus vs Perfectum
 

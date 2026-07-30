@@ -1,4 +1,10 @@
 # Stable, backend-agnostic scene identity and heterogeneous node storage.
+#
+# MODULE BOUNDARY (see docs/module-map.md):
+#   - scene.fab: handles, SceneStore, traversal, visibilia, resource lifecycle.
+#   - triga.fab: Matrix4 / TransformPayload used by world matrices and draws.
+#   - geometry / primitives: not imported here; hosts bind resource handles
+#     to buffer payloads outside this module.
 
 importa ex "triga:triga" privata triga
 

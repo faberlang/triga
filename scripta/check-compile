@@ -44,6 +44,12 @@ echo "check-compile: parsing src/triga.fab"
 echo "check-compile: parsing src/geometry.fab"
 "$RADIX_BIN" check "$ROOT/src/geometry.fab"
 
+echo "check-compile: parsing src/primitives.fab"
+"$RADIX_BIN" check "$ROOT/src/primitives.fab"
+
+echo "check-compile: parsing src/scene.fab"
+"$RADIX_BIN" check "$ROOT/src/scene.fab"
+
 echo "check-compile: checking geometry attribute exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
 

@@ -10,27 +10,41 @@ types that define the same structural domain.
 
 ## Status
 
-Math transforms, stable scene storage, deterministic geometry generators, and
-typed vertex-layout reflection are implemented as native Faber source. The CPU
-workloads typecheck and emit Rust, and Stage 2 generated-Rust scene identity
-acceptance is green. The direct Radix scene-store check is also green for
-`exempla/triga-scene-store.fab`; MIR/GPU graphics-stage parity and render
-pipeline integration remain future work.
+| Layer | State |
+| --- | --- |
+| Math / transforms | Stable native Faber (`Vector*`, `Matrix4`, quaternions, …) |
+| Scene store | Stable handles, graph edits, world transforms; exempla green |
+| Buffer geometry | SoA attributes, draw batches, vertex-layout reflection |
+| Primitive generators | Deterministic plane/box/sphere/… mesh builders |
+| Host WebGPU path | Sibling `hosts/webgpu-browser` consumes compiled graphics artifacts; Triga owns source contracts, not the browser runtime |
+
+CPU workloads typecheck and emit Rust. Stage 2 generated-Rust scene identity
+and the direct Radix scene-store check for `exempla/triga-scene-store.fab` are
+green. MIR/GPU parity continues to deepen on the Radix + host side; Triga's job
+is to keep the typed contract honest and modular.
 
 ## Current Types
 
-| Category | Types | Mirror |
-| -------- | ----- | ------ |
-| **Math** | `Vector2`, `Vector3`, `Vector4`, `Matrix3`, `Matrix4`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray` | THREE.Vector2 etc. |
-| **Scene Graph** | `Object3D`, `Scene`, `PerspectiveCamera`, `OrthographicCamera`, `Light`, `AmbientLight`, `DirectionalLight`, `PointLight` | THREE.Object3D etc. |
-| **Geometry** | `MeshGeometry` (SoA layout: positions, normals, uvs, indices, …) | THREE.BufferGeometry |
-| **Material** | `Material`, `MeshStandardMaterial` (PBR), `MeshBasicMaterial`, `MeshPhongMaterial` | THREE.Material etc. |
-| **Mesh** | `Mesh` (Object3D + geometry + material) | THREE.Mesh |
+| Category | Types | Module | Mirror |
+| -------- | ----- | ------ | ------ |
+| **Math** | `Vector2`, `Vector3`, `Vector4`, `Matrix3`, `Matrix4`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray` | `triga:triga` | THREE.Vector2 etc. |
+| **Scene Graph** | `Object3D`, `Scene`, `PerspectiveCamera`, `OrthographicCamera`, `Light`, … | `triga:triga` | THREE.Object3D etc. |
+| **Geometry (SoA shape)** | `MeshGeometry` | `triga:triga` | THREE.BufferGeometry (field shape) |
+| **Geometry (GPU layout)** | `BufferGeometry`, `BufferAttribute`, draw batches | `triga:geometry` | buffer / vertex layout |
+| **Primitives** | `plane_geometry`, `box_geometry`, `sphere_geometry`, … | `triga:primitives` | THREE.*Geometry helpers |
+| **Material** | `Material`, `MeshStandardMaterial`, `MeshBasicMaterial`, `MeshPhongMaterial` | `triga:triga` | THREE.Material etc. |
+| **Mesh** | `Mesh` | `triga:triga` | THREE.Mesh |
+| **Scene store** | `SceneStore`, `SceneHandle`, `ResourceHandle`, `visibilia`, … | `triga:scene` | stable identity graph |
+
+Full module ownership: [`docs/module-map.md`](docs/module-map.md).
 
 ## Import
 
 ```fab
 importa ex "triga:triga" privata triga
+importa ex "triga:geometry" privata geometry
+importa ex "triga:primitives" privata primitives
+importa ex "triga:scene" privata scene
 ```
 
 Radix and `faber` resolve provider imports from the shared library home:
@@ -45,6 +59,7 @@ In local Faber development, `FABER_LIBRARY_HOME` is usually the parent
 ```text
 faberlang/
   radix/
+  hosts/      # webgpu-browser product host
   norma/
   triga/      # this repo
 ```
@@ -60,6 +75,9 @@ faberlang/
 - **Three.js field alignment**: field names use Faber's snake_case convention
   but the structural hierarchy mirrors three.js (Object3D → Mesh → Scene,
   Material → MeshStandardMaterial, Camera → PerspectiveCamera).
+- **Module seams**: buffer layout (`geometry`) vs mesh generators (`primitives`)
+  vs scene identity (`scene`) vs shape/math carriers (`triga`). See
+  `docs/module-map.md`.
 
 ## Layout
 
@@ -69,6 +87,8 @@ faber.toml     library provider metadata for faber package resolution
 src/           public `triga:*` Faber modules
 exempla/       instructional demos for triga types
 scripta/       source-library checks
+docs/          policy + module map + factory history
+proof/         capability / capstone ledgers
 ```
 
 ## Checks
@@ -89,17 +109,18 @@ zero, while browser availability and artifact freshness are reported
 separately. `check-capabilities-stale-coupling` is the local regression check
 for stale ledger/capstone revision detection. See
 `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
+
 The Hello Voxel contract check is a Triga-owned pre-browser gate. It validates
 source facts, exempla, compile viability, capability honesty, and current
-renderer-dependency classification, but it does not claim direct WebGPU browser
-execution.
+renderer-dependency classification. Live browser execution lives under sibling
+`hosts/webgpu-browser` (`./scripta/webgpu-browser-proof` from that repo).
 
 ## Next Steps
 
-- Keep the stable scene identity generated-Rust acceptance and direct Radix
-  scene-store check green.
-- Lower Triga's typed vertex-layout contract through Radix graphics MIR and
-  prove compiler reflection agrees with the source facts.
-- Integrate the admitted graphics pipeline with a direct WebGPU host.
-- Add the material, texture, and lighting families after the graphics-stage
-  contract is proven end to end.
+- Keep scene identity (generated-Rust + direct Radix scene-store) green.
+- Keep vertex-layout reflection and primitive generators aligned with host
+  buffer upload seams.
+- Grow materials / textures / lighting only after graphics-stage contracts stay
+  green end to end on the host path.
+- Optional further module splits (math vs materials, resource lifecycle) when a
+  second real importer appears — not for aesthetics alone.

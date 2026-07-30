@@ -6,13 +6,14 @@ canonical = true
 summary = "Stage 4 source-owned vertex-layout facts for the graphics MIR handoff."
 +++
 importa ex "triga:geometry" privata geometry
+importa ex "triga:primitives" privata primitives
 
 @ vertex
 functio triga_plane_vertex() → vacuum {
 }
 
 incipit {
-    fixum geometry.BufferGeometry ∪ nihil plane_result ← geometry.plane_geometry(2.0, 2.0)
+    fixum geometry.BufferGeometry ∪ nihil plane_result ← primitives.plane_geometry(2.0, 2.0)
     fixum geometry.BufferGeometry plane ← geometry.BufferGeometry { topology = plane_result!.topology, vertex_count = plane_result!.vertex_count, attributes = plane_result!.attributes, indexed = plane_result!.indexed, indices = plane_result!.indices, draw_range = plane_result!.draw_range, groups = plane_result!.groups }
 
 

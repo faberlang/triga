@@ -1,25 +1,20 @@
-# src/triga.fab — Geometry, math, scene, and material types for Faber's GPU lane
+# src/triga.fab — Math, scene-graph, and material types for Faber's GPU lane.
 #
 # Shapes modeled closely after three.js abstractions for LLM familiarity
 # and migration ease. Not a binding to three.js — these are native Faber
 # types that define the data contract between compiled Faber output and
-#
-# MODULE BOUNDARY (geometry.fab vs triga.fab):
-#   - geometry.fab: rendering-pipeline geometry (BufferGeometry with
-#     list-of-attributes, indexed primitives, draw commands, vertex layouts).
-#     Consumed by radix MIR for GPU buffer layout computation.
-#   - triga.fab: shape contracts (MeshGeometry/three.js mirror), spatial
-#     math (Box3/Sphere with Vector3 sub-structs), material pipeline facts.
-#     The triga.fab Bounding* family (Box3, Sphere) is for spatial queries
-#     and collision detection; geometry.fab's BoundingBox/BoundingSphere is
-#     for mesh payload computation.
-#   - Do not add render-pipeline types to triga.fab; do not add three.js
-#     mirror types to geometry.fab.
 # the GPU runtime host.
 #
+# MODULE BOUNDARY (see docs/module-map.md):
+#   - geometry.fab: BufferGeometry, attributes, draw batches, vertex layout.
+#   - primitives.fab: free mesh generators (plane, box, sphere, …).
+#   - triga.fab: three.js-shaped math/scene/material carriers; spatial Box3
+#     and Sphere for queries (geometry's Bounding* are mesh-payload bounds).
+#   - scene.fab: stable scene identity store and resource lifecycle helpers.
+#   - Do not add render-pipeline types or mesh generators here.
+#
 # NOTE: genus types live at file top level (the parser does not support
-# genus inside a modulus block). The modulus wraps only utility functions
-# such as geometry generators and transformation helpers.
+# genus inside a modulus block).
 #
 # STYLE: numeric sugar (f32, u32) — all triga types are geometric/mathematical
 
