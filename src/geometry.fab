@@ -1315,3 +1315,18 @@ functio _primitive_range_valid(
         casu PointList { redde count > 0 }
     }
 }
+
+# --- Standalone vertex-layout assertion (wraps BufferGeometry method) ---
+
+functio geometry_vertex_layout_matches(
+    BufferGeometry geo,
+    numerus index,
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus offset_bytes,
+    numerus stride_bytes,
+    numerus step_mode_code
+) → bivalens {
+    redde geo.vertex_layout_matches(index, source_name, shader_location, format_code, offset_bytes, stride_bytes, step_mode_code)
+}
