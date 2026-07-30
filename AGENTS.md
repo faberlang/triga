@@ -22,8 +22,11 @@ One `.fab` file → one import path. Nested dirs for packages.
 | `triga:geometry` | BufferGeometry / vertex layout |
 | `triga:primitives` | Mesh generators |
 | `triga:scene` | SceneStore / identity |
-| `triga:scene/resource` | ResourceHandle lifecycle |
+| `triga:resource` | ResourceHandle lifecycle |
 | `triga:triga` | Facade map only (no genera) |
+
+Nested package dirs only with **≥2 modules** (prefer ≥3). A single nested file
+is flattened to a top-level leaf (`triga:resource`, not `triga:scene/resource`).
 
 Full map: [`docs/module-map.md`](docs/module-map.md). API shape:
 [`docs/api-shape-policy.md`](docs/api-shape-policy.md).
@@ -37,6 +40,7 @@ Full map: [`docs/module-map.md`](docs/module-map.md). API shape:
 - Prefer leaf imports; do not grow genera on the `triga:triga` facade.
 - Prefer receiver methods on genera; free functions for constructors / scalars /
   generators only.
+- Nested package directories need at least two leaves (prefer three+).
 - Do not move modules into Norma unless explicitly asked.
 
 ## Validation

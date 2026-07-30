@@ -7,7 +7,7 @@ summary = "Stable heterogeneous Triga scene store: insertion, attachment, visibi
 +++
 importa ex "triga:scene" privata scene
 importa ex "triga:math" privata math
-importa ex "triga:scene/resource" privata resource
+importa ex "triga:resource" privata resource
 
 incipit {
     # Resource handles

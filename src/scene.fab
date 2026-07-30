@@ -1,11 +1,10 @@
 # Stable, backend-agnostic scene identity and heterogeneous node storage.
 #
 # Public import: importa ex "triga:scene" privata scene
-# Nested:        importa ex "triga:scene/resource" privata resource
-# Depends on: triga:math, triga:scene/resource
+# Depends on: triga:math, triga:resource
 
 importa ex "triga:math" privata math
-importa ex "triga:scene/resource" privata resource
+importa ex "triga:resource" privata resource
 
 genus SceneHandle {
     numerus index

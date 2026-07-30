@@ -43,8 +43,8 @@ for mod in math graph material face geometry primitives scene triga; do
   echo "check-compile: parsing src/${mod}.fab"
   "$RADIX_BIN" check "$ROOT/src/${mod}.fab"
 done
-echo "check-compile: parsing src/scene/resource.fab"
-"$RADIX_BIN" check "$ROOT/src/scene/resource.fab"
+echo "check-compile: parsing src/resource.fab"
+"$RADIX_BIN" check "$ROOT/src/resource.fab"
 
 echo "check-compile: checking geometry attribute exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"

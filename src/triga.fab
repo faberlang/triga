@@ -10,7 +10,7 @@
 #   triga:geometry   BufferGeometry / vertex layout
 #   triga:primitives mesh generators
 #   triga:scene      scene store + identity
-#   triga:scene/resource  resource handle lifecycle free functions
+#   triga:resource   resource handle lifecycle free functions
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 

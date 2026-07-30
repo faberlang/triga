@@ -34,7 +34,7 @@ is to keep the typed contract honest and modular.
 | **Primitives** | `plane_geometry`, `box_geometry`, … | `triga:primitives` | THREE.*Geometry helpers |
 | **Material / Mesh** | `Material` family, `Mesh` | `triga:material` | THREE.Material / Mesh |
 | **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | stable identity graph |
-| **Resources** | `ResourceHandle`, lifecycle free functions | `triga:scene/resource` | host resource identity |
+| **Resources** | `ResourceHandle`, lifecycle free functions | `triga:resource` | host resource identity |
 
 Full module ownership: [`docs/module-map.md`](docs/module-map.md) (Norma-style multi-module package).
 
@@ -47,7 +47,7 @@ importa ex "triga:material" privata material
 importa ex "triga:geometry" privata geometry
 importa ex "triga:primitives" privata primitives
 importa ex "triga:scene" privata scene
-importa ex "triga:scene/resource" privata resource
+importa ex "triga:resource" privata resource
 ```
 
 Radix and `faber` resolve provider imports from the shared library home:
@@ -78,8 +78,9 @@ faberlang/
 - **Three.js field alignment**: field names use Faber's snake_case convention
   but the structural hierarchy mirrors three.js (Object3D → Mesh → Scene,
   Material → MeshStandardMaterial, Camera → PerspectiveCamera).
-- **Module seams**: Norma-style leaves — `math` / `graph` / `material` /
-  `geometry` / `primitives` / `scene` / `scene/resource`. See `docs/module-map.md`.
+- **Module seams**: Norma-style flat leaves — `math` / `graph` / `material` /
+  `geometry` / `primitives` / `scene` / `resource`. Nested package dirs only
+  when they hold 2–3+ modules (see `docs/module-map.md`).
 
 ## Layout
 

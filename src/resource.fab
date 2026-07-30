@@ -1,7 +1,7 @@
 # Resource handle identity and lifecycle free functions.
 #
-# Public import: importa ex "triga:scene/resource" privata resource
-# Nested package path (Norma caelum style). Scene store imports this module.
+# Public import: importa ex "triga:resource" privata resource
+# Public leaf module. Scene store imports this for mesh resource handles.
 
 genus ResourceHandle {
     numerus index

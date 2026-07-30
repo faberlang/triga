@@ -4,19 +4,25 @@
 **Date:** 2026-07-30
 
 Triga is a multi-file Faber source library under `src/`. Each `.fab` file is a
-provider module path: `triga:<stem>` resolves to `src/<stem>.fab`. Nested paths
-use directories, Norma-style: `triga:scene/resource` → `src/scene/resource.fab`.
+provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
 
 ## Pattern (from Norma)
 
 | Pattern | Norma example | Triga example |
 | --- | --- | --- |
-| Flat leaf | `norma:csv`, `norma:chorda` | `triga:math`, `triga:geometry` |
+| Flat leaf | `norma:csv`, `norma:chorda` | `triga:math`, `triga:resource` |
 | Cross-module import | `csv` imports `chorda` | `primitives` imports `geometry` |
-| Nested package | `norma:caelum/terminus` | `triga:scene/resource` |
+| Nested package | `norma:caelum/terminus` | *(none yet — see nesting rule)* |
 | Facade | `norma:caelum` composes submodules | `triga:triga` documents leaves (no genera) |
 
 There is **no type re-export**. Consumers import the leaf that owns the genus.
+
+### Nesting rule
+
+Nested dirs (`src/<pkg>/<leaf>.fab` → `triga:<pkg>/<leaf>`) only when the
+directory has **at least two** modules, preferably **three or more**. A single
+nested file is flattened to a top-level leaf instead (e.g. `triga:resource`,
+not `triga:scene/resource`).
 
 ## Public modules
 
@@ -29,7 +35,7 @@ There is **no type re-export**. Consumers import the leaf that owns the genus.
 | `triga:geometry` | `src/geometry.fab` | `BufferGeometry`, attributes, draw batches, vertex-layout reflection |
 | `triga:primitives` | `src/primitives.fab` | Deterministic mesh generators (`plane_geometry`, `box_geometry`, …) |
 | `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` |
-| `triga:scene/resource` | `src/scene/resource.fab` | `ResourceHandle` + lifecycle free functions |
+| `triga:resource` | `src/resource.fab` | `ResourceHandle` + lifecycle free functions |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
 | `triga:triga_proba` | `src/triga_proba.fab` | Proba helpers |
 
@@ -42,8 +48,8 @@ material     ──► math, graph
 face         ──► math, geometry
 geometry                (leaf)
 primitives   ──► geometry
-scene/resource          (leaf)
-scene        ──► math, scene/resource
+resource                (leaf)
+scene        ──► math, resource
 triga (facade) ──► math, graph, material, face   (docs only)
 ```
 
@@ -58,7 +64,7 @@ importa ex "triga:material" privata material
 importa ex "triga:geometry" privata geometry
 importa ex "triga:primitives" privata primitives
 importa ex "triga:scene" privata scene
-importa ex "triga:scene/resource" privata resource
+importa ex "triga:resource" privata resource
 ```
 
 ```fab
@@ -74,14 +80,16 @@ varia scene.SceneStore store ← scene.scene_store()
 | `math.fab` | ~850 |
 | `geometry.fab` | ~1320 |
 | `scene.fab` | ~930 |
-| `scene/resource.fab` | ~550 |
+| `resource.fab` | ~550 |
 | `primitives.fab` | ~470 |
 | `material.fab` | ~180 |
 | `graph.fab` | ~120 |
 | `face.fab` | ~40 |
 
 `geometry.fab` is still large (BufferGeometry methods). Next seam only if a second
-importer wants a pure layout-facts module.
+importer wants a pure layout-facts module. If `scene` is later split into a
+nested package, put **store + resource + visibilia** (or similar) under
+`src/scene/` together — not a lone file.
 
 ## Validation
 
