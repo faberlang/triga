@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
+# Package-aware transform-chain gate.
+# Math leaf lives in src/math.fab; workload is exempla/triga-transforms.fab
+# (imports triga:math). Do not cat a combined flat source — the facade
+# src/triga.fab holds no genera.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
 
 if [[ -n "${RADIX_ROOT:-}" ]]; then
   RADIX="$RADIX_ROOT"
@@ -11,24 +16,36 @@ else
   RADIX="$ROOT/../../../radix"
 fi
 
-RADIX_BIN="$RADIX/target/debug/radix"
-
-if [[ ! -x "$RADIX_BIN" ]]; then
-  echo "check-transforms: missing radix binary at $RADIX_BIN" >&2
+if [[ ! -d "$RADIX/crates/radix" ]]; then
+  echo "check-transforms: missing radix checkout at $RADIX" >&2
   exit 1
 fi
 
-combined="$(mktemp "${TMPDIR:-/tmp}/triga-transforms.XXXXXX.fab")"
-generated="$(mktemp "${TMPDIR:-/tmp}/triga-transforms.XXXXXX.rs")"
-trap 'rm -f "$combined" "$generated"' EXIT
+if [[ -n "${FABER_ROOT:-}" ]]; then
+  FABER="$FABER_ROOT"
+elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
+  FABER="$ROOT/../faber"
+else
+  FABER="$ROOT/../../../faber"
+fi
 
-cp "$ROOT/src/triga.fab" "$combined"
-awk 'BEGIN { delimiters = 0 } $0 == "+++" { delimiters += 1; next } delimiters >= 2' \
-  "$ROOT/exempla/triga-transforms.fab" \
-  | sed -e '/^importa ex "triga:triga" privata triga$/d' -e 's/triga\.//g' \
-  >> "$combined"
+if [[ ! -f "$FABER/Cargo.toml" ]]; then
+  echo "check-transforms: missing faber checkout at $FABER" >&2
+  exit 1
+fi
 
-echo "check-transforms: parsing combined library and transform workload"
-"$RADIX_BIN" check "$combined"
-echo "check-transforms: emitting generated Rust"
-"$RADIX_BIN" emit -t rust "$combined" > "$generated"
+RADIX_BIN="$RADIX/target/debug/radix"
+if [[ ! -x "$RADIX_BIN" ]]; then
+  (cd "$RADIX" && cargo build -q -p radix --bin radix)
+fi
+
+export FABER_LIBRARY_HOME
+export RADIX_ROOT="$RADIX"
+
+echo "check-transforms: parsing src/math.fab"
+"$RADIX_BIN" check "$ROOT/src/math.fab"
+
+echo "check-transforms: package check exempla/triga-transforms.fab"
+(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check exempla/triga-transforms.fab)
+
+echo "check-transforms: ok"

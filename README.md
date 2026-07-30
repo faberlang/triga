@@ -87,7 +87,7 @@ faberlang/
 ```text
 cista.toml     package identity + version (cista install)
 faber.toml     library provider metadata for faber package resolution
-src/           public `triga:*` Faber modules
+src/           public `triga:*` Faber modules (`name.fab` + co-located `name.proba` tests)
 exempla/       instructional demos for triga types
 scripta/       source-library checks
 docs/          policy + module map + factory history

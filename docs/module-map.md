@@ -37,7 +37,15 @@ not `triga:scene/resource`).
 | `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` |
 | `triga:resource` | `src/resource.fab` | `ResourceHandle` + lifecycle free functions |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
-| `triga:triga_proba` | `src/triga_proba.fab` | Proba helpers |
+
+## Proba (test sources)
+
+Co-located `name.proba` next to `name.fab`. Discovered only by `faber test`
+(`include_proba`); never imported as a product module.
+
+| File | Covers |
+| --- | --- |
+| `src/math.proba` | Vector3 method suite (`addita`, `normata`) |
 
 ## Dependency direction
 
@@ -96,4 +104,6 @@ nested package, put **store + resource + visibilia** (or similar) under
 ```bash
 ./scripta/check-source
 ./scripta/check-compile
+# package tests (requires faber + green generated Rust for lib packages):
+# faber test .
 ```

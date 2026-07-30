@@ -41,6 +41,6 @@ while IFS= read -r -d '' file; do
     echo "check-source: genus-prefixed function should be a receiver method (see docs/api-shape-policy.md) in $file" >&2
     status=1
   fi
-done < <(find "$SRC" -name '*.fab' -print0)
+done < <(find "$SRC" \( -name '*.fab' -o -name '*.proba' \) -print0)
 
 exit "$status"

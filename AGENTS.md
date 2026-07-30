@@ -34,6 +34,7 @@ Full map: [`docs/module-map.md`](docs/module-map.md). API shape:
 ## Rules
 
 - Keep public modules under `src/**/*.fab`.
+- Keep package tests as co-located `src/**/*.proba` (`name.fab` + `name.proba`).
 - Keep instructional demos under `exempla/**/*.fab`.
 - Do not add `@ externa` or `@ subsidia`.
 - Optional genus fields use `sponte`.
@@ -42,6 +43,7 @@ Full map: [`docs/module-map.md`](docs/module-map.md). API shape:
   generators only.
 - Nested package directories need at least two leaves (prefer three+).
 - Do not move modules into Norma unless explicitly asked.
+- Never `importa` a `.proba` file; shared helpers stay in `.fab` modules.
 
 ## Validation
 
