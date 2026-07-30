@@ -1,24 +1,24 @@
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
 
 probandum "triga vector3 methods" {
     proba "addita combines two vectors" {
-        fixum triga.Vector3 a ← triga.vector3(1.0, 2.0, 3.0)
-        fixum triga.Vector3 b ← triga.vector3(4.0, 5.0, 6.0)
-        fixum triga.Vector3 result ← a.addita(b)
+        fixum math.Vector3 a ← math.vector3(1.0, 2.0, 3.0)
+        fixum math.Vector3 b ← math.vector3(4.0, 5.0, 6.0)
+        fixum math.Vector3 result ← a.addita(b)
         adfirma result.x ≡ (5.0 ∷ f32)
         adfirma result.y ≡ (7.0 ∷ f32)
         adfirma result.z ≡ (9.0 ∷ f32)
     }
 
     proba "normata returns unit vector" {
-        fixum triga.Vector3 v ← triga.vector3(0.0, 0.0, 3.0)
-        fixum triga.Vector3 n ← v.normata()
+        fixum math.Vector3 v ← math.vector3(0.0, 0.0, 3.0)
+        fixum math.Vector3 n ← v.normata()
         adfirma n.z ≡ (1.0 ∷ f32)
     }
 
     proba "normata returns zero for zero-length" {
-        fixum triga.Vector3 v ← triga.vector3(0.0, 0.0, 0.0)
-        fixum triga.Vector3 n ← v.normata()
+        fixum math.Vector3 v ← math.vector3(0.0, 0.0, 0.0)
+        fixum math.Vector3 n ← v.normata()
         adfirma n.x ≡ (0.0 ∷ f32)
         adfirma n.z ≡ (0.0 ∷ f32)
     }

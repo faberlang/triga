@@ -11,7 +11,7 @@ summary = "Full graphics pipeline fixture: @vertex/@fragment with vertex layout,
 # fact constants for every MIR reflection category.
 
 importa ex "triga:geometry" privata geometry
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
 
 @ vertex
 functio hello_voxel_vertex() → vacuum {
@@ -49,10 +49,10 @@ incipit {
     nota resource_transform_byte_width
 
     # Transform payload
-    fixum triga.Matrix4 model ← triga.Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
-    fixum triga.Matrix4 view_proj ← triga.Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
-    fixum triga.TransformPayload ∪ nihil transform_result ← triga.transform_payload(model, view_proj)
-    fixum triga.TransformPayload transform ← triga.TransformPayload { values = transform_result!.values }
+    fixum math.Matrix4 model ← math.Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
+    fixum math.Matrix4 view_proj ← math.Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
+    fixum math.TransformPayload ∪ nihil transform_result ← math.transform_payload(model, view_proj)
+    fixum math.TransformPayload transform ← math.TransformPayload { values = transform_result!.values }
 
     # Pipeline facts
     fixum numerus goal_target_format ← 2

@@ -12,43 +12,45 @@ syntax = "importa ex \"triga:triga\" privata triga"
 # Covers: Vector2, Vector4, Matrix3, Mesh, Scene, MeshStandardMaterial,
 # MeshPhongMaterial, OrthographicCamera, Object3D standalone.
 
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
+importa ex "triga:graph" privata graph
+importa ex "triga:material" privata material
 
 incipit {
     # Vector2 construction
-    fixum triga.Vector2 vec2 ← triga.Vector2 { x = 3.0, y = 4.0 }
+    fixum math.Vector2 vec2 ← math.Vector2 { x = 3.0, y = 4.0 }
     nota vec2.x
 
     # Vector4 construction
-    fixum triga.Vector4 vec4 ← triga.Vector4 { x = 1.0, y = 2.0, z = 3.0, w = 4.0 }
+    fixum math.Vector4 vec4 ← math.Vector4 { x = 1.0, y = 2.0, z = 3.0, w = 4.0 }
     nota vec4.w
 
     # Matrix3 construction
-    fixum triga.Matrix3 matrix3 ← triga.Matrix3 { elements = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0] }
+    fixum math.Matrix3 matrix3 ← math.Matrix3 { elements = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0] }
 
     # Object3D standalone
-    fixum triga.Object3D standalone ← triga.Object3D { position = triga.vector3(0.0, 0.0, 0.0), rotation = triga.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = triga.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = triga.vector3(1.0, 1.0, 1.0), matrix = triga.matrix4_identitas(), children = vacua, visible = verum, name = "standalone" }
+    fixum graph.Object3D standalone ← graph.Object3D { position = math.vector3(0.0, 0.0, 0.0), rotation = math.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = math.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "standalone" }
     nota standalone.visible
 
     # Scene with background color
-    fixum triga.Scene scene ← triga.Scene { base = standalone, background = triga.Color { r = 0.5, g = 0.6, b = 0.7 } }
+    fixum graph.Scene scene ← graph.Scene { base = standalone, background = math.Color { r = 0.5, g = 0.6, b = 0.7 } }
     nota scene.background
 
     # OrthographicCamera
-    fixum triga.OrthographicCamera ortho ← triga.OrthographicCamera { base = standalone, left = -10.0 ∷ f32, right = 10.0, top = 10.0, bottom = -10.0 ∷ f32, near = 0.1, far = 2000.0 }
+    fixum graph.OrthographicCamera ortho ← graph.OrthographicCamera { base = standalone, left = -10.0 ∷ f32, right = 10.0, top = 10.0, bottom = -10.0 ∷ f32, near = 0.1, far = 2000.0 }
     nota ortho.left
     nota ortho.near
 
     # Mesh with MeshStandardMaterial
-    fixum triga.Color white ← triga.Color { r = 1.0, g = 1.0, b = 1.0 }
-    fixum triga.Color emissive ← triga.Color { r = 0.0, g = 0.0, b = 0.0 }
-    fixum triga.MeshStandardMaterial pbr_material ← triga.MeshStandardMaterial { base = triga.material("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0 }
-    fixum triga.MeshGeometry empty_geometry ← triga.MeshGeometry { positions = vacua, indices = vacua, draw_start = 0 }
-    fixum triga.Mesh mesh ← triga.Mesh { base = standalone, geometry = empty_geometry }
+    fixum math.Color white ← math.Color { r = 1.0, g = 1.0, b = 1.0 }
+    fixum math.Color emissive ← math.Color { r = 0.0, g = 0.0, b = 0.0 }
+    fixum material.MeshStandardMaterial pbr_material ← material.MeshStandardMaterial { base = material.material("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0 }
+    fixum material.MeshGeometry empty_geometry ← material.MeshGeometry { positions = vacua, indices = vacua, draw_start = 0 }
+    fixum material.Mesh mesh ← material.Mesh { base = standalone, geometry = empty_geometry }
     nota pbr_material.roughness
 
     # MeshPhongMaterial
-    fixum triga.Color spec ← triga.Color { r = 0.2, g = 0.2, b = 0.2 }
-    fixum triga.MeshPhongMaterial phong ← triga.MeshPhongMaterial { base = triga.material("phong"), color = white, specular = spec, shininess = 60.0 }
+    fixum math.Color spec ← math.Color { r = 0.2, g = 0.2, b = 0.2 }
+    fixum material.MeshPhongMaterial phong ← material.MeshPhongMaterial { base = material.material("phong"), color = white, specular = spec, shininess = 60.0 }
     nota phong.shininess
 }

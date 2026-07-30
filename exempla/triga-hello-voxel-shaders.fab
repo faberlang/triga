@@ -11,7 +11,6 @@ summary = "Minimal @vertex and @fragment exemplar with typed vertex layout facts
 # with Triga-side layout facts that the compiler extracts for WGSL emission.
 
 importa ex "triga:geometry" privata geometry
-importa ex "triga:triga" privata triga
 
 @ vertex
 functio hello_voxel_vertex() → vacuum {

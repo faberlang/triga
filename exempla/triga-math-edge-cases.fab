@@ -8,42 +8,43 @@ syntax = "importa ex \"triga:triga\" privata triga"
 +++
 # exempla/triga-math-edge-cases — degenerate inputs and boundary cases.
 
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
+importa ex "triga:graph" privata graph
 
 incipit {
     # Vector3 projecta with zero-length axis
-    fixum triga.Vector3 projected_point ← triga.vector3(1.0, 2.0, 3.0)
-    fixum triga.Vector3 zero_axis ← triga.vector3(0.0, 0.0, 0.0)
-    fixum triga.Vector3 projected ← projected_point.projecta(zero_axis)
+    fixum math.Vector3 projected_point ← math.vector3(1.0, 2.0, 3.0)
+    fixum math.Vector3 zero_axis ← math.vector3(0.0, 0.0, 0.0)
+    fixum math.Vector3 projected ← projected_point.projecta(zero_axis)
     nota projected.x
 
     # Quaternion normata with all-zero quaternion
-    fixum triga.Quaternion zero_q ← triga.quaternion(0.0, 0.0, 0.0, 0.0)
-    fixum triga.Quaternion normalized_zero_q ← zero_q.normata()
+    fixum math.Quaternion zero_q ← math.quaternion(0.0, 0.0, 0.0, 0.0)
+    fixum math.Quaternion normalized_zero_q ← zero_q.normata()
     nota normalized_zero_q.w
 
     # Vector3 normata with all-zero input
-    fixum triga.Vector3 all_zero ← triga.vector3(0.0, 0.0, 0.0)
-    fixum triga.Vector3 zero_normalized ← all_zero.normata()
+    fixum math.Vector3 all_zero ← math.vector3(0.0, 0.0, 0.0)
+    fixum math.Vector3 zero_normalized ← all_zero.normata()
     nota zero_normalized.x
 
     # Color validation with out-of-range components
     fixum f32 negative_value ← 0.0 - 0.1
     fixum f32 over_value ← 1.0 + 0.1
-    fixum triga.Color bad_g ← triga.Color { r = 0.5, g = negative_value, b = 0.0 }
+    fixum math.Color bad_g ← math.Color { r = 0.5, g = negative_value, b = 0.0 }
 
-    fixum triga.Color bad_r ← triga.Color { r = negative_value, g = 0.5, b = 0.5 }
+    fixum math.Color bad_r ← math.Color { r = negative_value, g = 0.5, b = 0.5 }
 
     # Ray intersect box3 with negative max_distance
-    fixum triga.Box3 test_box ← triga.Box3 { min = triga.vector3(-1.0 ∷ f32, -1.0 ∷ f32, -1.0 ∷ f32), max = triga.vector3(1.0, 1.0, 1.0) }
-    fixum triga.Ray ray ← triga.Ray { origin = triga.vector3(-3.0 ∷ f32, 0.0, 0.0), direction = triga.vector3(1.0, 0.0, 0.0) }
+    fixum math.Box3 test_box ← math.Box3 { min = math.vector3(-1.0 ∷ f32, -1.0 ∷ f32, -1.0 ∷ f32), max = math.vector3(1.0, 1.0, 1.0) }
+    fixum math.Ray ray ← math.Ray { origin = math.vector3(-3.0 ∷ f32, 0.0, 0.0), direction = math.vector3(1.0, 0.0, 0.0) }
 
     # Camera pitch coercita at boundaries
 
     # Camera view projection
-    fixum triga.Object3D cam_base ← triga.Object3D { position = triga.vector3(0.0, 0.0, 5.0), rotation = triga.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = triga.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = triga.vector3(1.0, 1.0, 1.0), matrix = triga.matrix4_identitas(), children = vacua, visible = verum, name = "cam" }
-    fixum triga.PerspectiveCamera test_camera ← triga.PerspectiveCamera { base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0 }
-    fixum triga.Vector3 cam_eye ← triga.vector3(0.0, 0.0, 5.0)
-    fixum triga.Vector3 cam_target ← triga.vector3(0.0, 0.0, 0.0)
-    fixum triga.Vector3 cam_up ← triga.vector3(0.0, 1.0, 0.0)
+    fixum graph.Object3D cam_base ← graph.Object3D { position = math.vector3(0.0, 0.0, 5.0), rotation = math.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = math.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "cam" }
+    fixum graph.PerspectiveCamera test_camera ← graph.PerspectiveCamera { base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0 }
+    fixum math.Vector3 cam_eye ← math.vector3(0.0, 0.0, 5.0)
+    fixum math.Vector3 cam_target ← math.vector3(0.0, 0.0, 0.0)
+    fixum math.Vector3 cam_up ← math.vector3(0.0, 1.0, 0.0)
 }

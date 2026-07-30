@@ -1,0 +1,39 @@
+# Voxel face quad construction helpers.
+#
+# Public import: importa ex "triga:face" privata face
+# Face-code tables (valida/normal/color/offsets) live in triga:math so RayBox3Hit
+# can call them without a math↔face import cycle.
+# Depends on: triga:math, triga:geometry
+
+importa ex "triga:math" privata math
+importa ex "triga:geometry" privata geometry
+
+genus FaceQuad {
+    math.Vector3 a
+    math.Vector3 b
+    math.Vector3 c
+    math.Vector3 d
+}
+
+functio face_code_unit_quad(numerus code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ nihil {
+    si math.face_code_valida(code) ≡ falsum ergo redde nihil
+    si size ≤ 0.0 ergo redde nihil
+    fixum f32 x1 ← x + size
+    fixum f32 y1 ← y + size
+    fixum f32 z1 ← z + size
+    si code ≡ 1 ergo redde FaceQuad { a = math.vector3(x, y, z), b = math.vector3(x, y, z1), c = math.vector3(x, y1, z1), d = math.vector3(x, y1, z) }
+    si code ≡ 2 ergo redde FaceQuad { a = math.vector3(x1, y, z1), b = math.vector3(x1, y, z), c = math.vector3(x1, y1, z), d = math.vector3(x1, y1, z1) }
+    si code ≡ 3 ergo redde FaceQuad { a = math.vector3(x, y, z), b = math.vector3(x1, y, z), c = math.vector3(x1, y, z1), d = math.vector3(x, y, z1) }
+    si code ≡ 4 ergo redde FaceQuad { a = math.vector3(x, y1, z1), b = math.vector3(x1, y1, z1), c = math.vector3(x1, y1, z), d = math.vector3(x, y1, z) }
+    si code ≡ 5 ergo redde FaceQuad { a = math.vector3(x1, y, z), b = math.vector3(x, y, z), c = math.vector3(x, y1, z), d = math.vector3(x1, y1, z) }
+    redde FaceQuad { a = math.vector3(x, y, z1), b = math.vector3(x1, y, z1), c = math.vector3(x1, y1, z1), d = math.vector3(x, y1, z1) }
+}
+
+functio face_code_colored_quad_mesh_append(lista<f32> positions, lista<f32> colors, lista<u32> indices, numerus code, f32 x, f32 y, f32 z, f32 size) → geometry.ColoredQuadMesh ∪ nihil {
+    fixum FaceQuad ∪ nihil quad_result ← face_code_unit_quad(code, x, y, z, size)
+    si quad_result est nihil ergo redde nihil
+    fixum math.Color ∪ nihil color_result ← math.face_code_color(code)
+    si color_result est nihil ergo redde nihil
+    redde geometry.colored_quad_mesh_append(positions, colors, indices, quad_result!.a.x, quad_result!.a.y, quad_result!.a.z, quad_result!.b.x, quad_result!.b.y, quad_result!.b.z, quad_result!.c.x, quad_result!.c.y, quad_result!.c.z, quad_result!.d.x, quad_result!.d.y, quad_result!.d.z, color_result!.r, color_result!.g, color_result!.b)
+}
+

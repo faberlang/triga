@@ -9,7 +9,6 @@ syntax = "importa ex \"triga:scene\" privata scene"
 # exempla/triga-scene-store-empty — empty SceneStore edge case demonstrations.
 
 importa ex "triga:scene" privata scene
-importa ex "triga:triga" privata triga
 
 incipit {
     fixum scene.SceneStore empty ← scene.scene_store()

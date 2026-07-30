@@ -27,24 +27,27 @@ is to keep the typed contract honest and modular.
 
 | Category | Types | Module | Mirror |
 | -------- | ----- | ------ | ------ |
-| **Math** | `Vector2`, `Vector3`, `Vector4`, `Matrix3`, `Matrix4`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray` | `triga:triga` | THREE.Vector2 etc. |
-| **Scene Graph** | `Object3D`, `Scene`, `PerspectiveCamera`, `OrthographicCamera`, `Light`, … | `triga:triga` | THREE.Object3D etc. |
-| **Geometry (SoA shape)** | `MeshGeometry` | `triga:triga` | THREE.BufferGeometry (field shape) |
+| **Math** | `Vector2`…`Ray`, matrices, quaternions, face-code tables | `triga:math` | THREE.Vector2 etc. |
+| **Scene Graph** | `Object3D`, `Scene`, cameras, lights | `triga:graph` | THREE.Object3D etc. |
+| **Geometry (SoA shape)** | `MeshGeometry` | `triga:material` | THREE.BufferGeometry (field shape) |
 | **Geometry (GPU layout)** | `BufferGeometry`, `BufferAttribute`, draw batches | `triga:geometry` | buffer / vertex layout |
-| **Primitives** | `plane_geometry`, `box_geometry`, `sphere_geometry`, … | `triga:primitives` | THREE.*Geometry helpers |
-| **Material** | `Material`, `MeshStandardMaterial`, `MeshBasicMaterial`, `MeshPhongMaterial` | `triga:triga` | THREE.Material etc. |
-| **Mesh** | `Mesh` | `triga:triga` | THREE.Mesh |
-| **Scene store** | `SceneStore`, `SceneHandle`, `ResourceHandle`, `visibilia`, … | `triga:scene` | stable identity graph |
+| **Primitives** | `plane_geometry`, `box_geometry`, … | `triga:primitives` | THREE.*Geometry helpers |
+| **Material / Mesh** | `Material` family, `Mesh` | `triga:material` | THREE.Material / Mesh |
+| **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | stable identity graph |
+| **Resources** | `ResourceHandle`, lifecycle free functions | `triga:scene/resource` | host resource identity |
 
-Full module ownership: [`docs/module-map.md`](docs/module-map.md).
+Full module ownership: [`docs/module-map.md`](docs/module-map.md) (Norma-style multi-module package).
 
 ## Import
 
 ```fab
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
+importa ex "triga:graph" privata graph
+importa ex "triga:material" privata material
 importa ex "triga:geometry" privata geometry
 importa ex "triga:primitives" privata primitives
 importa ex "triga:scene" privata scene
+importa ex "triga:scene/resource" privata resource
 ```
 
 Radix and `faber` resolve provider imports from the shared library home:
@@ -75,9 +78,8 @@ faberlang/
 - **Three.js field alignment**: field names use Faber's snake_case convention
   but the structural hierarchy mirrors three.js (Object3D → Mesh → Scene,
   Material → MeshStandardMaterial, Camera → PerspectiveCamera).
-- **Module seams**: buffer layout (`geometry`) vs mesh generators (`primitives`)
-  vs scene identity (`scene`) vs shape/math carriers (`triga`). See
-  `docs/module-map.md`.
+- **Module seams**: Norma-style leaves — `math` / `graph` / `material` /
+  `geometry` / `primitives` / `scene` / `scene/resource`. See `docs/module-map.md`.
 
 ## Layout
 

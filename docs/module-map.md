@@ -4,64 +4,88 @@
 **Date:** 2026-07-30
 
 Triga is a multi-file Faber source library under `src/`. Each `.fab` file is a
-provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
+provider module path: `triga:<stem>` resolves to `src/<stem>.fab`. Nested paths
+use directories, Norma-style: `triga:scene/resource` → `src/scene/resource.fab`.
+
+## Pattern (from Norma)
+
+| Pattern | Norma example | Triga example |
+| --- | --- | --- |
+| Flat leaf | `norma:csv`, `norma:chorda` | `triga:math`, `triga:geometry` |
+| Cross-module import | `csv` imports `chorda` | `primitives` imports `geometry` |
+| Nested package | `norma:caelum/terminus` | `triga:scene/resource` |
+| Facade | `norma:caelum` composes submodules | `triga:triga` documents leaves (no genera) |
+
+There is **no type re-export**. Consumers import the leaf that owns the genus.
 
 ## Public modules
 
 | Import | File | Owns |
 | --- | --- | --- |
-| `triga:triga` | `src/triga.fab` | Three.js-shaped math carriers (`Vector*`, `Matrix*`, `Quaternion`, …), scene-graph genera (`Object3D`, cameras, lights), materials, mesh, face-code helpers, transform payload |
-| `triga:geometry` | `src/geometry.fab` | GPU-facing buffer layout: `BufferAttribute`, `BufferGeometry`, draw batches, vertex-layout reflection, free constructors, visible-face payload facts |
-| `triga:primitives` | `src/primitives.fab` | Deterministic mesh generators (`plane_geometry`, `box_geometry`, …) and wire/draw helpers that build `BufferGeometry` |
-| `triga:scene` | `src/scene.fab` | Stable scene identity: handles, `SceneStore`, traversal, `visibilia`, resource lifecycle free functions |
-| `triga:triga_proba` | `src/triga_proba.fab` | Proba / property-test helpers (not a product API) |
+| `triga:math` | `src/math.fab` | `Vector*`, `Matrix*`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray`, transform payload, face-code tables, free math constructors |
+| `triga:graph` | `src/graph.fab` | `Object3D`, `Scene`, cameras, lights |
+| `triga:material` | `src/material.fab` | `Material` family, `Mesh`, `MeshGeometry`, material free helpers |
+| `triga:face` | `src/face.fab` | `FaceQuad` + unit/colored quad builders (depends on math + geometry) |
+| `triga:geometry` | `src/geometry.fab` | `BufferGeometry`, attributes, draw batches, vertex-layout reflection |
+| `triga:primitives` | `src/primitives.fab` | Deterministic mesh generators (`plane_geometry`, `box_geometry`, …) |
+| `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` |
+| `triga:scene/resource` | `src/scene/resource.fab` | `ResourceHandle` + lifecycle free functions |
+| `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
+| `triga:triga_proba` | `src/triga_proba.fab` | Proba helpers |
 
 ## Dependency direction
 
 ```text
-primitives ──imports──► geometry
-triga      ──imports──► geometry   (colored-quad mesh append only)
-scene      ──imports──► triga      (Matrix4, TransformPayload)
+math                    (leaf)
+graph        ──► math
+material     ──► math, graph
+face         ──► math, geometry
+geometry                (leaf)
+primitives   ──► geometry
+scene/resource          (leaf)
+scene        ──► math, scene/resource
+triga (facade) ──► math, graph, material, face   (docs only)
 ```
 
-No cycles. Hosts and apps import the modules they need; there is no umbrella
-re-export file.
+No cycles.
 
-## Boundary rules
+## Import examples
 
-1. **`geometry`** is the render-pipeline buffer contract consumed by Radix MIR
-   and the WebGPU host path. Keep attribute / draw / layout types here.
-2. **`primitives`** is CPU-side mesh construction. It may call geometry
-   constructors; it must not grow GPU reflection enums.
-3. **`triga`** is the three.js-familiar shape contract (math + scene graph
-   types + materials). Spatial `Box3` / `Sphere` live here; geometry's
-   `BoundingBox` / `BoundingSphere` are mesh-payload bounds.
-4. **`scene`** is backend-agnostic identity storage and draw-packet projection.
-   Resource lifecycle free functions stay on this module until a second caller
-   forces a split.
+```fab
+importa ex "triga:math" privata math
+importa ex "triga:graph" privata graph
+importa ex "triga:material" privata material
+importa ex "triga:geometry" privata geometry
+importa ex "triga:primitives" privata primitives
+importa ex "triga:scene" privata scene
+importa ex "triga:scene/resource" privata resource
+```
 
-## Size targets (hygiene)
+```fab
+fixum math.Vector3 p ← math.vector3(1.0, 2.0, 3.0)
+fixum resource.ResourceHandle h ← resource.ResourceHandle { index = 0, generation = 1 }
+varia scene.SceneStore store ← scene.scene_store()
+```
 
-Prefer production modules under ~1000 lines when a natural seam exists.
-After the 2026-07-30 split (approximate):
+## Size (approx after split)
 
-| File | Lines | Note |
-| --- | --- | --- |
-| `geometry.fab` | ~1300 | Buffer core still large; method body is the next seam |
-| `primitives.fab` | ~470 | Shape generators only |
-| `triga.fab` | ~1200 | Math + materials; next optional seam |
-| `scene.fab` | ~1470 | Store + resource lifecycle free functions |
+| File | Lines |
+| --- | --- |
+| `math.fab` | ~850 |
+| `geometry.fab` | ~1320 |
+| `scene.fab` | ~930 |
+| `scene/resource.fab` | ~550 |
+| `primitives.fab` | ~470 |
+| `material.fab` | ~180 |
+| `graph.fab` | ~120 |
+| `face.fab` | ~40 |
 
-Further splits (math vs materials inside `triga`, resource lifecycle inside
-`scene`) wait until import churn is intentional.
+`geometry.fab` is still large (BufferGeometry methods). Next seam only if a second
+importer wants a pure layout-facts module.
 
 ## Validation
-
-From the Triga repo root:
 
 ```bash
 ./scripta/check-source
 ./scripta/check-compile
 ```
-
-See `README.md` for the full capability / hello-voxel gate list.

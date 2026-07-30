@@ -1,14 +1,10 @@
 # Backend-agnostic geometry attributes and validation.
 #
-# MODULE BOUNDARY (geometry.fab vs primitives.fab vs triga.fab):
-#   - geometry.fab: rendering-pipeline geometry — BufferGeometry with
-#     list-of-attributes layout, indexed primitives, draw commands, vertex
-#     layouts, and format codes. Consumed by radix MIR for GPU buffer layout.
-#   - primitives.fab: deterministic mesh generators (plane, box, sphere, …).
-#   - triga.fab: shape contracts (MeshGeometry/three.js mirror), spatial math
-#     (Box3/Sphere), material pipeline facts.
-#   - Do not add three.js mirror types to geometry.fab; do not add
-#     render-pipeline types to triga.fab; do not add generators here.
+# Public import: importa ex "triga:geometry" privata geometry
+# MODULE BOUNDARY (see docs/module-map.md):
+#   - geometry: BufferGeometry, attributes, draw batches, vertex layouts.
+#   - primitives: mesh generators built on geometry constructors.
+#   - math / graph / material: three.js-shaped carriers (not buffer layout).
 #
 
 discretio PrimitiveTopology {

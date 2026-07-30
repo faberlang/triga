@@ -6,16 +6,17 @@ canonical = true
 summary = "Stable heterogeneous Triga scene store: insertion, attachment, visibility, and traversal."
 +++
 importa ex "triga:scene" privata scene
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
+importa ex "triga:scene/resource" privata resource
 
 incipit {
     # Resource handles
-    fixum scene.ResourceHandle geom_handle ← scene.ResourceHandle { index = 7, generation = 2 }
-    fixum scene.ResourceHandle mat_handle ← scene.ResourceHandle { index = 3, generation = 1 }
+    fixum resource.ResourceHandle geom_handle ← resource.ResourceHandle { index = 7, generation = 2 }
+    fixum resource.ResourceHandle mat_handle ← resource.ResourceHandle { index = 3, generation = 1 }
 
     # Resource transitions
-    fixum scene.ResourceTransition stable ← scene.resource_transition_unchanged(geom_handle)
-    fixum scene.ResourceTransition replaced ← scene.resource_transition_replaced(mat_handle)
+    fixum resource.ResourceTransition stable ← resource.resource_transition_unchanged(geom_handle)
+    fixum resource.ResourceTransition replaced ← resource.resource_transition_replaced(mat_handle)
 
     # Scene construction and insertion (Imperativus — requires varia)
     varia scene.SceneStore store ← scene.scene_store()
@@ -33,7 +34,7 @@ incipit {
     # Traversal
 
     # Visibilia query (single traversal, multiple accessors)
-    fixum scene.VisibiliaRetium ∪ nihil visibilia ← scene.visibilia(store, mesh_handle, triga.matrix4_identitas())
+    fixum scene.VisibiliaRetium ∪ nihil visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
     nota visibilia
 
     # Removal

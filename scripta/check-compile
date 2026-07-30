@@ -38,17 +38,13 @@ fi
 export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
 
-echo "check-compile: parsing src/triga.fab"
-"$RADIX_BIN" check "$ROOT/src/triga.fab"
-
-echo "check-compile: parsing src/geometry.fab"
-"$RADIX_BIN" check "$ROOT/src/geometry.fab"
-
-echo "check-compile: parsing src/primitives.fab"
-"$RADIX_BIN" check "$ROOT/src/primitives.fab"
-
-echo "check-compile: parsing src/scene.fab"
-"$RADIX_BIN" check "$ROOT/src/scene.fab"
+echo "check-compile: parsing leaf modules"
+for mod in math graph material face geometry primitives scene triga; do
+  echo "check-compile: parsing src/${mod}.fab"
+  "$RADIX_BIN" check "$ROOT/src/${mod}.fab"
+done
+echo "check-compile: parsing src/scene/resource.fab"
+"$RADIX_BIN" check "$ROOT/src/scene/resource.fab"
 
 echo "check-compile: checking geometry attribute exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"

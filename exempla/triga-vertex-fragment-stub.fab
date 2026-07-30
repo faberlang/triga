@@ -10,7 +10,6 @@ summary = "Minimal @vertex and @fragment function stubs for the source graphics 
 # Minimal @vertex / @fragment stub fixture for the source graphics pipeline.
 # Demonstrates the annotation contract that radix lowers to shader stages.
 
-importa ex "triga:triga" privata triga
 
 @ vertex
 functio hello_voxel_vertex() → vacuum {

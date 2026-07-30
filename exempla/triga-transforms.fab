@@ -5,81 +5,81 @@ category = "library"
 canonical = true
 summary = "Triga Vector3 and Matrix4 transform-chain demonstration."
 +++
-importa ex "triga:triga" privata triga
+importa ex "triga:math" privata math
 
 incipit {
     # Matrix4 transform chain: translate, scale, compose, apply
-    fixum triga.Matrix4 translation ← triga.matrix4_translatio(triga.vector3(5.0, -2.0 ∷ f32, 3.0))
-    fixum triga.Matrix4 scale ← triga.matrix4_scala(triga.vector3(2.0, 3.0, 4.0))
-    fixum triga.Matrix4 world ← translation.multiplicata(scale)
-    fixum triga.Vector3 local ← triga.vector3(1.0, 2.0, -1.0 ∷ f32)
-    fixum triga.Vector3 transformed ← world.applica_punctum(local)
+    fixum math.Matrix4 translation ← math.matrix4_translatio(math.vector3(5.0, -2.0 ∷ f32, 3.0))
+    fixum math.Matrix4 scale ← math.matrix4_scala(math.vector3(2.0, 3.0, 4.0))
+    fixum math.Matrix4 world ← translation.multiplicata(scale)
+    fixum math.Vector3 local ← math.vector3(1.0, 2.0, -1.0 ∷ f32)
+    fixum math.Vector3 transformed ← world.applica_punctum(local)
     nota transformed.x
 
     # TransformPayload
-    fixum triga.TransformPayload ∪ nihil packed_transform_result ← triga.transform_payload(world, scale)
-    fixum triga.TransformPayload packed_transform ← triga.TransformPayload { values = packed_transform_result!.values }
+    fixum math.TransformPayload ∪ nihil packed_transform_result ← math.transform_payload(world, scale)
+    fixum math.TransformPayload packed_transform ← math.TransformPayload { values = packed_transform_result!.values }
 
     # Matrix4 inverse
-    fixum triga.Matrix4 ∪ nihil inverse ← world.inversa_affinis()
-    fixum triga.Matrix4 inverse_value ← triga.Matrix4 { elements = inverse!.elements }
-    fixum triga.Vector3 round_trip ← inverse_value.applica_punctum(transformed)
+    fixum math.Matrix4 ∪ nihil inverse ← world.inversa_affinis()
+    fixum math.Matrix4 inverse_value ← math.Matrix4 { elements = inverse!.elements }
+    fixum math.Vector3 round_trip ← inverse_value.applica_punctum(transformed)
     nota round_trip.x
 
     # Quaternion operations
-    fixum triga.Quaternion identity_rotation ← triga.quaternion(0.0, 0.0, 0.0, 1.0)
-    fixum triga.Quaternion stable_rotation ← identity_rotation.interpolata(identity_rotation, 0.5)
-    fixum triga.Quaternion normalized_rotation ← triga.quaternion(0.0, 0.0, 0.0, 2.0).normata()
-    fixum triga.Quaternion multiplied_rotation ← identity_rotation.multiplicata(normalized_rotation)
+    fixum math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
+    fixum math.Quaternion stable_rotation ← identity_rotation.interpolata(identity_rotation, 0.5)
+    fixum math.Quaternion normalized_rotation ← math.quaternion(0.0, 0.0, 0.0, 2.0).normata()
+    fixum math.Quaternion multiplied_rotation ← identity_rotation.multiplicata(normalized_rotation)
     nota multiplied_rotation.w
 
     # Euler operations
-    fixum triga.Euler zero_euler ← triga.euler(0.0, 0.0, 0.0)
-    fixum triga.Quaternion ∪ nihil zero_euler_quaternion ← zero_euler.ad_quaternionem()
+    fixum math.Euler zero_euler ← math.euler(0.0, 0.0, 0.0)
+    fixum math.Quaternion ∪ nihil zero_euler_quaternion ← zero_euler.ad_quaternionem()
     nota zero_euler_quaternion
 
     # Camera direction
-    fixum triga.Vector3 forward_zero ← triga.camera_prorsum_planus_ex_yaw(0.0)
+    fixum math.Vector3 forward_zero ← math.camera_prorsum_planus_ex_yaw(0.0)
     nota forward_zero.z
-    fixum triga.Vector3 right_zero ← triga.camera_dextra_ex_yaw(0.0)
+    fixum math.Vector3 right_zero ← math.camera_dextra_ex_yaw(0.0)
     nota right_zero.x
-    fixum triga.Vector3 forward_turn ← triga.camera_prorsum_planus_ex_yaw(90.0)
+    fixum math.Vector3 forward_turn ← math.camera_prorsum_planus_ex_yaw(90.0)
     nota forward_turn.x
 
     # Box3 operations
-    fixum triga.Box3 bounds ← triga.Box3 { min = triga.vector3(-1.0 ∷ f32, -1.0 ∷ f32, -1.0 ∷ f32), max = triga.vector3(1.0, 1.0, 1.0) }
-    fixum triga.Box3 shifted_bounds ← bounds.translata(triga.vector3(2.0, 0.0, 0.0))
+    fixum math.Box3 bounds ← math.Box3 { min = math.vector3(-1.0 ∷ f32, -1.0 ∷ f32, -1.0 ∷ f32), max = math.vector3(1.0, 1.0, 1.0) }
+    fixum math.Box3 shifted_bounds ← bounds.translata(math.vector3(2.0, 0.0, 0.0))
 
     # Box3 construction variants
-    fixum triga.Box3 ∪ nihil minmax_bounds ← triga.box3_ex_minimo_et_maximo(triga.vector3(-2.0 ∷ f32, -3.0 ∷ f32, -4.0 ∷ f32), triga.vector3(2.0, 3.0, 4.0))
+    fixum math.Box3 ∪ nihil minmax_bounds ← math.box3_ex_minimo_et_maximo(math.vector3(-2.0 ∷ f32, -3.0 ∷ f32, -4.0 ∷ f32), math.vector3(2.0, 3.0, 4.0))
     nota minmax_bounds
-    fixum triga.Box3 ∪ nihil player_box ← triga.box3_ex_minimo_et_mensura(triga.vector3(-0.3 ∷ f32, 0.0, -0.3 ∷ f32), triga.vector3(0.6, 1.8, 0.6))
+    fixum math.Box3 ∪ nihil player_box ← math.box3_ex_minimo_et_mensura(math.vector3(-0.3 ∷ f32, 0.0, -0.3 ∷ f32), math.vector3(0.6, 1.8, 0.6))
     nota player_box
 
     # Sphere and Plane
-    fixum triga.Sphere sphere ← triga.Sphere { center = triga.vector3(0.0, 0.0, 0.0), radius = 2.0 }
-    fixum triga.Plane plane ← triga.Plane { normal = triga.vector3(0.0, 1.0, 0.0), constant = -2.0 ∷ f32 }
+    fixum math.Sphere sphere ← math.Sphere { center = math.vector3(0.0, 0.0, 0.0), radius = 2.0 }
+    fixum math.Plane plane ← math.Plane { normal = math.vector3(0.0, 1.0, 0.0), constant = -2.0 ∷ f32 }
 
     # Ray-Box intersection
-    fixum triga.Ray ray ← triga.Ray { origin = triga.vector3(0.0, 0.0, 0.0), direction = triga.vector3(1.0, 0.0, 0.0) }
-    fixum triga.Vector3 ray_point ← ray.punctum(3.0)
+    fixum math.Ray ray ← math.Ray { origin = math.vector3(0.0, 0.0, 0.0), direction = math.vector3(1.0, 0.0, 0.0) }
+    fixum math.Vector3 ray_point ← ray.punctum(3.0)
     nota ray_point.x
-    fixum triga.RayBox3Hit ∪ nihil ray_box_hit ← ray.box3_hit(shifted_bounds, 6.0)
-    fixum triga.RayBox3Hit ray_box_hit_value ← triga.RayBox3Hit { distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal }
+    fixum math.RayBox3Hit ∪ nihil ray_box_hit ← ray.box3_hit(shifted_bounds, 6.0)
+    fixum math.RayBox3Hit ray_box_hit_value ← math.RayBox3Hit { distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal }
 
     # Face code utilities
 
     # Camera yaw-pitch facts
-    fixum triga.CameraYawPitchFacts camera_facts ← triga.camera_yaw_pitch_facts(triga.vector3(2.0, 3.0, 4.0), 90.0, 100.0)
+    fixum math.CameraYawPitchFacts camera_facts ← math.camera_yaw_pitch_facts(math.vector3(2.0, 3.0, 4.0), 90.0, 100.0)
     nota camera_facts.clamped_pitch_degrees
     nota camera_facts.direction.y
 
     # Camera planar motion
-    fixum triga.Vector3 forward_motion ← triga.camera_motus_planus_ex_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
+    fixum math.Vector3 forward_motion ← math.camera_motus_planus_ex_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
     nota forward_motion.z
 
     # Color interpolation and matrix extras
-    fixum triga.Color midpoint_color ← triga.color_interpolata(triga.Color { r = 0.0, g = 0.0, b = 0.0 }, triga.Color { r = 1.0, g = 0.5, b = 0.25 }, 0.5)
+    fixum math.Color midpoint_color ← math.color_interpolata(math.Color { r = 0.0, g = 0.0, b = 0.0 }, math.Color { r = 1.0, g = 0.5, b = 0.25 }, 0.5)
     nota midpoint_color.r
-    fixum triga.Matrix4 transposed_translation ← translation.transposita()
+    fixum math.Matrix4 transposed_translation ← translation.transposita()
 }
