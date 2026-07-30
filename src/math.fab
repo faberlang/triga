@@ -389,7 +389,7 @@ genus Box3 {
     }
 
     functio translata(de Vector3 offset) → Box3 {
-        si ego.validum() ≡ falsum ergo redde ego
+        si ego.validum() ≡ falsum ergo redde Box3 { min = ego.min, max = ego.max }
         redde Box3 { min = ego.min.addita(offset), max = ego.max.addita(offset) }
     }
 }

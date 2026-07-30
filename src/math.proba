@@ -1,4 +1,6 @@
-importa ex "triga:math" privata math
+# Co-located package test: local import exercises this package's math unit.
+# External apps still use `importa ex "triga:math"`.
+importa ex "./math" privata math
 
 probandum "triga vector3 methods" {
     proba "addita combines two vectors" {
