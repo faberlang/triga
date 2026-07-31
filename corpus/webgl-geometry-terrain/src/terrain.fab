@@ -1,0 +1,226 @@
+# Procedural heightfield terrain for the triga corpus — recreation reference:
+# three.js `webgl_geometry_terrain`. One generated grid mesh with per-vertex
+# normals and elevation-ramp colors, plus a flat water plane in the valleys.
+#
+# Deterministic value noise (integer lattice hash + smoothstep interpolation,
+# three octaves). Normals come from central differences of the same height
+# function, so lighting follows the land.
+
+importa ex "triga:math" privata math
+
+genus TerrainMesh {
+    textus name
+    numerus vertex_count
+    numerus index_count
+    lista<f32> vertex_payload
+    lista<u32> index_payload
+}
+
+fixum numerus GRID_SEGMENTS ← 48
+fixum f32 GRID_EXTENT ← 80.0
+fixum f32 HEIGHT_BASE ← 5.2
+fixum f32 HEIGHT_RANGE ← 10.5
+fixum f32 WATER_LEVEL ← 0.0 - 1.3
+
+# --- Deterministic value noise --------------------------------------------
+
+@ privata
+functio _lattice_hash(numerus ix, numerus iy) → f32 {
+    fixum numerus h ← (ix * 7349 + iy * 15683 + ix * iy * 7919 + 104729) % 4096
+    redde (h ↦ f32) / 4096.0
+}
+
+@ privata
+functio _smoothstep(f32 t) → f32 {
+    redde t * t * (3.0 - 2.0 * t)
+}
+
+@ privata
+functio _value_noise(f32 x, f32 y) → f32 {
+    fixum numerus ix ← x ↦ numerus
+    fixum numerus iy ← y ↦ numerus
+    fixum f32 sx ← _smoothstep(x - (ix ↦ f32))
+    fixum f32 sy ← _smoothstep(y - (iy ↦ f32))
+
+    fixum f32 v00 ← _lattice_hash(ix, iy)
+    fixum f32 v10 ← _lattice_hash(ix + 1, iy)
+    fixum f32 v01 ← _lattice_hash(ix, iy + 1)
+    fixum f32 v11 ← _lattice_hash(ix + 1, iy + 1)
+
+    fixum f32 top ← v00 + (v10 - v00) * sx
+    fixum f32 bottom ← v01 + (v11 - v01) * sx
+    redde top + (bottom - top) * sy
+}
+
+# Height above/below the waterline. +400 keeps lattice coordinates positive
+# so f32 → numerus truncation behaves like floor.
+functio terrain_height(f32 wx, f32 wz) → f32 {
+    fixum f32 sx ← wx + 400.0
+    fixum f32 sz ← wz + 400.0
+    fixum f32 n1 ← _value_noise(sx * 0.055, sz * 0.055)
+    fixum f32 n2 ← _value_noise(sx * 0.11, sz * 0.11)
+    fixum f32 n3 ← _value_noise(sx * 0.22, sz * 0.22)
+    redde n1 * 6.0 + n2 * 3.0 + n3 * 1.5 - HEIGHT_BASE
+}
+
+# --- Local f32 helpers (triga:math keeps these private) --------------------
+
+@ privata
+functio _radix_f32(f32 value) → f32 {
+    si value ≤ 0.0 ergo redde 0.0
+    varia f32 scaled ← value
+    varia f32 scale ← 1.0
+    dum scaled > 4.0 {
+        scaled ← scaled * 0.25
+        scale ← scale * 2.0
+    }
+    dum scaled < 0.25 {
+        scaled ← scaled * 4.0
+        scale ← scale * 0.5
+    }
+    varia f32 estimate ← 1.0
+    varia numerus iteration ← 0
+    dum iteration < 8 {
+        estimate ← (estimate + scaled / estimate) * 0.5
+        iteration ← iteration + 1
+    }
+    redde estimate * scale
+}
+
+@ privata
+functio _clamp01(f32 value) → f32 {
+    si value < 0.0 ergo redde 0.0
+    si value > 1.0 ergo redde 1.0
+    redde value
+}
+
+# --- Elevation color ramp ---------------------------------------------------
+
+@ privata
+functio _elevation_color(f32 height) → math.Color {
+    fixum f32 t ← _clamp01((height + HEIGHT_BASE) / HEIGHT_RANGE)
+    fixum math.Color sand ← math.Color { r = 0.76, g = 0.70, b = 0.50 }
+    fixum math.Color grass ← math.Color { r = 0.29, g = 0.49, b = 0.25 }
+    fixum math.Color rock ← math.Color { r = 0.45, g = 0.42, b = 0.40 }
+    fixum math.Color snow ← math.Color { r = 0.90, g = 0.92, b = 0.95 }
+
+    si t < 0.35 ergo redde math.color_interpolata(sand, grass, t / 0.35)
+    si t < 0.70 ergo redde math.color_interpolata(grass, rock, (t - 0.35) / 0.35)
+    redde math.color_interpolata(rock, snow, (t - 0.70) / 0.30)
+}
+
+# --- Mesh generation --------------------------------------------------------
+
+@ privata
+functio _terrain_mesh() → TerrainMesh {
+    fixum numerus verts_per_row ← GRID_SEGMENTS + 1
+    fixum f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
+    fixum f32 half ← GRID_EXTENT * 0.5
+
+    varia lista<f32> payload ← vacua
+
+    varia numerus gz ← 0
+    dum gz < verts_per_row {
+        fixum f32 wz ← 0.0 - half + (gz ↦ f32) * cell
+        varia numerus gx ← 0
+        dum gx < verts_per_row {
+            fixum f32 wx ← 0.0 - half + (gx ↦ f32) * cell
+            fixum f32 wy ← terrain_height(wx, wz)
+
+            # Central-difference normal of the height function.
+            fixum f32 hl ← terrain_height(wx - cell, wz)
+            fixum f32 hr ← terrain_height(wx + cell, wz)
+            fixum f32 hd ← terrain_height(wx, wz - cell)
+            fixum f32 hu ← terrain_height(wx, wz + cell)
+            fixum f32 nx ← hl - hr
+            fixum f32 ny ← 2.0 * cell
+            fixum f32 nz ← hd - hu
+            fixum f32 nlen ← _radix_f32(nx * nx + ny * ny + nz * nz)
+
+            fixum math.Color color ← _elevation_color(wy)
+
+            payload.appende(wx)
+            payload.appende(wy)
+            payload.appende(wz)
+            payload.appende(nx / nlen)
+            payload.appende(ny / nlen)
+            payload.appende(nz / nlen)
+            payload.appende(color.r)
+            payload.appende(color.g)
+            payload.appende(color.b)
+            gx ← gx + 1
+        }
+        gz ← gz + 1
+    }
+
+    varia lista<u32> indices ← vacua
+    varia numerus cz ← 0
+    dum cz < GRID_SEGMENTS {
+        varia numerus cx ← 0
+        dum cx < GRID_SEGMENTS {
+            fixum u32 a ← ((cz * verts_per_row + cx) ↦ u32)
+            fixum u32 b ← ((cz * verts_per_row + cx + 1) ↦ u32)
+            fixum u32 c ← (((cz + 1) * verts_per_row + cx) ↦ u32)
+            fixum u32 d ← (((cz + 1) * verts_per_row + cx + 1) ↦ u32)
+            indices.appende(a)
+            indices.appende(c)
+            indices.appende(b)
+            indices.appende(b)
+            indices.appende(c)
+            indices.appende(d)
+            cx ← cx + 1
+        }
+        cz ← cz + 1
+    }
+
+    redde TerrainMesh {
+        name = "terrain",
+        vertex_count = verts_per_row * verts_per_row,
+        index_count = indices.longitudo(),
+        vertex_payload = payload,
+        index_payload = indices
+    }
+}
+
+@ privata
+functio _water_mesh() → TerrainMesh {
+    fixum f32 half ← GRID_EXTENT * 0.5
+    fixum f32 level ← WATER_LEVEL
+    varia lista<f32> payload ← vacua
+
+    # Four corners, normal up, deep-water blue.
+    fixum lista<f32> corners ← [
+        0.0 - half, level, 0.0 - half,
+        half, level, 0.0 - half,
+        half, level, half,
+        0.0 - half, level, half,
+    ]
+    varia numerus v ← 0
+    dum v < 4 {
+        payload.appende(corners[v * 3])
+        payload.appende(corners[v * 3 + 1])
+        payload.appende(corners[v * 3 + 2])
+        payload.appende(0.0)
+        payload.appende(1.0)
+        payload.appende(0.0)
+        payload.appende(0.20)
+        payload.appende(0.45)
+        payload.appende(0.60)
+        v ← v + 1
+    }
+
+    redde TerrainMesh {
+        name = "water",
+        vertex_count = 4,
+        index_count = 6,
+        vertex_payload = payload,
+        index_payload = [0, 2, 1, 0, 3, 2]
+    }
+}
+
+functio terrain_meshes() → lista<TerrainMesh> {
+    varia lista<TerrainMesh> meshes ← vacua
+    meshes.appende(_terrain_mesh())
+    meshes.appende(_water_mesh())
+    redde meshes
+}

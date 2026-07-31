@@ -1,0 +1,6 @@
+dist/
+target/
+public/
+src/shaders/
+faber.lock
+.serve.pid

@@ -1,0 +1,9 @@
+importa ex "./shapes" privata shapes
+
+genus CorpusGeometryManifest {
+    lista<shapes.CorpusMesh> objects
+}
+
+functio corpus_scene_geometry() → CorpusGeometryManifest {
+    redde CorpusGeometryManifest { objects = shapes.geometry_showcase_meshes() }
+}

@@ -31,11 +31,22 @@ is flattened to a top-level leaf (`triga:resource`, not `triga:scene/resource`).
 Full map: [`docs/module-map.md`](docs/module-map.md). API shape:
 [`docs/api-shape-policy.md`](docs/api-shape-policy.md).
 
+## Corpus
+
+`corpus/` holds browser-rendered demo scenes recreating three.js examples
+(`webgl-geometries/`, `webgl-geometry-terrain/`), one self-contained
+browser-app package per demo, with shared WebGPU host assets under
+`corpus/_host/`. Details and per-demo commands: [`corpus/README.md`](corpus/README.md).
+Demos should exercise the public `triga:*` surface and feed gaps back into the
+library (example: `BufferAttribute.float32_values()`), not grow workarounds.
+
 ## Rules
 
 - Keep public modules under `src/**/*.fab`.
 - Keep package tests as co-located `src/**/*.proba` (`name.fab` + `name.proba`).
 - Keep instructional demos under `exempla/**/*.fab`.
+- Keep three.js-reference browser demos under `corpus/<slug>/`; shared host
+  assets only under `corpus/_host/` (demo `public/` is generated, gitignored).
 - Do not add `@ externa` or `@ subsidia`.
 - Optional genus fields use `sponte`.
 - Prefer leaf imports; do not grow genera on the `triga:triga` facade.

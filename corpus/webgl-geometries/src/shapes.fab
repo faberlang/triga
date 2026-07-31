@@ -1,0 +1,99 @@
+# Primitive showcase for the triga corpus — recreation reference:
+# three.js `webgl_geometries`. One mesh per triga:primitives generator,
+# arranged on a static grid with per-mesh material colors.
+#
+# The primitives generate position/normal/uv BufferGeometry; the host
+# pipeline consumes interleaved pos3+normal3+color3, so colors are applied
+# here per vertex and grid offsets are baked into positions.
+
+importa ex "triga:geometry" privata geometry
+importa ex "triga:primitives" privata primitives
+
+genus CorpusMesh {
+    textus name
+    numerus vertex_count
+    numerus index_count
+    lista<f32> vertex_payload
+    lista<u32> index_payload
+}
+
+@ privata
+functio _float_values(de geometry.BufferAttribute attr) → lista<f32> ∪ nihil {
+    redde attr.float32_values()
+}
+
+@ privata
+functio _mesh_ex_geometry(
+    textus name,
+    de geometry.BufferGeometry geom,
+    f32 ox, f32 oy, f32 oz,
+    f32 r, f32 g, f32 b
+) → CorpusMesh ∪ nihil {
+    si geom.attributes.longitudo() < 2 ergo redde nihil
+    fixum lista<f32> ∪ nihil pos_opt ← _float_values(geom.attributes[0])
+    fixum lista<f32> ∪ nihil nrm_opt ← _float_values(geom.attributes[1])
+    si pos_opt est nihil aut nrm_opt est nihil ergo redde nihil
+    fixum lista<f32> pos ← pos_opt
+    fixum lista<f32> nrm ← nrm_opt
+    si pos.longitudo() ≠ geom.vertex_count * 3 ergo redde nihil
+    si nrm.longitudo() ≠ geom.vertex_count * 3 ergo redde nihil
+
+    varia lista<f32> payload ← vacua
+    varia numerus v ← 0
+    dum v < geom.vertex_count {
+        payload.appende(pos[v * 3] + ox)
+        payload.appende(pos[v * 3 + 1] + oy)
+        payload.appende(pos[v * 3 + 2] + oz)
+        payload.appende(nrm[v * 3])
+        payload.appende(nrm[v * 3 + 1])
+        payload.appende(nrm[v * 3 + 2])
+        payload.appende(r)
+        payload.appende(g)
+        payload.appende(b)
+        v ← v + 1
+    }
+
+    redde CorpusMesh {
+        name = name,
+        vertex_count = geom.vertex_count,
+        index_count = geom.indices.longitudo(),
+        vertex_payload = payload,
+        index_payload = geom.indices
+    }
+}
+
+@ privata
+functio _add_mesh(
+    lista<CorpusMesh> meshes,
+    textus name,
+    geometry.BufferGeometry ∪ nihil geom_opt,
+    f32 ox, f32 oy, f32 oz,
+    f32 r, f32 g, f32 b
+) → lista<CorpusMesh> {
+    si geom_opt est nihil ergo redde meshes
+    fixum CorpusMesh ∪ nihil mesh_opt ← _mesh_ex_geometry(name, geom_opt, ox, oy, oz, r, g, b)
+    si mesh_opt est nihil ergo redde meshes
+    fixum CorpusMesh mesh ← mesh_opt
+    si mesh.vertex_count ≡ 0 ergo redde meshes
+    meshes.appende(mesh)
+    redde meshes
+}
+
+# Grid layout mirroring the three.js geometries page: 4 columns × 2 rows.
+functio geometry_showcase_meshes() → lista<CorpusMesh> {
+    varia lista<CorpusMesh> meshes ← vacua
+
+    # Back row (z = -1.8).
+    meshes ← _add_mesh(meshes, "plane", primitives.plane_geometry(2.2, 2.2), -4.8 ∷ f32, 0.0, -1.8 ∷ f32, 0.90, 0.55, 0.45)
+    meshes ← _add_mesh(meshes, "box", primitives.box_geometry(1.5, 1.5, 1.5), -1.6 ∷ f32, 0.0, -1.8 ∷ f32, 0.45, 0.70, 0.90)
+    meshes ← _add_mesh(meshes, "circle", primitives.circle_geometry(1.1), 1.6, 0.0, -1.8 ∷ f32, 0.55, 0.85, 0.55)
+    meshes ← _add_mesh(meshes, "sphere", primitives.sphere_geometry(1.1), 4.8, 0.0, -1.8 ∷ f32, 0.90, 0.75, 0.40)
+
+    # Front row (z = +1.8).
+    meshes ← _add_mesh(meshes, "cylinder", primitives.cylinder_geometry(0.85, 1.8), -4.8 ∷ f32, 0.0, 1.8, 0.75, 0.55, 0.90)
+    meshes ← _add_mesh(meshes, "cone", primitives.cone_geometry(1.0, 1.8), -1.6 ∷ f32, 0.0, 1.8, 0.45, 0.85, 0.80)
+    meshes ← _add_mesh(meshes, "torus", primitives.torus_geometry(0.95, 0.35), 1.6, 0.0, 1.8, 0.90, 0.50, 0.65)
+    meshes ← _add_mesh(meshes, "slab", primitives.box_geometry(1.9, 0.6, 1.1), 4.8, 0.0, 1.8, 0.65, 0.65, 0.70)
+
+    redde meshes
+}

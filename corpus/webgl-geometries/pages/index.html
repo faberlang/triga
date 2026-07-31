@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Triga corpus — geometries</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+  </head>
+  <body>
+    <main id="triga-corpus-geometries" class="corpus-shell">
+      <section class="corpus-stage" aria-label="Triga corpus geometry showcase">
+        <canvas class="triga-canvas" tabindex="0"></canvas>
+        <div class="corpus-overlay">
+          <h1>Triga corpus — geometries</h1>
+          <p>triga:primitives showcase · three.js webgl_geometries reference</p>
+          <div class="corpus-status">loading</div>
+        </div>
+        <div class="triga-facts" tabindex="0" aria-hidden="true"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { mountControllers } from "../faber-esm/faber-browser.js";
+      import { initHost } from "../public/host-init.js";
+
+      const root = globalThis.document.querySelector("#triga-corpus-geometries");
+      const facts = globalThis.document.querySelector(".triga-facts");
+
+      async function main() {
+        try {
+          const runtime = mountControllers(globalThis.document);
+          if (runtime.failures?.length) {
+            console.error("controller mount failures", runtime.failures);
+          }
+        } catch (error) {
+          console.error("mountControllers failed", error);
+          if (root) {
+            root.setAttribute("data-mount-error", error.message);
+          }
+        }
+
+        try {
+          await initHost();
+        } catch (error) {
+          if (facts) {
+            facts.setAttribute("data-render-status", "host-failed");
+            facts.setAttribute("data-render-error", error.message);
+          }
+          console.error(error);
+        }
+      }
+
+      main();
+    </script>
+  </body>
+</html>
