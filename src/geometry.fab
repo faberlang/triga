@@ -98,6 +98,17 @@ genus BufferAttribute {
         }
     }
 
+    # Projection: float32 payload for consumers that interleave attributes
+    # into host vertex buffers. nihil when the attribute stores uint32 data.
+    # Cross-module `discerne` over AttributeData is not available to consumers,
+    # so the payload read lives here next to the enum.
+    functio float32_values() → lista<f32> ∪ nihil {
+        discerne ego.data {
+            casu Float32Attribute fixum values { redde values }
+            casu Uint32Attribute fixum values { redde nihil }
+        }
+    }
+
     functio stride_bytes() → numerus {
         redde ego.component_width * ego.scalar_bytes()
     }
