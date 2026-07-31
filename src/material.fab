@@ -78,7 +78,7 @@ genus Mesh {
     MeshStandardMaterial ∪ MeshBasicMaterial ∪ MeshPhongMaterial material sponte
 }
 
-functio material(textus name) → Material {
+functio materia_ex_nomine(textus name) → Material {
     redde Material { name = name, side = 0, transparent = falsum, opacity = 1.0, depth_write = verum, depth_test = verum, alpha_test = 0.0 }
 }
 
@@ -121,7 +121,7 @@ functio material_pipeline_facts(de Material value) → MaterialPipelineFacts ∪
 }
 
 functio mesh_basic_material(textus name, de math.Color color) → MeshBasicMaterial ∪ nihil {
-    fixum Material base ← material(name)
+    fixum Material base ← materia_ex_nomine(name)
     si material_valida(base) ≡ falsum ergo redde nihil
     redde MeshBasicMaterial { base = base, color = color }
 }
