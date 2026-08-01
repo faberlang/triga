@@ -252,19 +252,19 @@ the two acknowledged items" until S1 lands.
 
 ### S1 — Domain seam repair (Horizon 1)
 
-**Status**: in progress (2026-08-01) — **DS-B lighting LANDED**, **DS-E geometry LANDED**
-(C1+C2, deviations D1–D4 recorded), **DS-G graph LANDED** (object/camera leaves + all
-consumer migrations + corpus demo `camera_controls` rename), **DS-S2 Phase 1 LANDED**
-(hosts extraction + fork merge, 8/8 harnesses green), **G1 faber TS-emitter fix LANDED**
-(recursive library module emit + binding-alias normalization; 632 faber tests pass).
-**Corpus browser builds GREEN for both demos** (build-level; runtime render gates on
-the P1.3 artifact regeneration, documented). **DS-A material→renderable UNBLOCKED** by
-the union probe (cross-module union construction works; union `casu` fails even
-same-module — consumers use the dedicated-accessor pattern; the `triga-types-untested`
-fixture needs repair; a radix interface bug blocks `triga:material.Mesh` +
-`triga:graph` co-import — probe during DS-A). **DS-D scene split PARKED** on G2
-(cross-module enum variants) + G3 (faber import-cycle rejection) — language-decision
-items. DS-S2 Phase 2 gated on 80 Stage 5; DS-E C3 rename gated on 80 Stage 4.
+**Status**: in progress (2026-08-01) — **S1 seam repair is effectively complete**:
+DS-B lighting, DS-E geometry (C1+C2), DS-G graph, DS-A material→renderable, and
+DS-Prim primitives all LANDED and committed (`6225bfa`…`9620ff6`); **DS-S2 Phase 1
+AND Phase 2 A/B/D LANDED** (hosts extraction, engine facade + explicit state
+machine, capability admission, scene-extractor, resource-manager, Demo B wired;
+14/14 harnesses green — hosts `49473e1`, `befe85c`); **G1 faber TS-emitter fix
+LANDED** (`34a826d`); **both corpus demo builds GREEN**; world-schema contract +
+P1.3 regeneration map + language-lane handoff frozen (`1c8e9ba`). **Remaining
+gated**: DS-S2 Phase 2 C+E (Demo A wiring + two-demo oracle acceptance — 80
+Stage 5), P1.3 artifact regeneration (80 Stage 4 graphics-MIR), DS-E C3 rename
+(80 Stage 4 reflection agreement), DS-D scene split (G2/G3 — language decision,
+handoff in `checkpoint/language-lane-handoff.md`), G1b hollow-facade emitter gap
+(radix TS-emitter lane).
 **Source**: [GOAL.md](GOAL.md) Horizon 1 and the current-to-target ownership
 corrections table; [checkpoint report](checkpoint/report.md) §§1–3, §8
 **Depends on**: S0 (seam schedule — frozen in the checkpoint report)
