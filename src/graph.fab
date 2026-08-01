@@ -1,119 +1,12 @@
-# Scene-graph shape contracts (Object3D, cameras, lights).
+# Scene-graph shape contracts (Object3D, cameras) — package map facade.
 #
 # Public import: importa ex "triga:graph" privata graph
-# Depends on: triga:math
-
-importa ex "triga:math" privata math
-
-genus Object3D {
-    math.Vector3 position
-    math.Euler rotation
-    math.Quaternion quaternion
-    math.Vector3 scale
-    math.Matrix4 matrix
-    lista<Object3D> children
-    bivalens visible = verum
-    textus name
-}
-
-genus Scene {
-    Object3D base
-    math.Color background sponte
-}
-
-genus PerspectiveCamera {
-    Object3D base
-    f32 fov = 50.0
-    f32 aspect = 1.0
-    f32 near = 0.1
-    f32 far = 2000.0
-
-    functio projectio() → math.Matrix4 ∪ nihil {
-        redde math.matrix4_perspectiva(ego.fov, ego.aspect, ego.near, ego.far)
-    }
-
-    functio projectio_facta() → PerspectiveCameraProjectionFacts ∪ nihil {
-        fixum math.Matrix4 ∪ nihil projection_result ← ego.projectio()
-        si projection_result est nihil ergo redde nihil
-        fixum math.Matrix4 projection ← math.Matrix4 { elements = projection_result!.elements }
-        si projection.validum() ≡ falsum ergo redde nihil
-        redde PerspectiveCameraProjectionFacts { fov_y_degrees = ego.fov, aspect = ego.aspect, near = ego.near, far = ego.far, projection_float_count = projection.elements.longitudo(), x_scale = (projection.elements)[0], y_scale = (projection.elements)[5], depth_scale = (projection.elements)[10] }
-    }
-
-    functio visus_projectio(de math.Vector3 eye, de math.Vector3 target, de math.Vector3 up) → math.Matrix4 ∪ nihil {
-        fixum math.Matrix4 ∪ nihil projection_result ← ego.projectio()
-        si projection_result est nihil ergo redde nihil
-        fixum math.Matrix4 ∪ nihil view_result ← math.matrix4_conspectus(eye, target, up)
-        si view_result est nihil ergo redde nihil
-        fixum math.Matrix4 projection ← math.Matrix4 { elements = projection_result!.elements }
-        fixum math.Matrix4 view ← math.Matrix4 { elements = view_result!.elements }
-        redde projection.multiplicata(view)
-    }
-
-    functio visus_projectio_facta(de math.Vector3 eye, de math.Vector3 target, de math.Vector3 up) → ViewProjectionFacts ∪ nihil {
-        fixum math.Matrix4 ∪ nihil view_projection_result ← ego.visus_projectio(eye, target, up)
-        si view_projection_result est nihil ergo redde nihil
-        fixum math.Matrix4 view_projection ← math.Matrix4 { elements = view_projection_result!.elements }
-        si view_projection.validum() ≡ falsum ergo redde nihil
-        redde ViewProjectionFacts { float_count = view_projection.elements.longitudo(), x_scale = (view_projection.elements)[0], y_scale = (view_projection.elements)[5], depth_scale = (view_projection.elements)[10], view_translation_z = (view_projection.elements)[14] }
-    }
-}
-
-genus PerspectiveCameraProjectionFacts {
-    f32 fov_y_degrees
-    f32 aspect
-    f32 near
-    f32 far
-    numerus projection_float_count
-    f32 x_scale
-    f32 y_scale
-    f32 depth_scale
-}
-
-genus ViewProjectionFacts {
-    numerus float_count
-    f32 x_scale
-    f32 y_scale
-    f32 depth_scale
-    f32 view_translation_z
-}
-
-genus OrthographicCamera {
-    Object3D base
-    f32 left
-    f32 right
-    f32 top
-    f32 bottom
-    f32 near = 0.1
-    f32 far = 2000.0
-}
-
-genus Light {
-    Object3D base
-    math.Color color
-    f32 intensity = 1.0
-}
-
-genus AmbientLight {
-    Light base
-}
-
-genus DirectionalLight {
-    Light base
-    math.Vector3 target_position
-}
-
-genus PointLight {
-    Light base
-    f32 distance = 0.0
-    f32 decay = 2.0
-}
-
-# =========================================================================
-# GEOMETRY
 #
-# Mirror THREE.BufferGeometry as MeshGeometry (renamed to avoid collision with
-# geometry.fab's rendering-pipeline BufferGeometry, which uses a list-of-attributes
-# layout instead of the flat structure-of-arrays layout modeled here).
-# =========================================================================
+# Prefer leaf modules (Norma style — one concern per import path):
+#   triga:graph/object   Object3D, Scene
+#   triga:graph/camera   PerspectiveCamera, OrthographicCamera, projection facts
+#
+# This file intentionally holds no genera. Import the leaf modules above.
 
+importa ex "triga:graph/object" privata object
+importa ex "triga:graph/camera" privata camera

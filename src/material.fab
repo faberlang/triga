@@ -1,10 +1,10 @@
 # Materials, mesh binding, and mesh geometry shape contracts.
 #
 # Public import: importa ex "triga:material" privata material
-# Depends on: triga:math, triga:graph
+# Depends on: triga:math, triga:graph/object
 
 importa ex "triga:math" privata math
-importa ex "triga:graph" privata graph
+importa ex "triga:graph/object" privata object
 
 genus MeshGeometry {
     lista<f32> positions
@@ -73,7 +73,7 @@ genus MeshPhongMaterial {
 # =========================================================================
 
 genus Mesh {
-    graph.Object3D base
+    object.Object3D base
     MeshGeometry geometry
     MeshStandardMaterial ∪ MeshBasicMaterial ∪ MeshPhongMaterial material sponte
 }

@@ -1,0 +1,74 @@
+# Camera shape contracts (PerspectiveCamera, OrthographicCamera, projection facts).
+#
+# Public import: importa ex "triga:graph/camera" privata camera
+# Depends on: triga:math, triga:graph/object
+
+importa ex "triga:math" privata math
+importa ex "triga:graph/object" privata object
+
+genus PerspectiveCamera {
+    object.Object3D base
+    f32 fov = 50.0
+    f32 aspect = 1.0
+    f32 near = 0.1
+    f32 far = 2000.0
+
+    functio projectio() → math.Matrix4 ∪ nihil {
+        redde math.matrix4_perspectiva(ego.fov, ego.aspect, ego.near, ego.far)
+    }
+
+    functio projectio_facta() → PerspectiveCameraProjectionFacts ∪ nihil {
+        fixum math.Matrix4 ∪ nihil projection_result ← ego.projectio()
+        si projection_result est nihil ergo redde nihil
+        fixum math.Matrix4 projection ← math.Matrix4 { elements = projection_result!.elements }
+        si projection.validum() ≡ falsum ergo redde nihil
+        redde PerspectiveCameraProjectionFacts { fov_y_degrees = ego.fov, aspect = ego.aspect, near = ego.near, far = ego.far, projection_float_count = projection.elements.longitudo(), x_scale = (projection.elements)[0], y_scale = (projection.elements)[5], depth_scale = (projection.elements)[10] }
+    }
+
+    functio visus_projectio(de math.Vector3 eye, de math.Vector3 target, de math.Vector3 up) → math.Matrix4 ∪ nihil {
+        fixum math.Matrix4 ∪ nihil projection_result ← ego.projectio()
+        si projection_result est nihil ergo redde nihil
+        fixum math.Matrix4 ∪ nihil view_result ← math.matrix4_conspectus(eye, target, up)
+        si view_result est nihil ergo redde nihil
+        fixum math.Matrix4 projection ← math.Matrix4 { elements = projection_result!.elements }
+        fixum math.Matrix4 view ← math.Matrix4 { elements = view_result!.elements }
+        redde projection.multiplicata(view)
+    }
+
+    functio visus_projectio_facta(de math.Vector3 eye, de math.Vector3 target, de math.Vector3 up) → ViewProjectionFacts ∪ nihil {
+        fixum math.Matrix4 ∪ nihil view_projection_result ← ego.visus_projectio(eye, target, up)
+        si view_projection_result est nihil ergo redde nihil
+        fixum math.Matrix4 view_projection ← math.Matrix4 { elements = view_projection_result!.elements }
+        si view_projection.validum() ≡ falsum ergo redde nihil
+        redde ViewProjectionFacts { float_count = view_projection.elements.longitudo(), x_scale = (view_projection.elements)[0], y_scale = (view_projection.elements)[5], depth_scale = (view_projection.elements)[10], view_translation_z = (view_projection.elements)[14] }
+    }
+}
+
+genus PerspectiveCameraProjectionFacts {
+    f32 fov_y_degrees
+    f32 aspect
+    f32 near
+    f32 far
+    numerus projection_float_count
+    f32 x_scale
+    f32 y_scale
+    f32 depth_scale
+}
+
+genus ViewProjectionFacts {
+    numerus float_count
+    f32 x_scale
+    f32 y_scale
+    f32 depth_scale
+    f32 view_translation_z
+}
+
+genus OrthographicCamera {
+    object.Object3D base
+    f32 left
+    f32 right
+    f32 top
+    f32 bottom
+    f32 near = 0.1
+    f32 far = 2000.0
+}

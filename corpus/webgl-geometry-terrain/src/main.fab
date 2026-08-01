@@ -1,6 +1,6 @@
 importa ex "web:web" privata web
 importa ex "web:dom" privata dom
-importa ex "./camera" privata camera
+importa ex "./camera_controls" privata camera_controls
 importa ex "./scene" privata scene
 importa ex "./terrain" privata terrain
 importa ex "triga:math" privata math
@@ -61,8 +61,8 @@ functio publish_scene_geometry(dom.Element facts_element) → vacuum {
     dom.attr_set(facts_element, "data-scene-object-count", manifest.objects.longitudo() ↦ textus)
 }
 
-functio publish_transform(dom.Element facts_element, de camera.OrbitCamera orbit, f32 aspect) → vacuum {
-    fixum math.TransformPayload ∪ nihil payload_result ← camera.transform_payload(orbit, aspect)
+functio publish_transform(dom.Element facts_element, de camera_controls.OrbitCamera orbit, f32 aspect) → vacuum {
+    fixum math.TransformPayload ∪ nihil payload_result ← camera_controls.transform_payload(orbit, aspect)
     si payload_result est nihil {
         dom.attr_set(facts_element, "data-transform-status", "invalid")
         redde
@@ -78,7 +78,7 @@ functio publish_transform(dom.Element facts_element, de camera.OrbitCamera orbit
 functio corpus_terrain_controller(dom.Scope scope) → lista<dom.Subscription> {
     fixum dom.Element status ← dom.require(scope, ".corpus-status")
     fixum dom.Element facts ← dom.require(scope, ".triga-facts")
-    varia camera.OrbitCamera orbit ← camera.spawn_camera()
+    varia camera_controls.OrbitCamera orbit ← camera_controls.spawn_camera()
     fixum f32 canvas_aspect ← 960.0 / 540.0
 
     dom.attr_set(facts, "data-scene-name", "triga-corpus-webgl-geometry-terrain")
@@ -92,18 +92,18 @@ functio corpus_terrain_controller(dom.Scope scope) → lista<dom.Subscription> {
 
     fixum dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → vacuum ∴ fac {
         fixum f32 delta_seconds ← frame.delta_ms / 1000.0
-        orbit ← camera.step_camera(orbit, delta_seconds)
+        orbit ← camera_controls.step_camera(orbit, delta_seconds)
         publish_transform(facts, orbit, canvas_aspect)
         dom.attr_set(facts, "data-frame", frame.frame ↦ textus)
     })
 
     fixum dom.Subscription keydown_sub ← dom.on_keyboard(facts, "keydown", (dom.KeyboardState key) → vacuum ∴ fac {
-        orbit ← camera.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera.set_key_by_code(orbit.input, key.code, verum) }
+        orbit ← camera_controls.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera_controls.set_key_by_code(orbit.input, key.code, verum) }
         publish_transform(facts, orbit, canvas_aspect)
     })
 
     fixum dom.Subscription keyup_sub ← dom.on_keyboard(facts, "keyup", (dom.KeyboardState key) → vacuum ∴ fac {
-        orbit ← camera.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera.set_key_by_code(orbit.input, key.code, falsum) }
+        orbit ← camera_controls.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera_controls.set_key_by_code(orbit.input, key.code, falsum) }
         publish_transform(facts, orbit, canvas_aspect)
     })
 

@@ -9,7 +9,8 @@ syntax = "importa ex \"triga:triga\" privata triga"
 # exempla/triga-math-edge-cases — degenerate inputs and boundary cases.
 
 importa ex "triga:math" privata math
-importa ex "triga:graph" privata graph
+importa ex "triga:graph/object" privata object
+importa ex "triga:graph/camera" privata camera
 
 incipit {
     # Vector3 projecta with zero-length axis
@@ -42,8 +43,8 @@ incipit {
     # Camera pitch coercita at boundaries
 
     # Camera view projection
-    fixum graph.Object3D cam_base ← graph.Object3D { position = math.vector3(0.0, 0.0, 5.0), rotation = math.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = math.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "cam" }
-    fixum graph.PerspectiveCamera test_camera ← graph.PerspectiveCamera { base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0 }
+    fixum object.Object3D cam_base ← object.Object3D { position = math.vector3(0.0, 0.0, 5.0), rotation = math.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = math.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "cam" }
+    fixum camera.PerspectiveCamera test_camera ← camera.PerspectiveCamera { base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0 }
     fixum math.Vector3 cam_eye ← math.vector3(0.0, 0.0, 5.0)
     fixum math.Vector3 cam_target ← math.vector3(0.0, 0.0, 0.0)
     fixum math.Vector3 cam_up ← math.vector3(0.0, 1.0, 0.0)

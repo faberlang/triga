@@ -1,5 +1,6 @@
 importa ex "triga:math" privata math
-importa ex "triga:graph" privata graph
+importa ex "triga:graph/object" privata object
+importa ex "triga:graph/camera" privata camera
 
 genus CameraInput {
     bivalens yaw_left = falsum
@@ -23,12 +24,12 @@ genus OrbitCamera {
 }
 
 functio spawn_camera() → OrbitCamera {
-    redde OrbitCamera { target = math.vector3(0.0, 0.0, 0.0), yaw_degrees = -35.0 ∷ f32, pitch_degrees = -32.0 ∷ f32, distance = 110.0, input = CameraInput { } }
+    redde OrbitCamera { target = math.vector3(0.0, 0.0, 0.0), yaw_degrees = -30.0 ∷ f32, pitch_degrees = -20.0 ∷ f32, distance = 15.0, input = CameraInput { } }
 }
 
 functio _clamp_distance(f32 distance) → f32 {
-    si distance < 30.0 ergo redde 30.0
-    si distance > 250.0 ergo redde 250.0
+    si distance < 5.0 ergo redde 5.0
+    si distance > 40.0 ergo redde 40.0
     redde distance
 }
 
@@ -72,21 +73,21 @@ functio step_camera(de OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
 
     fixum f32 next_yaw ← camera.yaw_degrees + yaw_axis * 55.0 * safe_delta
     fixum f32 next_pitch ← math.camera_pitch_coercita(camera.pitch_degrees + pitch_axis * 38.0 * safe_delta)
-    fixum f32 next_distance ← _clamp_distance(camera.distance + dolly_axis * 60.0 * safe_delta)
-    fixum math.Vector3 pan ← math.camera_motus_planus_ex_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
+    fixum f32 next_distance ← _clamp_distance(camera.distance + dolly_axis * 14.0 * safe_delta)
+    fixum math.Vector3 pan ← math.camera_motus_planus_ex_yaw(next_yaw, pan_forward_axis, pan_right_axis, 6.0, safe_delta)
 
     redde OrbitCamera { target = camera.target.addita(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input }
 }
 
-functio view_projection(de OrbitCamera camera, f32 aspect) → math.Matrix4 ∪ nihil {
-    fixum math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(camera.yaw_degrees, camera.pitch_degrees)
-    fixum math.Vector3 eye ← camera.target.subtracta(direction.multiplicata(camera.distance))
-    fixum graph.PerspectiveCamera perspective ← graph.PerspectiveCamera { base = graph.Object3D { position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "corpus-orbit" }, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0 }
-    redde perspective.visus_projectio(eye, camera.target, math.vector3(0.0, 1.0, 0.0))
+functio view_projection(de OrbitCamera cam, f32 aspect) → math.Matrix4 ∪ nihil {
+    fixum math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
+    fixum math.Vector3 eye ← cam.target.subtracta(direction.multiplicata(cam.distance))
+    fixum camera.PerspectiveCamera perspective ← camera.PerspectiveCamera { base = object.Object3D { position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "corpus-orbit" }, fov = 45.0, aspect = aspect, near = 0.1, far = 200.0 }
+    redde perspective.visus_projectio(eye, cam.target, math.vector3(0.0, 1.0, 0.0))
 }
 
-functio transform_payload(de OrbitCamera camera, f32 aspect) → math.TransformPayload ∪ nihil {
-    fixum math.Matrix4 ∪ nihil view_projection_result ← view_projection(camera, aspect)
+functio transform_payload(de OrbitCamera cam, f32 aspect) → math.TransformPayload ∪ nihil {
+    fixum math.Matrix4 ∪ nihil view_projection_result ← view_projection(cam, aspect)
     si view_projection_result est nihil ergo redde nihil
     fixum math.Matrix4 view_projection_matrix ← math.Matrix4 { elements = view_projection_result!.elements }
     redde math.transform_payload(math.matrix4_identitas(), view_projection_matrix)

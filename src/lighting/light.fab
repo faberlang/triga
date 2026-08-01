@@ -1,0 +1,28 @@
+# Light family shape contracts (Light, AmbientLight, DirectionalLight, PointLight).
+#
+# Public import: importa ex "triga:lighting/light" privata lighting
+# Depends on: triga:math, triga:graph/object (Object3D base)
+
+importa ex "triga:math" privata math
+importa ex "triga:graph/object" privata object
+
+genus Light {
+    object.Object3D base
+    math.Color color
+    f32 intensity = 1.0
+}
+
+genus AmbientLight {
+    Light base
+}
+
+genus DirectionalLight {
+    Light base
+    math.Vector3 target_position
+}
+
+genus PointLight {
+    Light base
+    f32 distance = 0.0
+    f32 decay = 2.0
+}

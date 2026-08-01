@@ -1,0 +1,22 @@
+# Object3D scene-graph node and Scene container shape contracts.
+#
+# Public import: importa ex "triga:graph/object" privata object
+# Depends on: triga:math
+
+importa ex "triga:math" privata math
+
+genus Object3D {
+    math.Vector3 position
+    math.Euler rotation
+    math.Quaternion quaternion
+    math.Vector3 scale
+    math.Matrix4 matrix
+    lista<Object3D> children
+    bivalens visible = verum
+    textus name
+}
+
+genus Scene {
+    Object3D base
+    math.Color background sponte
+}

@@ -13,7 +13,8 @@ syntax = "importa ex \"triga:triga\" privata triga"
 # MeshPhongMaterial, OrthographicCamera, Object3D standalone.
 
 importa ex "triga:math" privata math
-importa ex "triga:graph" privata graph
+importa ex "triga:graph/object" privata object
+importa ex "triga:graph/camera" privata camera
 importa ex "triga:material" privata material
 
 incipit {
@@ -29,15 +30,15 @@ incipit {
     fixum math.Matrix3 matrix3 ← math.Matrix3 { elements = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0] }
 
     # Object3D standalone
-    fixum graph.Object3D standalone ← graph.Object3D { position = math.vector3(0.0, 0.0, 0.0), rotation = math.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = math.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "standalone" }
+    fixum object.Object3D standalone ← object.Object3D { position = math.vector3(0.0, 0.0, 0.0), rotation = math.Euler { x = 0.0, y = 0.0, z = 0.0, order = "XYZ" }, quaternion = math.Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = verum, name = "standalone" }
     nota standalone.visible
 
     # Scene with background color
-    fixum graph.Scene scene ← graph.Scene { base = standalone, background = math.Color { r = 0.5, g = 0.6, b = 0.7 } }
+    fixum object.Scene scene ← object.Scene { base = standalone, background = math.Color { r = 0.5, g = 0.6, b = 0.7 } }
     nota scene.background
 
     # OrthographicCamera
-    fixum graph.OrthographicCamera ortho ← graph.OrthographicCamera { base = standalone, left = -10.0 ∷ f32, right = 10.0, top = 10.0, bottom = -10.0 ∷ f32, near = 0.1, far = 2000.0 }
+    fixum camera.OrthographicCamera ortho ← camera.OrthographicCamera { base = standalone, left = -10.0 ∷ f32, right = 10.0, top = 10.0, bottom = -10.0 ∷ f32, near = 0.1, far = 2000.0 }
     nota ortho.left
     nota ortho.near
 
