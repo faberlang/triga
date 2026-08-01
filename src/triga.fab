@@ -3,21 +3,28 @@
 # Public import: importa ex "triga:triga" privata triga
 #
 # Prefer leaf modules (Norma style — one concern per import path):
-#   triga:math          vectors, matrices, volumes, rays, transform payload
-#   triga:graph/object  Object3D, Scene
-#   triga:graph/camera  PerspectiveCamera, OrthographicCamera, projection facts
-#   triga:lighting/light Light family (Light, AmbientLight, DirectionalLight, PointLight)
-#   triga:material      Material family, Mesh, MeshGeometry
-#   triga:face          voxel face-code helpers
-#   triga:geometry/data BufferGeometry (plus attribute/layout/bounds/batch leaves)
-#   triga:primitives    mesh generators
-#   triga:scene         scene store + identity
-#   triga:resource      resource handle lifecycle free functions
+#   triga:math            vectors, matrices, volumes, rays, transform payload
+#   triga:graph/object    Object3D, Scene
+#   triga:graph/camera    PerspectiveCamera, OrthographicCamera, projection facts
+#   triga:lighting/light  Light family (Light, AmbientLight, DirectionalLight, PointLight)
+#   triga:material/base   Material, MaterialPipelineFacts, TextureDescriptor (H3 seed)
+#   triga:material/basic  MeshBasicMaterial
+#   triga:material/lit    MeshPhongMaterial
+#   triga:material/standard MeshStandardMaterial
+#   triga:renderable/mesh Mesh (graph + geometry + material composition)
+#   triga:face            voxel face-code helpers
+#   triga:geometry/data   BufferGeometry (plus attribute/layout/bounds/batch leaves)
+#   triga:primitives/basic mesh generators (procedural/terrain/voxel planned)
+#   triga:scene           scene store + identity
+#   triga:resource        resource handle lifecycle free functions
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
 importa ex "triga:math" privata math
 importa ex "triga:graph/object" privata object
 importa ex "triga:graph/camera" privata camera
-importa ex "triga:material" privata material
+importa ex "triga:material/base" privata base
+importa ex "triga:material/basic" privata basic
+importa ex "triga:material/lit" privata lit
+importa ex "triga:material/standard" privata standard
 importa ex "triga:face" privata face

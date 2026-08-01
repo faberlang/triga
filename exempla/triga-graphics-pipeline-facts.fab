@@ -10,7 +10,8 @@ summary = "Triga-side facts for the locked graphics pipeline contract: shader st
 # Triga-side fact codes that map to radix MIR types.
 
 importa ex "triga:math" privata math
-importa ex "triga:material" privata material
+importa ex "triga:material/base" privata base
+importa ex "triga:material/basic" privata basic
 
 incipit {
     # Shader stage codes
@@ -49,11 +50,11 @@ incipit {
     # Goal 01 material
     fixum math.Color goal_color ← math.Color { r = 1.0, g = 0.2, b = 0.2 }
 
-    fixum material.MeshBasicMaterial ∪ nihil goal_material_result ← material.mesh_basic_material("goal-material", goal_color)
-    fixum material.MeshBasicMaterial goal_material ← material.MeshBasicMaterial { base = goal_material_result!.base, color = goal_material_result!.color }
+    fixum basic.MeshBasicMaterial ∪ nihil goal_material_result ← basic.mesh_basic_material("goal-material", goal_color)
+    fixum basic.MeshBasicMaterial goal_material ← basic.MeshBasicMaterial { base = goal_material_result!.base, color = goal_material_result!.color }
 
-    fixum material.MaterialPipelineFacts ∪ nihil goal_pipeline_result ← material.mesh_basic_material_pipeline_facts(goal_material)
-    fixum material.MaterialPipelineFacts goal_pipeline ← material.MaterialPipelineFacts { side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test }
+    fixum base.MaterialPipelineFacts ∪ nihil goal_pipeline_result ← basic.mesh_basic_material_pipeline_facts(goal_material)
+    fixum base.MaterialPipelineFacts goal_pipeline ← base.MaterialPipelineFacts { side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test }
     nota goal_pipeline.depth_test_enabled
     nota goal_pipeline.transparent
     nota goal_pipeline.side_code

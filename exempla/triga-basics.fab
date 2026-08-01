@@ -10,7 +10,8 @@ related = ["genus", "vector", "lista", "numerus"]
 # exempla/triga-basics — core triga type instantiation, field access, and material state
 
 importa ex "triga:math" privata math
-importa ex "triga:material" privata material
+importa ex "triga:material/base" privata base
+importa ex "triga:material/basic" privata basic
 
 incipit {
     fixum math.Vector3 origin ← math.Vector3 { x = 0.0, y = 0.0, z = 0.0 }
@@ -21,25 +22,25 @@ incipit {
     fixum math.Matrix4 matrix ← math.Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
 
     # Material construction and validation
-    fixum material.Material base_material ← material.material("hello-voxel")
+    fixum base.Material base_material ← base.materia_ex_nomine("hello-voxel")
 
     fixum math.Color valid_color ← math.Color { r = 1.0, g = 0.0, b = 0.5 }
 
     fixum math.Color invalid_color ← math.Color { r = 1.1, g = 0.0, b = 0.0 }
 
     # Material pipeline facts
-    fixum material.MaterialPipelineFacts ∪ nihil base_pipeline_result ← material.material_pipeline_facts(base_material)
+    fixum base.MaterialPipelineFacts ∪ nihil base_pipeline_result ← base.material_pipeline_facts(base_material)
     nota base_pipeline_result
 
     # Double-sided material
-    fixum material.Material double_sided ← material.material_double_sided(base_material)
+    fixum base.Material double_sided ← base.material_double_sided(base_material)
 
     # MeshBasicMaterial
     fixum math.Color unlit_color ← math.Color { r = 1.0, g = 0.5, b = 0.0 }
-    fixum material.MeshBasicMaterial ∪ nihil unlit ← material.mesh_basic_material("hello-voxel-unlit", unlit_color)
-    fixum material.MeshBasicMaterial unlit_value ← material.MeshBasicMaterial { base = unlit!.base, color = unlit!.color }
+    fixum basic.MeshBasicMaterial ∪ nihil unlit ← basic.mesh_basic_material("hello-voxel-unlit", unlit_color)
+    fixum basic.MeshBasicMaterial unlit_value ← basic.MeshBasicMaterial { base = unlit!.base, color = unlit!.color }
     nota unlit_value.color.g
 
     # Invalid material handling
-    fixum material.Material invalid ← material.material("")
+    fixum base.Material invalid ← base.materia_ex_nomine("")
 }

@@ -1,0 +1,53 @@
+# MeshBasicMaterial and its construction/access helpers.
+#
+# Public import: importa ex "triga:material/basic" privata basic
+#
+# Owns: MeshBasicMaterial, mesh_basic_material, mesh_basic_material_valida,
+# mesh_basic_material_color_r/g/b, mesh_basic_material_alpha,
+# mesh_basic_material_pipeline_facts.
+#
+# Imports: triga:math, triga:material/base.
+
+importa ex "triga:math" privata math
+importa ex "triga:material/base" privata base
+
+# Mirror THREE.MeshBasicMaterial
+genus MeshBasicMaterial {
+    base.Material base
+    math.Color color
+}
+
+functio mesh_basic_material(textus name, de math.Color color) → MeshBasicMaterial ∪ nihil {
+    fixum base.Material base_material ← base.materia_ex_nomine(name)
+    si base.material_valida(base_material) ≡ falsum ergo redde nihil
+    redde MeshBasicMaterial { base = base_material, color = color }
+}
+
+functio mesh_basic_material_valida(de MeshBasicMaterial value) → bivalens {
+    redde base.material_valida(value.base) et math.color_valida(value.color)
+}
+
+functio mesh_basic_material_color_r(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valida(value) ≡ falsum ergo redde nihil
+    redde value.color.r
+}
+
+functio mesh_basic_material_color_g(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valida(value) ≡ falsum ergo redde nihil
+    redde value.color.g
+}
+
+functio mesh_basic_material_color_b(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valida(value) ≡ falsum ergo redde nihil
+    redde value.color.b
+}
+
+functio mesh_basic_material_alpha(de MeshBasicMaterial value) → f32 ∪ nihil {
+    si mesh_basic_material_valida(value) ≡ falsum ergo redde nihil
+    redde value.base.opacity
+}
+
+functio mesh_basic_material_pipeline_facts(de MeshBasicMaterial value) → base.MaterialPipelineFacts ∪ nihil {
+    si mesh_basic_material_valida(value) ≡ falsum ergo redde nihil
+    redde base.material_pipeline_facts(value.base)
+}

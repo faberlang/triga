@@ -1,0 +1,13 @@
+# Renderable objects — package map facade.
+#
+# Public import: importa ex "triga:renderable" privata renderable
+#
+# Prefer leaf modules (Norma style — one concern per import path):
+#   triga:renderable/mesh   Mesh (Object3D + BufferGeometry + material union)
+#
+# Planned (report §1.3): renderable/skin, renderable/morph at H5;
+# renderable/instance at H6. Created only when they own content.
+#
+# This file intentionally holds no genera. Import the leaf modules above.
+
+importa ex "triga:renderable/mesh" privata mesh

@@ -1,0 +1,20 @@
+# MeshStandardMaterial — PBR standard material contract.
+#
+# Public import: importa ex "triga:material/standard" privata standard
+#
+# Owns: MeshStandardMaterial.
+#
+# Imports: triga:math, triga:material/base.
+
+importa ex "triga:math" privata math
+importa ex "triga:material/base" privata base
+
+# Mirror THREE.MeshStandardMaterial (PBR)
+genus MeshStandardMaterial {
+    base.Material base
+    math.Color color
+    f32 roughness = 1.0
+    f32 metalness = 0.0
+    math.Color emissive
+    f32 emissive_intensity = 0.0
+}

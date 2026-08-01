@@ -1,0 +1,18 @@
+# MeshPhongMaterial — Phong-shaded material contract.
+#
+# Public import: importa ex "triga:material/lit" privata lit
+#
+# Owns: MeshPhongMaterial.
+#
+# Imports: triga:math, triga:material/base.
+
+importa ex "triga:math" privata math
+importa ex "triga:material/base" privata base
+
+# Mirror THREE.MeshPhongMaterial
+genus MeshPhongMaterial {
+    base.Material base
+    math.Color color
+    math.Color specular
+    f32 shininess = 30.0
+}

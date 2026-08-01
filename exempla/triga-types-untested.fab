@@ -11,11 +11,20 @@ syntax = "importa ex \"triga:triga\" privata triga"
 #
 # Covers: Vector2, Vector4, Matrix3, Mesh, Scene, MeshStandardMaterial,
 # MeshPhongMaterial, OrthographicCamera, Object3D standalone.
+#
+# Mesh binds BufferGeometry (triga:geometry/data) since MeshGeometry was
+# retired (S0 §1.4.3); Mesh lives in triga:renderable/mesh.
 
 importa ex "triga:math" privata math
 importa ex "triga:graph/object" privata object
 importa ex "triga:graph/camera" privata camera
-importa ex "triga:material" privata material
+importa ex "triga:geometry/data" privata data
+importa ex "triga:geometry/attribute" privata attribute
+importa ex "triga:geometry/batch" privata batch
+importa ex "triga:renderable/mesh" privata mesh
+importa ex "triga:material/base" privata base
+importa ex "triga:material/standard" privata standard
+importa ex "triga:material/lit" privata lit
 
 incipit {
     # Vector2 construction
@@ -45,13 +54,17 @@ incipit {
     # Mesh with MeshStandardMaterial
     fixum math.Color white ← math.Color { r = 1.0, g = 1.0, b = 1.0 }
     fixum math.Color emissive ← math.Color { r = 0.0, g = 0.0, b = 0.0 }
-    fixum material.MeshStandardMaterial pbr_material ← material.MeshStandardMaterial { base = material.material("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0 }
-    fixum material.MeshGeometry empty_geometry ← material.MeshGeometry { positions = vacua, indices = vacua, draw_start = 0 }
-    fixum material.Mesh mesh ← material.Mesh { base = standalone, geometry = empty_geometry }
+    fixum standard.MeshStandardMaterial pbr_material ← standard.MeshStandardMaterial { base = base.materia_ex_nomine("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0 }
+
+    # MeshGeometry retired (S0 §1.4.3): Mesh binds BufferGeometry
+    fixum lista<attribute.BufferAttribute> empty_attributes ← vacua
+    fixum batch.DrawRange empty_range ← batch.DrawRange { start = 0, count = 0 }
+    fixum data.BufferGeometry empty_geometry ← data.triangle_geometry(0, empty_attributes, empty_range, vacua)
+    fixum mesh.Mesh mesh ← mesh.Mesh { base = standalone, geometry = empty_geometry }
     nota pbr_material.roughness
 
     # MeshPhongMaterial
     fixum math.Color spec ← math.Color { r = 0.2, g = 0.2, b = 0.2 }
-    fixum material.MeshPhongMaterial phong ← material.MeshPhongMaterial { base = material.material("phong"), color = white, specular = spec, shininess = 60.0 }
+    fixum lit.MeshPhongMaterial phong ← lit.MeshPhongMaterial { base = base.materia_ex_nomine("phong"), color = white, specular = spec, shininess = 60.0 }
     nota phong.shininess
 }

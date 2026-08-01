@@ -1,0 +1,25 @@
+# Mesh renderable — scene-graph node bound to geometry and a material.
+#
+# Public import: importa ex "triga:renderable/mesh" privata mesh
+# Depends on: triga:graph/object, triga:geometry/data,
+#             triga:material/{standard,basic,lit}
+#
+# Mesh is the primary renderable object (mirrors THREE.Mesh). It owns no
+# material-family type: the `material` field is a union of the three material
+# leaves' genera. Cross-module union CONSTRUCTION works (DS-A union probe,
+# 2026-08-01); union PATTERN-MATCHING (discerne/casu) does not — compiler
+# gap, semantics enum-only — so consumers must not case over the union; use
+# dedicated accessors / common union fields instead.
+
+importa ex "triga:graph/object" privata object
+importa ex "triga:geometry/data" privata data
+importa ex "triga:material/standard" privata standard
+importa ex "triga:material/basic" privata basic
+importa ex "triga:material/lit" privata lit
+
+# Mirror THREE.Mesh — the primary renderable object.
+genus Mesh {
+    object.Object3D base
+    data.BufferGeometry geometry
+    standard.MeshStandardMaterial ∪ basic.MeshBasicMaterial ∪ lit.MeshPhongMaterial material sponte
+}
