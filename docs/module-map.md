@@ -99,6 +99,39 @@ importer wants a pure layout-facts module. If `scene` is later split into a
 nested package, put **store + resource + visibilia** (or similar) under
 `src/scene/` together — not a lone file.
 
+## Target map (frozen at S0, 2026-08-01)
+
+The engine campaign's S0 architecture checkpoint
+([report](factory/triga-engine/checkpoint/report.md)) freezes the target ownership
+map. This living map documents what exists; the target map records what S1+ will
+build. Three states:
+
+**Freeze as-is** (no split): `math`, `resource`, `face`, `triga` (facade, map-only).
+
+**Split now (S1 / Horizon 1)** — leaves with live content, each split documented
+below as it lands:
+
+| Family | Leaves | Notes |
+| --- | --- | --- |
+| `scene` | `node`, `store`, `query` | pure relocation, unchanged interface names; nested-package tooling check (DEFER-121) is a precondition |
+| `geometry` | `data`, `attribute`, `layout`, `bounds`, `batch` | preserves frozen ABI `_code` names verbatim; fixes the pre-existing `geometry_vertex_layout_matches` naming-lint failure |
+| `material` | `base`, `basic`, `lit`, `standard` | `Mesh` → `renderable/mesh`; `MeshGeometry` retired into `BufferGeometry` |
+| `renderable` | `mesh` | `Mesh` = graph + geometry + material |
+| `lighting` | `light` | light families move from `graph.fab`; `graph/light` dropped |
+| `primitives` | `basic` | `procedural`/`terrain`/`voxel` deferred |
+| `graph` | `object`, `camera` | corpus demos migrate to leaf imports in the same change |
+
+**Planned** (record as future home; do NOT create empty leaves): `engine/*` (H2),
+`shader/*` (H3, program at H7), `render/*` (H4), `material/{texture,sampler}` (H3),
+`lighting/{model,environment,shadow}` (H3/H5/H4), `renderable/{skin,morph,instance}`
+(H5/H6), `primitives/{procedural,terrain,voxel}` (H2/H5), `asset/*`, `animation/*`,
+`world/*` (H5, `query` at H6).
+
+Inventory corrections frozen at S0: leaf count is 61 non-facade leaves / 75 import
+paths (not "~50"); `Box3`/`Sphere` stay in `math` while `geometry/bounds` owns
+`BoundingBox`/`BoundingSphere`; geometry draw-batch facts live in `geometry/batch`
+until `render/batch` exists at H4; `cista.toml` is future, not current.
+
 ## Validation
 
 ```bash

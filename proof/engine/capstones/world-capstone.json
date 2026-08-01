@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "ledger_revision": 1,
+  "id": "world-capstone",
+  "owner": "triga-engine",
+  "source": "docs/factory/triga-engine/checkpoint/T-F-capstone-first-artifact.md (frozen at S0, 2026-08-01)",
+  "rule": "Each item is recorded ONCE. 80's proof/capstones/*.json is read-only for the engine campaign. covered-by-80 cites an 80 manifest by id and adds no score; engine-evidence lists engine workload paths. No additive scoring across ledgers.",
+  "items": [
+    {"number": 1, "tag": "world package", "owner": "engine", "coverage": "engine-evidence", "state": "unsupported", "evidence": [], "reason": "persistent world package from Faber source; first persistence proof at S5 (triga.world.v1 manifest + glTF asset references)"},
+    {"number": 2, "tag": "terrain + prefabs", "owner": "mixed", "coverage": "engine-evidence (prefab/instance half); corpus webgl-geometry-terrain is evidence, not an 80 capstone", "state": "unsupported", "evidence": [], "reason": "procedural terrain exists as corpus proof; reusable world instances are engine-unique (world/instance)"},
+    {"number": 3, "tag": "shared-engine render", "owner": "shared", "coverage": "covered-by-80:hierarchical-scene + engine S2 gate", "state": "unsupported", "evidence": [], "reason": "80 proves the raw render; the shared-engine consumption by two unrelated demos is the engine S2 gate (S2-First Engine Render)"},
+    {"number": 4, "tag": "standard path", "owner": "80", "coverage": "covered-by-80:pbr-textured-lighting + hierarchical-scene", "state": "unsupported", "evidence": [], "reason": "materials/textures/lights/depth/camera are 80 Stages 5-7 domains; engine adds only the shared-material-instances seam"},
+    {"number": 5, "tag": "animation/deformation", "owner": "80", "coverage": "covered-by-80:animated-gltf", "state": "unsupported", "evidence": [], "reason": "full overlap with 80 capstone C3"},
+    {"number": 6, "tag": "picking / placement", "owner": "mixed", "coverage": "covered-by-80:picking-culling (picking) + engine-evidence (placement)", "state": "unsupported", "evidence": [], "reason": "picking is 80 Stage 7; spatial placement rules are engine-unique (world/query)"},
+    {"number": 7, "tag": "region streaming", "owner": "engine", "coverage": "engine-evidence", "state": "unsupported", "evidence": [], "reason": "bounded region stream/replace without invalid resource use (world/stream, world/region); S5-S6"},
+    {"number": 8, "tag": "scale proof", "owner": "mixed", "coverage": "covered-by-80:multipass-instancing + engine-evidence (scale target, LOD)", "state": "unsupported", "evidence": [], "reason": "instancing/culling mechanisms are 80's; LOD and the frozen scale target are engine S6"},
+    {"number": 9, "tag": "multipass", "owner": "80", "coverage": "covered-by-80:multipass-instancing", "state": "unsupported", "evidence": [], "reason": "full overlap with 80 capstone C4"},
+    {"number": 10, "tag": "production outcomes", "owner": "mixed", "coverage": "engine-evidence (structured diagnostics taxonomy) + shared oracle vocabulary", "state": "unsupported", "evidence": [], "reason": "deterministic-oracle vocabulary shared with 80 manifest schema; owning-layer/artifact/pass/capability diagnostics and device-lost state machine are engine S7"}
+  ]
+}
