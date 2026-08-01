@@ -20,6 +20,12 @@
  *     --expected '[9.1,12.2,18.1,24.2,27.1,36.2,36.1,48.2]' \
  *     [--tolerance 0.00001]
  *
+ * `--expected` also accepts a path to a `.ref.json` fixture (its `reference`
+ * array is used), matching the spec §3.5 direct-run validation shape:
+ *   node triga/scripta/w4-06c-gpu-chain-proof.mjs \
+ *     --descriptor <chain-descriptor.json> \
+ *     --expected faber/corpus/tensor-fragment/tiny-linear-device/src/main.ref.json
+ *
  * Dependencies:
  *   - Node.js >= 18
  *   - puppeteer (npm, installed via triga/package.json)
@@ -105,7 +111,9 @@ Options:
   --descriptor <path>      Path to KernelChainDescriptor JSON (required)
   --input <json>           Input data as JSON object mapping resource key to
                            value array, e.g. '{"0":[1,2,3],"1":[4,5,6]}'
-  --expected <json>        Expected output values as JSON array (required)
+  --expected <json>        Expected output values as JSON array, or a path to a
+                           .ref.json fixture whose 'reference' array is used
+                           (required)
   --tolerance <float>      f32 comparison tolerance (default 0.00001)
   --help, -h               Show this help
 `);
@@ -369,12 +377,31 @@ async function main() {
     }
   }
 
-  // 3. Parse expected values.
+  // 3. Parse expected values: inline JSON array, or a path to a `.ref.json`
+  //    fixture (reads the `reference` field). Both shapes are used by the
+  //    faber live test and the spec §3.5 direct-run validation.
   let expectedValues;
   try {
-    expectedValues = JSON.parse(opts.expectedJson);
+    const raw = opts.expectedJson;
+    if (fs.existsSync(raw)) {
+      const doc = JSON.parse(fs.readFileSync(raw, "utf-8"));
+      if (Array.isArray(doc)) {
+        expectedValues = doc;
+      } else if (Array.isArray(doc?.reference)) {
+        expectedValues = doc.reference;
+      } else {
+        console.error("error: expected fixture has no `reference` array:", raw);
+        process.exit(2);
+      }
+    } else {
+      expectedValues = JSON.parse(raw);
+    }
   } catch (e) {
     console.error("error: invalid expected JSON:", e.message);
+    process.exit(2);
+  }
+  if (!Array.isArray(expectedValues) || expectedValues.length === 0) {
+    console.error("error: expected values must be a non-empty JSON array");
     process.exit(2);
   }
 
