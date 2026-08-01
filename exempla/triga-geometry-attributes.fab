@@ -8,7 +8,7 @@ summary = "Triga attribute shape, layout, indexing, draw range, group validation
 importa ex "triga:geometry/data" privata data
 importa ex "triga:geometry/attribute" privata attribute
 importa ex "triga:geometry/batch" privata batch
-importa ex "triga:primitives" privata primitives
+importa ex "triga:primitives/basic" privata basic
 
 incipit {
     # Indexed triangle geometry
@@ -39,6 +39,6 @@ incipit {
     # Primitive generators
 
     # Wire box (line geometry)
-    fixum data.BufferGeometry ∪ nihil box_wire_result ← primitives.box_wire_geometry(2.0, 4.0, 6.0)
+    fixum data.BufferGeometry ∪ nihil box_wire_result ← basic.box_wire_geometry(2.0, 4.0, 6.0)
     fixum data.BufferGeometry box_wire ← data.BufferGeometry { topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups }
 }

@@ -8,7 +8,7 @@
 
 importa ex "triga:geometry/data" privata data
 importa ex "triga:geometry/attribute" privata attribute
-importa ex "triga:primitives" privata primitives
+importa ex "triga:primitives/basic" privata basic
 
 genus CorpusMesh {
     textus name
@@ -85,16 +85,16 @@ functio geometry_showcase_meshes() → lista<CorpusMesh> {
     varia lista<CorpusMesh> meshes ← vacua
 
     # Back row (z = -1.8).
-    meshes ← _add_mesh(meshes, "plane", primitives.plane_geometry(2.2, 2.2), -4.8 ∷ f32, 0.0, -1.8 ∷ f32, 0.90, 0.55, 0.45)
-    meshes ← _add_mesh(meshes, "box", primitives.box_geometry(1.5, 1.5, 1.5), -1.6 ∷ f32, 0.0, -1.8 ∷ f32, 0.45, 0.70, 0.90)
-    meshes ← _add_mesh(meshes, "circle", primitives.circle_geometry(1.1), 1.6, 0.0, -1.8 ∷ f32, 0.55, 0.85, 0.55)
-    meshes ← _add_mesh(meshes, "sphere", primitives.sphere_geometry(1.1), 4.8, 0.0, -1.8 ∷ f32, 0.90, 0.75, 0.40)
+    meshes ← _add_mesh(meshes, "plane", basic.plane_geometry(2.2, 2.2), -4.8 ∷ f32, 0.0, -1.8 ∷ f32, 0.90, 0.55, 0.45)
+    meshes ← _add_mesh(meshes, "box", basic.box_geometry(1.5, 1.5, 1.5), -1.6 ∷ f32, 0.0, -1.8 ∷ f32, 0.45, 0.70, 0.90)
+    meshes ← _add_mesh(meshes, "circle", basic.circle_geometry(1.1), 1.6, 0.0, -1.8 ∷ f32, 0.55, 0.85, 0.55)
+    meshes ← _add_mesh(meshes, "sphere", basic.sphere_geometry(1.1), 4.8, 0.0, -1.8 ∷ f32, 0.90, 0.75, 0.40)
 
     # Front row (z = +1.8).
-    meshes ← _add_mesh(meshes, "cylinder", primitives.cylinder_geometry(0.85, 1.8), -4.8 ∷ f32, 0.0, 1.8, 0.75, 0.55, 0.90)
-    meshes ← _add_mesh(meshes, "cone", primitives.cone_geometry(1.0, 1.8), -1.6 ∷ f32, 0.0, 1.8, 0.45, 0.85, 0.80)
-    meshes ← _add_mesh(meshes, "torus", primitives.torus_geometry(0.95, 0.35), 1.6, 0.0, 1.8, 0.90, 0.50, 0.65)
-    meshes ← _add_mesh(meshes, "slab", primitives.box_geometry(1.9, 0.6, 1.1), 4.8, 0.0, 1.8, 0.65, 0.65, 0.70)
+    meshes ← _add_mesh(meshes, "cylinder", basic.cylinder_geometry(0.85, 1.8), -4.8 ∷ f32, 0.0, 1.8, 0.75, 0.55, 0.90)
+    meshes ← _add_mesh(meshes, "cone", basic.cone_geometry(1.0, 1.8), -1.6 ∷ f32, 0.0, 1.8, 0.45, 0.85, 0.80)
+    meshes ← _add_mesh(meshes, "torus", basic.torus_geometry(0.95, 0.35), 1.6, 0.0, 1.8, 0.90, 0.50, 0.65)
+    meshes ← _add_mesh(meshes, "slab", basic.box_geometry(1.9, 0.6, 1.1), 4.8, 0.0, 1.8, 0.65, 0.65, 0.70)
 
     redde meshes
 }

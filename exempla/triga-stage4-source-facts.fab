@@ -8,14 +8,14 @@ summary = "Stage 4 source-owned vertex-layout facts for the graphics MIR handoff
 importa ex "triga:geometry/data" privata data
 importa ex "triga:geometry/attribute" privata attribute
 importa ex "triga:geometry/batch" privata batch
-importa ex "triga:primitives" privata primitives
+importa ex "triga:primitives/basic" privata basic
 
 @ vertex
 functio triga_plane_vertex() → vacuum {
 }
 
 incipit {
-    fixum data.BufferGeometry ∪ nihil plane_result ← primitives.plane_geometry(2.0, 2.0)
+    fixum data.BufferGeometry ∪ nihil plane_result ← basic.plane_geometry(2.0, 2.0)
     fixum data.BufferGeometry plane ← data.BufferGeometry { topology = plane_result!.topology, vertex_count = plane_result!.vertex_count, attributes = plane_result!.attributes, indexed = plane_result!.indexed, indices = plane_result!.indices, draw_range = plane_result!.draw_range, groups = plane_result!.groups }
 
     adfirma data.geometry_vertex_layout_matches(plane, 0, "position", 0, 3, 0, 12, 1) secus
