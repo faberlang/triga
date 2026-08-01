@@ -1,7 +1,7 @@
 # Triga module map
 
 **Status:** living map for the public `triga:*` surface  
-**Date:** 2026-07-30
+**Date:** 2026-08-01 (S1 splits landed: graph, lighting, geometry; primitives/material in flight)
 
 Triga is a multi-file Faber source library under `src/`. Each `.fab` file is a
 provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
@@ -12,7 +12,7 @@ provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
 | --- | --- | --- |
 | Flat leaf | `norma:csv`, `norma:chorda` | `triga:math`, `triga:resource` |
 | Cross-module import | `csv` imports `chorda` | `primitives` imports `geometry` |
-| Nested package | `norma:caelum/terminus` | *(none yet — see nesting rule)* |
+| Nested package | `norma:caelum/terminus` | `triga:graph/object`, `triga:geometry/data` |
 | Facade | `norma:caelum` composes submodules | `triga:triga` documents leaves (no genera) |
 
 There is **no type re-export**. Consumers import the leaf that owns the genus.
@@ -29,12 +29,21 @@ not `triga:scene/resource`).
 | Import | File | Owns |
 | --- | --- | --- |
 | `triga:math` | `src/math.fab` | `Vector*`, `Matrix*`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray`, transform payload, face-code tables, free math constructors |
-| `triga:graph` | `src/graph.fab` | `Object3D`, `Scene`, cameras, lights |
-| `triga:material` | `src/material.fab` | `Material` family, `Mesh`, `MeshGeometry`, material free helpers |
-| `triga:face` | `src/face.fab` | `FaceQuad` + unit/colored quad builders (depends on math + geometry) |
-| `triga:geometry` | `src/geometry.fab` | `BufferGeometry`, attributes, draw batches, vertex-layout reflection |
-| `triga:primitives` | `src/primitives.fab` | Deterministic mesh generators (`plane_geometry`, `box_geometry`, …) |
-| `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` |
+| `triga:graph` | `src/graph.fab` | Facade / map only (no genera) |
+| `triga:graph/object` | `src/graph/object.fab` | `Object3D`, `Scene` |
+| `triga:graph/camera` | `src/graph/camera.fab` | `PerspectiveCamera`, `OrthographicCamera`, `PerspectiveCameraProjectionFacts`, `ViewProjectionFacts` |
+| `triga:lighting` | `src/lighting.fab` | Facade / map only (planned leaves: model H3, shadow H4, environment H5) |
+| `triga:lighting/light` | `src/lighting/light.fab` | `Light`, `AmbientLight`, `DirectionalLight`, `PointLight` |
+| `triga:material` | `src/material.fab` | `Material` family, `Mesh`, `MeshGeometry`, material free helpers — **DS-A split in flight** (→ material/{base,basic,lit,standard} + renderable/mesh) |
+| `triga:face` | `src/face.fab` | `FaceQuad` + unit/colored quad builders (depends on math + geometry/data) |
+| `triga:geometry` | `src/geometry.fab` | Facade / map only (no genera) |
+| `triga:geometry/data` | `src/geometry/data.fab` | `BufferGeometry` (+ methods incl. `index_format_code`), `PrimitiveTopology`, `ColoredQuadMesh`, free constructors |
+| `triga:geometry/attribute` | `src/geometry/attribute.fab` | `BufferAttribute`, `AttributeData`, `AttributeUsage`, `float32_attribute` |
+| `triga:geometry/layout` | `src/geometry/layout.fab` | `VertexAttributeLayout`, `VertexFormat`, `VertexStepMode`, layout code helpers |
+| `triga:geometry/bounds` | `src/geometry/bounds.fab` | `BoundingBox`, `BoundingSphere` (math `Box3`/`Sphere` stay in math) |
+| `triga:geometry/batch` | `src/geometry/batch.fab` | `DrawRange`, `GeometryDrawCommand`, `GeometryGroup`, draw-batch facts |
+| `triga:primitives` | `src/primitives.fab` | Deterministic mesh generators — **basic split in flight** (→ primitives/basic; procedural/terrain/voxel deferred) |
+| `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` — **DS-D parked** on language gaps G2/G3 |
 | `triga:resource` | `src/resource.fab` | `ResourceHandle` + lifecycle free functions |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
 
@@ -51,26 +60,33 @@ Co-located `name.proba` next to `name.fab`. Discovered only by `faber test`
 
 ```text
 math                    (leaf)
-graph        ──► math
-material     ──► math, graph
-face         ──► math, geometry
-geometry                (leaf)
-primitives   ──► geometry
+graph/object ──► math
+graph/camera ──► math, graph/object
+graph (facade) ──► object, camera
+lighting/light ──► math, graph/object
+material     ──► math (Mesh → renderable/mesh; graph dep deleted)
+face         ──► math, geometry/data
+geometry/attribute ──► geometry/layout
+geometry/data ──► attribute, layout, bounds, batch
+geometry (facade) ──► data, attribute, layout, bounds, batch
+primitives   ──► geometry/data, attribute, batch
 resource                (leaf)
 scene        ──► math, resource
-triga (facade) ──► math, graph, material, face   (docs only)
+triga (facade) ──► math, graph/object, graph/camera, material, face   (docs only)
 ```
 
-No cycles.
+No cycles (scene's planned nested split is parked on language gaps G2/G3 —
+see the [engine checkpoint](factory/triga-engine/checkpoint/report.md) §8).
 
 ## Import examples
 
 ```fab
 importa ex "triga:math" privata math
-importa ex "triga:graph" privata graph
+importa ex "triga:graph/object" privata object
+importa ex "triga:graph/camera" privata camera
 importa ex "triga:material" privata material
-importa ex "triga:geometry" privata geometry
-importa ex "triga:primitives" privata primitives
+importa ex "triga:geometry/data" privata data
+importa ex "triga:primitives/basic" privata basic
 importa ex "triga:scene" privata scene
 importa ex "triga:resource" privata resource
 ```
@@ -81,23 +97,28 @@ fixum resource.ResourceHandle h ← resource.ResourceHandle { index = 0, generat
 varia scene.SceneStore store ← scene.scene_store()
 ```
 
-## Size (approx after split)
+## Size (after S1 splits)
 
 | File | Lines |
 | --- | --- |
 | `math.fab` | ~850 |
-| `geometry.fab` | ~1320 |
-| `scene.fab` | ~930 |
+| `geometry/data.fab` | ~500 |
+| `geometry/attribute.fab` | ~180 |
+| `geometry/layout.fab` | ~220 |
+| `geometry/bounds.fab` | ~60 |
+| `geometry/batch.fab` | ~300 |
+| `scene.fab` | ~930 (split parked) |
 | `resource.fab` | ~550 |
-| `primitives.fab` | ~470 |
-| `material.fab` | ~180 |
-| `graph.fab` | ~120 |
+| `primitives.fab` | ~470 (basic split in flight) |
+| `material.fab` | ~180 (DS-A split in flight) |
+| `graph.fab` | ~25 (facade) + object ~20 / camera ~110 |
+| `lighting/light.fab` | ~28 |
 | `face.fab` | ~40 |
 
-`geometry.fab` is still large (BufferGeometry methods). Next seam only if a second
-importer wants a pure layout-facts module. If `scene` is later split into a
-nested package, put **store + resource + visibilia** (or similar) under
-`src/scene/` together — not a lone file.
+`scene.fab` remains a monolith until the language gains cross-module enum
+variants (G2) and cycle tolerance (G3). If it is later split, put **store +
+resource + visibilia** (or similar) under `src/scene/` together — not a lone
+file.
 
 ## Target map (frozen at S0, 2026-08-01)
 
