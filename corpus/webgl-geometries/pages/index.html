@@ -21,7 +21,7 @@
 
     <script type="module">
       import { mountControllers } from "../faber-esm/faber-browser.js";
-      import { initHost } from "../public/host-init.js";
+      import { initEngine } from "../public/src/product/bootstrap.js";
 
       const root = globalThis.document.querySelector("#triga-corpus-geometries");
       const facts = globalThis.document.querySelector(".triga-facts");
@@ -40,7 +40,7 @@
         }
 
         try {
-          await initHost();
+          await initEngine();
         } catch (error) {
           if (facts) {
             facts.setAttribute("data-render-status", "host-failed");

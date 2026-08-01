@@ -44,6 +44,14 @@ for mod in math graph material face geometry primitives scene resource triga; do
   "$RADIX_BIN" check "$ROOT/src/${mod}.fab"
 done
 
+echo "check-compile: parsing nested package leaves"
+for leaf in graph/object graph/camera lighting/light \
+  geometry/layout geometry/bounds geometry/batch geometry/attribute geometry/data
+do
+  echo "check-compile: parsing src/${leaf}.fab"
+  "$RADIX_BIN" check "$ROOT/src/${leaf}.fab"
+done
+
 echo "check-compile: checking geometry attribute exemplar"
 "$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
 
