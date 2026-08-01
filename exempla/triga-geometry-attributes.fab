@@ -5,13 +5,15 @@ category = "library"
 canonical = true
 summary = "Triga attribute shape, layout, indexing, draw range, group validation, and primitive generators."
 +++
-importa ex "triga:geometry" privata geometry
+importa ex "triga:geometry/data" privata data
+importa ex "triga:geometry/attribute" privata attribute
+importa ex "triga:geometry/batch" privata batch
 importa ex "triga:primitives" privata primitives
 
 incipit {
     # Indexed triangle geometry
-    fixum geometry.BufferAttribute positions ← geometry.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
-    fixum geometry.BufferGeometry triangle ← geometry.indexed_triangle_geometry(3, [positions], [0, 1, 2], geometry.DrawRange { start = 0, count = 3 }, [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }])
+    fixum attribute.BufferAttribute positions ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+    fixum data.BufferGeometry triangle ← data.indexed_triangle_geometry(3, [positions], [0, 1, 2], batch.DrawRange { start = 0, count = 3 }, [batch.GeometryGroup { start = 0, count = 3, material_index = 0 }])
 
     # Attribute and layout queries
 
@@ -22,21 +24,21 @@ incipit {
     # Generated attributes
 
     # ColoredQuadMesh accumulation
-    fixum geometry.ColoredQuadMesh ∪ nihil first_quad ← geometry.colored_quad_mesh_append(vacua, vacua, vacua, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.2, 0.4, 0.6)
-    fixum geometry.ColoredQuadMesh ∪ nihil two_quads ← geometry.colored_quad_mesh_append(first_quad!.positions, first_quad!.colors, first_quad!.indices, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 3.0, 1.0, 0.0, 2.0, 1.0, 0.0, 0.7, 0.8, 0.9)
+    fixum data.ColoredQuadMesh ∪ nihil first_quad ← data.colored_quad_mesh_append(vacua, vacua, vacua, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.2, 0.4, 0.6)
+    fixum data.ColoredQuadMesh ∪ nihil two_quads ← data.colored_quad_mesh_append(first_quad!.positions, first_quad!.colors, first_quad!.indices, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 3.0, 1.0, 0.0, 2.0, 1.0, 0.0, 0.7, 0.8, 0.9)
 
     # Split groups
-    fixum geometry.BufferAttribute split_positions ← geometry.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0])
-    fixum geometry.BufferGeometry split_groups ← geometry.indexed_triangle_geometry(6, [split_positions], [0, 1, 2, 3, 4, 5], geometry.DrawRange { start = 0, count = 6 }, [geometry.GeometryGroup { start = 0, count = 3, material_index = 0 }, geometry.GeometryGroup { start = 3, count = 3, material_index = 1 }])
+    fixum attribute.BufferAttribute split_positions ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0])
+    fixum data.BufferGeometry split_groups ← data.indexed_triangle_geometry(6, [split_positions], [0, 1, 2, 3, 4, 5], batch.DrawRange { start = 0, count = 6 }, [batch.GeometryGroup { start = 0, count = 3, material_index = 0 }, batch.GeometryGroup { start = 3, count = 3, material_index = 1 }])
 
     # Non-indexed geometry
-    fixum geometry.BufferGeometry nonindexed ← geometry.triangle_geometry(3, [positions], geometry.DrawRange { start = 0, count = 3 }, vacua)
+    fixum data.BufferGeometry nonindexed ← data.triangle_geometry(3, [positions], batch.DrawRange { start = 0, count = 3 }, vacua)
 
     # Visible face utilities
 
     # Primitive generators
 
     # Wire box (line geometry)
-    fixum geometry.BufferGeometry ∪ nihil box_wire_result ← primitives.box_wire_geometry(2.0, 4.0, 6.0)
-    fixum geometry.BufferGeometry box_wire ← geometry.BufferGeometry { topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups }
+    fixum data.BufferGeometry ∪ nihil box_wire_result ← primitives.box_wire_geometry(2.0, 4.0, 6.0)
+    fixum data.BufferGeometry box_wire ← data.BufferGeometry { topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups }
 }

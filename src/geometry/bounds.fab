@@ -1,0 +1,26 @@
+# Geometry-side bounding volumes.
+#
+# Public import: importa ex "triga:geometry/bounds" privata bounds
+#
+# Owns the geometry-side BoundingBox / BoundingSphere pair used by
+# BufferGeometry. math.Box3 / math.Sphere stay in triga:math — RayBox3Hit
+# and the face-code tables depend on them — so this leaf is intentionally
+# the distinct geometry-side bounds family (report §1.4.2).
+#
+# Zero imports.
+
+genus BoundingBox {
+    f32 min_x
+    f32 min_y
+    f32 min_z
+    f32 max_x
+    f32 max_y
+    f32 max_z
+}
+
+genus BoundingSphere {
+    f32 center_x
+    f32 center_y
+    f32 center_z
+    f32 radius
+}

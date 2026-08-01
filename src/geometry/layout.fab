@@ -1,0 +1,97 @@
+# Vertex attribute layout types, format codes, and code helpers.
+#
+# Public import: importa ex "triga:geometry/layout" privata layout
+#
+# Owns: VertexAttributeLayout, VertexFormat, VertexStepMode, the format and
+# step-mode code helpers, and the VertexFormat / VertexStepMode variant
+# constructors. Enum variants are only constructible in the declaring leaf
+# under the current file-interface rules, so the constructors live next to
+# the enums and consumers build layout values through them.
+#
+# PrimitiveTopology stays in geometry/data so the topology discerne sites on
+# BufferGeometry remain same-module (see data.fab).
+#
+# Zero imports; self-contained.
+
+discretio VertexFormat {
+    Float32 { }
+    Float32x2 { }
+    Float32x3 { }
+    Float32x4 { }
+    Uint32 { }
+    Uint32x2 { }
+    Uint32x3 { }
+    Uint32x4 { }
+}
+
+discretio VertexStepMode {
+    VertexStep { }
+    InstanceStep { }
+}
+
+genus VertexAttributeLayout {
+    textus source_name
+    numerus shader_location
+    VertexFormat vertex_format
+    numerus offset_bytes
+    numerus stride_bytes
+    VertexStepMode step_mode
+}
+
+# --- VertexFormat / VertexStepMode variant constructors ---
+
+functio vertex_format_from_component_width(
+    numerus component_width,
+    bivalens is_float32
+) → VertexFormat {
+    si is_float32 {
+        si component_width ≡ 1 ergo redde finge Float32
+        si component_width ≡ 2 ergo redde finge Float32x2
+        si component_width ≡ 3 ergo redde finge Float32x3
+        redde finge Float32x4
+    }
+    si component_width ≡ 1 ergo redde finge Uint32
+    si component_width ≡ 2 ergo redde finge Uint32x2
+    si component_width ≡ 3 ergo redde finge Uint32x3
+    redde finge Uint32x4
+}
+
+functio vertex_step_mode_vertex_step() → VertexStepMode {
+    redde finge VertexStep
+}
+
+# --- Private format-code helpers (free, no genus receiver) ---
+
+@ privata
+functio _vertex_format_code(de VertexFormat format) → numerus {
+    discerne format {
+        casu Float32 { redde 1 }
+        casu Float32x2 { redde 2 }
+        casu Float32x3 { redde 3 }
+        casu Float32x4 { redde 4 }
+        casu Uint32 { redde 5 }
+        casu Uint32x2 { redde 6 }
+        casu Uint32x3 { redde 7 }
+        casu Uint32x4 { redde 8 }
+    }
+}
+
+# Public: data.fab's vertex_layout_format_code() / vertex_layout_matches()
+# compute layout codes across the leaf boundary (data -> layout).
+functio _vertex_layout_format_code(de VertexAttributeLayout layout) → numerus {
+    redde _vertex_format_code(layout.vertex_format)
+}
+
+@ privata
+functio _vertex_step_mode_code(de VertexStepMode mode) → numerus {
+    discerne mode {
+        casu VertexStep { redde 1 }
+        casu InstanceStep { redde 2 }
+    }
+}
+
+# Public: data.fab's vertex_layout_step_mode_code() / vertex_layout_matches()
+# compute layout codes across the leaf boundary (data -> layout).
+functio _vertex_layout_step_mode_code(de VertexAttributeLayout layout) → numerus {
+    redde _vertex_step_mode_code(layout.step_mode)
+}

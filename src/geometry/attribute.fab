@@ -1,0 +1,121 @@
+# Typed CPU-side vertex attributes.
+#
+# Public import: importa ex "triga:geometry/attribute" privata attribute
+#
+# Owns: BufferAttribute (+ all methods), AttributeData, AttributeUsage, and
+# the free constructor float32_attribute. AttributeData lives here so the
+# variant discerne sites (scalar_count / scalar_bytes / float32_values /
+# _vertex_format) and float32_values() stay co-located with the enum
+# (corpus README: variants are not in scope cross-module).
+#
+# Imports: triga:geometry/layout (VertexAttributeLayout, VertexFormat,
+# VertexStepMode, and the VertexFormat / VertexStepMode variant constructors).
+
+importa ex "triga:geometry/layout" privata layout
+
+discretio AttributeUsage {
+    StaticAttribute { }
+    DynamicAttribute { }
+    StreamAttribute { }
+}
+
+discretio AttributeData {
+    Float32Attribute { lista<f32> values }
+    Uint32Attribute { lista<u32> values }
+}
+
+genus BufferAttribute {
+    textus name
+    numerus shader_location
+    numerus component_width
+    numerus element_count
+    bivalens normalized
+    AttributeUsage usage
+    AttributeData data
+
+    @ privata
+    functio _vertex_format() → layout.VertexFormat {
+        discerne ego.data {
+            casu Float32Attribute fixum values {
+                redde layout.vertex_format_from_component_width(ego.component_width, verum)
+            }
+            casu Uint32Attribute fixum values {
+                redde layout.vertex_format_from_component_width(ego.component_width, falsum)
+            }
+        }
+    }
+
+    # Vertex format is exported through vertex_layout; standalone enum
+    # results are not file-interface carriers.
+    @ privata
+    functio vertex_format() → layout.VertexFormat ∪ nihil {
+        si ego.valida() ≡ falsum ergo redde nihil
+        redde ego._vertex_format()
+    }
+
+    functio valida() → bivalens {
+        si ego.name ≡ "" ergo redde falsum
+        si ego.normalized ergo redde falsum
+        si ego.component_width < 1 aut ego.component_width > 4 ergo redde falsum
+        si ego.element_count ≡ 0 ergo redde falsum
+        redde ego.scalar_count() ≡
+            ego.component_width * ego.element_count
+    }
+
+    functio scalar_count() → numerus {
+        discerne ego.data {
+            casu Float32Attribute fixum values { redde values.longitudo() }
+            casu Uint32Attribute fixum values { redde values.longitudo() }
+        }
+    }
+
+    functio scalar_bytes() → numerus {
+        discerne ego.data {
+            casu Float32Attribute fixum values { redde 4 }
+            casu Uint32Attribute fixum values { redde 4 }
+        }
+    }
+
+    # Projection: float32 payload for consumers that interleave attributes
+    # into host vertex buffers. nihil when the attribute stores uint32 data.
+    # Cross-module `discerne` over AttributeData is not available to consumers,
+    # so the payload read lives here next to the enum.
+    functio float32_values() → lista<f32> ∪ nihil {
+        discerne ego.data {
+            casu Float32Attribute fixum values { redde values }
+            casu Uint32Attribute fixum values { redde nihil }
+        }
+    }
+
+    functio stride_bytes() → numerus {
+        redde ego.component_width * ego.scalar_bytes()
+    }
+
+    functio vertex_layout() → layout.VertexAttributeLayout ∪ nihil {
+        si ego.valida() ≡ falsum ergo redde nihil
+        redde layout.VertexAttributeLayout {
+            source_name = ego.name,
+            shader_location = ego.shader_location,
+            vertex_format = ego._vertex_format(),
+            offset_bytes = 0, stride_bytes = ego.stride_bytes(),
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+    }
+}
+
+# --- Free constructors for BufferAttribute ---
+
+functio float32_attribute(
+    textus name,
+    numerus shader_location,
+    numerus component_width,
+    numerus element_count,
+    lista<f32> values
+) → BufferAttribute {
+    redde BufferAttribute {
+        name = name, shader_location = shader_location,
+        component_width = component_width, element_count = element_count,
+        normalized = falsum, usage = finge StaticAttribute,
+        data = finge Float32Attribute { values = values }
+    }
+}

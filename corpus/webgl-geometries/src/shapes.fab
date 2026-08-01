@@ -6,7 +6,8 @@
 # pipeline consumes interleaved pos3+normal3+color3, so colors are applied
 # here per vertex and grid offsets are baked into positions.
 
-importa ex "triga:geometry" privata geometry
+importa ex "triga:geometry/data" privata data
+importa ex "triga:geometry/attribute" privata attribute
 importa ex "triga:primitives" privata primitives
 
 genus CorpusMesh {
@@ -18,14 +19,14 @@ genus CorpusMesh {
 }
 
 @ privata
-functio _float_values(de geometry.BufferAttribute attr) → lista<f32> ∪ nihil {
+functio _float_values(de attribute.BufferAttribute attr) → lista<f32> ∪ nihil {
     redde attr.float32_values()
 }
 
 @ privata
 functio _mesh_ex_geometry(
     textus name,
-    de geometry.BufferGeometry geom,
+    de data.BufferGeometry geom,
     f32 ox, f32 oy, f32 oz,
     f32 r, f32 g, f32 b
 ) → CorpusMesh ∪ nihil {
@@ -66,7 +67,7 @@ functio _mesh_ex_geometry(
 functio _add_mesh(
     lista<CorpusMesh> meshes,
     textus name,
-    geometry.BufferGeometry ∪ nihil geom_opt,
+    data.BufferGeometry ∪ nihil geom_opt,
     f32 ox, f32 oy, f32 oz,
     f32 r, f32 g, f32 b
 ) → lista<CorpusMesh> {

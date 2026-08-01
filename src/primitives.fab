@@ -1,13 +1,17 @@
 # Deterministic mesh primitive generators for Triga.
 #
 # MODULE BOUNDARY:
-#   - geometry.fab: BufferGeometry / attributes / draw batches / layout codes.
+#   - geometry/data: BufferGeometry and its free constructors.
+#   - geometry/attribute: BufferAttribute / float32_attribute.
+#   - geometry/batch: DrawRange, GeometryGroup, batch facts.
 #   - primitives.fab: free generators that build BufferGeometry (plane, box, …).
 #   - Do not add GPU reflection enums here; do not grow three.js mirror genera.
 #
 # Import: triga:primitives
 
-importa ex "triga:geometry" privata geometry
+importa ex "triga:geometry/data" privata data
+importa ex "triga:geometry/attribute" privata attribute
+importa ex "triga:geometry/batch" privata batch
 
 # --- Free primitive helpers ---
 
@@ -18,23 +22,23 @@ functio _primitive_geometry(
     lista<f32> normals,
     lista<f32> uvs,
     lista<u32> indices
-) → geometry.BufferGeometry {
-    redde geometry.indexed_triangle_geometry(
+) → data.BufferGeometry {
+    redde data.indexed_triangle_geometry(
         vertex_count,
         [
-            geometry.float32_attribute("position", 0, 3, vertex_count, positions),
-            geometry.float32_attribute("normal", 1, 3, vertex_count, normals),
-            geometry.float32_attribute("uv", 2, 2, vertex_count, uvs),
+            attribute.float32_attribute("position", 0, 3, vertex_count, positions),
+            attribute.float32_attribute("normal", 1, 3, vertex_count, normals),
+            attribute.float32_attribute("uv", 2, 2, vertex_count, uvs),
         ],
         indices,
-        geometry.DrawRange { start = 0, count = indices.longitudo() },
-        [geometry.GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
+        batch.DrawRange { start = 0, count = indices.longitudo() },
+        [batch.GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
     )
 }
 
 # --- Free constructors for primitive shapes ---
 
-functio plane_geometry(f32 width, f32 height) → geometry.BufferGeometry ∪ nihil {
+functio plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 ergo redde nihil
     fixum f32 half_width ← width * 0.5
     fixum f32 half_height ← height * 0.5
@@ -55,7 +59,7 @@ functio plane_geometry(f32 width, f32 height) → geometry.BufferGeometry ∪ ni
     )
 }
 
-functio circle_geometry(f32 radius) → geometry.BufferGeometry ∪ nihil {
+functio circle_geometry(f32 radius) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 ergo redde nihil
     fixum f32 diagonal ← radius * 0.70710678
     redde _primitive_geometry(
@@ -84,7 +88,7 @@ functio circle_geometry(f32 radius) → geometry.BufferGeometry ∪ nihil {
     )
 }
 
-functio sphere_geometry(f32 radius) → geometry.BufferGeometry ∪ nihil {
+functio sphere_geometry(f32 radius) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 ergo redde nihil
     fixum f32 negative_radius ← 0.0 - radius
     fixum f32 negative_one ← 0.0 - 1.0
@@ -127,7 +131,7 @@ functio sphere_geometry(f32 radius) → geometry.BufferGeometry ∪ nihil {
     )
 }
 
-functio cylinder_geometry(f32 radius, f32 height) → geometry.BufferGeometry ∪ nihil {
+functio cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 aut height ≤ 0.0 ergo redde nihil
     fixum f32 half_height ← height * 0.5
     fixum f32 diagonal ← radius * 0.70710678
@@ -221,7 +225,7 @@ functio cylinder_geometry(f32 radius, f32 height) → geometry.BufferGeometry �
     )
 }
 
-functio cone_geometry(f32 radius, f32 height) → geometry.BufferGeometry ∪ nihil {
+functio cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 aut height ≤ 0.0 ergo redde nihil
     fixum f32 half_height ← height * 0.5
     fixum f32 diagonal ← radius * 0.70710678
@@ -297,7 +301,7 @@ functio cone_geometry(f32 radius, f32 height) → geometry.BufferGeometry ∪ ni
     )
 }
 
-functio torus_geometry(f32 radius, f32 tube_radius) → geometry.BufferGeometry ∪ nihil {
+functio torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 aut tube_radius ≤ 0.0 aut tube_radius ≥ radius ergo redde nihil
     fixum f32 diagonal ← 0.70710678
     fixum lista<f32> ring_cos ← [
@@ -350,7 +354,7 @@ functio torus_geometry(f32 radius, f32 tube_radius) → geometry.BufferGeometry 
     redde _primitive_geometry(45, positions, normals, uvs, indices)
 }
 
-functio box_geometry(f32 width, f32 height, f32 depth) → geometry.BufferGeometry ∪ nihil {
+functio box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 aut depth ≤ 0.0 ergo redde nihil
     fixum f32 x ← width * 0.5
     fixum f32 y ← height * 0.5
@@ -395,12 +399,12 @@ functio box_geometry(f32 width, f32 height, f32 depth) → geometry.BufferGeomet
     )
 }
 
-functio box_wire_geometry(f32 width, f32 height, f32 depth) → geometry.BufferGeometry ∪ nihil {
+functio box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 aut depth ≤ 0.0 ergo redde nihil
     fixum f32 x ← width * 0.5
     fixum f32 y ← height * 0.5
     fixum f32 z ← depth * 0.5
-    fixum geometry.BufferAttribute positions ← geometry.float32_attribute(
+    fixum attribute.BufferAttribute positions ← attribute.float32_attribute(
         "position", 0, 3, 8,
         [
             0.0 - x, 0.0 - y, 0.0 - z,
@@ -418,10 +422,10 @@ functio box_wire_geometry(f32 width, f32 height, f32 depth) → geometry.BufferG
         4, 5, 5, 6, 6, 7, 7, 4,
         0, 4, 1, 5, 2, 6, 3, 7,
     ]
-    fixum geometry.BufferGeometry wire ← geometry.line_geometry(
+    fixum data.BufferGeometry wire ← data.line_geometry(
         8, [positions], indices,
-        geometry.DrawRange { start = 0, count = indices.longitudo() },
-        [geometry.GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
+        batch.DrawRange { start = 0, count = indices.longitudo() },
+        [batch.GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
     )
     si wire.valida() ≡ falsum ergo redde nihil
     redde wire
@@ -433,10 +437,10 @@ functio box_wire_draw_batch_facts(
     f32 height,
     f32 depth,
     numerus instance_count
-) → geometry.LineGeometryDrawBatchFacts ∪ nihil {
-    fixum geometry.BufferGeometry ∪ nihil geometry_result ← box_wire_geometry(width, height, depth)
+) → batch.LineGeometryDrawBatchFacts ∪ nihil {
+    fixum data.BufferGeometry ∪ nihil geometry_result ← box_wire_geometry(width, height, depth)
     si geometry_result est nihil ergo redde nihil
-    fixum geometry.BufferGeometry geom ← geometry.BufferGeometry {
+    fixum data.BufferGeometry geom ← data.BufferGeometry {
         topology = geometry_result!.topology,
         vertex_count = geometry_result!.vertex_count,
         attributes = geometry_result!.attributes,
