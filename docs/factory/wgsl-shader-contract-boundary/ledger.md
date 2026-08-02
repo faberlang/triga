@@ -1,6 +1,6 @@
 # Compiler-Lane Ledger — WGSL Shader Contract Boundary (U5, Triga side)
 
-**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision
+**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision; U5-P2 repairs applied (naga hard-require, handover status complete)
 **Campaign**: [`radix/docs/factory/wgsl-shader-contract-boundary`](../../../radix/docs/factory/wgsl-shader-contract-boundary/) (goal.md, delivery.md §U5)
 **Repo**: `triga/` (this checkout) — write scope is triga only; radix is untouched
 **Unit**: U5 — Triga adapter + conformance suite (Wave 2, sibling repo)
@@ -118,11 +118,37 @@ The moved tests were rewritten onto the generic contract surface (see §2): real
 `triga:*` imports → generic contract (adapter declarations + constant
 assertions) → `faber emit -t wgsl-text` → Naga-valid WGSL.
 
+**Naming reconciliation**: earlier radix delivery docs (e.g.
+`radix/docs/factory/shader-body-lowering/delivery.md` and
+`radix/docs/factory/mir-gpu/phase-9gj-fragment-source-driver-test-delivery.md`)
+refer to **combined** test names —
+`triga_stage4_vertex_body_emits_wgsl_and_validates` and
+`triga_stage4_source_fragment_emits_wgsl_and_validates_with_naga`. The triga
+conformance corpus splits each combined test into two files — an emit-and-assert
+file plus a dedicated naga-validation file — because every corpus file must be a
+standalone program and the harness validates each emitted WGSL with naga. The
+one-to-many mapping is:
+
+| Radix-doc combined name | Triga emit/assert file | Triga naga file |
+| --- | --- | --- |
+| `triga_stage4_vertex_body_emits_wgsl_and_validates` | `vertex-body-emits-wgsl.fab` | `vertex-body-naga.fab` |
+| `triga_stage4_source_fragment_emits_wgsl_and_validates_with_naga` | `source-fragment-emits-wgsl.fab` | `fragment-entry-naga.fab` |
+
+Both triga files carry identical contract facts; the naga file's WGSL is
+additionally validated (harness `validate_naga`).
+
 **Atomic handover** (coordination with U4 / hand-1): agreed file list + pinned
 revision in mail hand-3→hand-1 (handle `c8677712`). Sequencing: triga lands
-first, hand-1 deletes the radix tests after confirming; radix deletion and
-triga landing stay atomic. Handover status: **proposed to hand-1; awaiting
-U4's deletion** — the triga side is landed and green regardless.
+first (commit `b3d3326`), hand-1 deletes the radix tests after confirming;
+radix deletion and triga landing stay atomic. Handover status: **COMPLETE** —
+the radix-side deletion is done. Verified 2026-08-02: zero `triga_stage4_*` /
+`triga:geometry` / `triga:primitives` references remain in
+`radix/crates/radix/src/tool_test.rs`, and
+`radix/crates/radix/src/fixtures/triga-stage4-source-facts.fab` is gone
+(replaced by the triga-free U4-A fixtures). The radix-side delivery doc's
+staleness is Mind's closeout item; the triga ledger reflects the actual state.
+Re-pin policy: if radix `crates/` moves past the pin, the harness fails loudly
+and the pin is re-validated in this ledger — never a silent rebuild.
 
 ## 4. Harness + validation evidence
 
@@ -130,7 +156,9 @@ Harness: `scripta/check-wgsl-shader-contract-conformance`.
 
 ```
 $ ./scripta/check-wgsl-shader-contract-conformance
+check-wgsl-shader-contract-conformance: naga validation required (/Users/ianzepp/.cargo/bin/naga)
 check-wgsl-shader-contract-conformance: faber .../faber/target/debug/faber (radix pinned 3cfd578b1)
+check-wgsl-shader-contract-conformance: conformance corpus .../exempla/conformance/shader-contract
 ok vertex-body-emits-wgsl
 ok vertex-body-naga
 ok source-fragment-emits-wgsl
@@ -147,6 +175,12 @@ Each file: `faber emit -t wgsl-text` → positive/negative WGSL assertions
 writes, fragment input varyings, default vs authored color output, Lambert math
 presence/absence) → `naga` validation (naga 30.0.0 on PATH) where the moved
 test validated.
+
+**Naga is a hard requirement** (P2-1 fix; auditor-1 residual `7b946d8d`): the
+moved conformance tests assert Naga-valid WGSL, so a naga-less environment
+must fail the suite, never silently pass without validation. The harness exits
+non-zero with a clear message when naga is absent from PATH or when `NAGA` is
+set empty (forced-absent path); `NAGA=/path/to/naga` overrides detection.
 
 ## 5. Pinned end-to-end run (done_when)
 
@@ -182,9 +216,12 @@ validates the same file in the harness (`vertex-body-naga`).
 - `triga/src/geometry/data.fab` gained only the `@ shader_contract
   "vertex_layout"` annotation on `geometry_vertex_layout_matches` (compiles
   clean; `radix check` green).
-- Triga gates re-run: `scripta/check-compile` (includes the new
-  `src/shader_contract.fab` leaf) and `scripta/check-hello-voxel-contract`
-  stay green.
+- Triga gates: `scripta/check-compile` leaf parsing (including the new
+  `src/shader_contract.fab` leaf) and the conformance suite are green; the
+  generated-Rust E0308 step and the `check-source`
+  `geometry_vertex_layout_matches` genus-prefix lint are pre-existing,
+  documented items (compiler-lane ledger E0308; decision-gated DS-E C3) and
+  are untouched by this unit.
 
 ## 7. Out of scope (unchanged)
 

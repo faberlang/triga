@@ -18,7 +18,8 @@
 #   ./scripta/check-wgsl-shader-contract-conformance
 #   FABER_ROOT=... RADIX_ROOT=... ./scripta/check-wgsl-shader-contract-conformance
 #
-# Exit non-zero on any compile failure, unexpected WGSL, or naga rejection.
+# Exit non-zero on any compile failure, unexpected WGSL, naga rejection, or
+# absent naga (the suite hard-requires naga — see below).
 
 set -euo pipefail
 
@@ -78,12 +79,26 @@ export RADIX_ROOT="$RADIX"
 
 CONFORMANCE_DIR="$ROOT/exempla/conformance/shader-contract"
 
-NAGA=""
-if command -v naga >/dev/null 2>&1; then
-  NAGA="$(command -v naga)"
+# Naga validation is a HARD requirement (P2-1 fix; auditor-1 residual
+# 7b946d8d): the moved conformance tests assert Naga-valid WGSL, so a
+# naga-less environment must fail the suite — never silently pass without
+# validation. `NAGA=/path/to/naga` overrides detection; `NAGA=` (empty)
+# deliberately forces the absent path and fails.
+if [[ -n "${NAGA+x}" ]]; then
+  NAGA_BIN="$NAGA"
+elif command -v naga >/dev/null 2>&1; then
+  NAGA_BIN="$(command -v naga)"
 else
-  echo "check-wgsl-shader-contract-conformance: naga not found on PATH; skipping WGSL validation" >&2
+  echo "check-wgsl-shader-contract-conformance: naga not found on PATH; this suite hard-requires naga (the moved conformance tests assert Naga-valid WGSL)" >&2
+  echo "  install with: cargo install naga-cli --version 30.0.0" >&2
+  exit 1
 fi
+if [[ -z "$NAGA_BIN" ]]; then
+  echo "check-wgsl-shader-contract-conformance: NAGA is set but empty; refusing to skip naga validation" >&2
+  echo "  install naga and retry, or unset NAGA to auto-detect" >&2
+  exit 1
+fi
+echo "check-wgsl-shader-contract-conformance: naga validation required ($NAGA_BIN)"
 
 TMPDIR_WORK="$(mktemp -d "${TMPDIR:-/tmp}/triga-sc-conformance.XXXXXX")"
 trap 'rm -rf "$TMPDIR_WORK"' EXIT
@@ -124,12 +139,9 @@ assert_not_contains() {
 # validate_naga <name> <wgsl>
 validate_naga() {
   local name="$1" wgsl="$2"
-  if [[ -z "$NAGA" ]]; then
-    return 0
-  fi
   local wgsl_file="$TMPDIR_WORK/$name.wgsl"
   printf '%s\n' "$wgsl" > "$wgsl_file"
-  if ! "$NAGA" "$wgsl_file" >"$TMPDIR_WORK/$name.naga.out" 2>&1; then
+  if ! "$NAGA_BIN" "$wgsl_file" >"$TMPDIR_WORK/$name.naga.out" 2>&1; then
     echo "FAIL $name: naga rejected the WGSL"
     sed -n 's/^/    /p' "$TMPDIR_WORK/$name.naga.out" | head -20
     return 1
