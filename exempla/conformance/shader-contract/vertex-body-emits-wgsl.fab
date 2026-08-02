@@ -1,0 +1,52 @@
++++
+term = "shader-contract-vertex-body-emits-wgsl"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "U5 conformance (moved from radix U4): authored @vertex body emits WGSL via the generic shader-contract surface."
++++
+# Conformance: triga_stage4_vertex_body_emits_wgsl (moved from radix U4).
+#
+# Real triga:* imports (geometry construction) + generic shader-contract
+# adapter declarations (mapping triga's geometry_vertex_layout_matches onto the
+# vertex_layout role) -> faber emit -t wgsl-text -> Naga-valid WGSL.
+#
+# Expected WGSL (asserted by scripta/check-wgsl-shader-contract-conformance):
+#   * @vertex entry `fn hello_voxel_vertex`
+#   * authored body: out.position = vec4<f32>(input.position.x, input.position.y, input.position.z, ...)
+#   * no transform fallback (`view_proj * model` absent)
+
+importa ex "triga:geometry/data" privata data
+importa ex "triga:primitives/basic" privata basic
+
+# Contract-role adapter declaration (mirrors src/shader_contract.fab). The
+# radix driver registers `@ shader_contract "vertex_layout"` by resolved
+# identity and ingests the constant-argument assertions below.
+@ shader_contract "vertex_layout"
+functio vertex_layout_matches(
+    numerus geo,
+    numerus index,
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus offset_bytes,
+    numerus stride_bytes,
+    numerus step_mode_code
+) → bivalens {
+    redde verum
+}
+
+@ vertex
+functio hello_voxel_vertex() → vacuum {
+    out_position ← position
+}
+
+incipit {
+    fixum data.BufferGeometry ∪ nihil plane ← basic.plane_geometry(2.0, 2.0)
+    adfirma plane non est nihil secus
+        "conformance requires valid plane geometry"
+    adfirma vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1) secus
+        "position input layout"
+    adfirma vertex_layout_matches(0, 1, "color", 1, 3, 12, 12, 1) secus
+        "color input layout"
+}

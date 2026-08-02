@@ -1,0 +1,182 @@
+# Triga's adapter onto the compiler-owned generic shader-contract surface.
+#
+# Public import: importa ex "triga:shader_contract" privata contract
+#
+# The compiler (radix) owns the generic shader-contract lane: the
+# `@ shader_contract "<role>"` annotation, identity-resolved ingestion,
+# fail-closed code tables, validation, reflection, and WGSL emission.
+# Triga owns the concrete external Faber contract and maps its real API onto
+# that generic surface. This module is that mapping:
+#
+#   * contract-role functions carrying the compiler-owned annotation, whose
+#     call argument shapes match the canonical surface radix recognizes
+#     (roles: vertex_layout / varying / fragment_output / pipeline /
+#     resource_binding);
+#   * Triga's canonical code vocabulary (the codes the conformance programs
+#     assert — they must be canonical radix_mir::shader_contract codes);
+#   * the Goal-01 pipeline defaults, which per decision D2 live HERE as
+#     Triga's contract, not in radix (bgra8unorm, depth24plus less+write,
+#     triangle-list, 36 vertices, transform storage buffer).
+#
+# Council lock: Triga never emits WGSL. It maps its API to the generic
+# surface; radix emits.
+#
+# The radix driver recognizes a contract-role function when the annotated
+# function is declared in the compiled unit and its constant-argument calls
+# appear in `adfirma` assertions. Triga's real API function
+# `geometry.geometry_vertex_layout_matches` (src/geometry/data.fab) is the
+# vertex-layout member of this contract; conformance programs
+# (exempla/conformance/shader-contract/*) declare the adapter pattern and
+# assert facts against it.
+#
+# Canonical code tables (radix_mir::shader_contract; unknown codes fail
+# closed with a structured diagnostic):
+#   vertex format   2 = float32x2, 3 = float32x3, 4 = float32x4
+#   color target    1 = bgra8unorm, 2 = bgra8unorm-srgb
+#   topology        1 = triangle-list, 2 = line-list, 3 = point-list
+#   depth compare   0 = no depth attachment (driver sentinel),
+#                   1 = less, 2 = equal, 3 = less-equal, 4 = greater,
+#                   5 = not-equal, 6 = greater-equal, 7 = always
+#   step mode       1 = vertex, 2 = instance
+#   interpolation   1 = perspective, 2 = linear, 3 = flat
+#   resource kind   1 = storage buffer, 2 = runtime extent
+#   resource role   1 = input, 2 = output
+#   resource access 1 = read, 2 = write, 3 = read-write
+#   scalar layout   1 = f32 (4 bytes), 2 = f64 (8), 3 = i32 (4), 4 = u32 (4)
+
+# ---------------------------------------------------------------------------
+# Contract-role adapter functions (decision D1 surface)
+#
+# Each declaration mirrors one slice of the generic shader contract. The
+# compiler registers the annotation by identity and ingests facts from
+# constant-argument calls.
+# ---------------------------------------------------------------------------
+
+# Vertex-buffer attribute layout: source semantic, shader location, canonical
+# format, offset/stride in bytes, and input step mode. Maps Triga's
+# geometry.geometry_vertex_layout_matches real API onto the vertex_layout role.
+@ shader_contract "vertex_layout"
+functio vertex_layout_matches(
+    numerus geo,
+    numerus index,
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus offset_bytes,
+    numerus stride_bytes,
+    numerus step_mode_code
+) → bivalens {
+    redde verum
+}
+
+# Interstage varying: source semantic, location, format, and interpolation.
+# Explicit varying declarations are Triga's contract (decision D3).
+@ shader_contract "varying"
+functio varying_matches(
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus interpolation_code
+) → bivalens {
+    redde verum
+}
+
+# Fragment render-target output: location and canonical color format.
+@ shader_contract "fragment_output"
+functio fragment_output_matches(
+    numerus location,
+    numerus format_code
+) → bivalens {
+    redde verum
+}
+
+# Pipeline state: color target, depth compare + write, topology, vertex count.
+# Maps Triga's geometry.geometry_pipeline_descriptor_matches contract onto the
+# pipeline role; the Goal-01 defaults are declared as named constants below
+# (decision D2).
+@ shader_contract "pipeline"
+functio pipeline_matches(
+    numerus color_target_format_code,
+    numerus depth_compare_code,
+    numerus depth_write_enabled_code,
+    numerus primitive_topology_code,
+    numerus vertex_count
+) → bivalens {
+    redde verum
+}
+
+# Resource binding: group/binding, kind, role, access, element count + scalar
+# layout, and the source semantic (e.g. "transform").
+@ shader_contract "resource_binding"
+functio resource_binding_matches(
+    numerus group,
+    numerus binding,
+    numerus kind_code,
+    numerus role_code,
+    numerus access_code,
+    numerus element_count,
+    numerus layout_code,
+    textus source_name
+) → bivalens {
+    redde verum
+}
+
+# ---------------------------------------------------------------------------
+# Goal-01 pipeline defaults (decision D2 — Triga's contract)
+#
+# The first-pipeline contract locked by docs/factory/hello-voxel/goals/
+# 01-source-graphics-pipeline.md: color target bgra8unorm, depth24plus with
+# compare less + writes enabled, triangle-list topology, 36 vertices, and a
+# group-0 binding-0 read-only transform storage buffer (32 f32). Conformance
+# programs assert these defaults through the pipeline / resource_binding role
+# functions above.
+# ---------------------------------------------------------------------------
+
+# Goal-01 first-pipeline defaults (locked by
+# docs/factory/hello-voxel/goals/01-source-graphics-pipeline.md):
+#   color target bgra8unorm (1), depth24plus compare less (1) + writes enabled
+#   (1), triangle-list topology (1), 36 vertices, and a group-0 binding-0
+#   read-only transform storage buffer (32 f32).
+@ privata
+fixum numerus goal_color_target_format_code ← 1
+@ privata
+fixum numerus goal_depth_compare_code ← 1
+@ privata
+fixum numerus goal_depth_write_enabled_code ← 1
+@ privata
+fixum numerus goal_primitive_topology_code ← 1
+@ privata
+fixum numerus goal_vertex_count ← 36
+# Position input layout: location 0, float32x3, offset 0, stride 12, vertex
+# step mode.
+@ privata
+fixum numerus goal_position_format_code ← 3
+@ privata
+fixum numerus goal_position_offset_bytes ← 0
+@ privata
+fixum numerus goal_position_stride_bytes ← 12
+@ privata
+fixum numerus goal_step_mode_vertex ← 1
+
+# Transform resource: group 0 binding 0, storage buffer, input role, read
+# access, 32 f32 elements, f32 scalar layout.
+@ privata
+fixum numerus goal_transform_group ← 0
+@ privata
+fixum numerus goal_transform_binding ← 0
+@ privata
+fixum numerus goal_transform_kind_code ← 1
+@ privata
+fixum numerus goal_transform_role_code ← 1
+@ privata
+fixum numerus goal_transform_access_code ← 1
+@ privata
+fixum numerus goal_transform_element_count ← 32
+@ privata
+fixum numerus goal_transform_layout_code ← 1
+
+# Fragment color output: location 0, float32x4.
+@ privata
+fixum numerus goal_fragment_output_location ← 0
+@ privata
+fixum numerus goal_fragment_output_format_code ← 4

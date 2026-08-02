@@ -25,3 +25,15 @@ Run this before handing work to Radix, Faber, or browser-host factory stages:
 This gate is intentionally scoped to Triga-owned evidence. It does not prove
 fragment lowering, direct WebGPU drawing, browser lifecycle, interaction, or
 runtime clean-break completion.
+
+## Compiler-lane boundary: WGSL shader contract
+
+Triga's adapter onto the compiler-owned generic shader-contract surface
+(`@ shader_contract "<role>"`), the moved radix U4 conformance suite, and the
+pinned radix revision live in
+[`wgsl-shader-contract-boundary/ledger.md`](wgsl-shader-contract-boundary/ledger.md).
+Run the conformance suite with:
+
+```bash
+./scripta/check-wgsl-shader-contract-conformance
+```

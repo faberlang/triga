@@ -1,0 +1,250 @@
+#!/usr/bin/env bash
+# check-wgsl-shader-contract-conformance
+#
+# Triga conformance suite for the compiler-owned generic shader-contract
+# boundary (docs/factory/wgsl-shader-contract-boundary/ledger.md).
+#
+# The moved radix U4 conformance tests (the 7 triga_stage4_* tests from
+# radix crates/radix/src/tool_test.rs:2373-2864) live here as real triga:*
+# corpus programs: real triga:* imports -> generic contract (via the adapter
+# declarations mirrored from triga/src/shader_contract.fab) -> faber emit
+# -t wgsl-text -> Naga-valid WGSL.
+#
+# Pinned radix revision: 3cfd578b1 (see ledger.md). The faber binary is built
+# from the sibling faber checkout (faber/Cargo.toml pins radix by path), so
+# the pinned radix revision is the compiled-against radix.
+#
+# Usage:
+#   ./scripta/check-wgsl-shader-contract-conformance
+#   FABER_ROOT=... RADIX_ROOT=... ./scripta/check-wgsl-shader-contract-conformance
+#
+# Exit non-zero on any compile failure, unexpected WGSL, or naga rejection.
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
+if [[ -n "${RADIX_ROOT:-}" ]]; then
+  RADIX="$RADIX_ROOT"
+elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
+  RADIX="$ROOT/../radix"
+else
+  RADIX="$ROOT/../../../radix"
+fi
+
+if [[ ! -d "$RADIX/crates/radix" ]]; then
+  echo "check-wgsl-shader-contract-conformance: missing radix checkout at $RADIX" >&2
+  exit 1
+fi
+
+if [[ -n "${FABER_ROOT:-}" ]]; then
+  FABER="$FABER_ROOT"
+elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
+  FABER="$ROOT/../faber"
+else
+  FABER="$ROOT/../../../faber"
+fi
+
+if [[ ! -f "$FABER/Cargo.toml" ]]; then
+  echo "check-wgsl-shader-contract-conformance: missing faber checkout at $FABER" >&2
+  exit 1
+fi
+
+# The faber binary must embed the pinned radix revision. Verify the radix
+# checkout still matches the pin (docs-only drift is allowed; code drift is a
+# re-pin decision recorded in the ledger, not a silent rebuild).
+PINNED_RADIX_REV="3cfd578b1"
+if [[ ! -d "$RADIX/.git" ]] || ! git -C "$RADIX" merge-base --is-ancestor "$PINNED_RADIX_REV" HEAD >/dev/null 2>&1; then
+  echo "check-wgsl-shader-contract-conformance: radix checkout is not at or after pinned $PINNED_RADIX_REV" >&2
+  echo "  re-pin the compiler-lane ledger (docs/factory/wgsl-shader-contract-boundary/ledger.md)" >&2
+  exit 1
+fi
+PIN_DELTA="$(git -C "$RADIX" diff "$PINNED_RADIX_REV" HEAD -- crates/ 2>/dev/null | wc -l | tr -d ' ')"
+if [[ "$PIN_DELTA" != "0" ]]; then
+  echo "check-wgsl-shader-contract-conformance: radix crates/ moved past pinned $PINNED_RADIX_REV ($PIN_DELTA diff lines)" >&2
+  echo "  re-pin the compiler-lane ledger before running this suite" >&2
+  exit 1
+fi
+
+FABER_BIN="$FABER/target/debug/faber"
+if [[ ! -x "$FABER_BIN" ]] || [[ "$RADIX/crates/radix/src/driver/shader_contract.rs" -nt "$FABER_BIN" ]] || [[ "$RADIX/Cargo.toml" -nt "$FABER_BIN" ]]; then
+  echo "check-wgsl-shader-contract-conformance: building faber against pinned radix $PINNED_RADIX_REV"
+  (cd "$FABER" && cargo build -q -p faber --bin faber)
+fi
+
+export FABER_LIBRARY_HOME
+export RADIX_ROOT="$RADIX"
+
+CONFORMANCE_DIR="$ROOT/exempla/conformance/shader-contract"
+
+NAGA=""
+if command -v naga >/dev/null 2>&1; then
+  NAGA="$(command -v naga)"
+else
+  echo "check-wgsl-shader-contract-conformance: naga not found on PATH; skipping WGSL validation" >&2
+fi
+
+TMPDIR_WORK="$(mktemp -d "${TMPDIR:-/tmp}/triga-sc-conformance.XXXXXX")"
+trap 'rm -rf "$TMPDIR_WORK"' EXIT
+
+failures=0
+
+# emit_file <name> <file>  -> emits WGSL to stdout, dies on compile failure.
+emit_file() {
+  local name="$1"
+  local file="$2"
+  local out
+  if ! out="$("$FABER_BIN" emit -t wgsl-text "$file" 2>"$TMPDIR_WORK/$name.err")"; then
+    echo "FAIL $name: faber emit -t wgsl-text failed"
+    sed -n 's/^/    /p' "$TMPDIR_WORK/$name.err" | head -20
+    return 1
+  fi
+  printf '%s\n' "$out"
+}
+
+# assert_contains <name> <needle> <wgsl>
+assert_contains() {
+  local name="$1" needle="$2" wgsl="$3"
+  if ! grep -qF -- "$needle" <<<"$wgsl"; then
+    echo "FAIL $name: expected WGSL to contain '$needle'"
+    return 1
+  fi
+}
+
+# assert_not_contains <name> <needle> <wgsl>
+assert_not_contains() {
+  local name="$1" needle="$2" wgsl="$3"
+  if grep -qF -- "$needle" <<<"$wgsl"; then
+    echo "FAIL $name: expected WGSL NOT to contain '$needle'"
+    return 1
+  fi
+}
+
+# validate_naga <name> <wgsl>
+validate_naga() {
+  local name="$1" wgsl="$2"
+  if [[ -z "$NAGA" ]]; then
+    return 0
+  fi
+  local wgsl_file="$TMPDIR_WORK/$name.wgsl"
+  printf '%s\n' "$wgsl" > "$wgsl_file"
+  if ! "$NAGA" "$wgsl_file" >"$TMPDIR_WORK/$name.naga.out" 2>&1; then
+    echo "FAIL $name: naga rejected the WGSL"
+    sed -n 's/^/    /p' "$TMPDIR_WORK/$name.naga.out" | head -20
+    return 1
+  fi
+}
+
+# --- moved test 1: triga_stage4_vertex_body_emits_wgsl -----------------------
+run_vertex_body_emits() {
+  local name="vertex-body-emits-wgsl"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/vertex-body-emits-wgsl.fab")" || return 1
+  assert_contains "$name" "@vertex" "$wgsl" || return 1
+  assert_contains "$name" "fn hello_voxel_vertex" "$wgsl" || return 1
+  assert_contains "$name" "out.position = vec4<f32>(input.position.x, input.position.y, input.position.z" "$wgsl" || return 1
+  assert_not_contains "$name" "view_proj * model" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+# --- moved test 2: triga_stage4_vertex_body_validates_with_naga --------------
+run_vertex_body_naga() {
+  local name="vertex-body-naga"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/vertex-body-naga.fab")" || return 1
+  assert_contains "$name" "@vertex" "$wgsl" || return 1
+  assert_contains "$name" "fn hello_voxel_vertex" "$wgsl" || return 1
+  validate_naga "$name" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+# --- moved test 3: triga_stage4_source_fragment_emits_wgsl -------------------
+run_source_fragment_emits() {
+  local name="source-fragment-emits-wgsl"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/source-fragment-emits-wgsl.fab")" || return 1
+  assert_contains "$name" "@fragment" "$wgsl" || return 1
+  assert_contains "$name" "fn hello_voxel_fragment" "$wgsl" || return 1
+  assert_contains "$name" "  @location(0) @interpolate(perspective) normal: vec3<f32>," "$wgsl" || return 1
+  assert_contains "$name" "  @location(1) @interpolate(perspective) uv: vec2<f32>," "$wgsl" || return 1
+  assert_contains "$name" "out.color = vec4<f32>(0.0, 0.0, 0.0, 1.0);" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+# --- moved test 4: triga_stage4_fragment_entry_validates_with_naga -----------
+run_fragment_entry_naga() {
+  local name="fragment-entry-naga"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/fragment-entry-naga.fab")" || return 1
+  assert_contains "$name" "@fragment" "$wgsl" || return 1
+  assert_contains "$name" "fn hello_voxel_fragment" "$wgsl" || return 1
+  validate_naga "$name" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+# --- moved test 5: triga_stage4_source_fragment_body_emits_authored_color_widening
+run_source_fragment_body_color_widening() {
+  local name="source-fragment-body-color-widening"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/source-fragment-body-color-widening.fab")" || return 1
+  assert_contains "$name" "  @location(0) @interpolate(perspective) normal: vec3<f32>," "$wgsl" || return 1
+  assert_contains "$name" "  @location(1) @interpolate(perspective) color: vec3<f32>," "$wgsl" || return 1
+  assert_contains "$name" "out.color = vec4<f32>(input.color.x, input.color.y, input.color.z" "$wgsl" || return 1
+  assert_not_contains "$name" "out.color = vec4<f32>(0.0, 0.0, 0.0, 1.0);" "$wgsl" || return 1
+  validate_naga "$name" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+# --- moved test 6: triga_stage4_source_fragment_lambert_emits_authored_math --
+run_source_fragment_lambert() {
+  local name="source-fragment-lambert"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/source-fragment-lambert.fab")" || return 1
+  assert_contains "$name" "var light_direction: vec3<f32>;" "$wgsl" || return 1
+  assert_contains "$name" "light_direction = tmp" "$wgsl" || return 1
+  assert_contains "$name" "input.normal.x * light_direction.x" "$wgsl" || return 1
+  assert_contains "$name" "max(" "$wgsl" || return 1
+  assert_contains "$name" "input.color.x * lighting_vec.x" "$wgsl" || return 1
+  assert_contains "$name" "out.color = vec4<f32>(lit_color.x, lit_color.y, lit_color.z" "$wgsl" || return 1
+  validate_naga "$name" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+# --- moved test 7: triga_stage4_source_fragment_lambert_negative_empty_body_has_no_lambert_math
+run_source_fragment_lambert_negative_empty() {
+  local name="source-fragment-lambert-negative-empty"
+  local wgsl
+  wgsl="$(emit_file "$name" "$CONFORMANCE_DIR/source-fragment-lambert-negative-empty.fab")" || return 1
+  assert_not_contains "$name" "light_direction" "$wgsl" || return 1
+  assert_not_contains "$name" "max(" "$wgsl" || return 1
+  assert_not_contains "$name" "lit_color" "$wgsl" || return 1
+  echo "ok $name"
+}
+
+echo "check-wgsl-shader-contract-conformance: faber $FABER_BIN (radix pinned $PINNED_RADIX_REV)"
+echo "check-wgsl-shader-contract-conformance: conformance corpus $CONFORMANCE_DIR"
+
+run_vertex_body_emits || failures=$((failures + 1))
+run_vertex_body_naga || failures=$((failures + 1))
+run_source_fragment_emits || failures=$((failures + 1))
+run_fragment_entry_naga || failures=$((failures + 1))
+run_source_fragment_body_color_widening || failures=$((failures + 1))
+run_source_fragment_lambert || failures=$((failures + 1))
+run_source_fragment_lambert_negative_empty || failures=$((failures + 1))
+
+# The moved source-facts fixture (radix crates/radix/src/fixtures/
+# triga-stage4-source-facts.fab) lands in triga as the existing exempla file;
+# it must stay check-clean against the pinned toolchain.
+echo "check-wgsl-shader-contract-conformance: source-facts fixture check"
+if ! "$FABER_BIN" check "$ROOT/exempla/triga-stage4-source-facts.fab" >"$TMPDIR_WORK/fixture.err" 2>&1; then
+  echo "FAIL source-facts fixture: faber check rejected triga-stage4-source-facts.fab"
+  sed -n 's/^/    /p' "$TMPDIR_WORK/fixture.err" | head -20
+  failures=$((failures + 1))
+fi
+
+if [[ "$failures" -gt 0 ]]; then
+  echo "check-wgsl-shader-contract-conformance: $failures failure(s)"
+  exit 1
+fi
+echo "check-wgsl-shader-contract-conformance: ok (7 moved conformance tests + source-facts fixture)"

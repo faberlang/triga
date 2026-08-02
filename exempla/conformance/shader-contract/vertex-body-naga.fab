@@ -1,0 +1,42 @@
++++
+term = "shader-contract-vertex-body-naga"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "U5 conformance (moved from radix U4): authored @vertex body emits Naga-valid WGSL via the generic shader-contract surface."
++++
+# Conformance: triga_stage4_vertex_body_validates_with_naga (moved from radix
+# U4). Identical facts to vertex-body-emits-wgsl; the harness additionally
+# validates the emitted WGSL with `naga`.
+
+importa ex "triga:geometry/data" privata data
+importa ex "triga:primitives/basic" privata basic
+
+@ shader_contract "vertex_layout"
+functio vertex_layout_matches(
+    numerus geo,
+    numerus index,
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus offset_bytes,
+    numerus stride_bytes,
+    numerus step_mode_code
+) → bivalens {
+    redde verum
+}
+
+@ vertex
+functio hello_voxel_vertex() → vacuum {
+    out_position ← position
+}
+
+incipit {
+    fixum data.BufferGeometry ∪ nihil plane ← basic.plane_geometry(2.0, 2.0)
+    adfirma plane non est nihil secus
+        "conformance requires valid plane geometry"
+    adfirma vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1) secus
+        "position input layout"
+    adfirma vertex_layout_matches(0, 1, "color", 1, 3, 12, 12, 1) secus
+        "color input layout"
+}

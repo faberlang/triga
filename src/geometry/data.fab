@@ -1023,7 +1023,14 @@ functio _primitive_range_valid(
 }
 
 # --- Standalone vertex-layout assertion (wraps BufferGeometry method) ---
+#
+# Contract-role adapter: the compiler-owned `@ shader_contract "vertex_layout"`
+# annotation maps this real Triga API onto the generic shader-contract surface
+# radix recognizes (see src/shader_contract.fab). The argument shape matches
+# the canonical vertex_layout role: (geo, index, source_name, location,
+# format_code, offset_bytes, stride_bytes, step_mode_code).
 
+@ shader_contract "vertex_layout"
 functio geometry_vertex_layout_matches(
     BufferGeometry geo,
     numerus index,

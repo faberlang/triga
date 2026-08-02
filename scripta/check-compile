@@ -39,7 +39,7 @@ export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
 
 echo "check-compile: parsing leaf modules"
-for mod in math graph material face geometry primitives scene resource triga; do
+for mod in math graph material face geometry primitives scene resource triga shader_contract; do
   echo "check-compile: parsing src/${mod}.fab"
   "$RADIX_BIN" check "$ROOT/src/${mod}.fab"
 done

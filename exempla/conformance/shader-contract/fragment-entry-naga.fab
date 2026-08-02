@@ -1,0 +1,65 @@
++++
+term = "shader-contract-fragment-entry-naga"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "U5 conformance (moved from radix U4): @fragment entry emits Naga-valid WGSL via the generic shader-contract surface."
++++
+# Conformance: triga_stage4_fragment_entry_validates_with_naga (moved from
+# radix U4). Identical facts to source-fragment-emits-wgsl; the harness
+# additionally validates the emitted WGSL with `naga`.
+
+importa ex "triga:geometry/data" privata data
+importa ex "triga:primitives/basic" privata basic
+
+@ shader_contract "vertex_layout"
+functio vertex_layout_matches(
+    numerus geo,
+    numerus index,
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus offset_bytes,
+    numerus stride_bytes,
+    numerus step_mode_code
+) → bivalens {
+    redde verum
+}
+
+@ shader_contract "varying"
+functio varying_matches(
+    textus source_name,
+    numerus shader_location,
+    numerus format_code,
+    numerus interpolation_code
+) → bivalens {
+    redde verum
+}
+
+@ shader_contract "fragment_output"
+functio fragment_output_matches(
+    numerus location,
+    numerus format_code
+) → bivalens {
+    redde verum
+}
+
+@ fragment
+functio hello_voxel_fragment() → vacuum {
+}
+
+incipit {
+    fixum data.BufferGeometry ∪ nihil plane ← basic.plane_geometry(2.0, 2.0)
+    adfirma plane non est nihil secus
+        "conformance requires valid plane geometry"
+    adfirma vertex_layout_matches(0, 0, "normal", 0, 3, 0, 12, 1) secus
+        "normal input layout"
+    adfirma vertex_layout_matches(0, 1, "uv", 1, 2, 0, 8, 1) secus
+        "uv input layout"
+    adfirma varying_matches("normal", 0, 3, 1) secus
+        "varying fact location 0: vec3<f32> normal"
+    adfirma varying_matches("uv", 1, 2, 1) secus
+        "varying fact location 1: vec2<f32> uv"
+    adfirma fragment_output_matches(0, 4) secus
+        "fragment output location 0: vec4<f32>"
+}
