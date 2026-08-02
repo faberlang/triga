@@ -11,7 +11,9 @@
 #   * contract-role functions carrying the compiler-owned annotation, whose
 #     call argument shapes match the canonical surface radix recognizes
 #     (roles: vertex_layout / varying / fragment_output / pipeline /
-#     resource_binding);
+#     resource_binding), each stage-I/O role declared explicitly via
+#     `stage_io_role_code` (radix U6; roles are never synthesized from
+#     source-name spelling or location);
 #   * Triga's canonical code vocabulary (the codes the conformance programs
 #     assert — they must be canonical radix_mir::shader_contract codes);
 #   * the Goal-01 pipeline defaults, which per decision D2 live HERE as
@@ -39,6 +41,11 @@
 #                   5 = not-equal, 6 = greater-equal, 7 = always
 #   step mode       1 = vertex, 2 = instance
 #   interpolation   1 = perspective, 2 = linear, 3 = flat
+#   stage-io role   1 = position, 2 = color, 3 = transform, 4 = other
+#   (stage_io_role_code, radix_mir::shader_contract::stage_io_role_from_code:
+#   the explicit stage-I/O role declared on each vertex_layout / varying /
+#   fragment_output / resource_binding call — never synthesized from
+#   source-name spelling or location)
 #   resource kind   1 = storage buffer, 2 = runtime extent
 #   resource role   1 = input, 2 = output
 #   resource access 1 = read, 2 = write, 3 = read-write
@@ -64,7 +71,8 @@ functio vertex_layout_matches(
     numerus format_code,
     numerus offset_bytes,
     numerus stride_bytes,
-    numerus step_mode_code
+    numerus step_mode_code,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }
@@ -76,7 +84,8 @@ functio varying_matches(
     textus source_name,
     numerus shader_location,
     numerus format_code,
-    numerus interpolation_code
+    numerus interpolation_code,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }
@@ -85,7 +94,8 @@ functio varying_matches(
 @ shader_contract "fragment_output"
 functio fragment_output_matches(
     numerus location,
-    numerus format_code
+    numerus format_code,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }
@@ -116,7 +126,8 @@ functio resource_binding_matches(
     numerus access_code,
     numerus element_count,
     numerus layout_code,
-    textus source_name
+    textus source_name,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }

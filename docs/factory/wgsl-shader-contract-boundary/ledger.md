@@ -1,20 +1,28 @@
 # Compiler-Lane Ledger — WGSL Shader Contract Boundary (U5, Triga side)
 
-**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision; U5-P2 repairs applied (naga hard-require, handover status complete)
+**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision; U5-P2 repairs applied (naga hard-require, handover status complete). **Re-pin applied** (2026-08-02, wave-close): pin moved `3cfd578b1` → `02b4cbb14` for radix U6 (explicit `stage_io_role_code` contract calls; F1/F2 role synthesis retired); adapter + exempla re-adapted to the new call shapes, suite green against the new pin (see §0 and §1).
 **Campaign**: [`radix/docs/factory/wgsl-shader-contract-boundary`](../../../radix/docs/factory/wgsl-shader-contract-boundary/) (goal.md, delivery.md §U5)
 **Repo**: `triga/` (this checkout) — write scope is triga only; radix is untouched
-**Unit**: U5 — Triga adapter + conformance suite (Wave 2, sibling repo)
+**Unit**: U5 — Triga adapter + conformance suite (Wave 2, sibling repo); wave-close re-pin to radix U6
 
 ## 0. Pinned radix revision
 
-**Pin**: `3cfd578b1` (radix main — post-Wave-1 integration: generic
-`@ shader_contract "<role>"` surface, identity-resolved ingestion, fail-closed
-code tables, role-based WGSL emitter).
+**Pin**: `02b4cbb14` (radix main — U6 landed: contract calls now declare an
+explicit `stage_io_role_code` on the `vertex_layout` / `varying` /
+`fragment_output` / `resource_binding` roles, and `ShaderStageIoRole` is
+carried on resource reflections; the old name-spelling synthesis and the
+location-0 color heuristic (F1/F2) are retired; `MirTriga*` / `triga_*`
+removed).
 
-- Verified at landing: radix main had advanced by three commits
-  (`a4e8cfad3`, `c470448bd`, `e3dc38752`) — all `docs/factory/` only.
-  `git diff 3cfd578b1 HEAD -- crates/` is **0 lines**: the compiled code the
-  faber binary embeds is byte-identical to the pin.
+**Re-pin decision (2026-08-02, wave-close)**: radix `crates/` moved past the
+U5 pin `3cfd578b1` when U6 landed at `02b4cbb14` — the harness failed loudly
+(pin drift), as designed. Decision: **re-pin to `02b4cbb14`** and re-adapt the
+triga side to the new contract-call shapes (see §1). This is a ledger-recorded
+re-pin decision, never a silent rebuild.
+
+- Verified at re-pin: radix main is `02b4cbb14`; `git diff 02b4cbb14 HEAD --
+  crates/` is **0 lines** — the compiled code the faber binary embeds is
+  byte-identical to the pin.
 - The conformance harness (`scripta/check-wgsl-shader-contract-conformance`)
   enforces the pin: it fails loudly if the radix checkout is not at/after the
   pin, or if `crates/` drifted past it (a re-pin is a ledger decision, never a
@@ -40,15 +48,32 @@ fixture is **not** the landed surface):
 functio <adapter>(...) → bivalens { redde verum }
 ```
 
-Contract-role functions and their canonical call argument shapes:
+Contract-role functions and their canonical call argument shapes (U6 shape —
+`stage_io_role_code` is the explicit stage-I/O role declared on every
+`vertex_layout` / `varying` / `fragment_output` / `resource_binding` call;
+roles are never synthesized from source-name spelling or location):
 
 | Role | Adapter function (triga) | Call argument shape |
 | --- | --- | --- |
-| `vertex_layout` | `vertex_layout_matches` (maps `geometry.geometry_vertex_layout_matches`) | `(geo, index, source_name, location, format_code, offset_bytes, stride_bytes, step_mode_code)` |
-| `varying` | `varying_matches` | `(source_name, location, format_code, interpolation_code)` |
-| `fragment_output` | `fragment_output_matches` | `(location, format_code)` |
-| `pipeline` | `pipeline_matches` (maps `geometry.geometry_pipeline_descriptor_matches`) | `(color_target_format_code, depth_compare_code, depth_write_enabled_code, primitive_topology_code, vertex_count)` |
-| `resource_binding` | `resource_binding_matches` | `(group, binding, kind_code, role_code, access_code, element_count, layout_code, source_name)` |
+| `vertex_layout` | `vertex_layout_matches` (maps `geometry.geometry_vertex_layout_matches`) | `(geo, index, source_name, location, format_code, offset_bytes, stride_bytes, step_mode_code, stage_io_role_code)` |
+| `varying` | `varying_matches` | `(source_name, location, format_code, interpolation_code, stage_io_role_code)` |
+| `fragment_output` | `fragment_output_matches` | `(location, format_code, stage_io_role_code)` |
+| `pipeline` | `pipeline_matches` (maps `geometry.geometry_pipeline_descriptor_matches`) | `(color_target_format_code, depth_compare_code, depth_write_enabled_code, primitive_topology_code, vertex_count)` (unchanged — no stage-I/O role) |
+| `resource_binding` | `resource_binding_matches` | `(group, binding, kind_code, role_code, access_code, element_count, layout_code, source_name, stage_io_role_code)` |
+
+**U6 contract-shape change (re-adapt record)**: at the U5 pin (`3cfd578b1`)
+the four stage-I/O roles were declared without `stage_io_role_code` (the
+driver synthesized the stage-I/O role from source-name spelling and a
+location-0 color heuristic — F1/F2). Radix U6 (`02b4cbb14`) retired that
+synthesis: each `vertex_layout` / `varying` / `fragment_output` /
+`resource_binding` contract call now carries an explicit `stage_io_role_code`
+(`radix_mir::shader_contract::stage_io_role_from_code`), and resource
+reflections carry `ShaderStageIoRole`. The triga adapter
+(`src/shader_contract.fab`) and all conformance exempla were re-adapted to the
+new shapes at the re-pin (this unit). `pipeline` is untouched. The real-API
+site `src/geometry/data.fab` (`geometry_vertex_layout_matches`) keeps its
+library-surface signature (library-declared annotations are not ingested — §2);
+only the adapter pattern and the conformance programs declare contract calls.
 
 Canonical codes (radix_mir::shader_contract tables; unknown codes fail closed):
 
@@ -59,6 +84,9 @@ Canonical codes (radix_mir::shader_contract tables; unknown codes fail closed):
   3 = less-equal, 4 = greater, 5 = not-equal, 6 = greater-equal, 7 = always
 - step mode 1 = vertex, 2 = instance
 - interpolation 1 = perspective, 2 = linear, 3 = flat
+- stage-io role 1 = position, 2 = color, 3 = transform, 4 = other
+  (`stage_io_role_code`, radix U6 — explicit on each vertex_layout / varying /
+  fragment_output / resource_binding call)
 - resource kind 1 = storage buffer, 2 = runtime extent
 - resource role 1 = input, 2 = output
 - resource access 1 = read, 2 = write, 3 = read-write
@@ -157,7 +185,7 @@ Harness: `scripta/check-wgsl-shader-contract-conformance`.
 ```
 $ ./scripta/check-wgsl-shader-contract-conformance
 check-wgsl-shader-contract-conformance: naga validation required (/Users/ianzepp/.cargo/bin/naga)
-check-wgsl-shader-contract-conformance: faber .../faber/target/debug/faber (radix pinned 3cfd578b1)
+check-wgsl-shader-contract-conformance: faber .../faber/target/debug/faber (radix pinned 02b4cbb14)
 check-wgsl-shader-contract-conformance: conformance corpus .../exempla/conformance/shader-contract
 ok vertex-body-emits-wgsl
 ok vertex-body-naga
@@ -207,7 +235,10 @@ fn hello_voxel_vertex(input: HelloVoxelVertexInput) -> HelloVoxelVertexOutput {
 ```
 
 Real `triga:*` imports → generic contract → `faber emit -t wgsl-text` → naga
-validates the same file in the harness (`vertex-body-naga`).
+validates the same file in the harness (`vertex-body-naga`). Re-verified at the
+re-pin (2026-08-02, against `02b4cbb14`): emission output is byte-identical —
+the explicit `stage_io_role_code` facts are carried in reflections and do not
+change WGSL emission.
 
 ## 6. Radix unaffected
 
@@ -228,5 +259,6 @@ validates the same file in the harness (`vertex-body-naga`).
 - No WGSL/reflection generation in triga.
 - No change to radix's gate to depend on triga.
 - No radix repo changes from this unit.
-- U6 (radix cleanup: delete `MirTriga*` / `triga_*`) waits on U4+U5 landing;
-  this unit's landing is the triga-side prerequisite.
+- U6 (radix cleanup: delete `MirTriga*` / `triga_*` and retire F1/F2 role
+  synthesis) **has landed** at `02b4cbb14`; this wave-close unit is the
+  triga-side re-pin + re-adapt (see §0, §1).

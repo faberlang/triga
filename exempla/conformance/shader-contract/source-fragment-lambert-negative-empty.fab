@@ -27,7 +27,8 @@ functio vertex_layout_matches(
     numerus format_code,
     numerus offset_bytes,
     numerus stride_bytes,
-    numerus step_mode_code
+    numerus step_mode_code,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }
@@ -37,7 +38,8 @@ functio varying_matches(
     textus source_name,
     numerus shader_location,
     numerus format_code,
-    numerus interpolation_code
+    numerus interpolation_code,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }
@@ -45,7 +47,8 @@ functio varying_matches(
 @ shader_contract "fragment_output"
 functio fragment_output_matches(
     numerus location,
-    numerus format_code
+    numerus format_code,
+    numerus stage_io_role_code
 ) → bivalens {
     redde verum
 }
@@ -58,14 +61,14 @@ incipit {
     fixum data.BufferGeometry ∪ nihil plane ← basic.plane_geometry(2.0, 2.0)
     adfirma plane non est nihil secus
         "conformance requires valid plane geometry"
-    adfirma vertex_layout_matches(0, 0, "normal", 0, 3, 0, 12, 1) secus
-        "normal input layout"
-    adfirma vertex_layout_matches(0, 1, "color", 1, 3, 0, 12, 1) secus
-        "color input layout"
-    adfirma varying_matches("normal", 0, 3, 1) secus
-        "normal varying"
-    adfirma varying_matches("color", 1, 3, 1) secus
-        "color varying"
-    adfirma fragment_output_matches(0, 4) secus
-        "fragment output location 0: vec4<f32>"
+    adfirma vertex_layout_matches(0, 0, "normal", 0, 3, 0, 12, 1, 4) secus
+        "normal input layout (stage-io role: other)"
+    adfirma vertex_layout_matches(0, 1, "color", 1, 3, 0, 12, 1, 2) secus
+        "color input layout (stage-io role: color)"
+    adfirma varying_matches("normal", 0, 3, 1, 4) secus
+        "normal varying (stage-io role: other)"
+    adfirma varying_matches("color", 1, 3, 1, 2) secus
+        "color varying (stage-io role: color)"
+    adfirma fragment_output_matches(0, 4, 2) secus
+        "fragment output location 0: vec4<f32> (stage-io role: color)"
 }
