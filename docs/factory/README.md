@@ -8,6 +8,12 @@
 | [Triga Three.js 80](triga-threejs-80/CAMPAIGN.md) | Active — Stage 1 foundation cleared; Stage 2 generated-Rust scene identity acceptance and direct scene-store Radix check green | Stage 4 — [graphics MIR and shader-stage handoff](triga-threejs-80/stage4-readiness-map-2026-07-14.md) |
 | [Triga Three.js 90](triga-threejs-90/CAMPAIGN.md) | Parked successor; routing only | None — wait for the Three.js 80 Stage 12 audit |
 
+## Architecture visions
+
+| Artifact | Status |
+| --- | --- |
+| [Triga Engine And World-Building Architecture](triga-engine/GOAL.md) | Vision-level target; requires an architecture checkpoint before delivery |
+
 ## Hello Voxel Triga Gate
 
 Run this before handing work to Radix, Faber, or browser-host factory stages:
