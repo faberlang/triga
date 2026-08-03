@@ -9,6 +9,9 @@
 #
 # Zero imports.
 
+# Axis-aligned bounds computed from geometry position data. This is a plain
+# CPU-side result record: BufferGeometry produces it only after its geometry
+# validates, while this leaf keeps the bounds shape independent of triga:math.
 genus BoundingBox {
     f32 min_x
     f32 min_y
@@ -18,6 +21,9 @@ genus BoundingBox {
     f32 max_z
 }
 
+# A center-and-radius result derived from validated geometry positions. The
+# radius is the enclosing distance used by BufferGeometry's bounding query;
+# this leaf only carries the result and performs no separate validation.
 genus BoundingSphere {
     f32 center_x
     f32 center_y

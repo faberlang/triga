@@ -13,17 +13,27 @@
 
 importa ex "triga:geometry/layout" privata layout
 
+# Update intent carried alongside a CPU-side attribute. The value is available
+# to upload or streaming code; this leaf records the intent but does not
+# schedule updates itself.
 discretio AttributeUsage {
     StaticAttribute { }
     DynamicAttribute { }
     StreamAttribute { }
 }
 
+# The scalar payload kept by a BufferAttribute. Both representations use
+# four-byte scalars; the typed distinction controls the vertex format and
+# whether a float32 view can be projected for interleaving.
 discretio AttributeData {
     Float32Attribute { lista<f32> values }
     Uint32Attribute { lista<u32> values }
 }
 
+# One named CPU-side vertex stream and the facts needed to describe it to a
+# host. `valida()` is the projection boundary: a valid stream has a non-empty
+# name, an unnormalized component width from 1 through 4, a positive element
+# count, and exactly component_width * element_count scalars.
 genus BufferAttribute {
     textus name
     numerus shader_location
@@ -33,6 +43,11 @@ genus BufferAttribute {
     AttributeUsage usage
     AttributeData data
 
+    # --- Format and host-layout projection ---
+
+    # The payload type and component width select the host vertex format.
+    # `vertex_layout()` exposes the resulting tightly packed stream with a
+    # zero offset, a scalar-derived stride, and per-vertex stepping.
     @ privata
     functio _vertex_format() → layout.VertexFormat {
         discerne ego.data {
@@ -53,6 +68,10 @@ genus BufferAttribute {
         redde ego._vertex_format()
     }
 
+    # --- Validation and CPU-side queries ---
+
+    # Validation intentionally stays close to the payload: it checks the
+    # metadata and the scalar count before any host-facing layout is emitted.
     functio valida() → bivalens {
         si ego.name ≡ "" ergo redde falsum
         si ego.normalized ergo redde falsum
@@ -76,10 +95,10 @@ genus BufferAttribute {
         }
     }
 
-    # Projection: float32 payload for consumers that interleave attributes
-    # into host vertex buffers. nihil when the attribute stores uint32 data.
-    # Cross-module `discerne` over AttributeData is not available to consumers,
-    # so the payload read lives here next to the enum.
+    # Projection: float32 payload for consumers that interleave attributes into
+    # host vertex buffers. `nihil` marks a uint32 payload; the variant match is
+    # kept here because consumers cannot `discerne` AttributeData across this
+    # file boundary.
     functio float32_values() → lista<f32> ∪ nihil {
         discerne ego.data {
             casu Float32Attribute fixum values { redde values }
@@ -105,6 +124,9 @@ genus BufferAttribute {
 
 # --- Free constructors for BufferAttribute ---
 
+# The starter constructor makes the common CPU-side case explicit: a static,
+# unnormalized float32 stream. `valida()` remains the authority for checking
+# that the supplied values match the declared element shape.
 functio float32_attribute(
     textus name,
     numerus shader_location,

@@ -9,11 +9,18 @@
 #
 # Zero imports.
 
+# A half-open draw selection in element space. BufferGeometry validates that
+# count is non-zero, that start + count stays within the available elements,
+# and that the range matches the active primitive topology before it becomes a
+# draw command.
 genus DrawRange {
     numerus start
     numerus count
 }
 
+# The complete scalar fact set for one host draw. BufferGeometry fills this
+# record from a validated draw range or group, preserving indexed mode,
+# element origin/count, instance count, and material selection.
 genus GeometryDrawCommand {
     bivalens indexed
     numerus element_count
@@ -23,12 +30,18 @@ genus GeometryDrawCommand {
     numerus material_index
 }
 
+# One material-owned element range. Groups are CPU-side batching metadata;
+# BufferGeometry requires non-empty, topology-aligned, in-bounds ranges in
+# non-overlapping order before producing group commands.
 genus GeometryGroup {
     numerus start
     numerus count
     numerus material_index
 }
 
+# Upload and draw facts for indexed geometry. The payload fields are byte
+# counts, while grouped_element_total describes the elements covered by the
+# generated group commands.
 genus IndexedGeometryDrawBatchFacts {
     numerus draw_count
     numerus grouped_element_total
@@ -37,6 +50,9 @@ genus IndexedGeometryDrawBatchFacts {
     numerus total_payload_byte_count
 }
 
+# Batch facts for line geometry. `line_count` records the number of line
+# primitives; the remaining fields carry the same draw, grouped-element, and
+# payload-byte facts as the indexed batch shape.
 genus LineGeometryDrawBatchFacts {
     numerus draw_count
     numerus line_count
@@ -46,6 +62,10 @@ genus LineGeometryDrawBatchFacts {
     numerus total_payload_byte_count
 }
 
+# Exact CPU-side payload facts for the visible-face mesh shape used by the
+# geometry helpers: four vertices, six u32 indices, and two triangles per face.
+# Position and color each use three float32 scalars per vertex, so the byte
+# helpers can describe the host upload without allocating a buffer.
 genus VisibleFaceMeshFacts {
     numerus face_count
     numerus vertex_count
@@ -57,7 +77,10 @@ genus VisibleFaceMeshFacts {
     numerus total_payload_byte_count
 }
 
-# --- Scalar helpers (no genus receiver) ---
+# --- Scalar payload and mesh-shape helpers ---
+
+# Non-positive face counts are rejected with `nihil`; accepted counts are
+# expanded into the fixed visible-face topology and byte counts above.
 
 functio visible_face_vertex_count(numerus face_count) → numerus ∪ nihil {
     si face_count ≤ 0 ergo redde nihil

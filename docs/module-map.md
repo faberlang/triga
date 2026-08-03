@@ -1,7 +1,8 @@
 # Triga module map
 
 **Status:** living map for the public `triga:*` surface  
-**Date:** 2026-08-01 (S1 splits landed: graph, lighting, geometry; primitives/material in flight)
+**Date:** 2026-08-02 (S1 splits landed: graph, lighting, geometry, material,
+primitives, and renderable; scene remains parked)
 
 Triga is a multi-file Faber source library under `src/`. Each `.fab` file is a
 provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
@@ -34,7 +35,7 @@ not `triga:scene/resource`).
 | `triga:graph/camera` | `src/graph/camera.fab` | `PerspectiveCamera`, `OrthographicCamera`, `PerspectiveCameraProjectionFacts`, `ViewProjectionFacts` |
 | `triga:lighting` | `src/lighting.fab` | Facade / map only (planned leaves: model H3, shadow H4, environment H5) |
 | `triga:lighting/light` | `src/lighting/light.fab` | `Light`, `AmbientLight`, `DirectionalLight`, `PointLight` |
-| `triga:material` | `src/material.fab` | `Material` family, `Mesh`, `MeshGeometry`, material free helpers — **DS-A split in flight** (→ material/{base,basic,lit,standard} + renderable/mesh) |
+| `triga:material` | `src/material.fab` | Facade for the material leaves; `Material` and material families live under `material/{base,basic,lit,standard}` |
 | `triga:face` | `src/face.fab` | `FaceQuad` + unit/colored quad builders (depends on math + geometry/data) |
 | `triga:geometry` | `src/geometry.fab` | Facade / map only (no genera) |
 | `triga:geometry/data` | `src/geometry/data.fab` | `BufferGeometry` (+ methods incl. `index_format_code`), `PrimitiveTopology`, `ColoredQuadMesh`, free constructors |
@@ -42,7 +43,7 @@ not `triga:scene/resource`).
 | `triga:geometry/layout` | `src/geometry/layout.fab` | `VertexAttributeLayout`, `VertexFormat`, `VertexStepMode`, layout code helpers |
 | `triga:geometry/bounds` | `src/geometry/bounds.fab` | `BoundingBox`, `BoundingSphere` (math `Box3`/`Sphere` stay in math) |
 | `triga:geometry/batch` | `src/geometry/batch.fab` | `DrawRange`, `GeometryDrawCommand`, `GeometryGroup`, draw-batch facts |
-| `triga:primitives` | `src/primitives.fab` | Deterministic mesh generators — **basic split in flight** (→ primitives/basic; procedural/terrain/voxel deferred) |
+| `triga:primitives` | `src/primitives.fab` | Facade for deterministic generators in `primitives/basic`; procedural/terrain/voxel remain deferred |
 | `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` — **DS-D parked** on language gaps G2/G3 |
 | `triga:resource` | `src/resource.fab` | `ResourceHandle` + lifecycle free functions |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
@@ -109,8 +110,8 @@ varia scene.SceneStore store ← scene.scene_store()
 | `geometry/batch.fab` | ~300 |
 | `scene.fab` | ~930 (split parked) |
 | `resource.fab` | ~550 |
-| `primitives.fab` | ~470 (basic split in flight) |
-| `material.fab` | ~180 (DS-A split in flight) |
+| `primitives.fab` | ~16 (facade) + `primitives/basic.fab` |
+| `material.fab` | ~21 (facade) + `material/{base,basic,lit,standard}.fab` |
 | `graph.fab` | ~25 (facade) + object ~20 / camera ~110 |
 | `lighting/light.fab` | ~28 |
 | `face.fab` | ~40 |
@@ -151,7 +152,8 @@ below as it lands:
 Inventory corrections frozen at S0: leaf count is 61 non-facade leaves / 75 import
 paths (not "~50"); `Box3`/`Sphere` stay in `math` while `geometry/bounds` owns
 `BoundingBox`/`BoundingSphere`; geometry draw-batch facts live in `geometry/batch`
-until `render/batch` exists at H4; `cista.toml` is future, not current.
+until `render/batch` exists at H4; `cista.toml` is the current source-package
+manifest and is independent of the `faber.toml` provider metadata.
 
 ## Validation
 

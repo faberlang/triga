@@ -21,12 +21,17 @@ importa ex "triga:geometry/layout" privata layout
 importa ex "triga:geometry/bounds" privata bounds
 importa ex "triga:geometry/batch" privata batch
 
+# PrimitiveTopology is the small source-side choice that controls element
+# grouping, draw-range validity, and the numeric code passed to shader facts.
 discretio PrimitiveTopology {
     TriangleList { }
     LineList { }
     PointList { }
 }
 
+# ColoredQuadMesh is the accumulation-friendly shape used by voxel and face
+# examples. Positions, colors, and indices remain parallel lists until the
+# `geometry()` projection turns them into a validated BufferGeometry.
 genus ColoredQuadMesh {
     lista<f32> positions
     lista<f32> colors
@@ -105,6 +110,10 @@ genus ColoredQuadMesh {
     }
 }
 
+# BufferGeometry is Triga's central CPU-side mesh contract. It keeps attribute
+# streams, optional indices, draw ranges, and material groups together so every
+# query can validate the same shape before exposing counts, bounds, layout, or
+# host draw facts.
 genus BufferGeometry {
     PrimitiveTopology topology
     numerus vertex_count
@@ -114,7 +123,10 @@ genus BufferGeometry {
     batch.DrawRange draw_range
     lista<batch.GeometryGroup> groups
 
-    # --- Validation ---
+    # --- Validation -----------------------------------------------------
+    # Validation-sensitive projections below call `valida()` first. Invalid
+    # geometry returns `nihil` rather than leaking partial facts to a later
+    # stage; structural queries such as `element_count()` remain direct.
 
     functio valida() → bivalens {
         si ego.vertex_count ≡ 0 ergo redde falsum
@@ -198,7 +210,7 @@ genus BufferGeometry {
         }
     }
 
-    # --- Element / vertex / index queries ---
+    # --- Element / vertex / index queries -------------------------------
 
     functio element_count() → numerus {
         si ego.indexed ≡ falsum ergo redde ego.vertex_count
@@ -229,7 +241,7 @@ genus BufferGeometry {
         redde count
     }
 
-    # --- Attribute payload byte counts ---
+    # --- Attribute payload byte counts ----------------------------------
 
     functio attribute_byte_count(textus name) → numerus ∪ nihil {
         si ego.valida() ≡ falsum ergo redde nihil
@@ -280,7 +292,7 @@ genus BufferGeometry {
         redde vertex_bytes + index_bytes
     }
 
-    # --- Primitive counts ---
+    # --- Primitive counts -----------------------------------------------
 
     functio triangle_count() → numerus ∪ nihil {
         si ego.valida() ≡ falsum ergo redde nihil
@@ -314,7 +326,7 @@ genus BufferGeometry {
         redde count
     }
 
-    # --- Draw commands ---
+    # --- Draw commands ---------------------------------------------------
 
     functio draw_command(
         numerus instance_count
@@ -384,7 +396,7 @@ genus BufferGeometry {
         redde total
     }
 
-    # --- Bounding volumes ---
+    # --- Bounding volumes ------------------------------------------------
 
     functio bounding_box() → bounds.BoundingBox ∪ nihil {
         si ego.valida() ≡ falsum ergo redde nihil
@@ -528,7 +540,7 @@ genus BufferGeometry {
         }
     }
 
-    # --- Normals and UVs ---
+    # --- Normals and UVs -------------------------------------------------
 
     functio vertex_normals() → attribute.BufferAttribute ∪ nihil {
         si ego.valida() ≡ falsum ergo redde nihil
@@ -623,7 +635,7 @@ genus BufferGeometry {
         redde attribute.float32_attribute("uv", 2, 2, ego.vertex_count, uvs)
     }
 
-    # --- Vertex layout introspection ---
+    # --- Vertex layout introspection ------------------------------------
 
     @ privata
     functio _position_values() → lista<f32> {
@@ -776,7 +788,7 @@ genus BufferGeometry {
         redde layouts
     }
 
-    # --- Batch facts ---
+    # --- Batch facts -----------------------------------------------------
 
     functio indexed_draw_batch_facts(
         numerus instance_count
@@ -829,6 +841,9 @@ genus BufferGeometry {
 }
 
 # --- Free constructors for BufferGeometry ---
+
+# These constructors make the indexed/non-indexed choice explicit while
+# sharing the same attribute, range, and group validation path.
 
 functio indexed_triangle_geometry(
     numerus vertex_count,
@@ -893,6 +908,9 @@ functio colored_indexed_geometry(
 }
 
 # --- Free helper functions ---
+
+# Append helpers preserve the same parallel-list contract as ColoredQuadMesh;
+# they are useful when a caller wants to build a mesh one face at a time.
 
 functio colored_quad_mesh_append(
     lista<f32> positions,

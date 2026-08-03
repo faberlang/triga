@@ -15,6 +15,13 @@ importa ex "triga:geometry/batch" privata batch
 
 # --- Free primitive helpers ---
 
+# The public triangle generators below return the same BufferGeometry shape:
+# position, normal, and UV attributes, a triangle-list index buffer, and one
+# draw group. `box_wire_geometry` is the deliberate line-list exception and
+# carries only the data needed for that debug shape. Dimensions are validated
+# at the boundary, so a non-positive input produces `nihil` instead of an
+# invalid mesh.
+
 @ privata
 functio _primitive_geometry(
     numerus vertex_count,
@@ -38,6 +45,7 @@ functio _primitive_geometry(
 
 # --- Free constructors for primitive shapes ---
 
+# A centered plane on the XY axes, with its normal pointing along +Z.
 functio plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 ergo redde nihil
     fixum f32 half_width ← width * 0.5
@@ -59,6 +67,7 @@ functio plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ nihil 
     )
 }
 
+# An eight-sector, center-fan circle on the XY plane.
 functio circle_geometry(f32 radius) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 ergo redde nihil
     fixum f32 diagonal ← radius * 0.70710678
@@ -88,6 +97,7 @@ functio circle_geometry(f32 radius) → data.BufferGeometry ∪ nihil {
     )
 }
 
+# A compact faceted sphere with explicit normals and UV coordinates.
 functio sphere_geometry(f32 radius) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 ergo redde nihil
     fixum f32 negative_radius ← 0.0 - radius
@@ -131,6 +141,7 @@ functio sphere_geometry(f32 radius) → data.BufferGeometry ∪ nihil {
     )
 }
 
+# A closed cylinder with side rings and cap centers.
 functio cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 aut height ≤ 0.0 ergo redde nihil
     fixum f32 half_height ← height * 0.5
@@ -225,6 +236,7 @@ functio cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ ni
     )
 }
 
+# A cone with a circular base, cap center, and apex.
 functio cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 aut height ≤ 0.0 ergo redde nihil
     fixum f32 half_height ← height * 0.5
@@ -301,6 +313,7 @@ functio cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ nihil 
     )
 }
 
+# A torus represented by the fixed ring/tube tessellation used by this leaf.
 functio torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ nihil {
     si radius ≤ 0.0 aut tube_radius ≤ 0.0 aut tube_radius ≥ radius ergo redde nihil
     fixum f32 diagonal ← 0.70710678
@@ -354,6 +367,7 @@ functio torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ 
     redde _primitive_geometry(45, positions, normals, uvs, indices)
 }
 
+# A six-sided box with one independently shaded face set per side.
 functio box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 aut depth ≤ 0.0 ergo redde nihil
     fixum f32 x ← width * 0.5
@@ -399,6 +413,7 @@ functio box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry �
     )
 }
 
+# A line-list box useful for debug views and early host bring-up.
 functio box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nihil {
     si width ≤ 0.0 aut height ≤ 0.0 aut depth ≤ 0.0 ergo redde nihil
     fixum f32 x ← width * 0.5
@@ -474,4 +489,3 @@ functio _primitives_radix_f32(f32 value) → f32 {
     }
     redde estimate * scale
 }
-

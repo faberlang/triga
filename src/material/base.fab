@@ -19,6 +19,10 @@
 # MATERIAL
 #
 # Mirror THREE.Material
+#
+# Material is deliberately a small value contract. The fields describe
+# pipeline-relevant state; texture storage and host allocation belong to later
+# material leaves and the sibling renderer.
 # =========================================================================
 
 genus Material {
@@ -32,6 +36,9 @@ genus Material {
     f32 alpha_test = 0.0
 }
 
+# MaterialPipelineFacts is the validated, compact view used by pipeline-facing
+# examples. `side_code` is a frozen ABI field; the remaining fields expose the
+# depth and alpha decisions without requiring consumers to inspect Material.
 genus MaterialPipelineFacts {
     numerus side_code
     bivalens depth_test_enabled

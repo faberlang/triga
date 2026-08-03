@@ -8,6 +8,54 @@ Shapes are modeled closely after three.js abstractions for LLM familiarity and
 migration ease. Triga is *not* a binding to three.js — these are native Faber
 types that define the same structural domain.
 
+Triga is also meant to be read as a small, real Faber library. The source is
+organized into leaf modules, each file owns one import path, and the exempla
+show the path from typed data to host-facing facts. Start with the short
+examples before opening the larger scene and shader contracts.
+
+## Start here
+
+The smallest useful Triga program constructs a typed attribute and wraps it in
+an indexed geometry value:
+
+```fab
+importa ex "triga:geometry/data" privata data
+importa ex "triga:geometry/attribute" privata attribute
+importa ex "triga:geometry/batch" privata batch
+
+incipit {
+    fixum attribute.BufferAttribute position ← attribute.float32_attribute(
+        "position", 0, 3, 3,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+    )
+    fixum data.BufferGeometry triangle ← data.indexed_triangle_geometry(
+        3,
+        [position],
+        [0, 1, 2],
+        batch.DrawRange { start = 0, count = 3 },
+        [batch.GeometryGroup { start = 0, count = 3, material_index = 0 }]
+    )
+    nota triangle.vertex_count
+}
+```
+
+Then follow the learning path in [`exempla/README.md`](exempla/README.md):
+
+1. [`triga-basics.fab`](exempla/triga-basics.fab) — values, materials, and
+   validation.
+2. [`triga-transforms.fab`](exempla/triga-transforms.fab) — vectors, matrices,
+   quaternions, bounds, and rays.
+3. [`triga-geometry-attributes.fab`](exempla/triga-geometry-attributes.fab) —
+   attributes, layouts, draw ranges, bounds, and primitive generators.
+4. [`triga-scene-store.fab`](exempla/triga-scene-store.fab) — stable handles,
+   hierarchy, visibility, and traversal.
+5. [`triga-hello-voxel-pipeline.fab`](exempla/triga-hello-voxel-pipeline.fab) —
+   the source-side facts that feed shader and host contracts.
+
+The examples are intentionally ordinary Faber programs. They are the best
+place to learn expression shape; the source modules explain why the data is
+split the way it is.
+
 ## Status
 
 | Layer | State |
@@ -28,11 +76,13 @@ is to keep the typed contract honest and modular.
 | Category | Types | Module | Mirror |
 | -------- | ----- | ------ | ------ |
 | **Math** | `Vector2`…`Ray`, matrices, quaternions, face-code tables | `triga:math` | THREE.Vector2 etc. |
-| **Scene Graph** | `Object3D`, `Scene`, cameras, lights | `triga:graph` | THREE.Object3D etc. |
-| **Geometry (SoA shape)** | `MeshGeometry` | `triga:material` | THREE.BufferGeometry (field shape) |
-| **Geometry (GPU layout)** | `BufferGeometry`, `BufferAttribute`, draw batches | `triga:geometry` | buffer / vertex layout |
-| **Primitives** | `plane_geometry`, `box_geometry`, … | `triga:primitives` | THREE.*Geometry helpers |
-| **Material / Mesh** | `Material` family, `Mesh` | `triga:material` | THREE.Material / Mesh |
+| **Scene Graph** | `Object3D`, `Scene`, cameras | `triga:graph/{object,camera}` | THREE.Object3D etc. |
+| **Lighting** | `Light` family | `triga:lighting/light` | THREE.Light family |
+| **Geometry data** | `BufferGeometry`, `ColoredQuadMesh` | `triga:geometry/data` | THREE.BufferGeometry (field shape) |
+| **Geometry (GPU layout)** | `BufferAttribute`, vertex layouts, draw batches | `triga:geometry/{attribute,layout,batch}` | buffer / vertex layout |
+| **Primitives** | `plane_geometry`, `box_geometry`, … | `triga:primitives/basic` | THREE.*Geometry helpers |
+| **Materials** | `Material` family | `triga:material/{base,basic,lit,standard}` | THREE.Material family |
+| **Renderable** | `Mesh` | `triga:renderable/mesh` | THREE.Mesh composition |
 | **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | stable identity graph |
 | **Resources** | `ResourceHandle`, lifecycle free functions | `triga:resource` | host resource identity |
 
@@ -49,6 +99,9 @@ importa ex "triga:primitives" privata primitives
 importa ex "triga:scene" privata scene
 importa ex "triga:resource" privata resource
 ```
+
+This is an orientation map. In application code, import the leaf that owns the
+genus you use; the facade modules intentionally do not re-export types.
 
 Radix and `faber` resolve provider imports from the shared library home:
 
@@ -79,8 +132,28 @@ faberlang/
   but the structural hierarchy mirrors three.js (Object3D → Mesh → Scene,
   Material → MeshStandardMaterial, Camera → PerspectiveCamera).
 - **Module seams**: Norma-style flat leaves — `math` / `graph` / `material` /
-  `geometry` / `primitives` / `scene` / `resource`. Nested package dirs only
-  when they hold 2–3+ modules (see `docs/module-map.md`).
+  `geometry` / `primitives` / `scene` / `resource` / `renderable`. Nested
+  package dirs only when they hold 2–3+ modules (see `docs/module-map.md`).
+
+## Reading the source
+
+Read the library from the data contract outward:
+
+```text
+math → geometry/{attribute,layout,data} → primitives/basic
+     → graph/{object,camera} → scene → renderable/mesh
+     → shader_contract → sibling host
+```
+
+`math`, `geometry`, and `scene` own backend-agnostic values and invariants.
+`primitives` assembles those values into useful meshes. `shader_contract`
+names the facts that the compiler can validate and reflect. The browser host
+is a separate sibling repository: Triga describes the contract; the host owns
+device setup, resource allocation, and presentation.
+
+This separation is deliberate. When reading a function, ask whether it is
+constructing a value, validating a value, or describing a fact for a later
+stage. That distinction is the central Faber design lesson in this package.
 
 ## Layout
 

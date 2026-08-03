@@ -6,21 +6,32 @@
 importa ex "triga:math" privata math
 importa ex "triga:graph/object" privata object
 
+# Light is the shared scene-graph payload for the current light families.
+# `color` and `intensity` are source-side facts; the host decides how a later
+# renderer turns them into bindings or shader inputs.
 genus Light {
     object.Object3D base
     math.Color color
     f32 intensity = 1.0
 }
 
+# AmbientLight contributes a light family with no direction or position of its
+# own. It keeps the common Object3D and Light data visible through `base`.
 genus AmbientLight {
     Light base
 }
 
+# DirectionalLight points at an explicit target position. Keeping the target in
+# the source contract makes the intended direction deterministic for examples
+# and host adapters.
 genus DirectionalLight {
     Light base
     math.Vector3 target_position
 }
 
+# PointLight carries the distance and decay fields for the point-light path.
+# Their defaults are part of the source shape; the eventual renderer owns the
+# interpretation of cutoff and attenuation.
 genus PointLight {
     Light base
     f32 distance = 0.0

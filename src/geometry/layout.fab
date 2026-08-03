@@ -13,6 +13,9 @@
 #
 # Zero imports; self-contained.
 
+# The compact set of scalar formats understood by a vertex input. The suffix
+# is the component width, so the enum carries the same 1-to-4 shape used by
+# BufferAttribute validation and stride calculation.
 discretio VertexFormat {
     Float32 { }
     Float32x2 { }
@@ -24,11 +27,16 @@ discretio VertexFormat {
     Uint32x4 { }
 }
 
+# Whether a vertex input advances once per vertex or once per instance. The
+# selected mode is preserved in VertexAttributeLayout for the host draw path.
 discretio VertexStepMode {
     VertexStep { }
     InstanceStep { }
 }
 
+# A host-facing description of one vertex stream. Offsets and strides are byte
+# counts; shader_location, vertex_format, and step_mode together identify how
+# the host should interpret the CPU-side attribute data.
 genus VertexAttributeLayout {
     textus source_name
     numerus shader_location
@@ -38,7 +46,11 @@ genus VertexAttributeLayout {
     VertexStepMode step_mode
 }
 
-# --- VertexFormat / VertexStepMode variant constructors ---
+# --- Public variant constructors ---
+
+# These constructors keep enum variant creation in the declaring leaf. The
+# component-width helper expects the 1-to-4 width guaranteed by BufferAttribute
+# validation and selects the float32 or uint32 family with `is_float32`.
 
 functio vertex_format_from_component_width(
     numerus component_width,
@@ -56,11 +68,18 @@ functio vertex_format_from_component_width(
     redde finge Uint32x4
 }
 
+# The current attribute projection is per-vertex. An instance-step value is
+# still represented by VertexStepMode for host-facing layouts built elsewhere.
 functio vertex_step_mode_vertex_step() → VertexStepMode {
     redde finge VertexStep
 }
 
-# --- Private format-code helpers (free, no genus receiver) ---
+# --- Host-facing compact codes ---
+
+# These helpers turn the typed layout facts into small numeric values for the
+# geometry/data leaf. Vertex formats map Float32 through Float32x4 to 1..4 and
+# Uint32 through Uint32x4 to 5..8; step modes map VertexStep and InstanceStep
+# to 1 and 2.
 
 @ privata
 functio _vertex_format_code(de VertexFormat format) → numerus {

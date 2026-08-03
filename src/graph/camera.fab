@@ -6,6 +6,9 @@
 importa ex "triga:math" privata math
 importa ex "triga:graph/object" privata object
 
+# PerspectiveCamera is a value-level camera contract. The projection methods
+# return `nihil` when the matrix inputs cannot form a valid payload, so camera
+# setup stays in ordinary Faber control flow.
 genus PerspectiveCamera {
     object.Object3D base
     f32 fov = 50.0
@@ -44,6 +47,9 @@ genus PerspectiveCamera {
     }
 }
 
+# Projection facts are the small, host-readable summary of a perspective
+# matrix. They keep a consumer from decoding the matrix merely to inspect its
+# scale and depth terms.
 genus PerspectiveCameraProjectionFacts {
     f32 fov_y_degrees
     f32 aspect
@@ -55,6 +61,9 @@ genus PerspectiveCameraProjectionFacts {
     f32 depth_scale
 }
 
+# ViewProjectionFacts describes the combined projection × view result used by
+# a render path. The full matrix remains available from `visus_projectio`; this
+# genus is for compact validation and reflection facts.
 genus ViewProjectionFacts {
     numerus float_count
     f32 x_scale
@@ -63,6 +72,9 @@ genus ViewProjectionFacts {
     f32 view_translation_z
 }
 
+# OrthographicCamera reserves the same composed Object3D shape for the
+# orthographic projection family. Its fields are plain data so the projection
+# implementation can share the public graph contract.
 genus OrthographicCamera {
     object.Object3D base
     f32 left

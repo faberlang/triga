@@ -6,11 +6,17 @@
 importa ex "triga:math" privata math
 importa ex "triga:resource" privata resource
 
+# A SceneHandle names a slot and its generation. Handles are the stable value
+# passed between scene edits and render queries; callers never need to hold a
+# mutable SceneNode reference.
 genus SceneHandle {
     numerus index
     numerus generation
 }
 
+# SceneNodeKind keeps the heterogeneous scene payload explicit. Mesh nodes
+# carry resource handles; groups, cameras, and lights remain distinct cases so
+# traversal can filter without guessing from a name or field convention.
 discretio SceneNodeKind {
     SceneGroup { },
     SceneMesh { resource.ResourceHandle geometry, resource.ResourceHandle material },
@@ -18,6 +24,9 @@ discretio SceneNodeKind {
     SceneLight { },
 }
 
+# SceneNode stores local and cached world transforms together with hierarchy
+# links. `world_dirty` marks the cache after a local edit or reparent; the store
+# refreshes it before a render-facing query.
 genus SceneNode {
     textus name
     SceneNodeKind kind
@@ -47,16 +56,23 @@ genus SceneNode {
     }
 }
 
+# SceneSlot is the store's generation-checked storage cell. A deleted node
+# leaves its slot behind so an old handle cannot silently refer to a new node.
 genus SceneSlot {
     numerus generation
     bivalens alive
     SceneNode node
 }
 
+# SceneStore owns mutation, hierarchy validation, world-transform refresh, and
+# bounded preorder traversal. It is the stateful boundary of this otherwise
+# backend-agnostic source module, so callers bind it with `varia`.
 genus SceneStore {
     lista<SceneSlot> slots
 
     # ── Mutation (Imperativus) ──────────────────────────────────────────
+    # These methods reject stale handles, duplicate parents, and cycles while
+    # preserving the slot/generation identity of every live node.
 
     functio insere(SceneNode nodus) → SceneHandle {
         fixum numerus index ← ego.slots.longitudo()
@@ -737,27 +753,37 @@ genus SceneStore {
     }
 }
 
+# Traversal fact carriers keep internal bounds and the render-facing payload
+# separate. The `remaining` field belongs to the bounded traversal machinery;
+# the other genera are compact projections consumed by examples or hosts.
 genus SceneTraversal {
     lista<SceneHandle> handles
     numerus remaining
 }
 
+# SceneCount is the count-only traversal projection.
 genus SceneCount {
     numerus count
     numerus remaining
 }
 
+# SceneMeshResources associates a visible mesh node with the two logical
+# resources needed to draw it.
 genus SceneMeshResources {
     SceneHandle node
     resource.ResourceHandle geometry
     resource.ResourceHandle material
 }
 
+# SceneMeshTransformPayload pairs a mesh identity with the packed model/view
+# projection data described by `triga:math`.
 genus SceneMeshTransformPayload {
     SceneHandle node
     math.TransformPayload payload
 }
 
+# SceneMeshDrawPacket is the source-side draw unit assembled by `visibilia`.
+# It contains identities and facts, not host GPU objects.
 genus SceneMeshDrawPacket {
     SceneHandle node
     resource.ResourceHandle geometry
@@ -765,6 +791,8 @@ genus SceneMeshDrawPacket {
     math.TransformPayload transform
 }
 
+# These two fact genera summarize the number of packets and resource identities
+# without forcing a consumer to inspect the full traversal payload.
 genus SceneVisibleMeshDrawBatchFacts {
     numerus packet_count
     numerus transform_payload_byte_count
@@ -777,11 +805,15 @@ genus SceneVisibleMeshResourceFacts {
     numerus material_handle_count
 }
 
+# SceneMeshResourceTraversal is the resource-only traversal projection.
 genus SceneMeshResourceTraversal {
     lista<SceneMeshResources> resources
     numerus remaining
 }
 
+# VisibiliaRetium is the deliberately small result of one visible-mesh walk.
+# Its parallel lists stay aligned by index; `ductus()` turns them into the
+# explicit draw packets used by the next stage.
 genus VisibiliaRetium {
     lista<SceneHandle> manubria = vacua
     lista<resource.ResourceHandle> geometria_opes = vacua
@@ -836,6 +868,9 @@ genus VisibiliaRetium {
 
 # ── Visibilia entry point ─────────────────────────────────────────────
 
+# One traversal collects visible mesh handles, resource handles, and packed
+# transforms. Keeping this as one query avoids making callers repeat the scene
+# walk and gives the host a coherent snapshot of the visible set.
 functio visibilia(
     de SceneStore store,
     de SceneHandle radix,
@@ -885,6 +920,8 @@ functio visibilia(
 
 # ── Free constructors ─────────────────────────────────────────────────
 
+# Constructors establish identity defaults in one place: empty children,
+# identity local/world matrices, and a dirty world cache.
 functio scene_store() → SceneStore {
     redde SceneStore { slots = vacua }
 }
@@ -927,4 +964,3 @@ functio scene_light(textus name) → SceneNode {
 functio scene_handle_equals(de SceneHandle a, de SceneHandle b) → bivalens {
     redde a.index ≡ b.index et a.generation ≡ b.generation
 }
-

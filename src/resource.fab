@@ -3,17 +3,25 @@
 # Public import: importa ex "triga:resource" privata resource
 # Public leaf module. Scene store imports this for mesh resource handles.
 
+# A ResourceHandle is a stable logical slot plus a generation. Consumers
+# compare both fields, so a later resource in the same logical slot cannot be
+# mistaken for the handle that named an earlier resource.
 genus ResourceHandle {
     numerus index
     numerus generation
 }
 
+# ResourceTransition describes one slot across a replacement boundary. An
+# unchanged transition repeats the same generation; a changed transition uses
+# the next generation for the same logical index.
 genus ResourceTransition {
     ResourceHandle previous
     ResourceHandle current
     bivalens changed
 }
 
+# ResourceLifecycleTransition extends the replacement model with creation and
+# removal. Optional handles make the two one-sided states explicit.
 genus ResourceLifecycleTransition {
     numerus logical_index
     ResourceHandle previous sponte
@@ -22,6 +30,9 @@ genus ResourceLifecycleTransition {
     bivalens removed
 }
 
+# ResourceLifecycleBatchFacts is the aggregate view used by a resource update
+# pass. The counts are derived only after the transition list passes its
+# uniqueness and generation checks.
 genus ResourceLifecycleBatchFacts {
     numerus transition_count
     numerus changed_count
@@ -31,13 +42,18 @@ genus ResourceLifecycleBatchFacts {
     numerus live_count
 }
 
-
+# ResourceHandleTraversal is the bounded accumulator used by the handle query
+# helpers below. `remaining` keeps traversal loops fail-closed if a malformed
+# input would otherwise cycle.
 genus ResourceHandleTraversal {
     lista<ResourceHandle> handles
     numerus remaining
 }
 
-# ── VisibiliaRetium: single-traversal visible-mesh query genus ────────
+# ── Replacement transitions ──────────────────────────────────────────
+#
+# The first family preserves logical indices while making generation changes
+# visible. The list helpers validate the whole batch before returning facts.
 
 
 functio resource_handle_equals(de ResourceHandle a, de ResourceHandle b) → bivalens {
@@ -221,6 +237,12 @@ functio resource_transition_unchanged_handles(
     }
     redde handles
 }
+
+# ── Lifecycle transitions ────────────────────────────────────────────
+#
+# Lifecycle facts distinguish replacement, creation, and removal while still
+# preserving the same logical index. Batch accessors intentionally return
+# `nihil` for duplicate or generation-inconsistent input.
 
 functio resource_lifecycle_unchanged(de ResourceHandle handle) → ResourceLifecycleTransition {
     redde ResourceLifecycleTransition {

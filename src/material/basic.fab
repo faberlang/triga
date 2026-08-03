@@ -11,7 +11,9 @@
 importa ex "triga:math" privata math
 importa ex "triga:material/base" privata base
 
-# Mirror THREE.MeshBasicMaterial
+# MeshBasicMaterial is the unlit material path. Its base contract carries
+# depth, alpha, and side state; this leaf adds only the source color used by
+# the basic pipeline facts.
 genus MeshBasicMaterial {
     base.Material base
     math.Color color

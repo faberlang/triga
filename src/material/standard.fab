@@ -9,7 +9,9 @@
 importa ex "triga:math" privata math
 importa ex "triga:material/base" privata base
 
-# Mirror THREE.MeshStandardMaterial (PBR)
+# MeshStandardMaterial is the PBR-shaped material carrier. The fields are
+# source data only; texture sampling, environment lighting, and pipeline
+# allocation belong to the future material/render seams.
 genus MeshStandardMaterial {
     base.Material base
     math.Color color

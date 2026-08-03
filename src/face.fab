@@ -8,6 +8,9 @@
 importa ex "triga:math" privata math
 importa ex "triga:geometry/data" privata data
 
+# FaceQuad is the four-corner source shape used by voxel-style face builders.
+# Face-code orientation and color stay in `triga:math`; this leaf only turns a
+# code plus an origin/size into geometry-ready corners.
 genus FaceQuad {
     math.Vector3 a
     math.Vector3 b
@@ -15,6 +18,8 @@ genus FaceQuad {
     math.Vector3 d
 }
 
+# Build one oriented quad. Invalid face codes and non-positive sizes return
+# `nihil` so callers can keep malformed voxel input out of geometry buffers.
 functio face_code_unit_quad(numerus code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ nihil {
     si math.face_code_valida(code) ≡ falsum ergo redde nihil
     si size ≤ 0.0 ergo redde nihil
@@ -29,6 +34,8 @@ functio face_code_unit_quad(numerus code, f32 x, f32 y, f32 z, f32 size) → Fac
     redde FaceQuad { a = math.vector3(x, y, z1), b = math.vector3(x1, y, z1), c = math.vector3(x1, y1, z1), d = math.vector3(x, y1, z1) }
 }
 
+# Append the same face directly into position/color/index arrays, preserving
+# the accumulation shape used by the voxel exempla.
 functio face_code_colored_quad_mesh_append(lista<f32> positions, lista<f32> colors, lista<u32> indices, numerus code, f32 x, f32 y, f32 z, f32 size) → data.ColoredQuadMesh ∪ nihil {
     fixum FaceQuad ∪ nihil quad_result ← face_code_unit_quad(code, x, y, z, size)
     si quad_result est nihil ergo redde nihil
@@ -36,4 +43,3 @@ functio face_code_colored_quad_mesh_append(lista<f32> positions, lista<f32> colo
     si color_result est nihil ergo redde nihil
     redde data.colored_quad_mesh_append(positions, colors, indices, quad_result!.a.x, quad_result!.a.y, quad_result!.a.z, quad_result!.b.x, quad_result!.b.y, quad_result!.b.z, quad_result!.c.x, quad_result!.c.y, quad_result!.c.z, quad_result!.d.x, quad_result!.d.y, quad_result!.d.z, color_result!.r, color_result!.g, color_result!.b)
 }
-

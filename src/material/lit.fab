@@ -9,7 +9,9 @@
 importa ex "triga:math" privata math
 importa ex "triga:material/base" privata base
 
-# Mirror THREE.MeshPhongMaterial
+# MeshPhongMaterial is the first lit-material shape. It keeps the three.js
+# familiar carrier name while leaving lighting evaluation to the later shader
+# and host contracts.
 genus MeshPhongMaterial {
     base.Material base
     math.Color color

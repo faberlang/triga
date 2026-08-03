@@ -17,7 +17,10 @@ importa ex "triga:material/standard" privata standard
 importa ex "triga:material/basic" privata basic
 importa ex "triga:material/lit" privata lit
 
-# Mirror THREE.Mesh — the primary renderable object.
+# Mesh is the primary renderable composition: graph transform plus geometry
+# plus one of the current material families. The union is intentionally a
+# source-side contract; consumers use the shared fields and dedicated facts,
+# while the host owns resource and draw submission.
 genus Mesh {
     object.Object3D base
     data.BufferGeometry geometry

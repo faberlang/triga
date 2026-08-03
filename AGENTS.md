@@ -17,7 +17,8 @@ One `.fab` file → one import path. Nested dirs for packages.
 | --- | --- |
 | `triga:math` | Vectors, matrices, volumes, rays, face-code tables |
 | `triga:graph` | Object3D, cameras, lights |
-| `triga:material` | Materials, Mesh, MeshGeometry |
+| `triga:material` | Material family facade and material leaves |
+| `triga:renderable/mesh` | Mesh composition (graph + geometry + material) |
 | `triga:face` | FaceQuad builders |
 | `triga:geometry` | BufferGeometry / vertex layout |
 | `triga:primitives` | Mesh generators |

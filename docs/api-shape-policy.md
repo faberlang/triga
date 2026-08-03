@@ -131,4 +131,7 @@ Genuine absence (e.g., non-overlap) stays nullable.
 - **(New)** No public `functio` with a type-name prefix matching a defined genus
   (`vector3_*`, `box3_*`, `matrix4_*`, `camera_*`, `scene_*`, `geometry_*`,
   `transform_payload_*`) except constructors and pure scalar helpers explicitly
-  documented in this policy.
+  documented in this policy. The compiler contract adapter
+  `geometry_vertex_layout_matches` is also exempt: its standalone signature
+  is the canonical `@ shader_contract "vertex_layout"` bridge and is not a
+  receiver operation.
