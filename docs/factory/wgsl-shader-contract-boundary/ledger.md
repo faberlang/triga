@@ -1,26 +1,30 @@
 # Compiler-Lane Ledger — WGSL Shader Contract Boundary (U5, Triga side)
 
-**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision; U5-P2 repairs applied (naga hard-require, handover status complete). **Re-pin applied** (2026-08-02, wave-close): pin moved `3cfd578b1` → `02b4cbb14` for radix U6 (explicit `stage_io_role_code` contract calls; F1/F2 role synthesis retired); adapter + exempla re-adapted to the new call shapes, suite green against the new pin (see §0 and §1).
+**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision; U5-P2 repairs applied (naga hard-require, handover status complete). **Re-pin applied** (2026-08-02, wave-close): pin moved `3cfd578b1` → `02b4cbb14` for radix U6 (explicit `stage_io_role_code` contract calls; F1/F2 role synthesis retired); adapter + exempla re-adapted to the new call shapes, suite green against the new pin (see §0 and §1). **Re-pin applied** (2026-08-03): pin moved `02b4cbb14` → `41b4c0411` — radix `crates/` moved 16,897 diff lines past the old pin (fhir/hir-* extraction, wgsl emitter fixes `abeb97cb7`, wasm/llvm/metal/ts/go fixes, docs); the suite re-ran clean with **no conformance-program re-adaptation** (emitted WGSL unchanged; §0).
 **Campaign**: [`radix/docs/factory/wgsl-shader-contract-boundary`](../../../radix/docs/factory/wgsl-shader-contract-boundary/) (goal.md, delivery.md §U5)
 **Repo**: `triga/` (this checkout) — write scope is triga only; radix is untouched
 **Unit**: U5 — Triga adapter + conformance suite (Wave 2, sibling repo); wave-close re-pin to radix U6
 
 ## 0. Pinned radix revision
 
-**Pin**: `02b4cbb14` (radix main — U6 landed: contract calls now declare an
-explicit `stage_io_role_code` on the `vertex_layout` / `varying` /
-`fragment_output` / `resource_binding` roles, and `ShaderStageIoRole` is
-carried on resource reflections; the old name-spelling synthesis and the
-location-0 color heuristic (F1/F2) are retired; `MirTriga*` / `triga_*`
-removed).
+**Pin**: `41b4c0411` (radix main — U6 `02b4cbb14` landed the explicit
+`stage_io_role_code` contract calls and retired F1/F2; since then radix moved
+through the fhir/hir-* crate extraction (`4aeea3633`, `b20f1a82e`,
+`0f6211c27`), wgsl emitter fixes (`abeb97cb7`: forward-chase, relu row-major
+index, workgroup overrides, arm state, device-view scalar-local `let`
+materialization), and wasm/llvm/metal/ts/go/codegen fixes).
 
-**Re-pin decision (2026-08-02, wave-close)**: radix `crates/` moved past the
-U5 pin `3cfd578b1` when U6 landed at `02b4cbb14` — the harness failed loudly
-(pin drift), as designed. Decision: **re-pin to `02b4cbb14`** and re-adapt the
-triga side to the new contract-call shapes (see §1). This is a ledger-recorded
-re-pin decision, never a silent rebuild.
+**Re-pin decision (2026-08-03)**: radix `crates/` moved past the
+`02b4cbb14` pin (16,897 diff lines) — the harness failed loudly (pin drift),
+as designed. Decision: **re-pin to `41b4c0411`** (current radix main tip).
+No conformance-program or adapter re-adaptation was required: the wgsl
+emitter changes in the window (`abeb97cb7`) do not touch the generic
+shader-contract emission surface the suite exercises (simple `@vertex` /
+`@fragment` entry programs), and the suite's positive/negative WGSL
+assertions plus naga validation all hold against the new pin. This is a
+ledger-recorded re-pin decision, never a silent rebuild.
 
-- Verified at re-pin: radix main is `02b4cbb14`; `git diff 02b4cbb14 HEAD --
+- Verified at re-pin: radix main is `41b4c0411`; `git diff 41b4c0411 HEAD --
   crates/` is **0 lines** — the compiled code the faber binary embeds is
   byte-identical to the pin.
 - The conformance harness (`scripta/check-wgsl-shader-contract-conformance`)
@@ -185,7 +189,7 @@ Harness: `scripta/check-wgsl-shader-contract-conformance`.
 ```
 $ ./scripta/check-wgsl-shader-contract-conformance
 check-wgsl-shader-contract-conformance: naga validation required (/Users/ianzepp/.cargo/bin/naga)
-check-wgsl-shader-contract-conformance: faber .../faber/target/debug/faber (radix pinned 02b4cbb14)
+check-wgsl-shader-contract-conformance: faber .../faber/target/debug/faber (radix pinned 41b4c0411)
 check-wgsl-shader-contract-conformance: conformance corpus .../exempla/conformance/shader-contract
 ok vertex-body-emits-wgsl
 ok vertex-body-naga
@@ -236,9 +240,10 @@ fn hello_voxel_vertex(input: HelloVoxelVertexInput) -> HelloVoxelVertexOutput {
 
 Real `triga:*` imports → generic contract → `faber emit -t wgsl-text` → naga
 validates the same file in the harness (`vertex-body-naga`). Re-verified at the
-re-pin (2026-08-02, against `02b4cbb14`): emission output is byte-identical —
-the explicit `stage_io_role_code` facts are carried in reflections and do not
-change WGSL emission.
+re-pins (2026-08-02 against `02b4cbb14`, 2026-08-03 against `41b4c0411`):
+emission output is byte-identical — the explicit `stage_io_role_code` facts are
+carried in reflections and do not change WGSL emission, and the wgsl emitter
+fixes in the `02b4cbb14`→`41b4c0411` window do not touch this surface.
 
 ## 6. Radix unaffected
 

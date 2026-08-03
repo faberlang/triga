@@ -10,7 +10,7 @@
 # declarations mirrored from triga/src/shader_contract.fab) -> faber emit
 # -t wgsl-text -> Naga-valid WGSL.
 #
-# Pinned radix revision: 02b4cbb14 (see ledger.md). The faber binary is built
+# Pinned radix revision: 41b4c0411 (see ledger.md). The faber binary is built
 # from the sibling faber checkout (faber/Cargo.toml pins radix by path), so
 # the pinned radix revision is the compiled-against radix.
 #
@@ -55,7 +55,7 @@ fi
 # The faber binary must embed the pinned radix revision. Verify the radix
 # checkout still matches the pin (docs-only drift is allowed; code drift is a
 # re-pin decision recorded in the ledger, not a silent rebuild).
-PINNED_RADIX_REV="02b4cbb14"
+PINNED_RADIX_REV="41b4c0411"
 if [[ ! -d "$RADIX/.git" ]] || ! git -C "$RADIX" merge-base --is-ancestor "$PINNED_RADIX_REV" HEAD >/dev/null 2>&1; then
   echo "check-wgsl-shader-contract-conformance: radix checkout is not at or after pinned $PINNED_RADIX_REV" >&2
   echo "  re-pin the compiler-lane ledger (docs/factory/wgsl-shader-contract-boundary/ledger.md)" >&2
