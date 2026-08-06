@@ -1,0 +1,166 @@
++++
+locale = "en"
++++
+import from "web:web" private web
+import from "web:dom" private dom
+import from "triga:math" private math
+
+class WaterMesh {
+    string name
+    int vertex_count
+    int index_count
+    list<f32> vertex_payload
+    list<int<u32>> index_payload
+}
+
+const int GRID_SEGMENTS ← 24
+const f32 GRID_EXTENT ← 24.0
+
+fn floats_textus(de list<f32> values) → string {
+    var string output ← ""
+    var int i ← 0
+    while i < values.longitudo() {
+        if i ≡ 0 {
+            output ← values[i] ↦ string
+        }
+        else {
+            output ← "§ §"(output, values[i] ↦ string)
+        }
+        i ← i + 1
+    }
+    return output
+}
+
+fn indices_textus(de list<int<u32>> values) → string {
+    var string output ← ""
+    var int i ← 0
+    while i < values.longitudo() {
+        if i ≡ 0 {
+            output ← values[i] ↦ string
+        }
+        else {
+            output ← "§ §"(output, values[i] ↦ string)
+        }
+        i ← i + 1
+    }
+    return output
+}
+
+fn water_mesh() → WaterMesh {
+    const int vertices_per_row ← GRID_SEGMENTS + 1
+    const f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
+    const f32 half ← GRID_EXTENT * 0.5
+    var list<f32> payload ← vacua
+    var int z ← 0
+    while z < vertices_per_row {
+        const f32 wz ← (0.0 - half) + (z ↦ f32) * cell
+        var int x ← 0
+        while x < vertices_per_row {
+            const f32 wx ← (0.0 - half) + (x ↦ f32) * cell
+            payload.appende(wx)
+            payload.appende(0.0)
+            payload.appende(wz)
+            payload.appende(0.0)
+            payload.appende(1.0)
+            payload.appende(0.0)
+            payload.appende(0.04)
+            payload.appende(0.32)
+            payload.appende(0.62)
+            x ← x + 1
+        }
+        z ← z + 1
+    }
+
+    var list<int<u32>> indices ← vacua
+    var int row ← 0
+    while row < GRID_SEGMENTS {
+        var int column ← 0
+        while column < GRID_SEGMENTS {
+            const int<u32> a ← (row * vertices_per_row + column) ↦ int<u32>
+            const int<u32> b ← (row * vertices_per_row + column + 1) ↦ int<u32>
+            const int<u32> c ← ((row + 1) * vertices_per_row + column) ↦ int<u32>
+            const int<u32> d ← ((row + 1) * vertices_per_row + column + 1) ↦ int<u32>
+            indices.appende(a)
+            indices.appende(c)
+            indices.appende(b)
+            indices.appende(b)
+            indices.appende(c)
+            indices.appende(d)
+            column ← column + 1
+        }
+        row ← row + 1
+    }
+
+    return WaterMesh {name = "flowing-water", vertex_count = vertices_per_row * vertices_per_row, index_count = indices.longitudo(), vertex_payload = payload, index_payload = indices}
+}
+
+fn scene_geometry_blob(de WaterMesh mesh) → string {
+    return "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
+}
+
+fn model_matrix(f32 elapsed_seconds) → math.Matrix4 {
+    const math.Quaternion quaternion ← math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}
+    return math.matrix4_composita(math.vector3(elapsed_seconds * 0.35, 0.0, 0.0), quaternion, math.vector3(1.0, 1.0, 1.0))
+}
+
+fn view_projection(f32 camera_yaw_degrees, f32 aspect) → math.Matrix4 ∪ null {
+    const math.Vector3 target ← math.vector3(0.0, 0.0, 0.0)
+    const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(camera_yaw_degrees, -28.0)
+    const math.Vector3 eye ← target.subtracta(direction.multiplicata(17.0))
+    const math.Matrix4 ∪ null projection_result ← math.matrix4_perspectiva(45.0, aspect, 0.1, 200.0)
+    if projection_result is null then return null
+    const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
+    if view_result is null then return null
+    const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
+    const math.Matrix4 view ← math.Matrix4 {elements = view_result!.elements}
+    return projection.multiplicata(view)
+}
+
+fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ null {
+    const math.Matrix4 ∪ null view_projection_result ← view_projection(-35.0 + elapsed_seconds * 5.0, aspect)
+    if view_projection_result is null then return null
+    const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
+    const math.Matrix4 model ← model_matrix(elapsed_seconds)
+    return math.transform_payload(model, view_projection_matrix)
+}
+
+@ WebController { selector = "#triga-corpus-animation-water" }
+fn corpus_animation_water_controller(dom.Scope scope) → list<dom.Subscription> {
+    const dom.Element status ← dom.require(scope, ".corpus-status")
+    const dom.Element facts ← dom.require(scope, ".triga-facts")
+    const WaterMesh mesh ← water_mesh()
+    var f32 elapsed_seconds ← 0.0
+    const f32 canvas_aspect ← 960.0 / 540.0
+
+    dom.attr_set(facts, "data-scene-name", "triga-corpus-webgl-animation-water")
+    dom.attr_set(facts, "data-render-status", "awaiting-host")
+    dom.attr_set(facts, "data-render-gate", "pending-host-init")
+    dom.attr_set(facts, "data-device-status", "unknown")
+    dom.attr_set(facts, "data-scene-geometry", scene_geometry_blob(mesh))
+    dom.attr_set(facts, "data-water-grid", GRID_SEGMENTS ↦ string)
+    dom.text_set(status, "water-ready")
+
+    const math.TransformPayload ∪ null initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
+    if initial_payload is null {
+        dom.attr_set(facts, "data-transform-status", "invalid")
+    }
+    else {
+        dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
+    }
+
+    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
+        const f32 delta_seconds ← frame.delta_ms / 1000.0
+        elapsed_seconds ← elapsed_seconds + delta_seconds
+        const math.TransformPayload ∪ null payload ← transform_payload(elapsed_seconds, canvas_aspect)
+        if payload is null {
+            dom.attr_set(facts, "data-transform-status", "invalid")
+        }
+        else {
+            dom.attr_set(facts, "data-transform-payload", floats_textus(payload!.values))
+        }
+        dom.attr_set(facts, "data-frame", frame.frame ↦ string)
+        dom.attr_set(facts, "data-animation-seconds", elapsed_seconds ↦ string)
+    })
+
+    return [frame_sub]
+}
