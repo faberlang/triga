@@ -12,10 +12,14 @@ reference, named after its slug:
 | --- | --- | --- |
 | `webgl-geometries/` | `webgl_geometries` | Every `triga:primitives` generator (plane, box, circle, sphere, cylinder, cone, torus), per-mesh colors, BufferGeometry → interleaved host payload |
 | `webgl-geometry-terrain/` | `webgl_geometry_terrain` | Procedural mesh generation at scale (48² heightfield, 4.6k triangles), value noise, central-difference normals, elevation color ramp via `triga:math.color_interpolata` |
+| `webgl-animation-orbit/` | `webgl_animation_multiple` + `webgl_geometry_terrain` | Delta-driven frame updates, automatic camera travel, rotating model transforms, and live transform readback |
 
 Adaptations vs. the originals are deliberate: triga primitives are low-poly
-(the "sphere" is an octahedron), shapes do not rotate yet (the host publishes
-one model matrix), and materials are per-vertex colors rather than textures.
+(the "sphere" is an octahedron), the first two demos remain static geometry
+showcases, the animation demo rotates its complete model and camera through the
+scene, and materials are per-vertex colors rather than textures. Independent
+per-object transforms and dynamic vertex streams remain later host-contract
+work.
 
 ## Layout
 
