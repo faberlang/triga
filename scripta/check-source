@@ -21,13 +21,13 @@ while IFS= read -r -d '' file; do
     status=1
   fi
 
-  if grep -nE '\bad[[:space:]]+[A-Za-z_][A-Za-z0-9_]*[[:space:]]*\{' "$file"; then
+  if grep -nE '\b(ad|call)[[:space:]]+[A-Za-z_][A-Za-z0-9_]*[[:space:]]*\{' "$file"; then
     echo "check-source: route calls must use canonical string route syntax in $file" >&2
     status=1
   fi
 
-  if grep -nE '∪[[:space:]]*nihil[[:space:]]+[A-Za-z_][A-Za-z0-9_]*[[:space:]]*=' "$file"; then
-    echo "check-source: retired optional genus field syntax in $file; use sponte" >&2
+  if grep -nE '∪[[:space:]]*(nihil|null)[[:space:]]+[A-Za-z_][A-Za-z0-9_]*[[:space:]]*=' "$file"; then
+    echo "check-source: retired optional genus field syntax in $file; use sponte/optional" >&2
     status=1
   fi
 
@@ -38,7 +38,7 @@ while IFS= read -r -d '' file; do
   # not prefixed methods (e.g. scene_mesh( is exempt, scene_mesh_geometry( is not).
   # The vertex-layout adapter is a standalone compiler-contract bridge, not a
   # receiver operation; its exemption is recorded in docs/api-shape-policy.md.
-  if grep -nE '^functio (vector[234]|box3|matrix[34]|quaternion|euler|sphere|plane|ray|scene|geometry|transform_payload)_[a-z]' "$file" \
+  if grep -nE '^(functio|fn) (vector[234]|box3|matrix[34]|quaternion|euler|sphere|plane|ray|scene|geometry|transform_payload)_[a-z]' "$file" \
      | grep -vE '(vector[234]\(|box3_ex_|matrix[34]_(identitas|translatio|scala|composita|perspectiva|conspectus)|plane_geometry|sphere_geometry|colored_quad_mesh_append|scene_(store|node|group|mesh|camera|light)\(|scene_handle_equals\(|camera_(pitch_coercita|directio_ex|prorsum|dextra|motus|ray_ex|yaw_pitch)|geometry_vertex_layout_matches\()'; then
     echo "check-source: genus-prefixed function should be a receiver method (see docs/api-shape-policy.md) in $file" >&2
     status=1

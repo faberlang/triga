@@ -1,6 +1,6 @@
 # Material family shape contracts — package map facade.
 #
-# Public import: importa ex "triga:material" privata material
+# Public import: import from "triga:material" private material
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:material/base       Material, MaterialPipelineFacts, TextureDescriptor (H3 seed), base helpers
@@ -15,7 +15,10 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-importa ex "triga:material/base" privata base
-importa ex "triga:material/basic" privata basic
-importa ex "triga:material/lit" privata lit
-importa ex "triga:material/standard" privata standard
+import from "triga:material/base" private base
+
+import from "triga:material/basic" private basic
+
+import from "triga:material/lit" private lit
+
+import from "triga:material/standard" private standard

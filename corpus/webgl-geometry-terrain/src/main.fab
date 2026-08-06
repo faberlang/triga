@@ -1,3 +1,6 @@
++++
+locale = "la"
++++
 importa ex "web:web" privata web
 importa ex "web:dom" privata dom
 importa ex "./camera_controls" privata camera_controls

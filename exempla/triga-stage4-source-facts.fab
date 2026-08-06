@@ -5,28 +5,24 @@ category = "library"
 canonical = true
 summary = "Stage 4 source-owned vertex-layout facts for the graphics MIR handoff."
 +++
-importa ex "triga:geometry/data" privata data
-importa ex "triga:geometry/attribute" privata attribute
-importa ex "triga:geometry/batch" privata batch
-importa ex "triga:primitives/basic" privata basic
+import from "triga:geometry/data" private data
 
-@ vertex
-functio triga_plane_vertex() → vacuum {
+import from "triga:geometry/attribute" private attribute
+
+import from "triga:geometry/batch" private batch
+
+import from "triga:primitives/basic" private basic
+
+@ vertex { }
+fn triga_plane_vertex() → void {
 }
 
-incipit {
-    fixum data.BufferGeometry ∪ nihil plane_result ← basic.plane_geometry(2.0, 2.0)
-    fixum data.BufferGeometry plane ← data.BufferGeometry { topology = plane_result!.topology, vertex_count = plane_result!.vertex_count, attributes = plane_result!.attributes, indexed = plane_result!.indexed, indices = plane_result!.indices, draw_range = plane_result!.draw_range, groups = plane_result!.groups }
-
-    adfirma data.geometry_vertex_layout_matches(plane, 0, "position", 0, 3, 0, 12, 1) secus
-        "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
-
-    adfirma data.geometry_vertex_layout_matches(plane, 1, "normal", 1, 3, 0, 12, 1) secus
-        "normal layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
-
-    adfirma data.geometry_vertex_layout_matches(plane, 2, "uv", 2, 2, 0, 8, 1) secus
-        "uv layout fixes location 2, Float32x2, zero offset, 8-byte stride, and vertex step mode"
-
-    fixum attribute.BufferAttribute duplicate_position ← attribute.float32_attribute("other_position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0])
-    fixum data.BufferGeometry duplicate_location ← data.triangle_geometry(4, [(plane.attributes)[0], duplicate_position, (plane.attributes)[2]], batch.DrawRange { start = 0, count = 3 }, vacua)
+main {
+    const data.BufferGeometry ∪ null plane_result ← basic.plane_geometry(2.0, 2.0)
+    const data.BufferGeometry plane ← data.BufferGeometry {topology = plane_result!.topology, vertex_count = plane_result!.vertex_count, attributes = plane_result!.attributes, indexed = plane_result!.indexed, indices = plane_result!.indices, draw_range = plane_result!.draw_range, groups = plane_result!.groups}
+    assert data.geometry_vertex_layout_matches(plane, 0, "position", 0, 3, 0, 12, 1) secus "position layout fixes location 0, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    assert data.geometry_vertex_layout_matches(plane, 1, "normal", 1, 3, 0, 12, 1) secus "normal layout fixes location 1, Float32x3, zero offset, 12-byte stride, and vertex step mode"
+    assert data.geometry_vertex_layout_matches(plane, 2, "uv", 2, 2, 0, 8, 1) secus "uv layout fixes location 2, Float32x2, zero offset, 8-byte stride, and vertex step mode"
+    const attribute.BufferAttribute duplicate_position ← attribute.float32_attribute("other_position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0])
+    const data.BufferGeometry duplicate_location ← data.triangle_geometry(4, [plane.attributes[0], duplicate_position, plane.attributes[2]], batch.DrawRange {start = 0, count = 3}, vacua)
 }

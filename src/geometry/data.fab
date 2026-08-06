@@ -1,6 +1,6 @@
 # CPU-side geometry data, topology, and mesh construction.
 #
-# Public import: importa ex "triga:geometry/data" privata data
+# Public import: import from "triga:geometry/data" private data
 #
 # Owns: BufferGeometry (+ all methods, including index_format_code() and
 # topology_code()), ColoredQuadMesh (+ methods), colored_quad_mesh_append,
@@ -16,97 +16,74 @@
 # Imports: triga:geometry/attribute, triga:geometry/layout,
 # triga:geometry/bounds, triga:geometry/batch.
 
-importa ex "triga:geometry/attribute" privata attribute
-importa ex "triga:geometry/layout" privata layout
-importa ex "triga:geometry/bounds" privata bounds
-importa ex "triga:geometry/batch" privata batch
+import from "triga:geometry/attribute" private attribute
+
+import from "triga:geometry/layout" private layout
+
+import from "triga:geometry/bounds" private bounds
+
+import from "triga:geometry/batch" private batch
 
 # PrimitiveTopology is the small source-side choice that controls element
 # grouping, draw-range validity, and the numeric code passed to shader facts.
-discretio PrimitiveTopology {
-    TriangleList { }
-    LineList { }
-    PointList { }
+union PrimitiveTopology {
+    TriangleList,
+    LineList,
+    PointList,
 }
 
 # ColoredQuadMesh is the accumulation-friendly shape used by voxel and face
 # examples. Positions, colors, and indices remain parallel lists until the
 # `geometry()` projection turns them into a validated BufferGeometry.
-genus ColoredQuadMesh {
-    lista<f32> positions
-    lista<f32> colors
-    lista<u32> indices
+class ColoredQuadMesh {
+    list<f32> positions
+    list<f32> colors
+    list<int<u32>> indices
 
-    functio face_count() → numerus ∪ nihil {
-        si ego.positions.longitudo() ≠ ego.colors.longitudo() ergo redde nihil
-        si ego.positions.longitudo() % 12 ≠ 0 ergo redde nihil
-        si ego.indices.longitudo() % 6 ≠ 0 ergo redde nihil
-        fixum numerus count ← ego.positions.longitudo() / 12
-        si count ≡ 0 ergo redde nihil
-        si ego.indices.longitudo() ≠ count * 6 ergo redde nihil
-        redde count
+    fn face_count() → int ∪ null {
+        if self.positions.longitudo() ≠ self.colors.longitudo() then return null
+        if self.positions.longitudo() % 12 ≠ 0 then return null
+        if self.indices.longitudo() % 6 ≠ 0 then return null
+        const int count ← self.positions.longitudo() / 12
+        if count ≡ 0 then return null
+        if self.indices.longitudo() ≠ count * 6 then return null
+        return count
     }
 
-    functio geometry() → BufferGeometry ∪ nihil {
-        si ego.positions.longitudo() ≠ ego.colors.longitudo() ergo redde nihil
-        si ego.positions.longitudo() % 3 ≠ 0 ergo redde nihil
-        si ego.indices.longitudo() % 3 ≠ 0 ergo redde nihil
-        fixum numerus vertex_count ← ego.positions.longitudo() / 3
-        redde colored_indexed_geometry(vertex_count, ego.positions, ego.colors, ego.indices)
+    fn geometry() → BufferGeometry ∪ null {
+        if self.positions.longitudo() ≠ self.colors.longitudo() then return null
+        if self.positions.longitudo() % 3 ≠ 0 then return null
+        if self.indices.longitudo() % 3 ≠ 0 then return null
+        const int vertex_count ← self.positions.longitudo() / 3
+        return colored_indexed_geometry(vertex_count, self.positions, self.colors, self.indices)
     }
 
-    functio facts() → batch.VisibleFaceMeshFacts ∪ nihil {
-        fixum numerus ∪ nihil face_count_result ← ego.face_count()
-        si face_count_result est nihil ergo redde nihil
-        fixum numerus face_count ← face_count_result vel 0
-        redde batch.visible_face_mesh_facts(face_count)
+    fn facts() → batch.VisibleFaceMeshFacts ∪ null {
+        const int ∪ null face_count_result ← self.face_count()
+        if face_count_result is null then return null
+        const int face_count ← face_count_result coalesce 0
+        return batch.visible_face_mesh_facts(face_count)
     }
 
-    functio draw_batch_facts(
-        numerus instance_count
-    ) → batch.IndexedGeometryDrawBatchFacts ∪ nihil {
-        fixum BufferGeometry ∪ nihil geometry_result ← ego.geometry()
-        si geometry_result est nihil ergo redde nihil
-        fixum BufferGeometry geom ← BufferGeometry {
-            topology = geometry_result!.topology,
-            vertex_count = geometry_result!.vertex_count,
-            attributes = geometry_result!.attributes,
-            indexed = geometry_result!.indexed,
-            indices = geometry_result!.indices,
-            draw_range = geometry_result!.draw_range,
-            groups = geometry_result!.groups
-        }
-        redde geom.indexed_draw_batch_facts(instance_count)
+    fn draw_batch_facts(int instance_count) → batch.IndexedGeometryDrawBatchFacts ∪ null {
+        const BufferGeometry ∪ null geometry_result ← self.geometry()
+        if geometry_result is null then return null
+        const BufferGeometry geom ← BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+        return geom.indexed_draw_batch_facts(instance_count)
     }
 
-    functio bounding_box() → bounds.BoundingBox ∪ nihil {
-        fixum BufferGeometry ∪ nihil geometry_result ← ego.geometry()
-        si geometry_result est nihil ergo redde nihil
-        fixum BufferGeometry geom ← BufferGeometry {
-            topology = geometry_result!.topology,
-            vertex_count = geometry_result!.vertex_count,
-            attributes = geometry_result!.attributes,
-            indexed = geometry_result!.indexed,
-            indices = geometry_result!.indices,
-            draw_range = geometry_result!.draw_range,
-            groups = geometry_result!.groups
-        }
-        redde geom.bounding_box()
+    fn bounding_box() → bounds.BoundingBox ∪ null {
+        const BufferGeometry ∪ null geometry_result ← self.geometry()
+        if geometry_result is null then return null
+        const BufferGeometry geom ← BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+        return geom.bounding_box()
     }
 
-    functio bounding_sphere() → bounds.BoundingSphere ∪ nihil {
-        fixum BufferGeometry ∪ nihil geometry_result ← ego.geometry()
-        si geometry_result est nihil ergo redde nihil
-        fixum BufferGeometry geom ← BufferGeometry {
-            topology = geometry_result!.topology,
-            vertex_count = geometry_result!.vertex_count,
-            attributes = geometry_result!.attributes,
-            indexed = geometry_result!.indexed,
-            indices = geometry_result!.indices,
-            draw_range = geometry_result!.draw_range,
-            groups = geometry_result!.groups
-        }
-        redde geom.bounding_sphere()
+    fn bounding_sphere() → bounds.BoundingSphere ∪ null {
+        const BufferGeometry ∪ null geometry_result ← self.geometry()
+        if geometry_result is null then return null
+        const BufferGeometry geom ← BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+        return geom.bounding_sphere()
     }
 }
 
@@ -114,472 +91,457 @@ genus ColoredQuadMesh {
 # streams, optional indices, draw ranges, and material groups together so every
 # query can validate the same shape before exposing counts, bounds, layout, or
 # host draw facts.
-genus BufferGeometry {
+class BufferGeometry {
     PrimitiveTopology topology
-    numerus vertex_count
-    lista<attribute.BufferAttribute> attributes
-    bivalens indexed
-    lista<u32> indices
+    int vertex_count
+    list<attribute.BufferAttribute> attributes
+    bool indexed
+    list<int<u32>> indices
     batch.DrawRange draw_range
-    lista<batch.GeometryGroup> groups
+    list<batch.GeometryGroup> groups
 
     # --- Validation -----------------------------------------------------
     # Validation-sensitive projections below call `valida()` first. Invalid
     # geometry returns `nihil` rather than leaking partial facts to a later
     # stage; structural queries such as `element_count()` remain direct.
 
-    functio valida() → bivalens {
-        si ego.vertex_count ≡ 0 ergo redde falsum
-        si ego._attributes_valid() ≡ falsum ergo redde falsum
-        si ego._indices_valid() ≡ falsum ergo redde falsum
-        fixum numerus element_count ← ego.element_count()
-        si ego.draw_range.count ≡ 0 ergo redde falsum
-        si ego.draw_range.start + ego.draw_range.count > element_count ergo redde falsum
-        si _primitive_range_valid(
-            ego.topology, ego.draw_range.start, ego.draw_range.count
-        ) ≡ falsum ergo redde falsum
-        si ego._topology_valid() ≡ falsum ergo redde falsum
-        redde ego._groups_valid()
+    fn valida() → bool {
+        if self.vertex_count ≡ 0 then return false
+        if self._attributes_valid() ≡ false then return false
+        if self._indices_valid() ≡ false then return false
+        const int element_count ← self.element_count()
+        if self.draw_range.count ≡ 0 then return false
+        if self.draw_range.start + self.draw_range.count ≻ element_count then return false
+        if _primitive_range_valid(self.topology, self.draw_range.start, self.draw_range.count) ≡ false then return false
+        if self._topology_valid() ≡ false then return false
+        return self._groups_valid()
     }
 
-    @ privata
-    functio _attributes_valid() → bivalens {
-        varia bivalens has_position ← falsum
-        varia numerus i ← 0
-        dum i < ego.attributes.longitudo() {
-            fixum attribute.BufferAttribute attr ← ego.attributes[i]
-            si attr.valida() ≡ falsum ergo redde falsum
-            si attr.element_count ≠ ego.vertex_count ergo redde falsum
-            si attr.name ≡ "position" {
-                has_position ← verum
-                si attr.component_width ≠ 3 ergo redde falsum
-                si attr.float32_values() est nihil ergo redde falsum
+    @ private { }
+    fn _attributes_valid() → bool {
+        var bool has_position ← false
+        var int i ← 0
+        while i ≺ self.attributes.longitudo() {
+            const attribute.BufferAttribute attr ← self.attributes[i]
+            if attr.valida() ≡ false then return false
+            if attr.element_count ≠ self.vertex_count then return false
+            if attr.name ≡ "position" {
+                has_position ← true
+                if attr.component_width ≠ 3 then return false
+                if attr.float32_values() is null then return false
             }
-            varia numerus j ← 0
-            dum j < i {
-                fixum attribute.BufferAttribute previous ← ego.attributes[j]
-                si previous.name ≡ attr.name { redde falsum }
-                si previous.shader_location ≡ attr.shader_location { redde falsum }
+            var int j ← 0
+            while j ≺ i {
+                const attribute.BufferAttribute previous ← self.attributes[j]
+                if previous.name ≡ attr.name then return false
+                if previous.shader_location ≡ attr.shader_location then return false
                 j ← j + 1
             }
             i ← i + 1
         }
-        redde has_position
+        return has_position
     }
 
-    @ privata
-    functio _indices_valid() → bivalens {
-        si ego.indexed ≡ falsum ergo redde ego.indices.longitudo() ≡ 0
-        si ego.indices.longitudo() ≡ 0 ergo redde falsum
-        varia numerus i ← 0
-        dum i < ego.indices.longitudo() {
-            fixum numerus index ← ego.indices[i] ↦ numerus
-            si index ≥ ego.vertex_count { redde falsum }
+    @ private { }
+    fn _indices_valid() → bool {
+        if self.indexed ≡ false then return self.indices.longitudo() ≡ 0
+        if self.indices.longitudo() ≡ 0 then return false
+        var int i ← 0
+        while i ≺ self.indices.longitudo() {
+            const int index ← self.indices[i] ↦ int
+            if index ≥ self.vertex_count then return false
             i ← i + 1
         }
-        redde verum
+        return true
     }
 
-    @ privata
-    functio _groups_valid() → bivalens {
-        fixum numerus element_count ← ego.element_count()
-        varia numerus previous_end ← 0
-        varia numerus i ← 0
-        dum i < ego.groups.longitudo() {
-            fixum batch.GeometryGroup group ← ego.groups[i]
-            si group.count ≡ 0 ergo redde falsum
-            si _primitive_range_valid(ego.topology, group.start, group.count) ≡ falsum {
-                redde falsum
-            }
-            si group.start < previous_end ergo redde falsum
-            fixum numerus group_end ← group.start + group.count
-            si group_end > element_count { redde falsum }
+    @ private { }
+    fn _groups_valid() → bool {
+        const int element_count ← self.element_count()
+        var int previous_end ← 0
+        var int i ← 0
+        while i ≺ self.groups.longitudo() {
+            const batch.GeometryGroup group ← self.groups[i]
+            if group.count ≡ 0 then return false
+            if _primitive_range_valid(self.topology, group.start, group.count) ≡ false then return false
+            if group.start ≺ previous_end then return false
+            const int group_end ← group.start + group.count
+            if group_end ≻ element_count then return false
             previous_end ← group_end
             i ← i + 1
         }
-        redde verum
+        return true
     }
 
-    @ privata
-    functio _topology_valid() → bivalens {
-        fixum numerus element_count ← ego.element_count()
-        discerne ego.topology {
-            casu TriangleList { redde _element_count_divisible(element_count, 3) }
-            casu LineList { redde _element_count_divisible(element_count, 2) }
-            casu PointList { redde element_count > 0 }
+    @ private { }
+    fn _topology_valid() → bool {
+        const int element_count ← self.element_count()
+        match self.topology {
+            case TriangleList {
+                return _element_count_divisible(element_count, 3)
+            }
+            case LineList {
+                return _element_count_divisible(element_count, 2)
+            }
+            case PointList {
+                return element_count ≻ 0
+            }
         }
     }
 
     # --- Element / vertex / index queries -------------------------------
 
-    functio element_count() → numerus {
-        si ego.indexed ≡ falsum ergo redde ego.vertex_count
-        redde ego.indices.longitudo()
+    fn element_count() → int {
+        if self.indexed ≡ false then return self.vertex_count
+        return self.indices.longitudo()
     }
 
-    functio validated_vertex_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        redde ego.vertex_count
+    fn validated_vertex_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        return self.vertex_count
     }
 
-    functio index_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si ego.indexed ≡ falsum ergo redde nihil
-        fixum numerus count ← ego.indices.longitudo()
-        redde count
+    fn index_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        if self.indexed ≡ false then return null
+        const int count ← self.indices.longitudo()
+        return count
     }
 
-    functio index_format_code() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si ego.indexed ≡ falsum ergo redde nihil
-        redde 1
+    fn index_format_code() → int ∪ null {
+        if self.valida() ≡ false then return null
+        if self.indexed ≡ false then return null
+        return 1
     }
 
-    functio group_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        fixum numerus count ← ego.groups.longitudo()
-        redde count
+    fn group_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        const int count ← self.groups.longitudo()
+        return count
     }
 
     # --- Attribute payload byte counts ----------------------------------
 
-    functio attribute_byte_count(textus name) → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        itera ex ego.attributes fixum attribute {
-            si attribute.name ≡ name {
-                fixum numerus scalars ← attribute.scalar_count()
-                fixum numerus bytes ← scalars * attribute.scalar_bytes()
-                redde bytes
+    fn attribute_byte_count(string name) → int ∪ null {
+        if self.valida() ≡ false then return null
+        for from self.attributes const attribute {
+            if attribute.name ≡ name {
+                const int scalars ← attribute.scalar_count()
+                const int bytes ← scalars * attribute.scalar_bytes()
+                return bytes
             }
         }
-        redde nihil
+        return null
     }
 
-    functio attribute_scalar_count(textus name) → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        varia numerus i ← 0
-        dum i < ego.attributes.longitudo() {
-            fixum attribute.BufferAttribute attribute ← ego.attributes[i]
-            si attribute.name ≡ name ergo redde attribute.scalar_count()
+    fn attribute_scalar_count(string name) → int ∪ null {
+        if self.valida() ≡ false then return null
+        var int i ← 0
+        while i ≺ self.attributes.longitudo() {
+            const attribute.BufferAttribute attribute ← self.attributes[i]
+            if attribute.name ≡ name then return attribute.scalar_count()
             i ← i + 1
         }
-        redde nihil
+        return null
     }
 
-    functio vertex_payload_byte_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        varia numerus total ← 0
-        itera ex ego.attributes fixum attribute {
+    fn vertex_payload_byte_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        var int total ← 0
+        for from self.attributes const attribute {
             total ← total + attribute.scalar_count() * attribute.scalar_bytes()
         }
-        redde total
+        return total
     }
 
-    functio index_payload_byte_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si ego.indexed ≡ falsum ergo redde nihil
-        fixum numerus bytes ← ego.indices.longitudo() * 4
-        redde bytes
+    fn index_payload_byte_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        if self.indexed ≡ false then return null
+        const int bytes ← self.indices.longitudo() * 4
+        return bytes
     }
 
-    functio payload_byte_count() → numerus ∪ nihil {
-        fixum numerus ∪ nihil vertex_bytes_result ← ego.vertex_payload_byte_count()
-        si vertex_bytes_result est nihil ergo redde nihil
-        fixum numerus vertex_bytes ← vertex_bytes_result vel 0
-        fixum numerus ∪ nihil index_bytes_result ← ego.index_payload_byte_count()
-        si index_bytes_result est nihil ergo redde vertex_bytes
-        fixum numerus index_bytes ← index_bytes_result vel 0
-        redde vertex_bytes + index_bytes
+    fn payload_byte_count() → int ∪ null {
+        const int ∪ null vertex_bytes_result ← self.vertex_payload_byte_count()
+        if vertex_bytes_result is null then return null
+        const int vertex_bytes ← vertex_bytes_result coalesce 0
+        const int ∪ null index_bytes_result ← self.index_payload_byte_count()
+        if index_bytes_result is null then return vertex_bytes
+        const int index_bytes ← index_bytes_result coalesce 0
+        return vertex_bytes + index_bytes
     }
 
     # --- Primitive counts -----------------------------------------------
 
-    functio triangle_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        discerne ego.topology {
-            casu TriangleList { }
-            casu LineList { redde nihil }
-            casu PointList { redde nihil }
+    fn triangle_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        match self.topology {
+            case TriangleList {
+            }
+            case LineList {
+                return null
+            }
+            case PointList {
+                return null
+            }
         }
-        varia numerus remaining ← ego.element_count()
-        varia numerus count ← 0
-        dum remaining ≥ 3 {
+        var int remaining ← self.element_count()
+        var int count ← 0
+        while remaining ≥ 3 {
             remaining ← remaining - 3
             count ← count + 1
         }
-        redde count
+        return count
     }
 
-    functio line_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        discerne ego.topology {
-            casu TriangleList { redde nihil }
-            casu LineList { }
-            casu PointList { redde nihil }
+    fn line_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        match self.topology {
+            case TriangleList {
+                return null
+            }
+            case LineList {
+            }
+            case PointList {
+                return null
+            }
         }
-        varia numerus remaining ← ego.element_count()
-        varia numerus count ← 0
-        dum remaining ≥ 2 {
+        var int remaining ← self.element_count()
+        var int count ← 0
+        while remaining ≥ 2 {
             remaining ← remaining - 2
             count ← count + 1
         }
-        redde count
+        return count
     }
 
     # --- Draw commands ---------------------------------------------------
 
-    functio draw_command(
-        numerus instance_count
-    ) → batch.GeometryDrawCommand ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si instance_count ≡ 0 ergo redde nihil
-        redde batch.GeometryDrawCommand {
-            indexed = ego.indexed,
-            element_count = ego.draw_range.count,
-            first_element = ego.draw_range.start,
-            base_vertex = 0,
-            instance_count = instance_count,
-            material_index = 0
-        }
+    fn draw_command(int instance_count) → batch.GeometryDrawCommand ∪ null {
+        if self.valida() ≡ false then return null
+        if instance_count ≡ 0 then return null
+        return batch.GeometryDrawCommand {indexed = self.indexed, element_count = self.draw_range.count, first_element = self.draw_range.start, base_vertex = 0, instance_count = instance_count, material_index = 0}
     }
 
-    functio group_draw_command(
-        numerus group_index,
-        numerus instance_count
-    ) → batch.GeometryDrawCommand ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si group_index ≥ ego.groups.longitudo() ergo redde nihil
-        si instance_count ≡ 0 ergo redde nihil
-        fixum batch.GeometryGroup group ← ego.groups[group_index]
-        redde batch.GeometryDrawCommand {
-            indexed = ego.indexed,
-            element_count = group.count,
-            first_element = group.start,
-            base_vertex = 0,
-            instance_count = instance_count,
-            material_index = group.material_index
-        }
+    fn group_draw_command(int group_index, int instance_count) → batch.GeometryDrawCommand ∪ null {
+        if self.valida() ≡ false then return null
+        if group_index ≥ self.groups.longitudo() then return null
+        if instance_count ≡ 0 then return null
+        const batch.GeometryGroup group ← self.groups[group_index]
+        return batch.GeometryDrawCommand {indexed = self.indexed, element_count = group.count, first_element = group.start, base_vertex = 0, instance_count = instance_count, material_index = group.material_index}
     }
 
-    functio group_draw_commands(
-        numerus instance_count
-    ) → lista<batch.GeometryDrawCommand> ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si instance_count ≡ 0 ergo redde nihil
-        varia lista<batch.GeometryDrawCommand> commands ← vacua
-        varia numerus i ← 0
-        dum i < ego.groups.longitudo() {
-            fixum batch.GeometryDrawCommand ∪ nihil command ← ego.group_draw_command(i, instance_count)
-            si command est nihil ergo redde nihil
-            fixum batch.GeometryDrawCommand value ← batch.GeometryDrawCommand {
-                indexed = command!.indexed,
-                element_count = command!.element_count,
-                first_element = command!.first_element,
-                base_vertex = command!.base_vertex,
-                instance_count = command!.instance_count,
-                material_index = command!.material_index
-            }
+    fn group_draw_commands(int instance_count) → list<batch.GeometryDrawCommand> ∪ null {
+        if self.valida() ≡ false then return null
+        if instance_count ≡ 0 then return null
+        var list<batch.GeometryDrawCommand> commands ← vacua
+        var int i ← 0
+        while i ≺ self.groups.longitudo() {
+            const batch.GeometryDrawCommand ∪ null command ← self.group_draw_command(i, instance_count)
+            if command is null then return null
+            const batch.GeometryDrawCommand value ← batch.GeometryDrawCommand {indexed = command!.indexed, element_count = command!.element_count, first_element = command!.first_element, base_vertex = command!.base_vertex, instance_count = command!.instance_count, material_index = command!.material_index}
             commands.appende(value)
             i ← i + 1
         }
-        redde commands
+        return commands
     }
 
-    functio group_element_total() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        varia numerus total ← 0
-        varia numerus i ← 0
-        dum i < ego.groups.longitudo() {
-            total ← total + ego.groups[i].count
+    fn group_element_total() → int ∪ null {
+        if self.valida() ≡ false then return null
+        var int total ← 0
+        var int i ← 0
+        while i ≺ self.groups.longitudo() {
+            total ← total + self.groups[i].count
             i ← i + 1
         }
-        redde total
+        return total
     }
 
     # --- Bounding volumes ------------------------------------------------
 
-    functio bounding_box() → bounds.BoundingBox ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        fixum lista<f32> positions ← ego._position_values()
-
-        varia f32 min_x ← positions[0]
-        varia f32 min_y ← positions[1]
-        varia f32 min_z ← positions[2]
-        varia f32 max_x ← positions[0]
-        varia f32 max_y ← positions[1]
-        varia f32 max_z ← positions[2]
-        varia numerus i ← 3
-        dum i < positions.longitudo() {
-            fixum f32 x ← positions[i]
-            fixum f32 y ← positions[i + 1]
-            fixum f32 z ← positions[i + 2]
-            si x < min_x { min_x ← x }
-            si y < min_y { min_y ← y }
-            si z < min_z { min_z ← z }
-            si x > max_x { max_x ← x }
-            si y > max_y { max_y ← y }
-            si z > max_z { max_z ← z }
+    fn bounding_box() → bounds.BoundingBox ∪ null {
+        if self.valida() ≡ false then return null
+        const list<f32> positions ← self._position_values()
+        var f32 min_x ← positions[0]
+        var f32 min_y ← positions[1]
+        var f32 min_z ← positions[2]
+        var f32 max_x ← positions[0]
+        var f32 max_y ← positions[1]
+        var f32 max_z ← positions[2]
+        var int i ← 3
+        while i ≺ positions.longitudo() {
+            const f32 x ← positions[i]
+            const f32 y ← positions[i + 1]
+            const f32 z ← positions[i + 2]
+            if x ≺ min_x {
+                min_x ← x
+            }
+            if y ≺ min_y {
+                min_y ← y
+            }
+            if z ≺ min_z {
+                min_z ← z
+            }
+            if x ≻ max_x {
+                max_x ← x
+            }
+            if y ≻ max_y {
+                max_y ← y
+            }
+            if z ≻ max_z {
+                max_z ← z
+            }
             i ← i + 3
         }
-        redde bounds.BoundingBox {
-            min_x = min_x, min_y = min_y, min_z = min_z,
-            max_x = max_x, max_y = max_y, max_z = max_z
-        }
+        return bounds.BoundingBox {min_x = min_x, min_y = min_y, min_z = min_z, max_x = max_x, max_y = max_y, max_z = max_z}
     }
 
-    functio group_bounding_box(
-        numerus group_index
-    ) → bounds.BoundingBox ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si group_index ≥ ego.groups.longitudo() ergo redde nihil
-        fixum batch.GeometryGroup group ← ego.groups[group_index]
-        fixum lista<f32> positions ← ego._position_values()
-
-        varia numerus vertex_index ← group.start
-        si ego.indexed {
-            vertex_index ← ego.indices[group.start] ↦ numerus
+    fn group_bounding_box(int group_index) → bounds.BoundingBox ∪ null {
+        if self.valida() ≡ false then return null
+        if group_index ≥ self.groups.longitudo() then return null
+        const batch.GeometryGroup group ← self.groups[group_index]
+        const list<f32> positions ← self._position_values()
+        var int vertex_index ← group.start
+        if self.indexed {
+            vertex_index ← self.indices[group.start] ↦ int
         }
-        varia numerus position_index ← vertex_index * 3
-        varia f32 min_x ← positions[position_index]
-        varia f32 min_y ← positions[position_index + 1]
-        varia f32 min_z ← positions[position_index + 2]
-        varia f32 max_x ← min_x
-        varia f32 max_y ← min_y
-        varia f32 max_z ← min_z
-
-        varia numerus i ← group.start
-        fixum numerus end ← group.start + group.count
-        dum i < end {
+        var int position_index ← vertex_index * 3
+        var f32 min_x ← positions[position_index]
+        var f32 min_y ← positions[position_index + 1]
+        var f32 min_z ← positions[position_index + 2]
+        var f32 max_x ← min_x
+        var f32 max_y ← min_y
+        var f32 max_z ← min_z
+        var int i ← group.start
+        const int end ← group.start + group.count
+        while i ≺ end {
             vertex_index ← i
-            si ego.indexed {
-                vertex_index ← ego.indices[i] ↦ numerus
+            if self.indexed {
+                vertex_index ← self.indices[i] ↦ int
             }
             position_index ← vertex_index * 3
-            fixum f32 x ← positions[position_index]
-            fixum f32 y ← positions[position_index + 1]
-            fixum f32 z ← positions[position_index + 2]
-            si x < min_x { min_x ← x }
-            si y < min_y { min_y ← y }
-            si z < min_z { min_z ← z }
-            si x > max_x { max_x ← x }
-            si y > max_y { max_y ← y }
-            si z > max_z { max_z ← z }
+            const f32 x ← positions[position_index]
+            const f32 y ← positions[position_index + 1]
+            const f32 z ← positions[position_index + 2]
+            if x ≺ min_x {
+                min_x ← x
+            }
+            if y ≺ min_y {
+                min_y ← y
+            }
+            if z ≺ min_z {
+                min_z ← z
+            }
+            if x ≻ max_x {
+                max_x ← x
+            }
+            if y ≻ max_y {
+                max_y ← y
+            }
+            if z ≻ max_z {
+                max_z ← z
+            }
             i ← i + 1
         }
-        redde bounds.BoundingBox {
-            min_x = min_x, min_y = min_y, min_z = min_z,
-            max_x = max_x, max_y = max_y, max_z = max_z
-        }
+        return bounds.BoundingBox {min_x = min_x, min_y = min_y, min_z = min_z, max_x = max_x, max_y = max_y, max_z = max_z}
     }
 
-    functio bounding_sphere() → bounds.BoundingSphere ∪ nihil {
-        fixum bounds.BoundingBox ∪ nihil bounds_result ← ego.bounding_box()
-        si bounds_result est nihil ergo redde nihil
-        fixum bounds.BoundingBox bnd ← bounds.BoundingBox {
-            min_x = bounds_result!.min_x, min_y = bounds_result!.min_y,
-            min_z = bounds_result!.min_z, max_x = bounds_result!.max_x,
-            max_y = bounds_result!.max_y, max_z = bounds_result!.max_z
-        }
-        fixum f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
-        fixum f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
-        fixum f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
-
-        fixum lista<f32> positions ← ego._position_values()
-
-        varia f32 radius_squared ← 0.0
-        varia numerus i ← 0
-        dum i < positions.longitudo() {
-            fixum f32 dx ← positions[i] - center_x
-            fixum f32 dy ← positions[i + 1] - center_y
-            fixum f32 dz ← positions[i + 2] - center_z
-            fixum f32 distance_squared ← dx * dx + dy * dy + dz * dz
-            si distance_squared > radius_squared { radius_squared ← distance_squared }
+    fn bounding_sphere() → bounds.BoundingSphere ∪ null {
+        const bounds.BoundingBox ∪ null bounds_result ← self.bounding_box()
+        if bounds_result is null then return null
+        const bounds.BoundingBox bnd ← bounds.BoundingBox {min_x = bounds_result!.min_x, min_y = bounds_result!.min_y, min_z = bounds_result!.min_z, max_x = bounds_result!.max_x, max_y = bounds_result!.max_y, max_z = bounds_result!.max_z}
+        const f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
+        const f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
+        const f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
+        const list<f32> positions ← self._position_values()
+        var f32 radius_squared ← 0.0
+        var int i ← 0
+        while i ≺ positions.longitudo() {
+            const f32 dx ← positions[i] - center_x
+            const f32 dy ← positions[i + 1] - center_y
+            const f32 dz ← positions[i + 2] - center_z
+            const f32 distance_squared ← (dx * dx + dy * dy) + dz * dz
+            if distance_squared ≻ radius_squared {
+                radius_squared ← distance_squared
+            }
             i ← i + 3
         }
-        redde bounds.BoundingSphere {
-            center_x = center_x, center_y = center_y, center_z = center_z,
-            radius = _geometry_radix_f32(radius_squared)
-        }
+        return bounds.BoundingSphere {center_x = center_x, center_y = center_y, center_z = center_z, radius = _geometry_radix_f32(radius_squared)}
     }
 
-    functio group_bounding_sphere(
-        numerus group_index
-    ) → bounds.BoundingSphere ∪ nihil {
-        fixum bounds.BoundingBox ∪ nihil bounds_result ← ego.group_bounding_box(group_index)
-        si bounds_result est nihil ergo redde nihil
-        fixum bounds.BoundingBox bnd ← bounds.BoundingBox {
-            min_x = bounds_result!.min_x, min_y = bounds_result!.min_y,
-            min_z = bounds_result!.min_z, max_x = bounds_result!.max_x,
-            max_y = bounds_result!.max_y, max_z = bounds_result!.max_z
-        }
-        fixum f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
-        fixum f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
-        fixum f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
-        fixum batch.GeometryGroup group ← ego.groups[group_index]
-        fixum lista<f32> positions ← ego._position_values()
-
-        varia f32 radius_squared ← 0.0
-        varia numerus i ← group.start
-        fixum numerus end ← group.start + group.count
-        dum i < end {
-            varia numerus vertex_index ← i
-            si ego.indexed {
-                vertex_index ← ego.indices[i] ↦ numerus
+    fn group_bounding_sphere(int group_index) → bounds.BoundingSphere ∪ null {
+        const bounds.BoundingBox ∪ null bounds_result ← self.group_bounding_box(group_index)
+        if bounds_result is null then return null
+        const bounds.BoundingBox bnd ← bounds.BoundingBox {min_x = bounds_result!.min_x, min_y = bounds_result!.min_y, min_z = bounds_result!.min_z, max_x = bounds_result!.max_x, max_y = bounds_result!.max_y, max_z = bounds_result!.max_z}
+        const f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
+        const f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
+        const f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
+        const batch.GeometryGroup group ← self.groups[group_index]
+        const list<f32> positions ← self._position_values()
+        var f32 radius_squared ← 0.0
+        var int i ← group.start
+        const int end ← group.start + group.count
+        while i ≺ end {
+            var int vertex_index ← i
+            if self.indexed {
+                vertex_index ← self.indices[i] ↦ int
             }
-            fixum numerus position_index ← vertex_index * 3
-            fixum f32 dx ← positions[position_index] - center_x
-            fixum f32 dy ← positions[position_index + 1] - center_y
-            fixum f32 dz ← positions[position_index + 2] - center_z
-            fixum f32 distance_squared ← dx * dx + dy * dy + dz * dz
-            si distance_squared > radius_squared { radius_squared ← distance_squared }
+            const int position_index ← vertex_index * 3
+            const f32 dx ← positions[position_index] - center_x
+            const f32 dy ← positions[position_index + 1] - center_y
+            const f32 dz ← positions[position_index + 2] - center_z
+            const f32 distance_squared ← (dx * dx + dy * dy) + dz * dz
+            if distance_squared ≻ radius_squared {
+                radius_squared ← distance_squared
+            }
             i ← i + 1
         }
-        redde bounds.BoundingSphere {
-            center_x = center_x, center_y = center_y, center_z = center_z,
-            radius = _geometry_radix_f32(radius_squared)
-        }
+        return bounds.BoundingSphere {center_x = center_x, center_y = center_y, center_z = center_z, radius = _geometry_radix_f32(radius_squared)}
     }
 
     # --- Normals and UVs -------------------------------------------------
 
-    functio vertex_normals() → attribute.BufferAttribute ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        discerne ego.topology {
-            casu TriangleList { }
-            casu LineList { redde nihil }
-            casu PointList { redde nihil }
+    fn vertex_normals() → attribute.BufferAttribute ∪ null {
+        if self.valida() ≡ false then return null
+        match self.topology {
+            case TriangleList {
+            }
+            case LineList {
+                return null
+            }
+            case PointList {
+                return null
+            }
         }
-
-        fixum lista<f32> positions ← ego._position_values()
-        varia lista<f32> normals ← vacua
-        varia numerus i ← 0
-        dum i < positions.longitudo() {
+        const list<f32> positions ← self._position_values()
+        var list<f32> normals ← vacua
+        var int i ← 0
+        while i ≺ positions.longitudo() {
             normals.appende(0.0)
             i ← i + 1
         }
-
         i ← 0
-        dum i < ego.element_count() {
-            varia numerus a ← i
-            varia numerus b ← i + 1
-            varia numerus c ← i + 2
-            si ego.indexed {
-                a ← ego.indices[i] ↦ numerus
-                b ← ego.indices[i + 1] ↦ numerus
-                c ← ego.indices[i + 2] ↦ numerus
+        while i ≺ self.element_count() {
+            var int a ← i
+            var int b ← i + 1
+            var int c ← i + 2
+            if self.indexed {
+                a ← self.indices[i] ↦ int
+                b ← self.indices[i + 1] ↦ int
+                c ← self.indices[i + 2] ↦ int
             }
-            fixum numerus ai ← a * 3
-            fixum numerus bi ← b * 3
-            fixum numerus ci ← c * 3
-            fixum f32 ab_x ← positions[bi] - positions[ai]
-            fixum f32 ab_y ← positions[bi + 1] - positions[ai + 1]
-            fixum f32 ab_z ← positions[bi + 2] - positions[ai + 2]
-            fixum f32 ac_x ← positions[ci] - positions[ai]
-            fixum f32 ac_y ← positions[ci + 1] - positions[ai + 1]
-            fixum f32 ac_z ← positions[ci + 2] - positions[ai + 2]
-            fixum f32 nx ← ab_y * ac_z - ab_z * ac_y
-            fixum f32 ny ← ab_z * ac_x - ab_x * ac_z
-            fixum f32 nz ← ab_x * ac_y - ab_y * ac_x
+            const int ai ← a * 3
+            const int bi ← b * 3
+            const int ci ← c * 3
+            const f32 ab_x ← positions[bi] - positions[ai]
+            const f32 ab_y ← positions[bi + 1] - positions[ai + 1]
+            const f32 ab_z ← positions[bi + 2] - positions[ai + 2]
+            const f32 ac_x ← positions[ci] - positions[ai]
+            const f32 ac_y ← positions[ci + 1] - positions[ai + 1]
+            const f32 ac_z ← positions[ci + 2] - positions[ai + 2]
+            const f32 nx ← ab_y * ac_z - ab_z * ac_y
+            const f32 ny ← ab_z * ac_x - ab_x * ac_z
+            const f32 nz ← ab_x * ac_y - ab_y * ac_x
             normals[ai] ← normals[ai] + nx
             normals[ai + 1] ← normals[ai + 1] + ny
             normals[ai + 2] ← normals[ai + 2] + nz
@@ -591,252 +553,177 @@ genus BufferGeometry {
             normals[ci + 2] ← normals[ci + 2] + nz
             i ← i + 3
         }
-
         i ← 0
-        fixum f32 zero ← 0.0
-        dum i < normals.longitudo() {
-            fixum f32 abs_x ← normals[i].absolutum()
-            fixum f32 abs_y ← normals[i + 1].absolutum()
-            fixum f32 abs_z ← normals[i + 2].absolutum()
-            varia f32 normal_max ← abs_x
-            si abs_y > normal_max { normal_max ← abs_y }
-            si abs_z > normal_max { normal_max ← abs_z }
-            si normal_max ≡ zero { redde nihil }
-            fixum f32 scaled_x ← normals[i] / normal_max
-            fixum f32 scaled_y ← normals[i + 1] / normal_max
-            fixum f32 scaled_z ← normals[i + 2] / normal_max
-            fixum f32 normal_scale ← normal_max * _geometry_radix_f32(
-                scaled_x * scaled_x + scaled_y * scaled_y + scaled_z * scaled_z
-            )
+        const f32 zero ← 0.0
+        while i ≺ normals.longitudo() {
+            const f32 abs_x ← normals[i].absolutum()
+            const f32 abs_y ← normals[i + 1].absolutum()
+            const f32 abs_z ← normals[i + 2].absolutum()
+            var f32 normal_max ← abs_x
+            if abs_y ≻ normal_max {
+                normal_max ← abs_y
+            }
+            if abs_z ≻ normal_max {
+                normal_max ← abs_z
+            }
+            if normal_max ≡ zero then return null
+            const f32 scaled_x ← normals[i] / normal_max
+            const f32 scaled_y ← normals[i + 1] / normal_max
+            const f32 scaled_z ← normals[i + 2] / normal_max
+            const f32 normal_scale ← normal_max * _geometry_radix_f32((scaled_x * scaled_x + scaled_y * scaled_y) + scaled_z * scaled_z)
             normals[i] ← normals[i] / normal_scale
             normals[i + 1] ← normals[i + 1] / normal_scale
             normals[i + 2] ← normals[i + 2] / normal_scale
             i ← i + 3
         }
-        redde attribute.float32_attribute("normal", 1, 3, ego.vertex_count, normals)
+        return attribute.float32_attribute("normal", 1, 3, self.vertex_count, normals)
     }
 
-    functio planar_uvs() → attribute.BufferAttribute ∪ nihil {
-        fixum bounds.BoundingBox ∪ nihil bounds_result ← ego.bounding_box()
-        si bounds_result est nihil ergo redde nihil
-        fixum f32 width ← bounds_result!.max_x - bounds_result!.min_x
-        fixum f32 height ← bounds_result!.max_y - bounds_result!.min_y
-        fixum f32 zero ← 0.0
-        si width ≡ zero aut height ≡ zero ergo redde nihil
-
-        fixum lista<f32> positions ← ego._position_values()
-        varia lista<f32> uvs ← vacua
-        varia numerus i ← 0
-        dum i < positions.longitudo() {
+    fn planar_uvs() → attribute.BufferAttribute ∪ null {
+        const bounds.BoundingBox ∪ null bounds_result ← self.bounding_box()
+        if bounds_result is null then return null
+        const f32 width ← bounds_result!.max_x - bounds_result!.min_x
+        const f32 height ← bounds_result!.max_y - bounds_result!.min_y
+        const f32 zero ← 0.0
+        if width ≡ zero or height ≡ zero then return null
+        const list<f32> positions ← self._position_values()
+        var list<f32> uvs ← vacua
+        var int i ← 0
+        while i ≺ positions.longitudo() {
             uvs.appende((positions[i] - bounds_result!.min_x) / width)
             uvs.appende((positions[i + 1] - bounds_result!.min_y) / height)
             i ← i + 3
         }
-        redde attribute.float32_attribute("uv", 2, 2, ego.vertex_count, uvs)
+        return attribute.float32_attribute("uv", 2, 2, self.vertex_count, uvs)
     }
 
     # --- Vertex layout introspection ------------------------------------
-
-    @ privata
-    functio _position_values() → lista<f32> {
-        varia lista<f32> positions ← vacua
-        varia numerus i ← 0
-        dum i < ego.attributes.longitudo() {
-            fixum attribute.BufferAttribute attr ← ego.attributes[i]
-            si attr.name ≡ "position" {
-                fixum lista<f32> ∪ nihil values ← attr.float32_values()
-                si values non est nihil {
+    @ private { }
+    fn _position_values() → list<f32> {
+        var list<f32> positions ← vacua
+        var int i ← 0
+        while i ≺ self.attributes.longitudo() {
+            const attribute.BufferAttribute attr ← self.attributes[i]
+            if attr.name ≡ "position" {
+                const list<f32> ∪ null values ← attr.float32_values()
+                if values not is null {
                     positions ← values
                 }
             }
             i ← i + 1
         }
-        redde positions
+        return positions
     }
 
-    @ privata
-    functio _vertex_layout_at(
-        numerus index
-    ) → layout.VertexAttributeLayout ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si index ≥ ego.attributes.longitudo() ergo redde nihil
-        fixum attribute.BufferAttribute attr ← ego.attributes[index]
-        redde attr.vertex_layout()
+    @ private { }
+    fn _vertex_layout_at(int index) → layout.VertexAttributeLayout ∪ null {
+        if self.valida() ≡ false then return null
+        if index ≥ self.attributes.longitudo() then return null
+        const attribute.BufferAttribute attr ← self.attributes[index]
+        return attr.vertex_layout()
     }
 
-    functio topology_code() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        redde _primitive_topology_code(ego.topology)
+    fn topology_code() → int ∪ null {
+        if self.valida() ≡ false then return null
+        return _primitive_topology_code(self.topology)
     }
 
-    functio vertex_layout_count() → numerus ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        fixum numerus count ← ego.attributes.longitudo()
-        redde count
+    fn vertex_layout_count() → int ∪ null {
+        if self.valida() ≡ false then return null
+        const int count ← self.attributes.longitudo()
+        return count
     }
 
-    functio vertex_layout_location(
-        numerus index
-    ) → numerus ∪ nihil {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde nihil
-        redde layout_result!.shader_location
+    fn vertex_layout_location(int index) → int ∪ null {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return null
+        return layout_result!.shader_location
     }
 
-    functio vertex_layout_source_name(
-        numerus index
-    ) → textus ∪ nihil {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde nihil
-        redde layout_result!.source_name
+    fn vertex_layout_source_name(int index) → string ∪ null {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return null
+        return layout_result!.source_name
     }
 
-    functio vertex_layout_format_code(
-        numerus index
-    ) → numerus ∪ nihil {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde nihil
-        fixum layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {
-            source_name = layout_result!.source_name,
-            shader_location = layout_result!.shader_location,
-            vertex_format = layout_result!.vertex_format,
-            offset_bytes = layout_result!.offset_bytes,
-            stride_bytes = layout_result!.stride_bytes,
-            step_mode = layout_result!.step_mode
-        }
-        redde layout._vertex_layout_format_code(lay)
+    fn vertex_layout_format_code(int index) → int ∪ null {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return null
+        const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
+        return layout._vertex_layout_format_code(lay)
     }
 
-    functio vertex_layout_offset_bytes(
-        numerus index
-    ) → numerus ∪ nihil {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde nihil
-        redde layout_result!.offset_bytes
+    fn vertex_layout_offset_bytes(int index) → int ∪ null {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return null
+        return layout_result!.offset_bytes
     }
 
-    functio vertex_layout_stride_bytes(
-        numerus index
-    ) → numerus ∪ nihil {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde nihil
-        redde layout_result!.stride_bytes
+    fn vertex_layout_stride_bytes(int index) → int ∪ null {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return null
+        return layout_result!.stride_bytes
     }
 
-    functio vertex_layout_step_mode_code(
-        numerus index
-    ) → numerus ∪ nihil {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde nihil
-        fixum layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {
-            source_name = layout_result!.source_name,
-            shader_location = layout_result!.shader_location,
-            vertex_format = layout_result!.vertex_format,
-            offset_bytes = layout_result!.offset_bytes,
-            stride_bytes = layout_result!.stride_bytes,
-            step_mode = layout_result!.step_mode
-        }
-        redde layout._vertex_layout_step_mode_code(lay)
+    fn vertex_layout_step_mode_code(int index) → int ∪ null {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return null
+        const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
+        return layout._vertex_layout_step_mode_code(lay)
     }
 
-    functio vertex_layout_matches(
-        numerus index,
-        textus source_name,
-        numerus shader_location,
-        numerus format_code,
-        numerus offset_bytes,
-        numerus stride_bytes,
-        numerus step_mode_code
-    ) → bivalens {
-        fixum layout.VertexAttributeLayout ∪ nihil layout_result ← ego._vertex_layout_at(index)
-        si layout_result est nihil ergo redde falsum
-        fixum layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {
-            source_name = layout_result!.source_name,
-            shader_location = layout_result!.shader_location,
-            vertex_format = layout_result!.vertex_format,
-            offset_bytes = layout_result!.offset_bytes,
-            stride_bytes = layout_result!.stride_bytes,
-            step_mode = layout_result!.step_mode
-        }
-        redde lay.source_name ≡ source_name
-            et lay.shader_location ≡ shader_location
-            et layout._vertex_layout_format_code(lay) ≡ format_code
-            et lay.offset_bytes ≡ offset_bytes
-            et lay.stride_bytes ≡ stride_bytes
-            et layout._vertex_layout_step_mode_code(lay) ≡ step_mode_code
+    fn vertex_layout_matches(int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code) → bool {
+        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        if layout_result is null then return false
+        const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
+        return ((((lay.source_name ≡ source_name and lay.shader_location ≡ shader_location) and layout._vertex_layout_format_code(lay) ≡ format_code) and lay.offset_bytes ≡ offset_bytes) and lay.stride_bytes ≡ stride_bytes) and layout._vertex_layout_step_mode_code(lay) ≡ step_mode_code
     }
 
-    functio vertex_layouts() → lista<layout.VertexAttributeLayout> ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        varia lista<layout.VertexAttributeLayout> layouts ← vacua
-        varia numerus i ← 0
-        dum i < ego.attributes.longitudo() {
-            fixum attribute.BufferAttribute attr ← ego.attributes[i]
-            fixum layout.VertexAttributeLayout ∪ nihil layout_result ← attr.vertex_layout()
-            si layout_result est nihil ergo redde nihil
-            fixum layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {
-                source_name = layout_result!.source_name,
-                shader_location = layout_result!.shader_location,
-                vertex_format = layout_result!.vertex_format,
-                offset_bytes = layout_result!.offset_bytes,
-                stride_bytes = layout_result!.stride_bytes,
-                step_mode = layout_result!.step_mode
-            }
+    fn vertex_layouts() → list<layout.VertexAttributeLayout> ∪ null {
+        if self.valida() ≡ false then return null
+        var list<layout.VertexAttributeLayout> layouts ← vacua
+        var int i ← 0
+        while i ≺ self.attributes.longitudo() {
+            const attribute.BufferAttribute attr ← self.attributes[i]
+            const layout.VertexAttributeLayout ∪ null layout_result ← attr.vertex_layout()
+            if layout_result is null then return null
+            const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
             layouts.appende(lay)
             i ← i + 1
         }
-        redde layouts
+        return layouts
     }
 
     # --- Batch facts -----------------------------------------------------
 
-    functio indexed_draw_batch_facts(
-        numerus instance_count
-    ) → batch.IndexedGeometryDrawBatchFacts ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si ego.indexed ≡ falsum ergo redde nihil
-        si instance_count ≡ 0 ergo redde nihil
-        fixum lista<batch.GeometryDrawCommand> ∪ nihil commands_result ←
-            ego.group_draw_commands(instance_count)
-        si commands_result est nihil ergo redde nihil
-        fixum lista<batch.GeometryDrawCommand> empty_commands ← vacua
-        fixum lista<batch.GeometryDrawCommand> commands ← commands_result vel empty_commands
-        fixum numerus ∪ nihil grouped_elements_result ← ego.group_element_total()
-        si grouped_elements_result est nihil ergo redde nihil
-        fixum numerus ∪ nihil vertex_bytes_result ← ego.vertex_payload_byte_count()
-        si vertex_bytes_result est nihil ergo redde nihil
-        fixum numerus ∪ nihil index_bytes_result ← ego.index_payload_byte_count()
-        si index_bytes_result est nihil ergo redde nihil
-        fixum numerus ∪ nihil total_bytes_result ← ego.payload_byte_count()
-        si total_bytes_result est nihil ergo redde nihil
-        redde batch.IndexedGeometryDrawBatchFacts {
-            draw_count = commands.longitudo(),
-            grouped_element_total = grouped_elements_result vel 0,
-            vertex_payload_byte_count = vertex_bytes_result vel 0,
-            index_payload_byte_count = index_bytes_result vel 0,
-            total_payload_byte_count = total_bytes_result vel 0
-        }
+    fn indexed_draw_batch_facts(int instance_count) → batch.IndexedGeometryDrawBatchFacts ∪ null {
+        if self.valida() ≡ false then return null
+        if self.indexed ≡ false then return null
+        if instance_count ≡ 0 then return null
+        const list<batch.GeometryDrawCommand> ∪ null commands_result ← self.group_draw_commands(instance_count)
+        if commands_result is null then return null
+        const list<batch.GeometryDrawCommand> empty_commands ← vacua
+        const list<batch.GeometryDrawCommand> commands ← commands_result coalesce empty_commands
+        const int ∪ null grouped_elements_result ← self.group_element_total()
+        if grouped_elements_result is null then return null
+        const int ∪ null vertex_bytes_result ← self.vertex_payload_byte_count()
+        if vertex_bytes_result is null then return null
+        const int ∪ null index_bytes_result ← self.index_payload_byte_count()
+        if index_bytes_result is null then return null
+        const int ∪ null total_bytes_result ← self.payload_byte_count()
+        if total_bytes_result is null then return null
+        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.longitudo(), grouped_element_total = grouped_elements_result coalesce 0, vertex_payload_byte_count = vertex_bytes_result coalesce 0, index_payload_byte_count = index_bytes_result coalesce 0, total_payload_byte_count = total_bytes_result coalesce 0}
     }
 
-    functio line_draw_batch_facts(
-        numerus instance_count
-    ) → batch.LineGeometryDrawBatchFacts ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        si ego.indexed ≡ falsum ergo redde nihil
-        si instance_count ≡ 0 ergo redde nihil
-        fixum numerus ∪ nihil line_count_result ← ego.line_count()
-        si line_count_result est nihil ergo redde nihil
-        fixum batch.IndexedGeometryDrawBatchFacts ∪ nihil batch_result ←
-            ego.indexed_draw_batch_facts(instance_count)
-        si batch_result est nihil ergo redde nihil
-        redde batch.LineGeometryDrawBatchFacts {
-            draw_count = batch_result!.draw_count,
-            line_count = line_count_result vel 0,
-            grouped_element_total = batch_result!.grouped_element_total,
-            vertex_payload_byte_count = batch_result!.vertex_payload_byte_count,
-            index_payload_byte_count = batch_result!.index_payload_byte_count,
-            total_payload_byte_count = batch_result!.total_payload_byte_count
-        }
+    fn line_draw_batch_facts(int instance_count) → batch.LineGeometryDrawBatchFacts ∪ null {
+        if self.valida() ≡ false then return null
+        if self.indexed ≡ false then return null
+        if instance_count ≡ 0 then return null
+        const int ∪ null line_count_result ← self.line_count()
+        if line_count_result is null then return null
+        const batch.IndexedGeometryDrawBatchFacts ∪ null batch_result ← self.indexed_draw_batch_facts(instance_count)
+        if batch_result is null then return null
+        return batch.LineGeometryDrawBatchFacts {draw_count = batch_result!.draw_count, line_count = line_count_result coalesce 0, grouped_element_total = batch_result!.grouped_element_total, vertex_payload_byte_count = batch_result!.vertex_payload_byte_count, index_payload_byte_count = batch_result!.index_payload_byte_count, total_payload_byte_count = batch_result!.total_payload_byte_count}
     }
 }
 
@@ -845,66 +732,24 @@ genus BufferGeometry {
 # These constructors make the indexed/non-indexed choice explicit while
 # sharing the same attribute, range, and group validation path.
 
-functio indexed_triangle_geometry(
-    numerus vertex_count,
-    de lista<attribute.BufferAttribute> attributes,
-    lista<u32> indices,
-    batch.DrawRange draw_range,
-    lista<batch.GeometryGroup> groups
-) → BufferGeometry {
-    redde BufferGeometry {
-        topology = finge TriangleList, vertex_count = vertex_count,
-        attributes = attributes, indexed = verum, indices = indices,
-        draw_range = draw_range, groups = groups
-    }
+fn indexed_triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<int<u32>> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
+    return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = true, indices = indices, draw_range = draw_range, groups = groups}
 }
 
-functio triangle_geometry(
-    numerus vertex_count,
-    de lista<attribute.BufferAttribute> attributes,
-    batch.DrawRange draw_range,
-    lista<batch.GeometryGroup> groups
-) → BufferGeometry {
-    redde BufferGeometry {
-        topology = finge TriangleList, vertex_count = vertex_count,
-        attributes = attributes, indexed = falsum, indices = vacua,
-        draw_range = draw_range, groups = groups
-    }
+fn triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
+    return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = false, indices = vacua, draw_range = draw_range, groups = groups}
 }
 
-functio line_geometry(
-    numerus vertex_count,
-    de lista<attribute.BufferAttribute> attributes,
-    lista<u32> indices,
-    batch.DrawRange draw_range,
-    lista<batch.GeometryGroup> groups
-) → BufferGeometry {
-    redde BufferGeometry {
-        topology = finge LineList, vertex_count = vertex_count,
-        attributes = attributes, indexed = verum, indices = indices,
-        draw_range = draw_range, groups = groups
-    }
+fn line_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<int<u32>> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
+    return BufferGeometry {topology = LineList(), vertex_count = vertex_count, attributes = attributes, indexed = true, indices = indices, draw_range = draw_range, groups = groups}
 }
 
-functio colored_indexed_geometry(
-    numerus vertex_count,
-    lista<f32> positions,
-    lista<f32> colors,
-    lista<u32> indices
-) → BufferGeometry ∪ nihil {
-    fixum attribute.BufferAttribute position_attribute ← attribute.float32_attribute(
-        "position", 0, 3, vertex_count, positions
-    )
-    fixum attribute.BufferAttribute color_attribute ← attribute.float32_attribute(
-        "color", 1, 3, vertex_count, colors
-    )
-    fixum BufferGeometry geometry ← indexed_triangle_geometry(
-        vertex_count, [position_attribute, color_attribute], indices,
-        batch.DrawRange { start = 0, count = indices.longitudo() },
-        [batch.GeometryGroup { start = 0, count = indices.longitudo(), material_index = 0 }]
-    )
-    si geometry.valida() ≡ falsum ergo redde nihil
-    redde geometry
+fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> colors, list<int<u32>> indices) → BufferGeometry ∪ null {
+    const attribute.BufferAttribute position_attribute ← attribute.float32_attribute("position", 0, 3, vertex_count, positions)
+    const attribute.BufferAttribute color_attribute ← attribute.float32_attribute("color", 1, 3, vertex_count, colors)
+    const BufferGeometry geometry ← indexed_triangle_geometry(vertex_count, [position_attribute, color_attribute], indices, batch.DrawRange {start = 0, count = indices.longitudo()}, [batch.GeometryGroup {start = 0, count = indices.longitudo(), material_index = 0}])
+    if geometry.valida() ≡ false then return null
+    return geometry
 }
 
 # --- Free helper functions ---
@@ -912,42 +757,29 @@ functio colored_indexed_geometry(
 # Append helpers preserve the same parallel-list contract as ColoredQuadMesh;
 # they are useful when a caller wants to build a mesh one face at a time.
 
-functio colored_quad_mesh_append(
-    lista<f32> positions,
-    lista<f32> colors,
-    lista<u32> indices,
-    f32 ax, f32 ay, f32 az,
-    f32 bx, f32 by, f32 bz,
-    f32 cx, f32 cy, f32 cz,
-    f32 dx, f32 dy, f32 dz,
-    f32 r, f32 g, f32 b
-) → ColoredQuadMesh ∪ nihil {
-    si positions.longitudo() ≠ colors.longitudo() ergo redde nihil
-    si positions.longitudo() % 3 ≠ 0 ergo redde nihil
-    si indices.longitudo() % 3 ≠ 0 ergo redde nihil
-
-    varia lista<f32> next_positions ← vacua
-    varia numerus i ← 0
-    dum i < positions.longitudo() {
+fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>> indices, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 cx, f32 cy, f32 cz, f32 dx, f32 dy, f32 dz, f32 r, f32 g, f32 b) → ColoredQuadMesh ∪ null {
+    if positions.longitudo() ≠ colors.longitudo() then return null
+    if positions.longitudo() % 3 ≠ 0 then return null
+    if indices.longitudo() % 3 ≠ 0 then return null
+    var list<f32> next_positions ← vacua
+    var int i ← 0
+    while i ≺ positions.longitudo() {
         next_positions.appende(positions[i])
         i ← i + 1
     }
-
-    varia lista<f32> next_colors ← vacua
+    var list<f32> next_colors ← vacua
     i ← 0
-    dum i < colors.longitudo() {
+    while i ≺ colors.longitudo() {
         next_colors.appende(colors[i])
         i ← i + 1
     }
-
-    varia lista<u32> next_indices ← vacua
+    var list<int<u32>> next_indices ← vacua
     i ← 0
-    dum i < indices.longitudo() {
+    while i ≺ indices.longitudo() {
         next_indices.appende(indices[i])
         i ← i + 1
     }
-
-    fixum numerus vertex_base ← positions.longitudo() / 3
+    const int vertex_base ← positions.longitudo() / 3
     next_positions.appende(ax)
     next_positions.appende(ay)
     next_positions.appende(az)
@@ -960,83 +792,82 @@ functio colored_quad_mesh_append(
     next_positions.appende(dx)
     next_positions.appende(dy)
     next_positions.appende(dz)
-
     i ← 0
-    dum i < 4 {
+    while i ≺ 4 {
         next_colors.appende(r)
         next_colors.appende(g)
         next_colors.appende(b)
         i ← i + 1
     }
-
-    next_indices.appende(vertex_base ↦ u32)
-    next_indices.appende((vertex_base + 1) ↦ u32)
-    next_indices.appende((vertex_base + 2) ↦ u32)
-    next_indices.appende(vertex_base ↦ u32)
-    next_indices.appende((vertex_base + 2) ↦ u32)
-    next_indices.appende((vertex_base + 3) ↦ u32)
-
-    redde ColoredQuadMesh {
-        positions = next_positions,
-        colors = next_colors,
-        indices = next_indices
-    }
+    next_indices.appende(vertex_base ↦ int<u32>)
+    next_indices.appende(vertex_base + 1 ↦ int<u32>)
+    next_indices.appende(vertex_base + 2 ↦ int<u32>)
+    next_indices.appende(vertex_base ↦ int<u32>)
+    next_indices.appende(vertex_base + 2 ↦ int<u32>)
+    next_indices.appende(vertex_base + 3 ↦ int<u32>)
+    return ColoredQuadMesh {positions = next_positions, colors = next_colors, indices = next_indices}
 }
 
 # --- Private scalar and code helpers (free, no genus receiver) ---
 
-@ privata
-functio _primitive_topology_code(de PrimitiveTopology topology) → numerus {
-    discerne topology {
-        casu TriangleList { redde 1 }
-        casu LineList { redde 2 }
-        casu PointList { redde 3 }
+@ private { }
+fn _primitive_topology_code(ref PrimitiveTopology topology) → int {
+    match topology {
+        case TriangleList {
+            return 1
+        }
+        case LineList {
+            return 2
+        }
+        case PointList {
+            return 3
+        }
     }
 }
 
-@ privata
-functio _geometry_radix_f32(f32 value) → f32 {
-    si value ≤ 0.0 ergo redde 0.0
-    varia f32 scaled ← value
-    varia f32 scale ← 1.0
-    dum scaled > 4.0 {
+@ private { }
+fn _geometry_radix_f32(f32 value) → f32 {
+    if value ≤ 0.0 then return 0.0
+    var f32 scaled ← value
+    var f32 scale ← 1.0
+    while scaled ≻ 4.0 {
         scaled ← scaled * 0.25
         scale ← scale * 2.0
     }
-    dum scaled < 0.25 {
+    while scaled ≺ 0.25 {
         scaled ← scaled * 4.0
         scale ← scale * 0.5
     }
-    varia f32 estimate ← 1.0
-    varia numerus iteration ← 0
-    dum iteration < 8 {
+    var f32 estimate ← 1.0
+    var int iteration ← 0
+    while iteration ≺ 8 {
         estimate ← (estimate + scaled / estimate) * 0.5
         iteration ← iteration + 1
     }
-    redde estimate * scale
+    return estimate * scale
 }
 
-@ privata
-functio _element_count_divisible(numerus element_count, numerus divisor) → bivalens {
-    varia numerus remaining ← element_count
-    dum remaining ≥ divisor { remaining ← remaining - divisor }
-    redde remaining ≡ 0
+@ private { }
+fn _element_count_divisible(int element_count, int divisor) → bool {
+    var int remaining ← element_count
+    while remaining ≥ divisor {
+        remaining ← remaining - divisor
+    }
+    return remaining ≡ 0
 }
 
-@ privata
-functio _primitive_range_valid(
-    de PrimitiveTopology topology,
-    numerus start,
-    numerus count
-) → bivalens {
-    discerne topology {
-        casu TriangleList {
-            redde _element_count_divisible(start, 3) et _element_count_divisible(count, 3)
+@ private { }
+fn _primitive_range_valid(ref PrimitiveTopology topology, int start, int count) → bool {
+    match topology {
+        case TriangleList {
+            return _element_count_divisible(start, 3) and _element_count_divisible(count, 3)
         }
-        casu LineList {
-            redde _element_count_divisible(start, 2) et _element_count_divisible(count, 2)
+        case LineList {
+            return _element_count_divisible(start, 2) and _element_count_divisible(count, 2)
         }
-        casu PointList { redde count > 0 }
+        case PointList {
+            return count ≻ 0
+        }
     }
 }
 
@@ -1049,15 +880,6 @@ functio _primitive_range_valid(
 # format_code, offset_bytes, stride_bytes, step_mode_code).
 
 @ shader_contract "vertex_layout"
-functio geometry_vertex_layout_matches(
-    BufferGeometry geo,
-    numerus index,
-    textus source_name,
-    numerus shader_location,
-    numerus format_code,
-    numerus offset_bytes,
-    numerus stride_bytes,
-    numerus step_mode_code
-) → bivalens {
-    redde geo.vertex_layout_matches(index, source_name, shader_location, format_code, offset_bytes, stride_bytes, step_mode_code)
+fn geometry_vertex_layout_matches(BufferGeometry geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code) → bool {
+    return geo.vertex_layout_matches(index, source_name, shader_location, format_code, offset_bytes, stride_bytes, step_mode_code)
 }

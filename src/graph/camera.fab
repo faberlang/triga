@@ -1,61 +1,62 @@
 # Camera shape contracts (PerspectiveCamera, OrthographicCamera, projection facts).
 #
-# Public import: importa ex "triga:graph/camera" privata camera
+# Public import: import from "triga:graph/camera" private camera
 # Depends on: triga:math, triga:graph/object
 
-importa ex "triga:math" privata math
-importa ex "triga:graph/object" privata object
+import from "triga:math" private math
+
+import from "triga:graph/object" private object as graph_object
 
 # PerspectiveCamera is a value-level camera contract. The projection methods
 # return `nihil` when the matrix inputs cannot form a valid payload, so camera
 # setup stays in ordinary Faber control flow.
-genus PerspectiveCamera {
-    object.Object3D base
+class PerspectiveCamera {
+    graph_object.Object3D base
     f32 fov = 50.0
     f32 aspect = 1.0
     f32 near = 0.1
     f32 far = 2000.0
 
-    functio projectio() → math.Matrix4 ∪ nihil {
-        redde math.matrix4_perspectiva(ego.fov, ego.aspect, ego.near, ego.far)
+    fn projectio() → math.Matrix4 ∪ null {
+        return math.matrix4_perspectiva(self.fov, self.aspect, self.near, self.far)
     }
 
-    functio projectio_facta() → PerspectiveCameraProjectionFacts ∪ nihil {
-        fixum math.Matrix4 ∪ nihil projection_result ← ego.projectio()
-        si projection_result est nihil ergo redde nihil
-        fixum math.Matrix4 projection ← math.Matrix4 { elements = projection_result!.elements }
-        si projection.validum() ≡ falsum ergo redde nihil
-        redde PerspectiveCameraProjectionFacts { fov_y_degrees = ego.fov, aspect = ego.aspect, near = ego.near, far = ego.far, projection_float_count = projection.elements.longitudo(), x_scale = (projection.elements)[0], y_scale = (projection.elements)[5], depth_scale = (projection.elements)[10] }
+    fn projectio_facta() → PerspectiveCameraProjectionFacts ∪ null {
+        const math.Matrix4 ∪ null projection_result ← self.projectio()
+        if projection_result is null then return null
+        const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
+        if projection.validum() ≡ false then return null
+        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = projection.elements.longitudo(), x_scale = projection.elements[0], y_scale = projection.elements[5], depth_scale = projection.elements[10]}
     }
 
-    functio visus_projectio(de math.Vector3 eye, de math.Vector3 target, de math.Vector3 up) → math.Matrix4 ∪ nihil {
-        fixum math.Matrix4 ∪ nihil projection_result ← ego.projectio()
-        si projection_result est nihil ergo redde nihil
-        fixum math.Matrix4 ∪ nihil view_result ← math.matrix4_conspectus(eye, target, up)
-        si view_result est nihil ergo redde nihil
-        fixum math.Matrix4 projection ← math.Matrix4 { elements = projection_result!.elements }
-        fixum math.Matrix4 view ← math.Matrix4 { elements = view_result!.elements }
-        redde projection.multiplicata(view)
+    fn visus_projectio(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → math.Matrix4 ∪ null {
+        const math.Matrix4 ∪ null projection_result ← self.projectio()
+        if projection_result is null then return null
+        const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(eye, target, up)
+        if view_result is null then return null
+        const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
+        const math.Matrix4 view ← math.Matrix4 {elements = view_result!.elements}
+        return projection.multiplicata(view)
     }
 
-    functio visus_projectio_facta(de math.Vector3 eye, de math.Vector3 target, de math.Vector3 up) → ViewProjectionFacts ∪ nihil {
-        fixum math.Matrix4 ∪ nihil view_projection_result ← ego.visus_projectio(eye, target, up)
-        si view_projection_result est nihil ergo redde nihil
-        fixum math.Matrix4 view_projection ← math.Matrix4 { elements = view_projection_result!.elements }
-        si view_projection.validum() ≡ falsum ergo redde nihil
-        redde ViewProjectionFacts { float_count = view_projection.elements.longitudo(), x_scale = (view_projection.elements)[0], y_scale = (view_projection.elements)[5], depth_scale = (view_projection.elements)[10], view_translation_z = (view_projection.elements)[14] }
+    fn visus_projectio_facta(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → ViewProjectionFacts ∪ null {
+        const math.Matrix4 ∪ null view_projection_result ← self.visus_projectio(eye, target, up)
+        if view_projection_result is null then return null
+        const math.Matrix4 view_projection ← math.Matrix4 {elements = view_projection_result!.elements}
+        if view_projection.validum() ≡ false then return null
+        return ViewProjectionFacts {float_count = view_projection.elements.longitudo(), x_scale = view_projection.elements[0], y_scale = view_projection.elements[5], depth_scale = view_projection.elements[10], view_translation_z = view_projection.elements[14]}
     }
 }
 
 # Projection facts are the small, host-readable summary of a perspective
 # matrix. They keep a consumer from decoding the matrix merely to inspect its
 # scale and depth terms.
-genus PerspectiveCameraProjectionFacts {
+class PerspectiveCameraProjectionFacts {
     f32 fov_y_degrees
     f32 aspect
     f32 near
     f32 far
-    numerus projection_float_count
+    int projection_float_count
     f32 x_scale
     f32 y_scale
     f32 depth_scale
@@ -64,8 +65,8 @@ genus PerspectiveCameraProjectionFacts {
 # ViewProjectionFacts describes the combined projection × view result used by
 # a render path. The full matrix remains available from `visus_projectio`; this
 # genus is for compact validation and reflection facts.
-genus ViewProjectionFacts {
-    numerus float_count
+class ViewProjectionFacts {
+    int float_count
     f32 x_scale
     f32 y_scale
     f32 depth_scale
@@ -75,8 +76,8 @@ genus ViewProjectionFacts {
 # OrthographicCamera reserves the same composed Object3D shape for the
 # orthographic projection family. Its fields are plain data so the projection
 # implementation can share the public graph contract.
-genus OrthographicCamera {
-    object.Object3D base
+class OrthographicCamera {
+    graph_object.Object3D base
     f32 left
     f32 right
     f32 top

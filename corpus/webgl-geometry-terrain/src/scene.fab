@@ -1,9 +1,9 @@
-importa ex "./terrain" privata terrain
+import from "./terrain" private terrain
 
-genus CorpusGeometryManifest {
-    lista<terrain.TerrainMesh> objects
+class CorpusGeometryManifest {
+    list<terrain.TerrainMesh> objects
 }
 
-functio corpus_scene_geometry() → CorpusGeometryManifest {
-    redde CorpusGeometryManifest { objects = terrain.terrain_meshes() }
+fn corpus_scene_geometry() → CorpusGeometryManifest {
+    return CorpusGeometryManifest {objects = terrain.terrain_meshes()}
 }

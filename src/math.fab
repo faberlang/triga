@@ -1,6 +1,6 @@
 # Triga math: small, backend-agnostic carriers for geometry and transforms.
 #
-# Public import: importa ex "triga:math" privata math
+# Public import: import from "triga:math" private math
 #
 # Owns:
 # - Vector2, Vector3, Vector4, Matrix3, and Matrix4 value carriers.
@@ -22,68 +22,68 @@
 # Vector2 and Vector4 keep common 2D and four-lane data explicit.
 #
 # Two-dimensional coordinates.
-genus Vector2 {
+class Vector2 {
     f32 x
     f32 y
 }
 
 # Three-dimensional points and directions. Its guarded normalization and
 # projection methods return the zero vector for near-zero inputs.
-genus Vector3 {
+class Vector3 {
     f32 x
     f32 y
     f32 z
 
-    functio addita(de Vector3 alter) → Vector3 {
-        redde vector3(ego.x + alter.x, ego.y + alter.y, ego.z + alter.z)
+    fn addita(ref Vector3 alter) → Vector3 {
+        return vector3(self.x + alter.x, self.y + alter.y, self.z + alter.z)
     }
 
-    functio subtracta(de Vector3 alter) → Vector3 {
-        redde vector3(ego.x - alter.x, ego.y - alter.y, ego.z - alter.z)
+    fn subtracta(ref Vector3 alter) → Vector3 {
+        return vector3(self.x - alter.x, self.y - alter.y, self.z - alter.z)
     }
 
-    functio multiplicata(f32 scalar) → Vector3 {
-        redde vector3(ego.x * scalar, ego.y * scalar, ego.z * scalar)
+    fn multiplicata(f32 scalar) → Vector3 {
+        return vector3(self.x * scalar, self.y * scalar, self.z * scalar)
     }
 
-    functio productum(de Vector3 alter) → f32 {
-        redde (ego.x * alter.x + ego.y * alter.y) + ego.z * alter.z
+    fn productum(ref Vector3 alter) → f32 {
+        return (self.x * alter.x + self.y * alter.y) + self.z * alter.z
     }
 
-    functio transversum(de Vector3 alter) → Vector3 {
-        redde vector3(ego.y * alter.z - ego.z * alter.y, ego.z * alter.x - ego.x * alter.z, ego.x * alter.y - ego.y * alter.x)
+    fn transversum(ref Vector3 alter) → Vector3 {
+        return vector3(self.y * alter.z - self.z * alter.y, self.z * alter.x - self.x * alter.z, self.x * alter.y - self.y * alter.x)
     }
 
-    functio longitudo() → f32 {
-        redde _radix_f32((ego.x * ego.x + ego.y * ego.y) + ego.z * ego.z)
+    fn longitudo() → f32 {
+        return _radix_f32((self.x * self.x + self.y * self.y) + self.z * self.z)
     }
 
-    functio normata() → Vector3 {
-        fixum f32 length ← _radix_f32((ego.x * ego.x + ego.y * ego.y) + ego.z * ego.z)
-        si length ≤ 0.000001 ergo redde vector3(0.0, 0.0, 0.0)
-        redde vector3(ego.x / length, ego.y / length, ego.z / length)
+    fn normata() → Vector3 {
+        const f32 length ← _radix_f32((self.x * self.x + self.y * self.y) + self.z * self.z)
+        if length ≤ 0.000001 then return vector3(0.0, 0.0, 0.0)
+        return vector3(self.x / length, self.y / length, self.z / length)
     }
 
-    functio distantia(de Vector3 alter) → f32 {
-        fixum f32 x ← ego.x - alter.x
-        fixum f32 y ← ego.y - alter.y
-        fixum f32 z ← ego.z - alter.z
-        redde _radix_f32((x * x + y * y) + z * z)
+    fn distantia(ref Vector3 alter) → f32 {
+        const f32 x ← self.x - alter.x
+        const f32 y ← self.y - alter.y
+        const f32 z ← self.z - alter.z
+        return _radix_f32((x * x + y * y) + z * z)
     }
 
-    functio interpolata(de Vector3 alter, f32 ratio) → Vector3 {
-        redde vector3(ego.x + (alter.x - ego.x) * ratio, ego.y + (alter.y - ego.y) * ratio, ego.z + (alter.z - ego.z) * ratio)
+    fn interpolata(ref Vector3 alter, f32 ratio) → Vector3 {
+        return vector3(self.x + (alter.x - self.x) * ratio, self.y + (alter.y - self.y) * ratio, self.z + (alter.z - self.z) * ratio)
     }
 
-    functio projecta(de Vector3 axis) → Vector3 {
-        fixum f32 denominator ← axis.productum(axis)
-        si denominator ≤ 0.000001 ergo redde vector3(0.0, 0.0, 0.0)
-        redde axis.multiplicata(ego.productum(axis) / denominator)
+    fn projecta(ref Vector3 axis) → Vector3 {
+        const f32 denominator ← axis.productum(axis)
+        if denominator ≤ 0.000001 then return vector3(0.0, 0.0, 0.0)
+        return axis.multiplicata(self.productum(axis) / denominator)
     }
 }
 
 # Four-component data carrier for APIs that need an explicit w lane.
-genus Vector4 {
+class Vector4 {
     f32 x
     f32 y
     f32 z
@@ -91,8 +91,8 @@ genus Vector4 {
 }
 
 # A flat 3x3 element carrier. Matrix3 has no operations in this module yet.
-genus Matrix3 {
-    lista<f32> elements
+class Matrix3 {
+    list<f32> elements
 }
 
 # --- MATRICES ---
@@ -103,75 +103,76 @@ genus Matrix3 {
 # Point application performs the homogeneous divide and uses 1 when w is
 # near zero. The affine inverse returns nihil when its 3x3 determinant is
 # near zero.
-genus Matrix4 {
-    lista<f32> elements
+class Matrix4 {
+    list<f32> elements
 
-    functio validum() → bivalens {
-        redde ego.elements.longitudo() ≡ 16
+    fn validum() → bool {
+        return self.elements.longitudo() ≡ 16
     }
 
-    functio determinans_affinis() → f32 {
-        fixum lista<f32> e ← ego.elements
-        redde (e[0] * (e[5] * e[10] - e[9] * e[6]) - e[4] * (e[1] * e[10] - e[9] * e[2])) + e[8] * (e[1] * e[6] - e[5] * e[2])
+    fn determinans_affinis() → f32 {
+        const list<f32> e ← self.elements
+        return (e[0] * (e[5] * e[10] - e[9] * e[6]) - e[4] * (e[1] * e[10] - e[9] * e[2])) + e[8] * (e[1] * e[6] - e[5] * e[2])
     }
 
-    functio transposita() → Matrix4 {
-        fixum lista<f32> e ← ego.elements
-        redde Matrix4 { elements = [e[0], e[4], e[8], e[12], e[1], e[5], e[9], e[13], e[2], e[6], e[10], e[14], e[3], e[7], e[11], e[15]] }
+    fn transposita() → Matrix4 {
+        const list<f32> e ← self.elements
+        return Matrix4 {elements = [e[0], e[4], e[8], e[12], e[1], e[5], e[9], e[13], e[2], e[6], e[10], e[14], e[3], e[7], e[11], e[15]]}
     }
 
-    functio multiplicata(de Matrix4 alter) → Matrix4 {
-        fixum lista<f32> ae ← ego.elements
-        fixum lista<f32> be ← alter.elements
-        varia lista<f32> result ← vacua
-        varia numerus column ← 0
-        dum column < 4 {
-            varia numerus row ← 0
-            dum row < 4 {
+    fn multiplicata(ref Matrix4 alter) → Matrix4 {
+        const list<f32> ae ← self.elements
+        const list<f32> be ← alter.elements
+        var list<f32> result ← vacua
+        var int column ← 0
+        while column ≺ 4 {
+            var int row ← 0
+            while row ≺ 4 {
                 result.appende(((ae[0 * 4 + row] * be[column * 4 + 0] + ae[1 * 4 + row] * be[column * 4 + 1]) + ae[2 * 4 + row] * be[column * 4 + 2]) + ae[3 * 4 + row] * be[column * 4 + 3])
                 row ← row + 1
             }
             column ← column + 1
         }
-        redde Matrix4 { elements = result }
+        return Matrix4 {elements = result}
     }
 
-    functio applica_punctum(de Vector3 punctum) → Vector3 {
-        fixum lista<f32> e ← ego.elements
-        fixum f32 w ← ((e[3] * punctum.x + e[7] * punctum.y) + e[11] * punctum.z) + e[15]
-        varia f32 divisor ← w
-        si w.absolutum() ≤ 0.000001 ergo divisor ← 1.0
-        redde vector3((((e[0] * punctum.x + e[4] * punctum.y) + e[8] * punctum.z) + e[12]) / divisor, (((e[1] * punctum.x + e[5] * punctum.y) + e[9] * punctum.z) + e[13]) / divisor, (((e[2] * punctum.x + e[6] * punctum.y) + e[10] * punctum.z) + e[14]) / divisor)
+    fn applica_punctum(ref Vector3 punctum) → Vector3 {
+        const list<f32> e ← self.elements
+        const f32 w ← ((e[3] * punctum.x + e[7] * punctum.y) + e[11] * punctum.z) + e[15]
+        var f32 divisor ← w
+        if w.absolutum() ≤ 0.000001 {
+            divisor ← 1.0
+        }
+        return vector3((((e[0] * punctum.x + e[4] * punctum.y) + e[8] * punctum.z) + e[12]) / divisor, (((e[1] * punctum.x + e[5] * punctum.y) + e[9] * punctum.z) + e[13]) / divisor, (((e[2] * punctum.x + e[6] * punctum.y) + e[10] * punctum.z) + e[14]) / divisor)
     }
 
-    functio inversa_affinis() → Matrix4 ∪ nihil {
-        fixum lista<f32> e ← ego.elements
-        fixum f32 a00 ← e[0]
-        fixum f32 a01 ← e[4]
-        fixum f32 a02 ← e[8]
-        fixum f32 a10 ← e[1]
-        fixum f32 a11 ← e[5]
-        fixum f32 a12 ← e[9]
-        fixum f32 a20 ← e[2]
-        fixum f32 a21 ← e[6]
-        fixum f32 a22 ← e[10]
-        fixum f32 determinant ← ego.determinans_affinis()
-        si determinant.absolutum() ≤ 0.000001 ergo redde nihil
-
-        fixum f32 d ← 1.0 / determinant
-        fixum f32 i00 ← (a11 * a22 - a12 * a21) * d
-        fixum f32 i01 ← (a02 * a21 - a01 * a22) * d
-        fixum f32 i02 ← (a01 * a12 - a02 * a11) * d
-        fixum f32 i10 ← (a12 * a20 - a10 * a22) * d
-        fixum f32 i11 ← (a00 * a22 - a02 * a20) * d
-        fixum f32 i12 ← (a02 * a10 - a00 * a12) * d
-        fixum f32 i20 ← (a10 * a21 - a11 * a20) * d
-        fixum f32 i21 ← (a01 * a20 - a00 * a21) * d
-        fixum f32 i22 ← (a00 * a11 - a01 * a10) * d
-        fixum f32 tx ← e[12]
-        fixum f32 ty ← e[13]
-        fixum f32 tz ← e[14]
-        redde Matrix4 { elements = [i00, i10, i20, 0.0, i01, i11, i21, 0.0, i02, i12, i22, 0.0, -((i00 * tx + i01 * ty) + i02 * tz), -((i10 * tx + i11 * ty) + i12 * tz), -((i20 * tx + i21 * ty) + i22 * tz), 1.0] }
+    fn inversa_affinis() → Matrix4 ∪ null {
+        const list<f32> e ← self.elements
+        const f32 a00 ← e[0]
+        const f32 a01 ← e[4]
+        const f32 a02 ← e[8]
+        const f32 a10 ← e[1]
+        const f32 a11 ← e[5]
+        const f32 a12 ← e[9]
+        const f32 a20 ← e[2]
+        const f32 a21 ← e[6]
+        const f32 a22 ← e[10]
+        const f32 determinant ← self.determinans_affinis()
+        if determinant.absolutum() ≤ 0.000001 then return null
+        const f32 d ← 1.0 / determinant
+        const f32 i00 ← (a11 * a22 - a12 * a21) * d
+        const f32 i01 ← (a02 * a21 - a01 * a22) * d
+        const f32 i02 ← (a01 * a12 - a02 * a11) * d
+        const f32 i10 ← (a12 * a20 - a10 * a22) * d
+        const f32 i11 ← (a00 * a22 - a02 * a20) * d
+        const f32 i12 ← (a02 * a10 - a00 * a12) * d
+        const f32 i20 ← (a10 * a21 - a11 * a20) * d
+        const f32 i21 ← (a01 * a20 - a00 * a21) * d
+        const f32 i22 ← (a00 * a11 - a01 * a10) * d
+        const f32 tx ← e[12]
+        const f32 ty ← e[13]
+        const f32 tz ← e[14]
+        return Matrix4 {elements = [i00, i10, i20, 0.0, i01, i11, i21, 0.0, i02, i12, i22, 0.0, -((i00 * tx + i01 * ty) + i02 * tz), -((i10 * tx + i11 * ty) + i12 * tz), -((i20 * tx + i21 * ty) + i22 * tz), 1.0]}
     }
 }
 
@@ -211,32 +212,32 @@ genus Matrix4 {
 #          transform_payload_view_projection_value(payload, index) reads VP bytes.
 #          transform_payload_float_count(payload) validates 32 floats.
 #          transform_payload_byte_count(payload) returns 128.
-genus TransformPayload {
-    lista<f32> values
+class TransformPayload {
+    list<f32> values
 
-    functio float_count() → numerus ∪ nihil {
-        si ego.values.longitudo() ≠ 32 ergo redde nihil
-        fixum numerus count ← ego.values.longitudo()
-        redde count
+    fn float_count() → int ∪ null {
+        if self.values.longitudo() ≠ 32 then return null
+        const int count ← self.values.longitudo()
+        return count
     }
 
-    functio byte_count() → numerus ∪ nihil {
-        si ego.values.longitudo() ≠ 32 ergo redde nihil
-        redde ego.values.longitudo() * 4
+    fn byte_count() → int ∪ null {
+        if self.values.longitudo() ≠ 32 then return null
+        return self.values.longitudo() * 4
     }
 
-    functio model_value(numerus index) → f32 ∪ nihil {
-        si ego.values.longitudo() ≠ 32 ergo redde nihil
-        si index < 0 aut index ≥ 16 ergo redde nihil
-        fixum f32 value ← (ego.values)[index]
-        redde value
+    fn model_value(int index) → f32 ∪ null {
+        if self.values.longitudo() ≠ 32 then return null
+        if index ≺ 0 or index ≥ 16 then return null
+        const f32 value ← self.values[index]
+        return value
     }
 
-    functio view_projection_value(numerus index) → f32 ∪ nihil {
-        si ego.values.longitudo() ≠ 32 ergo redde nihil
-        si index < 0 aut index ≥ 16 ergo redde nihil
-        fixum f32 value ← (ego.values)[index + 16]
-        redde value
+    fn view_projection_value(int index) → f32 ∪ null {
+        if self.values.longitudo() ≠ 32 then return null
+        if index ≺ 0 or index ≥ 16 then return null
+        const f32 value ← self.values[index + 16]
+        return value
     }
 }
 
@@ -244,42 +245,42 @@ genus TransformPayload {
 # Quaternion stores its vector part in x/y/z and its scalar part in w.
 # normata falls back to the identity quaternion for a near-zero value, and
 # interpolata chooses the nearer sign before normalizing the result.
-genus Quaternion {
+class Quaternion {
     f32 x
     f32 y
     f32 z
     f32 w
 
-    functio multiplicata(de Quaternion alter) → Quaternion {
-        redde quaternion(((ego.w * alter.x + ego.x * alter.w) + ego.y * alter.z) - ego.z * alter.y, ((ego.w * alter.y - ego.x * alter.z) + ego.y * alter.w) + ego.z * alter.x, ((ego.w * alter.z + ego.x * alter.y) - ego.y * alter.x) + ego.z * alter.w, ((ego.w * alter.w - ego.x * alter.x) - ego.y * alter.y) - ego.z * alter.z)
+    fn multiplicata(ref Quaternion alter) → Quaternion {
+        return quaternion(((self.w * alter.x + self.x * alter.w) + self.y * alter.z) - self.z * alter.y, ((self.w * alter.y - self.x * alter.z) + self.y * alter.w) + self.z * alter.x, ((self.w * alter.z + self.x * alter.y) - self.y * alter.x) + self.z * alter.w, ((self.w * alter.w - self.x * alter.x) - self.y * alter.y) - self.z * alter.z)
     }
 
-    functio normata() → Quaternion {
-        fixum f32 length ← _radix_f32(((ego.x * ego.x + ego.y * ego.y) + ego.z * ego.z) + ego.w * ego.w)
-        si length ≤ 0.000001 ergo redde quaternion(0.0, 0.0, 0.0, 1.0)
-        redde quaternion(ego.x / length, ego.y / length, ego.z / length, ego.w / length)
+    fn normata() → Quaternion {
+        const f32 length ← _radix_f32(((self.x * self.x + self.y * self.y) + self.z * self.z) + self.w * self.w)
+        if length ≤ 0.000001 then return quaternion(0.0, 0.0, 0.0, 1.0)
+        return quaternion(self.x / length, self.y / length, self.z / length, self.w / length)
     }
 
-    functio interpolata(de Quaternion alter, f32 ratio) → Quaternion {
-        varia f32 bx ← alter.x
-        varia f32 by ← alter.y
-        varia f32 bz ← alter.z
-        varia f32 bw ← alter.w
-        fixum f32 alignment ← ((ego.x * bx + ego.y * by) + ego.z * bz) + ego.w * bw
-        si alignment < 0.0 {
+    fn interpolata(ref Quaternion alter, f32 ratio) → Quaternion {
+        var f32 bx ← alter.x
+        var f32 by ← alter.y
+        var f32 bz ← alter.z
+        var f32 bw ← alter.w
+        const f32 alignment ← ((self.x * bx + self.y * by) + self.z * bz) + self.w * bw
+        if alignment ≺ 0.0 {
             bx ← -bx
             by ← -by
             bz ← -bz
             bw ← -bw
         }
-        fixum Quaternion mixed ← quaternion(ego.x + (bx - ego.x) * ratio, ego.y + (by - ego.y) * ratio, ego.z + (bz - ego.z) * ratio, ego.w + (bw - ego.w) * ratio)
-        redde mixed.normata()
+        const Quaternion mixed ← quaternion(self.x + (bx - self.x) * ratio, self.y + (by - self.y) * ratio, self.z + (bz - self.z) * ratio, self.w + (bw - self.w) * ratio)
+        return mixed.normata()
     }
 }
 
 # RGB color carrier. There is no alpha channel here; color_valida accepts
 # exactly the normalized range 0.0 through 1.0 for each component.
-genus Color {
+class Color {
     f32 r
     f32 g
     f32 b
@@ -288,162 +289,162 @@ genus Color {
 
 # Euler stores its angles and an explicit rotation order. This implementation
 # accepts only XYZ; its conversion path consumes x/y/z directly as radians.
-genus Euler {
+class Euler {
     f32 x
     f32 y
     f32 z
-    textus order = "XYZ"
+    string order = "XYZ"
 
-    functio ad_quaternionem() → Quaternion ∪ nihil {
-        si ego.order ≠ "XYZ" ergo redde nihil
-        fixum f32 hx ← ego.x * 0.5
-        fixum f32 hy ← ego.y * 0.5
-        fixum f32 hz ← ego.z * 0.5
-        fixum f32 sx ← _sinus_f32(hx)
-        fixum f32 cx ← _cosinus_f32(hx)
-        fixum f32 sy ← _sinus_f32(hy)
-        fixum f32 cy ← _cosinus_f32(hy)
-        fixum f32 sz ← _sinus_f32(hz)
-        fixum f32 cz ← _cosinus_f32(hz)
-        redde quaternion((sx * cy) * cz + (cx * sy) * sz, (cx * sy) * cz - (sx * cy) * sz, (cx * cy) * sz + (sx * sy) * cz, (cx * cy) * cz - (sx * sy) * sz).normata()
+    fn ad_quaternionem() → Quaternion ∪ null {
+        if self.order ≠ "XYZ" then return null
+        const f32 hx ← self.x * 0.5
+        const f32 hy ← self.y * 0.5
+        const f32 hz ← self.z * 0.5
+        const f32 sx ← _sinus_f32(hx)
+        const f32 cx ← _cosinus_f32(hx)
+        const f32 sy ← _sinus_f32(hy)
+        const f32 cy ← _cosinus_f32(hy)
+        const f32 sz ← _sinus_f32(hz)
+        const f32 cz ← _cosinus_f32(hz)
+        return quaternion((sx * cy) * cz + (cx * sy) * sz, (cx * sy) * cz - (sx * cy) * sz, (cx * cy) * sz + (sx * sy) * cz, (cx * cy) * cz - (sx * sy) * sz).normata()
     }
 
-    functio composita(de Euler alter) → Quaternion ∪ nihil {
-        fixum Quaternion ∪ nihil qa ← ego.ad_quaternionem()
-        si qa est nihil ergo redde nihil
-        fixum Quaternion ∪ nihil qb ← alter.ad_quaternionem()
-        si qb est nihil ergo redde nihil
-        fixum Quaternion av ← Quaternion { x = qa!.x, y = qa!.y, z = qa!.z, w = qa!.w }
-        fixum Quaternion bv ← Quaternion { x = qb!.x, y = qb!.y, z = qb!.z, w = qb!.w }
-        redde av.multiplicata(bv).normata()
+    fn composita(ref Euler alter) → Quaternion ∪ null {
+        const Quaternion ∪ null qa ← self.ad_quaternionem()
+        if qa is null then return null
+        const Quaternion ∪ null qb ← alter.ad_quaternionem()
+        if qb is null then return null
+        const Quaternion av ← Quaternion {x = qa!.x, y = qa!.y, z = qa!.z, w = qa!.w}
+        const Quaternion bv ← Quaternion {x = qb!.x, y = qb!.y, z = qb!.z, w = qb!.w}
+        return av.multiplicata(bv).normata()
     }
 
-    functio interpolata(de Euler alter, f32 ratio) → Euler ∪ nihil {
-        si ego.order ≠ alter.order ergo redde nihil
-        si ego.order ≠ "XYZ" ergo redde nihil
-        redde Euler { x = ego.x + (alter.x - ego.x) * ratio, y = ego.y + (alter.y - ego.y) * ratio, z = ego.z + (alter.z - ego.z) * ratio, order = "XYZ" }
+    fn interpolata(ref Euler alter, f32 ratio) → Euler ∪ null {
+        if self.order ≠ alter.order then return null
+        if self.order ≠ "XYZ" then return null
+        return Euler {x = self.x + (alter.x - self.x) * ratio, y = self.y + (alter.y - self.y) * ratio, z = self.z + (alter.z - self.z) * ratio, order = "XYZ"}
     }
 }
 
 # --- SPATIAL VOLUMES AND RAYS ---
 # Axis-aligned box represented by inclusive minimum and maximum corners.
 # validum is the min ≤ max invariant used by the nullable box helpers.
-genus Box3 {
+class Box3 {
     Vector3 min
     Vector3 max
 
-    functio continet(de Vector3 punctum) → bivalens {
-        redde ((((punctum.x ≥ ego.min.x et punctum.x ≤ ego.max.x) et punctum.y ≥ ego.min.y) et punctum.y ≤ ego.max.y) et punctum.z ≥ ego.min.z) et punctum.z ≤ ego.max.z
+    fn continet(ref Vector3 punctum) → bool {
+        return ((((punctum.x ≥ self.min.x and punctum.x ≤ self.max.x) and punctum.y ≥ self.min.y) and punctum.y ≤ self.max.y) and punctum.z ≥ self.min.z) and punctum.z ≤ self.max.z
     }
 
-    functio intersecat(de Box3 alia) → bivalens {
-        si ego.max.x < alia.min.x aut ego.min.x > alia.max.x ergo redde falsum
-        si ego.max.y < alia.min.y aut ego.min.y > alia.max.y ergo redde falsum
-        si ego.max.z < alia.min.z aut ego.min.y > alia.max.z ergo redde falsum
-        redde verum
+    fn intersecat(ref Box3 alia) → bool {
+        if self.max.x ≺ alia.min.x or self.min.x ≻ alia.max.x then return false
+        if self.max.y ≺ alia.min.y or self.min.y ≻ alia.max.y then return false
+        if self.max.z ≺ alia.min.z or self.min.y ≻ alia.max.z then return false
+        return true
     }
 
-    functio inflata(f32 quantitas) → Box3 {
-        redde Box3 { min = vector3(ego.min.x - quantitas, ego.min.y - quantitas, ego.min.z - quantitas), max = vector3(ego.max.x + quantitas, ego.max.y + quantitas, ego.max.z + quantitas) }
+    fn inflata(f32 quantitas) → Box3 {
+        return Box3 {min = vector3(self.min.x - quantitas, self.min.y - quantitas, self.min.z - quantitas), max = vector3(self.max.x + quantitas, self.max.y + quantitas, self.max.z + quantitas)}
     }
 
-    functio infla(f32 quantitas) → vacuum {
-        ego.min ← vector3(ego.min.x - quantitas, ego.min.y - quantitas, ego.min.z - quantitas)
-        ego.max ← vector3(ego.max.x + quantitas, ego.max.y + quantitas, ego.max.z + quantitas)
+    fn infla(f32 quantitas) → void {
+        self.min ← vector3(self.min.x - quantitas, self.min.y - quantitas, self.min.z - quantitas)
+        self.max ← vector3(self.max.x + quantitas, self.max.y + quantitas, self.max.z + quantitas)
     }
 
-    functio validum() → bivalens {
-        redde (ego.min.x ≤ ego.max.x et ego.min.y ≤ ego.max.y) et ego.min.z ≤ ego.max.z
+    fn validum() → bool {
+        return (self.min.x ≤ self.max.x and self.min.y ≤ self.max.y) and self.min.z ≤ self.max.z
     }
 
-    functio mensura() → Vector3 ∪ nihil {
-        si ego.validum() ≡ falsum ergo redde nihil
-        redde ego.max.subtracta(ego.min)
+    fn mensura() → Vector3 ∪ null {
+        if self.validum() ≡ false then return null
+        return self.max.subtracta(self.min)
     }
 
-    functio centrum() → Vector3 ∪ nihil {
-        si ego.validum() ≡ falsum ergo redde nihil
-        redde ego.min.addita(ego.max).multiplicata(0.5)
+    fn centrum() → Vector3 ∪ null {
+        if self.validum() ≡ false then return null
+        return self.min.addita(self.max).multiplicata(0.5)
     }
 
-    functio continet_capsam(de Box3 alia) → bivalens {
-        redde ego.continet(alia.min) et ego.continet(alia.max)
+    fn continet_capsam(ref Box3 alia) → bool {
+        return self.continet(alia.min) and self.continet(alia.max)
     }
 
-    functio superpositio(de Box3 alia) → Vector3 ∪ nihil {
-        si ego.intersecat(alia) ≡ falsum ergo redde nihil
-        varia f32 min_x ← ego.max.x
-        varia f32 min_y ← ego.max.y
-        varia f32 min_z ← ego.max.z
-        varia f32 max_x ← ego.min.x
-        varia f32 max_y ← ego.min.y
-        varia f32 max_z ← ego.min.z
-        si alia.max.x < min_x {
+    fn superpositio(ref Box3 alia) → Vector3 ∪ null {
+        if self.intersecat(alia) ≡ false then return null
+        var f32 min_x ← self.max.x
+        var f32 min_y ← self.max.y
+        var f32 min_z ← self.max.z
+        var f32 max_x ← self.min.x
+        var f32 max_y ← self.min.y
+        var f32 max_z ← self.min.z
+        if alia.max.x ≺ min_x {
             min_x ← alia.max.x
         }
-        si alia.max.y < min_y {
+        if alia.max.y ≺ min_y {
             min_y ← alia.max.y
         }
-        si alia.max.z < min_z {
+        if alia.max.z ≺ min_z {
             min_z ← alia.max.z
         }
-        si alia.min.x > max_x {
+        if alia.min.x ≻ max_x {
             max_x ← alia.min.x
         }
-        si alia.min.y > max_y {
+        if alia.min.y ≻ max_y {
             max_y ← alia.min.y
         }
-        si alia.min.z > max_z {
+        if alia.min.z ≻ max_z {
             max_z ← alia.min.z
         }
-        redde vector3(min_x - max_x, min_y - max_y, min_z - max_z)
+        return vector3(min_x - max_x, min_y - max_y, min_z - max_z)
     }
 
-    functio superpositio_facta(de Box3 alia) → Box3OverlapFacts ∪ nihil {
-        fixum Vector3 ∪ nihil overlap_result ← ego.superpositio(alia)
-        si overlap_result est nihil ergo redde nihil
-        fixum Vector3 overlap ← Vector3 { x = overlap_result!.x, y = overlap_result!.y, z = overlap_result!.z }
-        redde Box3OverlapFacts { overlap = overlap, x = overlap.x, y = overlap.y, z = overlap.z }
+    fn superpositio_facta(ref Box3 alia) → Box3OverlapFacts ∪ null {
+        const Vector3 ∪ null overlap_result ← self.superpositio(alia)
+        if overlap_result is null then return null
+        const Vector3 overlap ← Vector3 {x = overlap_result!.x, y = overlap_result!.y, z = overlap_result!.z}
+        return Box3OverlapFacts {overlap = overlap, x = overlap.x, y = overlap.y, z = overlap.z}
     }
 
-    functio unio(de Box3 alia) → Box3 ∪ nihil {
-        si ego.validum() ≡ falsum aut alia.validum() ≡ falsum ergo redde nihil
-        varia f32 min_x ← ego.min.x
-        varia f32 min_y ← ego.min.y
-        varia f32 min_z ← ego.min.z
-        varia f32 max_x ← ego.max.x
-        varia f32 max_y ← ego.max.y
-        varia f32 max_z ← ego.max.z
-        si alia.min.x < min_x {
+    fn unio(ref Box3 alia) → Box3 ∪ null {
+        if self.validum() ≡ false or alia.validum() ≡ false then return null
+        var f32 min_x ← self.min.x
+        var f32 min_y ← self.min.y
+        var f32 min_z ← self.min.z
+        var f32 max_x ← self.max.x
+        var f32 max_y ← self.max.y
+        var f32 max_z ← self.max.z
+        if alia.min.x ≺ min_x {
             min_x ← alia.min.x
         }
-        si alia.min.y < min_y {
+        if alia.min.y ≺ min_y {
             min_y ← alia.min.y
         }
-        si alia.min.z < min_z {
+        if alia.min.z ≺ min_z {
             min_z ← alia.min.z
         }
-        si alia.max.x > max_x {
+        if alia.max.x ≻ max_x {
             max_x ← alia.max.x
         }
-        si alia.max.y > max_y {
+        if alia.max.y ≻ max_y {
             max_y ← alia.max.y
         }
-        si alia.max.z > max_z {
+        if alia.max.z ≻ max_z {
             max_z ← alia.max.z
         }
-        redde Box3 { min = vector3(min_x, min_y, min_z), max = vector3(max_x, max_y, max_z) }
+        return Box3 {min = vector3(min_x, min_y, min_z), max = vector3(max_x, max_y, max_z)}
     }
 
-    functio translata(de Vector3 offset) → Box3 {
-        si ego.validum() ≡ falsum ergo redde Box3 { min = ego.min, max = ego.max }
-        redde Box3 { min = ego.min.addita(offset), max = ego.max.addita(offset) }
+    fn translata(ref Vector3 offset) → Box3 {
+        if self.validum() ≡ false then return Box3 {min = self.min, max = self.max}
+        return Box3 {min = self.min.addita(offset), max = self.max.addita(offset)}
     }
 }
 
 # Details returned by Box3.superpositio_facta, keeping overlap components
 # available both as a Vector3 and as named scalar fields.
-genus Box3OverlapFacts {
+class Box3OverlapFacts {
     Vector3 overlap
     f32 x
     f32 y
@@ -452,83 +453,80 @@ genus Box3OverlapFacts {
 
 # Sphere carrier with a center and radius. Point containment compares the
 # center-to-point distance directly with radius.
-genus Sphere {
+class Sphere {
     Vector3 center
     f32 radius
 
-    functio continet(de Vector3 punctum) → bivalens {
-        redde ego.center.distantia(punctum) ≤ ego.radius
+    fn continet(ref Vector3 punctum) → bool {
+        return self.center.distantia(punctum) ≤ self.radius
     }
 }
 
 # Plane represented by normal and constant; distantia evaluates
 # normal · point + constant.
-genus Plane {
+class Plane {
     Vector3 normal
     f32 constant
 
-    functio distantia(de Vector3 punctum) → f32 {
-        redde ego.normal.productum(punctum) + ego.constant
+    fn distantia(ref Vector3 punctum) → f32 {
+        return self.normal.productum(punctum) + self.constant
     }
 }
 
 # Ray represented by an origin and direction. punctum evaluates
 # origin + direction × distance; box intersections return a bounded hit.
-genus Ray {
+class Ray {
     Vector3 origin
     Vector3 direction
 
-    functio punctum(f32 distantia) → Vector3 {
-        redde ego.origin.addita(ego.direction.multiplicata(distantia))
+    fn punctum(f32 distantia) → Vector3 {
+        return self.origin.addita(self.direction.multiplicata(distantia))
     }
 
-    functio intersecat_capsam(de Box3 capsam, f32 distantia_maxima) → f32 ∪ nihil {
-        si capsam.validum() ≡ falsum ergo redde nihil
-        si distantia_maxima < 0.0 ergo redde nihil
-        fixum RayInterval ∪ nihil x_interval ← _ray_axis_interval(ego.origin.x, ego.direction.x, capsam.min.x, capsam.max.x)
-        si x_interval est nihil ergo redde nihil
-        fixum RayInterval ∪ nihil y_interval ← _ray_axis_interval(ego.origin.y, ego.direction.y, capsam.min.y, capsam.max.y)
-        si y_interval est nihil ergo redde nihil
-        fixum RayInterval ∪ nihil z_interval ← _ray_axis_interval(ego.origin.z, ego.direction.z, capsam.min.z, capsam.max.z)
-        si z_interval est nihil ergo redde nihil
-
-        varia f32 entry ← x_interval!.minimum
-        si y_interval!.minimum > entry {
+    fn intersecat_capsam(ref Box3 capsam, f32 distantia_maxima) → f32 ∪ null {
+        if capsam.validum() ≡ false then return null
+        if distantia_maxima ≺ 0.0 then return null
+        const RayInterval ∪ null x_interval ← _ray_axis_interval(self.origin.x, self.direction.x, capsam.min.x, capsam.max.x)
+        if x_interval is null then return null
+        const RayInterval ∪ null y_interval ← _ray_axis_interval(self.origin.y, self.direction.y, capsam.min.y, capsam.max.y)
+        if y_interval is null then return null
+        const RayInterval ∪ null z_interval ← _ray_axis_interval(self.origin.z, self.direction.z, capsam.min.z, capsam.max.z)
+        if z_interval is null then return null
+        var f32 entry ← x_interval!.minimum
+        if y_interval!.minimum ≻ entry {
             entry ← y_interval!.minimum
         }
-        si z_interval!.minimum > entry {
+        if z_interval!.minimum ≻ entry {
             entry ← z_interval!.minimum
         }
-        si entry < 0.0 {
+        if entry ≺ 0.0 {
             entry ← 0.0
         }
-
-        varia f32 exit ← x_interval!.maximum
-        si y_interval!.maximum < exit {
+        var f32 exit ← x_interval!.maximum
+        if y_interval!.maximum ≺ exit {
             exit ← y_interval!.maximum
         }
-        si z_interval!.maximum < exit {
+        if z_interval!.maximum ≺ exit {
             exit ← z_interval!.maximum
         }
-        si distantia_maxima < exit {
+        if distantia_maxima ≺ exit {
             exit ← distantia_maxima
         }
-
-        si entry > exit ergo redde nihil
-        redde entry
+        if entry ≻ exit then return null
+        return entry
     }
 
-    functio box3_hit(de Box3 capsam, f32 distantia_maxima) → RayBox3Hit ∪ nihil {
-        fixum f32 ∪ nihil distance_result ← ego.intersecat_capsam(capsam, distantia_maxima)
-        si distance_result est nihil ergo redde nihil
-        fixum f32 distantia ← distance_result vel 0.0
-        fixum Vector3 punctum ← ego.punctum(distantia)
-        redde RayBox3Hit { distance = distantia, point = punctum, normal = _ray_box3_hit_normal(capsam, punctum) }
+    fn box3_hit(ref Box3 capsam, f32 distantia_maxima) → RayBox3Hit ∪ null {
+        const f32 ∪ null distance_result ← self.intersecat_capsam(capsam, distantia_maxima)
+        if distance_result is null then return null
+        const f32 distantia ← distance_result coalesce 0.0
+        const Vector3 punctum ← self.punctum(distantia)
+        return RayBox3Hit {distance = distantia, point = punctum, normal = _ray_box3_hit_normal(capsam, punctum)}
     }
 }
 
 # One axis' entry and exit values for the ray-box slab calculation.
-genus RayInterval {
+class RayInterval {
     f32 minimum
     f32 maximum
 }
@@ -537,13 +535,13 @@ genus RayInterval {
 # Face codes identify the six axis-aligned directions: 1/2 = −X/+X,
 # 3/4 = −Y/+Y, and 5/6 = −Z/+Z. The helper functions below derive the
 # matching axis, opposite face, signed offsets, normal, and display color.
-genus FaceCodeFacts {
-    numerus code
-    numerus axis_code
-    numerus opposite_code
-    numerus x_offset
-    numerus y_offset
-    numerus z_offset
+class FaceCodeFacts {
+    int code
+    int axis_code
+    int opposite_code
+    int x_offset
+    int y_offset
+    int z_offset
     Vector3 normal
     Color color
 }
@@ -551,49 +549,49 @@ genus FaceCodeFacts {
 
 # A ray-box hit stores the distance, point, and axis-aligned normal used to
 # recover a face code and its complete FaceCodeFacts record.
-genus RayBox3Hit {
+class RayBox3Hit {
     f32 distance
     Vector3 point
     Vector3 normal
 
-    functio hit_face_code() → numerus ∪ nihil {
-        si ego.normal.x ≡ (-1.0 ∷ f32) ergo redde 1
-        si ego.normal.x ≡ (1.0 ∷ f32) ergo redde 2
-        si ego.normal.y ≡ (-1.0 ∷ f32) ergo redde 3
-        si ego.normal.y ≡ (1.0 ∷ f32) ergo redde 4
-        si ego.normal.z ≡ (-1.0 ∷ f32) ergo redde 5
-        si ego.normal.z ≡ (1.0 ∷ f32) ergo redde 6
-        redde nihil
+    fn hit_face_code() → int ∪ null {
+        if self.normal.x ≡ -1.0 ∷ f32 then return 1
+        if self.normal.x ≡ 1.0 ∷ f32 then return 2
+        if self.normal.y ≡ -1.0 ∷ f32 then return 3
+        if self.normal.y ≡ 1.0 ∷ f32 then return 4
+        if self.normal.z ≡ -1.0 ∷ f32 then return 5
+        if self.normal.z ≡ 1.0 ∷ f32 then return 6
+        return null
     }
 
-    functio hit_face_offset_x() → numerus ∪ nihil {
-        fixum numerus ∪ nihil code_result ← ego.hit_face_code()
-        si code_result est nihil ergo redde nihil
-        redde face_code_x_offset(code_result vel 0)
+    fn hit_face_offset_x() → int ∪ null {
+        const int ∪ null code_result ← self.hit_face_code()
+        if code_result is null then return null
+        return face_code_x_offset(code_result coalesce 0)
     }
 
-    functio hit_face_offset_y() → numerus ∪ nihil {
-        fixum numerus ∪ nihil code_result ← ego.hit_face_code()
-        si code_result est nihil ergo redde nihil
-        redde face_code_y_offset(code_result vel 0)
+    fn hit_face_offset_y() → int ∪ null {
+        const int ∪ null code_result ← self.hit_face_code()
+        if code_result is null then return null
+        return face_code_y_offset(code_result coalesce 0)
     }
 
-    functio hit_face_offset_z() → numerus ∪ nihil {
-        fixum numerus ∪ nihil code_result ← ego.hit_face_code()
-        si code_result est nihil ergo redde nihil
-        redde face_code_z_offset(code_result vel 0)
+    fn hit_face_offset_z() → int ∪ null {
+        const int ∪ null code_result ← self.hit_face_code()
+        if code_result is null then return null
+        return face_code_z_offset(code_result coalesce 0)
     }
 
-    functio hit_face_facts() → FaceCodeFacts ∪ nihil {
-        fixum numerus ∪ nihil code_result ← ego.hit_face_code()
-        si code_result est nihil ergo redde nihil
-        redde face_code_facts(code_result vel 0)
+    fn hit_face_facts() → FaceCodeFacts ∪ null {
+        const int ∪ null code_result ← self.hit_face_code()
+        if code_result is null then return null
+        return face_code_facts(code_result coalesce 0)
     }
 }
 
 # Camera helpers return this compact record so callers can inspect the
 # clamped pitch, normalized directions, and the derived ray together.
-genus CameraYawPitchFacts {
+class CameraYawPitchFacts {
     f32 yaw_degrees
     f32 pitch_degrees
     f32 clamped_pitch_degrees
@@ -607,93 +605,92 @@ genus CameraYawPitchFacts {
 # --- VALIDATION AND FACE-CODE HELPERS ---
 # Color validation is channel-wise; face-code validation accepts only codes
 # 1 through 6. Invalid codes return nihil from the derived helpers.
-functio color_valida(de Color value) → bivalens {
-    si value.r < 0.0 aut value.r > 1.0 ergo redde falsum
-    si value.g < 0.0 aut value.g > 1.0 ergo redde falsum
-    si value.b < 0.0 aut value.b > 1.0 ergo redde falsum
-    redde verum
+fn color_valida(ref Color value) → bool {
+    if value.r ≺ 0.0 or value.r ≻ 1.0 then return false
+    if value.g ≺ 0.0 or value.g ≻ 1.0 then return false
+    if value.b ≺ 0.0 or value.b ≻ 1.0 then return false
+    return true
 }
 
-
-functio face_code_valida(numerus code) → bivalens {
-    redde code ≥ 1 et code ≤ 6
+fn face_code_valida(int code) → bool {
+    return code ≥ 1 and code ≤ 6
 }
 
-functio face_code_axis_code(numerus code) → numerus ∪ nihil {
-    si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≤ 2 ergo redde 1
-    si code ≤ 4 ergo redde 2
-    redde 3
+fn face_code_axis_code(int code) → int ∪ null {
+    if face_code_valida(code) ≡ false then return null
+    if code ≤ 2 then return 1
+    if code ≤ 4 then return 2
+    return 3
 }
 
-functio face_code_opposite(numerus code) → numerus ∪ nihil {
-    si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 1 ergo redde 2
-    si code ≡ 2 ergo redde 1
-    si code ≡ 3 ergo redde 4
-    si code ≡ 4 ergo redde 3
-    si code ≡ 5 ergo redde 6
-    redde 5
+fn face_code_opposite(int code) → int ∪ null {
+    if face_code_valida(code) ≡ false then return null
+    if code ≡ 1 then return 2
+    if code ≡ 2 then return 1
+    if code ≡ 3 then return 4
+    if code ≡ 4 then return 3
+    if code ≡ 5 then return 6
+    return 5
 }
 
-functio face_code_x_offset(numerus code) → numerus ∪ nihil {
-    si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 1 ergo redde 0 - 1
-    si code ≡ 2 ergo redde 1
-    redde 0
+fn face_code_x_offset(int code) → int ∪ null {
+    if face_code_valida(code) ≡ false then return null
+    if code ≡ 1 then return 0 - 1
+    if code ≡ 2 then return 1
+    return 0
 }
 
-functio face_code_y_offset(numerus code) → numerus ∪ nihil {
-    si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 3 ergo redde 0 - 1
-    si code ≡ 4 ergo redde 1
-    redde 0
+fn face_code_y_offset(int code) → int ∪ null {
+    if face_code_valida(code) ≡ false then return null
+    if code ≡ 3 then return 0 - 1
+    if code ≡ 4 then return 1
+    return 0
 }
 
-functio face_code_z_offset(numerus code) → numerus ∪ nihil {
-    si face_code_valida(code) ≡ falsum ergo redde nihil
-    si code ≡ 5 ergo redde 0 - 1
-    si code ≡ 6 ergo redde 1
-    redde 0
+fn face_code_z_offset(int code) → int ∪ null {
+    if face_code_valida(code) ≡ false then return null
+    if code ≡ 5 then return 0 - 1
+    if code ≡ 6 then return 1
+    return 0
 }
 
-functio face_code_normal(numerus code) → Vector3 ∪ nihil {
-    si code ≡ 1 ergo redde vector3(-1.0 ∷ f32, 0.0, 0.0)
-    si code ≡ 2 ergo redde vector3(1.0, 0.0, 0.0)
-    si code ≡ 3 ergo redde vector3(0.0, -1.0 ∷ f32, 0.0)
-    si code ≡ 4 ergo redde vector3(0.0, 1.0, 0.0)
-    si code ≡ 5 ergo redde vector3(0.0, 0.0, -1.0 ∷ f32)
-    si code ≡ 6 ergo redde vector3(0.0, 0.0, 1.0)
-    redde nihil
+fn face_code_normal(int code) → Vector3 ∪ null {
+    if code ≡ 1 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
+    if code ≡ 2 then return vector3(1.0, 0.0, 0.0)
+    if code ≡ 3 then return vector3(0.0, -1.0 ∷ f32, 0.0)
+    if code ≡ 4 then return vector3(0.0, 1.0, 0.0)
+    if code ≡ 5 then return vector3(0.0, 0.0, -1.0 ∷ f32)
+    if code ≡ 6 then return vector3(0.0, 0.0, 1.0)
+    return null
 }
 
-functio face_code_color(numerus code) → Color ∪ nihil {
-    si code ≡ 1 ergo redde Color { r = 0.8, g = 0.1, b = 0.1 }
-    si code ≡ 2 ergo redde Color { r = 1.0, g = 0.4, b = 0.4 }
-    si code ≡ 3 ergo redde Color { r = 0.1, g = 0.7, b = 0.1 }
-    si code ≡ 4 ergo redde Color { r = 0.4, g = 1.0, b = 0.4 }
-    si code ≡ 5 ergo redde Color { r = 0.1, g = 0.1, b = 0.8 }
-    si code ≡ 6 ergo redde Color { r = 0.4, g = 0.4, b = 1.0 }
-    redde nihil
+fn face_code_color(int code) → Color ∪ null {
+    if code ≡ 1 then return Color {r = 0.8, g = 0.1, b = 0.1}
+    if code ≡ 2 then return Color {r = 1.0, g = 0.4, b = 0.4}
+    if code ≡ 3 then return Color {r = 0.1, g = 0.7, b = 0.1}
+    if code ≡ 4 then return Color {r = 0.4, g = 1.0, b = 0.4}
+    if code ≡ 5 then return Color {r = 0.1, g = 0.1, b = 0.8}
+    if code ≡ 6 then return Color {r = 0.4, g = 0.4, b = 1.0}
+    return null
 }
 
-functio face_code_facts(numerus code) → FaceCodeFacts ∪ nihil {
-    si face_code_valida(code) ≡ falsum ergo redde nihil
-    fixum numerus ∪ nihil axis_result ← face_code_axis_code(code)
-    si axis_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil opposite_result ← face_code_opposite(code)
-    si opposite_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil x_offset_result ← face_code_x_offset(code)
-    si x_offset_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil y_offset_result ← face_code_y_offset(code)
-    si y_offset_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil z_offset_result ← face_code_z_offset(code)
-    si z_offset_result est nihil ergo redde nihil
-    fixum Vector3 ∪ nihil normal_result ← face_code_normal(code)
-    si normal_result est nihil ergo redde nihil
-    fixum Color ∪ nihil color_result ← face_code_color(code)
-    si color_result est nihil ergo redde nihil
-    redde FaceCodeFacts { code = code, axis_code = axis_result vel 0, opposite_code = opposite_result vel 0, x_offset = x_offset_result vel 0, y_offset = y_offset_result vel 0, z_offset = z_offset_result vel 0, normal = Vector3 { x = normal_result!.x, y = normal_result!.y, z = normal_result!.z }, color = Color { r = color_result!.r, g = color_result!.g, b = color_result!.b } }
+fn face_code_facts(int code) → FaceCodeFacts ∪ null {
+    if face_code_valida(code) ≡ false then return null
+    const int ∪ null axis_result ← face_code_axis_code(code)
+    if axis_result is null then return null
+    const int ∪ null opposite_result ← face_code_opposite(code)
+    if opposite_result is null then return null
+    const int ∪ null x_offset_result ← face_code_x_offset(code)
+    if x_offset_result is null then return null
+    const int ∪ null y_offset_result ← face_code_y_offset(code)
+    if y_offset_result is null then return null
+    const int ∪ null z_offset_result ← face_code_z_offset(code)
+    if z_offset_result is null then return null
+    const Vector3 ∪ null normal_result ← face_code_normal(code)
+    if normal_result is null then return null
+    const Color ∪ null color_result ← face_code_color(code)
+    if color_result is null then return null
+    return FaceCodeFacts {code = code, axis_code = axis_result coalesce 0, opposite_code = opposite_result coalesce 0, x_offset = x_offset_result coalesce 0, y_offset = y_offset_result coalesce 0, z_offset = z_offset_result coalesce 0, normal = Vector3 {x = normal_result!.x, y = normal_result!.y, z = normal_result!.z}, color = Color {r = color_result!.r, g = color_result!.g, b = color_result!.b}}
 }
 
 
@@ -702,242 +699,228 @@ functio face_code_facts(numerus code) → FaceCodeFacts ∪ nihil {
 # named fields used by the public genera.
 #
 # Construct the common three-component vector value.
-functio vector3(f32 x, f32 y, f32 z) → Vector3 {
-    redde Vector3 { x = x, y = y, z = z }
+fn vector3(f32 x, f32 y, f32 z) → Vector3 {
+    return Vector3 {x = x, y = y, z = z}
 }
 
-functio _radix_f32(f32 value) → f32 {
-    si value ≤ 0.0 ergo redde 0.0
-    varia f32 estimate ← value
-    varia numerus iteration ← 0
-    dum iteration < 12 {
+fn _radix_f32(f32 value) → f32 {
+    if value ≤ 0.0 then return 0.0
+    var f32 estimate ← value
+    var int iteration ← 0
+    while iteration ≺ 12 {
         estimate ← (estimate + value / estimate) * 0.5
         iteration ← iteration + 1
     }
-    redde estimate
+    return estimate
 }
 
 # Construct a quaternion without changing its components. Call normata when
 # a unit quaternion is required.
-functio quaternion(f32 x, f32 y, f32 z, f32 w) → Quaternion {
-    redde Quaternion { x = x, y = y, z = z, w = w }
+fn quaternion(f32 x, f32 y, f32 z, f32 w) → Quaternion {
+    return Quaternion {x = x, y = y, z = z, w = w}
 }
 
 # Construct the default XYZ Euler value; the supplied angles are stored as-is.
-functio euler(f32 x, f32 y, f32 z) → Euler {
-    redde Euler { x = x, y = y, z = z, order = "XYZ" }
+fn euler(f32 x, f32 y, f32 z) → Euler {
+    return Euler {x = x, y = y, z = z, order = "XYZ"}
 }
 
 # --- ANGLE AND CAMERA HELPERS ---
 # Camera-facing helpers accept degrees at their public boundary. The local
 # trigonometric approximations consume radians after explicit conversion.
-functio _angulus_reductus(f32 angle) → f32 {
-    varia f32 reduced ← angle
-    dum reduced > 3.14159265 {
+fn _angulus_reductus(f32 angle) → f32 {
+    var f32 reduced ← angle
+    while reduced ≻ 3.14159265 {
         reduced ← reduced - 6.2831853
     }
-    dum reduced < -3.14159265 {
+    while reduced ≺ -3.14159265 {
         reduced ← reduced + 6.2831853
     }
-    redde reduced
+    return reduced
 }
 
-functio _sinus_f32(f32 angle) → f32 {
-    fixum f32 x ← _angulus_reductus(angle)
-    fixum f32 x2 ← x * x
-    fixum f32 x4 ← x2 * x2
-    fixum f32 x6 ← x4 * x2
-    fixum f32 x8 ← x6 * x2
-    redde x * ((((1.0 - x2 / 6.0) + x4 / 120.0) - x6 / 5040.0) + x8 / 362880.0)
+fn _sinus_f32(f32 angle) → f32 {
+    const f32 x ← _angulus_reductus(angle)
+    const f32 x2 ← x * x
+    const f32 x4 ← x2 * x2
+    const f32 x6 ← x4 * x2
+    const f32 x8 ← x6 * x2
+    return x * ((((1.0 - x2 / 6.0) + x4 / 120.0) - x6 / 5040.0) + x8 / 362880.0)
 }
 
-functio _cosinus_f32(f32 angle) → f32 {
-    fixum f32 x ← _angulus_reductus(angle)
-    fixum f32 x2 ← x * x
-    fixum f32 x4 ← x2 * x2
-    fixum f32 x6 ← x4 * x2
-    fixum f32 x8 ← x6 * x2
-    redde (((1.0 - x2 / 2.0) + x4 / 24.0) - x6 / 720.0) + x8 / 40320.0
+fn _cosinus_f32(f32 angle) → f32 {
+    const f32 x ← _angulus_reductus(angle)
+    const f32 x2 ← x * x
+    const f32 x4 ← x2 * x2
+    const f32 x6 ← x4 * x2
+    const f32 x8 ← x6 * x2
+    return (((1.0 - x2 / 2.0) + x4 / 24.0) - x6 / 720.0) + x8 / 40320.0
 }
 
-functio radians_ex_gradibus(f32 degrees) → f32 {
-    redde degrees * 0.017453292519943295
+fn radians_ex_gradibus(f32 degrees) → f32 {
+    return degrees * 0.017453292519943295
 }
 
-functio camera_pitch_coercita(f32 pitch_degrees) → f32 {
-    si pitch_degrees > 89.0 ergo redde 89.0
-    si pitch_degrees < 0.0 - 89.0 ergo redde 0.0 - 89.0
-    redde pitch_degrees
+fn camera_pitch_coercita(f32 pitch_degrees) → f32 {
+    if pitch_degrees ≻ 89.0 then return 89.0
+    if pitch_degrees ≺ 0.0 - 89.0 then return 0.0 - 89.0
+    return pitch_degrees
 }
 
-functio camera_directio_ex_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → Vector3 {
-    fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    fixum f32 pitch ← radians_ex_gradibus(camera_pitch_coercita(pitch_degrees))
-    fixum f32 horizontal ← _cosinus_f32(pitch)
-    redde vector3(_sinus_f32(yaw) * horizontal, _sinus_f32(pitch), -_cosinus_f32(yaw) * horizontal).normata()
+fn camera_directio_ex_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → Vector3 {
+    const f32 yaw ← radians_ex_gradibus(yaw_degrees)
+    const f32 pitch ← radians_ex_gradibus(camera_pitch_coercita(pitch_degrees))
+    const f32 horizontal ← _cosinus_f32(pitch)
+    return vector3(_sinus_f32(yaw) * horizontal, _sinus_f32(pitch), -_cosinus_f32(yaw) * horizontal).normata()
 }
 
-functio camera_prorsum_planus_ex_yaw(f32 yaw_degrees) → Vector3 {
-    fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    redde vector3(_sinus_f32(yaw), 0.0, -_cosinus_f32(yaw)).normata()
+fn camera_prorsum_planus_ex_yaw(f32 yaw_degrees) → Vector3 {
+    const f32 yaw ← radians_ex_gradibus(yaw_degrees)
+    return vector3(_sinus_f32(yaw), 0.0, -_cosinus_f32(yaw)).normata()
 }
 
-functio camera_dextra_ex_yaw(f32 yaw_degrees) → Vector3 {
-    fixum f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    redde vector3(_cosinus_f32(yaw), 0.0, _sinus_f32(yaw)).normata()
+fn camera_dextra_ex_yaw(f32 yaw_degrees) → Vector3 {
+    const f32 yaw ← radians_ex_gradibus(yaw_degrees)
+    return vector3(_cosinus_f32(yaw), 0.0, _sinus_f32(yaw)).normata()
 }
 
-functio camera_motus_planus_ex_yaw(f32 yaw_degrees, f32 forward_amount, f32 right_amount, f32 speed, f32 delta_seconds) → Vector3 {
-    si speed ≤ 0.0 aut delta_seconds ≤ 0.0 ergo redde vector3(0.0, 0.0, 0.0)
-    fixum Vector3 forward ← camera_prorsum_planus_ex_yaw(yaw_degrees)
-    fixum Vector3 right ← camera_dextra_ex_yaw(yaw_degrees)
-    fixum Vector3 mixed ← forward.multiplicata(forward_amount).addita(right.multiplicata(right_amount))
-    fixum Vector3 direction ← mixed.normata()
-    redde direction.multiplicata(speed * delta_seconds)
+fn camera_motus_planus_ex_yaw(f32 yaw_degrees, f32 forward_amount, f32 right_amount, f32 speed, f32 delta_seconds) → Vector3 {
+    if speed ≤ 0.0 or delta_seconds ≤ 0.0 then return vector3(0.0, 0.0, 0.0)
+    const Vector3 forward ← camera_prorsum_planus_ex_yaw(yaw_degrees)
+    const Vector3 right ← camera_dextra_ex_yaw(yaw_degrees)
+    const Vector3 mixed ← forward.multiplicata(forward_amount).addita(right.multiplicata(right_amount))
+    const Vector3 direction ← mixed.normata()
+    return direction.multiplicata(speed * delta_seconds)
 }
 
-functio camera_ray_ex_yaw_pitch(de Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → Ray {
-    redde Ray { origin = origin, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees) }
+fn camera_ray_ex_yaw_pitch(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → Ray {
+    return Ray {origin = origin, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees)}
 }
 
-functio camera_yaw_pitch_facts(de Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → CameraYawPitchFacts {
-    fixum f32 clamped_pitch ← camera_pitch_coercita(pitch_degrees)
-    redde CameraYawPitchFacts { yaw_degrees = yaw_degrees, pitch_degrees = pitch_degrees, clamped_pitch_degrees = clamped_pitch, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees), planar_forward = camera_prorsum_planus_ex_yaw(yaw_degrees), planar_right = camera_dextra_ex_yaw(yaw_degrees), ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees) }
+fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → CameraYawPitchFacts {
+    const f32 clamped_pitch ← camera_pitch_coercita(pitch_degrees)
+    return CameraYawPitchFacts {yaw_degrees = yaw_degrees, pitch_degrees = pitch_degrees, clamped_pitch_degrees = clamped_pitch, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees), planar_forward = camera_prorsum_planus_ex_yaw(yaw_degrees), planar_right = camera_dextra_ex_yaw(yaw_degrees), ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees)}
 }
 
 # Interpolate RGB channels independently; the ratio is not clamped here.
-functio color_interpolata(de Color a, de Color b, f32 ratio) → Color {
-    redde Color { r = a.r + (b.r - a.r) * ratio, g = a.g + (b.g - a.g) * ratio, b = a.b + (b.b - a.b) * ratio }
+fn color_interpolata(ref Color a, ref Color b, f32 ratio) → Color {
+    return Color {r = a.r + (b.r - a.r) * ratio, g = a.g + (b.g - a.g) * ratio, b = a.b + (b.b - a.b) * ratio}
 }
 
 # --- BOX CONSTRUCTORS ---
 # The min/max constructor rejects reversed bounds; the size constructors reject
 # non-positive sizes. Each returns nihil, keeping Box3.validum explicit.
-functio box3_ex_minimo_et_maximo(de Vector3 minimum, de Vector3 maximum) → Box3 ∪ nihil {
-    fixum Box3 bounds ← Box3 { min = minimum, max = maximum }
-    si bounds.validum() ≡ falsum ergo redde nihil
-    redde bounds
+fn box3_ex_minimo_et_maximo(ref Vector3 minimum, ref Vector3 maximum) → Box3 ∪ null {
+    const Box3 bounds ← Box3 {min = minimum, max = maximum}
+    if bounds.validum() ≡ false then return null
+    return bounds
 }
 
-functio box3_ex_minimo_et_mensura(de Vector3 minimum, de Vector3 size) → Box3 ∪ nihil {
-    si (size.x ≤ 0.0 aut size.y ≤ 0.0) aut size.z ≤ 0.0 ergo redde nihil
-    redde Box3 { min = minimum, max = minimum.addita(size) }
+fn box3_ex_minimo_et_mensura(ref Vector3 minimum, ref Vector3 size) → Box3 ∪ null {
+    if (size.x ≤ 0.0 or size.y ≤ 0.0) or size.z ≤ 0.0 then return null
+    return Box3 {min = minimum, max = minimum.addita(size)}
 }
 
-functio box3_ex_centro_et_mensura(de Vector3 center, de Vector3 size) → Box3 ∪ nihil {
-    si (size.x ≤ 0.0 aut size.y ≤ 0.0) aut size.z ≤ 0.0 ergo redde nihil
-    fixum Vector3 half ← size.multiplicata(0.5)
-    redde Box3 { min = center.subtracta(half), max = center.addita(half) }
+fn box3_ex_centro_et_mensura(ref Vector3 center, ref Vector3 size) → Box3 ∪ null {
+    if (size.x ≤ 0.0 or size.y ≤ 0.0) or size.z ≤ 0.0 then return null
+    const Vector3 half ← size.multiplicata(0.5)
+    return Box3 {min = center.subtracta(half), max = center.addita(half)}
 }
 
-@ privata
-functio _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ nihil {
-    si direction.absolutum() ≤ 0.000001 {
-        si origin < minimum aut origin > maximum ergo redde nihil
-        redde RayInterval { minimum = -1000000000.0 ∷ f32, maximum = 1000000000.0 }
+@ private { }
+fn _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ null {
+    if direction.absolutum() ≤ 0.000001 {
+        if origin ≺ minimum or origin ≻ maximum then return null
+        return RayInterval {minimum = -1000000000.0 ∷ f32, maximum = 1000000000.0}
     }
-    varia f32 first ← (minimum - origin) / direction
-    varia f32 second ← (maximum - origin) / direction
-    si first > second {
-        fixum f32 swap ← first
+    var f32 first ← (minimum - origin) / direction
+    var f32 second ← (maximum - origin) / direction
+    if first ≻ second {
+        const f32 swap ← first
         first ← second
         second ← swap
     }
-    redde RayInterval { minimum = first, maximum = second }
+    return RayInterval {minimum = first, maximum = second}
 }
 
-
-
-functio _ray_box3_hit_normal(de Box3 bounds, de Vector3 point) → Vector3 {
-    si (point.x - bounds.min.x).absolutum() ≤ 0.0001 {
-        redde vector3(-1.0 ∷ f32, 0.0, 0.0)
-    }
-    si (point.x - bounds.max.x).absolutum() ≤ 0.0001 {
-        redde vector3(1.0, 0.0, 0.0)
-    }
-    si (point.y - bounds.min.y).absolutum() ≤ 0.0001 {
-        redde vector3(0.0, -1.0 ∷ f32, 0.0)
-    }
-    si (point.y - bounds.max.y).absolutum() ≤ 0.0001 {
-        redde vector3(0.0, 1.0, 0.0)
-    }
-    si (point.z - bounds.min.z).absolutum() ≤ 0.0001 {
-        redde vector3(0.0, 0.0, -1.0 ∷ f32)
-    }
-    si (point.z - bounds.max.z).absolutum() ≤ 0.0001 {
-        redde vector3(0.0, 0.0, 1.0)
-    }
-    redde vector3(0.0, 0.0, 0.0)
+fn _ray_box3_hit_normal(ref Box3 bounds, ref Vector3 point) → Vector3 {
+    if (point.x - bounds.min.x).absolutum() ≤ 0.0001 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
+    if (point.x - bounds.max.x).absolutum() ≤ 0.0001 then return vector3(1.0, 0.0, 0.0)
+    if (point.y - bounds.min.y).absolutum() ≤ 0.0001 then return vector3(0.0, -1.0 ∷ f32, 0.0)
+    if (point.y - bounds.max.y).absolutum() ≤ 0.0001 then return vector3(0.0, 1.0, 0.0)
+    if (point.z - bounds.min.z).absolutum() ≤ 0.0001 then return vector3(0.0, 0.0, -1.0 ∷ f32)
+    if (point.z - bounds.max.z).absolutum() ≤ 0.0001 then return vector3(0.0, 0.0, 1.0)
+    return vector3(0.0, 0.0, 0.0)
 }
 
 # --- MATRIX AND PAYLOAD CONSTRUCTORS ---
 # The builders below all emit Matrix4 values using the column-major layout
 # documented above.
-functio matrix4_identitas() → Matrix4 {
-    redde Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
+fn matrix4_identitas() → Matrix4 {
+    return Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
 }
 
 # Pack model followed by view_projection. Both inputs must already be valid
 # 16-element Matrix4 values.
-functio transform_payload(de Matrix4 model, de Matrix4 view_projection) → TransformPayload ∪ nihil {
-    si model.validum() ≡ falsum ergo redde nihil
-    si view_projection.validum() ≡ falsum ergo redde nihil
-    varia lista<f32> values ← vacua
-    itera ex model.elements fixum value {
+fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → TransformPayload ∪ null {
+    if model.validum() ≡ false then return null
+    if view_projection.validum() ≡ false then return null
+    var list<f32> values ← vacua
+    for from model.elements const value {
         values.appende(value)
     }
-    itera ex view_projection.elements fixum value {
+    for from view_projection.elements const value {
         values.appende(value)
     }
-    redde TransformPayload { values = values }
+    return TransformPayload {values = values}
 }
 
 # Translation and scale occupy the fourth column and diagonal respectively.
-functio matrix4_translatio(de Vector3 offset) → Matrix4 {
-    redde Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, offset.x, offset.y, offset.z, 1.0] }
+fn matrix4_translatio(ref Vector3 offset) → Matrix4 {
+    return Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, offset.x, offset.y, offset.z, 1.0]}
 }
 
-functio matrix4_scala(de Vector3 scale) → Matrix4 {
-    redde Matrix4 { elements = [scale.x, 0.0, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, 0.0, scale.z, 0.0, 0.0, 0.0, 0.0, 1.0] }
+fn matrix4_scala(ref Vector3 scale) → Matrix4 {
+    return Matrix4 {elements = [scale.x, 0.0, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, 0.0, scale.z, 0.0, 0.0, 0.0, 0.0, 1.0]}
 }
 
 # Compose position, normalized rotation, and scale into one affine matrix.
-functio matrix4_composita(de Vector3 position, de Quaternion rotation, de Vector3 scale) → Matrix4 {
-    fixum Quaternion q ← rotation.normata()
-    fixum f32 xx ← q.x * q.x
-    fixum f32 yy ← q.y * q.y
-    fixum f32 zz ← q.z * q.z
-    fixum f32 xy ← q.x * q.y
-    fixum f32 xz ← q.x * q.z
-    fixum f32 yz ← q.y * q.z
-    fixum f32 wx ← q.w * q.x
-    fixum f32 wy ← q.w * q.y
-    fixum f32 wz ← q.w * q.z
-    redde Matrix4 { elements = [(1.0 - 2.0 * (yy + zz)) * scale.x, (2.0 * (xy + wz)) * scale.x, (2.0 * (xz - wy)) * scale.x, 0.0, (2.0 * (xy - wz)) * scale.y, (1.0 - 2.0 * (xx + zz)) * scale.y, (2.0 * (yz + wx)) * scale.y, 0.0, (2.0 * (xz + wy)) * scale.z, (2.0 * (yz - wx)) * scale.z, (1.0 - 2.0 * (xx + yy)) * scale.z, 0.0, position.x, position.y, position.z, 1.0] }
+fn matrix4_composita(ref Vector3 position, ref Quaternion rotation, ref Vector3 scale) → Matrix4 {
+    const Quaternion q ← rotation.normata()
+    const f32 xx ← q.x * q.x
+    const f32 yy ← q.y * q.y
+    const f32 zz ← q.z * q.z
+    const f32 xy ← q.x * q.y
+    const f32 xz ← q.x * q.z
+    const f32 yz ← q.y * q.z
+    const f32 wx ← q.w * q.x
+    const f32 wy ← q.w * q.y
+    const f32 wz ← q.w * q.z
+    return Matrix4 {elements = [(1.0 - 2.0 * (yy + zz)) * scale.x, (2.0 * (xy + wz)) * scale.x, (2.0 * (xz - wy)) * scale.x, 0.0, (2.0 * (xy - wz)) * scale.y, (1.0 - 2.0 * (xx + zz)) * scale.y, (2.0 * (yz + wx)) * scale.y, 0.0, (2.0 * (xz + wy)) * scale.z, (2.0 * (yz - wx)) * scale.z, (1.0 - 2.0 * (xx + yy)) * scale.z, 0.0, position.x, position.y, position.z, 1.0]}
 }
 
 # Perspective construction validates its degree-based field of view, aspect,
 # and near/far ordering before returning a matrix.
-functio matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Matrix4 ∪ nihil {
-    si fov_y_degrees ≤ 0.0 aut fov_y_degrees ≥ 180.0 ergo redde nihil
-    si aspect ≤ 0.0 ergo redde nihil
-    si near ≤ 0.0 aut far ≤ near ergo redde nihil
-    fixum f32 half_angle ← radians_ex_gradibus(fov_y_degrees) * 0.5
-    fixum f32 sine ← _sinus_f32(half_angle)
-    fixum f32 cosine ← _cosinus_f32(half_angle)
-    si sine.absolutum() ≤ 0.000001 ergo redde nihil
-    fixum f32 focal ← cosine / sine
-    fixum f32 depth ← far / (near - far)
-    redde Matrix4 { elements = [focal / aspect, 0.0, 0.0, 0.0, 0.0, focal, 0.0, 0.0, 0.0, 0.0, depth, -1.0 ∷ f32, 0.0, 0.0, near * depth, 0.0] }
+fn matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Matrix4 ∪ null {
+    if fov_y_degrees ≤ 0.0 or fov_y_degrees ≥ 180.0 then return null
+    if aspect ≤ 0.0 then return null
+    if near ≤ 0.0 or far ≤ near then return null
+    const f32 half_angle ← radians_ex_gradibus(fov_y_degrees) * 0.5
+    const f32 sine ← _sinus_f32(half_angle)
+    const f32 cosine ← _cosinus_f32(half_angle)
+    if sine.absolutum() ≤ 0.000001 then return null
+    const f32 focal ← cosine / sine
+    const f32 depth ← far / (near - far)
+    return Matrix4 {elements = [focal / aspect, 0.0, 0.0, 0.0, 0.0, focal, 0.0, 0.0, 0.0, 0.0, depth, -1.0 ∷ f32, 0.0, 0.0, near * depth, 0.0]}
 }
 
 # Build a view matrix from eye, target, and up. Coincident or collinear inputs
 # return nihil when a usable forward or side direction cannot be formed.
-functio matrix4_conspectus(de Vector3 eye, de Vector3 target, de Vector3 up) → Matrix4 ∪ nihil {
-    fixum Vector3 forward ← target.subtracta(eye).normata()
-    si forward.longitudo() ≤ 0.000001 ergo redde nihil
-    fixum Vector3 side ← forward.transversum(up).normata()
-    si side.longitudo() ≤ 0.000001 ergo redde nihil
-    fixum Vector3 camera_up ← side.transversum(forward)
-    redde Matrix4 { elements = [side.x, camera_up.x, -forward.x, 0.0, side.y, camera_up.y, -forward.y, 0.0, side.z, camera_up.z, -forward.z, 0.0, -side.productum(eye), -camera_up.productum(eye), forward.productum(eye), 1.0] }
+fn matrix4_conspectus(ref Vector3 eye, ref Vector3 target, ref Vector3 up) → Matrix4 ∪ null {
+    const Vector3 forward ← target.subtracta(eye).normata()
+    if forward.longitudo() ≤ 0.000001 then return null
+    const Vector3 side ← forward.transversum(up).normata()
+    if side.longitudo() ≤ 0.000001 then return null
+    const Vector3 camera_up ← side.transversum(forward)
+    return Matrix4 {elements = [side.x, camera_up.x, -forward.x, 0.0, side.y, camera_up.y, -forward.y, 0.0, side.z, camera_up.z, -forward.z, 0.0, -side.productum(eye), -camera_up.productum(eye), forward.productum(eye), 1.0]}
 }

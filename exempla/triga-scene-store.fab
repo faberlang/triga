@@ -5,27 +5,29 @@ category = "library"
 canonical = true
 summary = "Stable heterogeneous Triga scene store: insertion, attachment, visibility, and traversal."
 +++
-importa ex "triga:scene" privata scene
-importa ex "triga:math" privata math
-importa ex "triga:resource" privata resource
+import from "triga:scene" private scene
 
-incipit {
+import from "triga:math" private math
+
+import from "triga:resource" private resource
+
+main {
     # Resource handles
-    fixum resource.ResourceHandle geom_handle ← resource.ResourceHandle { index = 7, generation = 2 }
-    fixum resource.ResourceHandle mat_handle ← resource.ResourceHandle { index = 3, generation = 1 }
+    const resource.ResourceHandle geom_handle ← resource.ResourceHandle {index = 7, generation = 2}
+    const resource.ResourceHandle mat_handle ← resource.ResourceHandle {index = 3, generation = 1}
 
     # Resource transitions
-    fixum resource.ResourceTransition stable ← resource.resource_transition_unchanged(geom_handle)
-    fixum resource.ResourceTransition replaced ← resource.resource_transition_replaced(mat_handle)
+    const resource.ResourceTransition stable ← resource.resource_transition_unchanged(geom_handle)
+    const resource.ResourceTransition replaced ← resource.resource_transition_replaced(mat_handle)
 
     # Scene construction and insertion (Imperativus — requires varia)
-    varia scene.SceneStore store ← scene.scene_store()
-    fixum scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
-    fixum scene.SceneHandle mesh_handle ← store.insere(mesh_node)
+    var scene.SceneStore store ← scene.scene_store()
+    const scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
+    const scene.SceneHandle mesh_handle ← store.insere(mesh_node)
 
     # Hierarchy: attach a child mesh
-    fixum scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
-    fixum scene.SceneHandle child_handle ← store.insere(child_node)
+    const scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
+    const scene.SceneHandle child_handle ← store.insere(child_node)
 
     # Visibility and world matrix
 
@@ -34,11 +36,11 @@ incipit {
     # Traversal
 
     # Visibilia query (single traversal, multiple accessors)
-    fixum scene.VisibiliaRetium ∪ nihil visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
-    nota visibilia
+    const scene.VisibiliaRetium ∪ null visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
+    print visibilia
 
     # Removal
 
     # SceneNode mesh accessors
-    fixum scene.SceneNode ∪ nihil fetched ← store.cape(mesh_handle)
+    const scene.SceneNode ∪ null fetched ← store.cape(mesh_handle)
 }

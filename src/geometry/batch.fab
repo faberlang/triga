@@ -1,6 +1,6 @@
 # Geometry draw-range, draw-command, group, and payload byte-count facts.
 #
-# Public import: importa ex "triga:geometry/batch" privata batch
+# Public import: import from "triga:geometry/batch" private batch
 #
 # Owns: DrawRange, GeometryDrawCommand, GeometryGroup, the indexed/line
 # draw-batch fact genera, VisibleFaceMeshFacts, and the visible_face_*
@@ -13,68 +13,68 @@
 # count is non-zero, that start + count stays within the available elements,
 # and that the range matches the active primitive topology before it becomes a
 # draw command.
-genus DrawRange {
-    numerus start
-    numerus count
+class DrawRange {
+    int start
+    int count
 }
 
 # The complete scalar fact set for one host draw. BufferGeometry fills this
 # record from a validated draw range or group, preserving indexed mode,
 # element origin/count, instance count, and material selection.
-genus GeometryDrawCommand {
-    bivalens indexed
-    numerus element_count
-    numerus first_element
-    numerus base_vertex
-    numerus instance_count
-    numerus material_index
+class GeometryDrawCommand {
+    bool indexed
+    int element_count
+    int first_element
+    int base_vertex
+    int instance_count
+    int material_index
 }
 
 # One material-owned element range. Groups are CPU-side batching metadata;
 # BufferGeometry requires non-empty, topology-aligned, in-bounds ranges in
 # non-overlapping order before producing group commands.
-genus GeometryGroup {
-    numerus start
-    numerus count
-    numerus material_index
+class GeometryGroup {
+    int start
+    int count
+    int material_index
 }
 
 # Upload and draw facts for indexed geometry. The payload fields are byte
 # counts, while grouped_element_total describes the elements covered by the
 # generated group commands.
-genus IndexedGeometryDrawBatchFacts {
-    numerus draw_count
-    numerus grouped_element_total
-    numerus vertex_payload_byte_count
-    numerus index_payload_byte_count
-    numerus total_payload_byte_count
+class IndexedGeometryDrawBatchFacts {
+    int draw_count
+    int grouped_element_total
+    int vertex_payload_byte_count
+    int index_payload_byte_count
+    int total_payload_byte_count
 }
 
 # Batch facts for line geometry. `line_count` records the number of line
 # primitives; the remaining fields carry the same draw, grouped-element, and
 # payload-byte facts as the indexed batch shape.
-genus LineGeometryDrawBatchFacts {
-    numerus draw_count
-    numerus line_count
-    numerus grouped_element_total
-    numerus vertex_payload_byte_count
-    numerus index_payload_byte_count
-    numerus total_payload_byte_count
+class LineGeometryDrawBatchFacts {
+    int draw_count
+    int line_count
+    int grouped_element_total
+    int vertex_payload_byte_count
+    int index_payload_byte_count
+    int total_payload_byte_count
 }
 
 # Exact CPU-side payload facts for the visible-face mesh shape used by the
 # geometry helpers: four vertices, six u32 indices, and two triangles per face.
 # Position and color each use three float32 scalars per vertex, so the byte
 # helpers can describe the host upload without allocating a buffer.
-genus VisibleFaceMeshFacts {
-    numerus face_count
-    numerus vertex_count
-    numerus index_count
-    numerus triangle_count
-    numerus position_payload_byte_count
-    numerus color_payload_byte_count
-    numerus index_payload_byte_count
-    numerus total_payload_byte_count
+class VisibleFaceMeshFacts {
+    int face_count
+    int vertex_count
+    int index_count
+    int triangle_count
+    int position_payload_byte_count
+    int color_payload_byte_count
+    int index_payload_byte_count
+    int total_payload_byte_count
 }
 
 # --- Scalar payload and mesh-shape helpers ---
@@ -82,81 +82,69 @@ genus VisibleFaceMeshFacts {
 # Non-positive face counts are rejected with `nihil`; accepted counts are
 # expanded into the fixed visible-face topology and byte counts above.
 
-functio visible_face_vertex_count(numerus face_count) → numerus ∪ nihil {
-    si face_count ≤ 0 ergo redde nihil
-    redde face_count * 4
+fn visible_face_vertex_count(int face_count) → int ∪ null {
+    if face_count ≤ 0 then return null
+    return face_count * 4
 }
 
-functio visible_face_index_count(numerus face_count) → numerus ∪ nihil {
-    si face_count ≤ 0 ergo redde nihil
-    redde face_count * 6
+fn visible_face_index_count(int face_count) → int ∪ null {
+    if face_count ≤ 0 then return null
+    return face_count * 6
 }
 
-functio visible_face_triangle_count(numerus face_count) → numerus ∪ nihil {
-    si face_count ≤ 0 ergo redde nihil
-    redde face_count * 2
+fn visible_face_triangle_count(int face_count) → int ∪ null {
+    if face_count ≤ 0 then return null
+    return face_count * 2
 }
 
-functio visible_face_position_payload_byte_count(numerus face_count) → numerus ∪ nihil {
-    fixum numerus ∪ nihil vertex_count_result ← visible_face_vertex_count(face_count)
-    si vertex_count_result est nihil ergo redde nihil
-    fixum numerus vertex_count ← vertex_count_result vel 0
-    redde vertex_count * 3 * 4
+fn visible_face_position_payload_byte_count(int face_count) → int ∪ null {
+    const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
+    if vertex_count_result is null then return null
+    const int vertex_count ← vertex_count_result coalesce 0
+    return (vertex_count * 3) * 4
 }
 
-functio visible_face_color_payload_byte_count(numerus face_count) → numerus ∪ nihil {
-    fixum numerus ∪ nihil vertex_count_result ← visible_face_vertex_count(face_count)
-    si vertex_count_result est nihil ergo redde nihil
-    fixum numerus vertex_count ← vertex_count_result vel 0
-    redde vertex_count * 3 * 4
+fn visible_face_color_payload_byte_count(int face_count) → int ∪ null {
+    const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
+    if vertex_count_result is null then return null
+    const int vertex_count ← vertex_count_result coalesce 0
+    return (vertex_count * 3) * 4
 }
 
-functio visible_face_index_payload_byte_count(numerus face_count) → numerus ∪ nihil {
-    fixum numerus ∪ nihil index_count_result ← visible_face_index_count(face_count)
-    si index_count_result est nihil ergo redde nihil
-    fixum numerus index_count ← index_count_result vel 0
-    redde index_count * 4
+fn visible_face_index_payload_byte_count(int face_count) → int ∪ null {
+    const int ∪ null index_count_result ← visible_face_index_count(face_count)
+    if index_count_result is null then return null
+    const int index_count ← index_count_result coalesce 0
+    return index_count * 4
 }
 
-functio visible_face_payload_byte_count(numerus face_count) → numerus ∪ nihil {
-    fixum numerus ∪ nihil position_bytes_result ←
-        visible_face_position_payload_byte_count(face_count)
-    si position_bytes_result est nihil ergo redde nihil
-    fixum numerus position_bytes ← position_bytes_result vel 0
-    fixum numerus ∪ nihil color_bytes_result ← visible_face_color_payload_byte_count(face_count)
-    si color_bytes_result est nihil ergo redde nihil
-    fixum numerus color_bytes ← color_bytes_result vel 0
-    fixum numerus ∪ nihil index_bytes_result ← visible_face_index_payload_byte_count(face_count)
-    si index_bytes_result est nihil ergo redde nihil
-    fixum numerus index_bytes ← index_bytes_result vel 0
-    redde position_bytes + color_bytes + index_bytes
+fn visible_face_payload_byte_count(int face_count) → int ∪ null {
+    const int ∪ null position_bytes_result ← visible_face_position_payload_byte_count(face_count)
+    if position_bytes_result is null then return null
+    const int position_bytes ← position_bytes_result coalesce 0
+    const int ∪ null color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    if color_bytes_result is null then return null
+    const int color_bytes ← color_bytes_result coalesce 0
+    const int ∪ null index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    if index_bytes_result is null then return null
+    const int index_bytes ← index_bytes_result coalesce 0
+    return (position_bytes + color_bytes) + index_bytes
 }
 
-functio visible_face_mesh_facts(numerus face_count) → VisibleFaceMeshFacts ∪ nihil {
-    fixum numerus ∪ nihil vertex_count_result ← visible_face_vertex_count(face_count)
-    si vertex_count_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil index_count_result ← visible_face_index_count(face_count)
-    si index_count_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil triangle_count_result ← visible_face_triangle_count(face_count)
-    si triangle_count_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil position_bytes_result ←
-        visible_face_position_payload_byte_count(face_count)
-    si position_bytes_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil color_bytes_result ← visible_face_color_payload_byte_count(face_count)
-    si color_bytes_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil index_bytes_result ←
-        visible_face_index_payload_byte_count(face_count)
-    si index_bytes_result est nihil ergo redde nihil
-    fixum numerus ∪ nihil total_bytes_result ← visible_face_payload_byte_count(face_count)
-    si total_bytes_result est nihil ergo redde nihil
-    redde VisibleFaceMeshFacts {
-        face_count = face_count,
-        vertex_count = vertex_count_result vel 0,
-        index_count = index_count_result vel 0,
-        triangle_count = triangle_count_result vel 0,
-        position_payload_byte_count = position_bytes_result vel 0,
-        color_payload_byte_count = color_bytes_result vel 0,
-        index_payload_byte_count = index_bytes_result vel 0,
-        total_payload_byte_count = total_bytes_result vel 0
-    }
+fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ null {
+    const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
+    if vertex_count_result is null then return null
+    const int ∪ null index_count_result ← visible_face_index_count(face_count)
+    if index_count_result is null then return null
+    const int ∪ null triangle_count_result ← visible_face_triangle_count(face_count)
+    if triangle_count_result is null then return null
+    const int ∪ null position_bytes_result ← visible_face_position_payload_byte_count(face_count)
+    if position_bytes_result is null then return null
+    const int ∪ null color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    if color_bytes_result is null then return null
+    const int ∪ null index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    if index_bytes_result is null then return null
+    const int ∪ null total_bytes_result ← visible_face_payload_byte_count(face_count)
+    if total_bytes_result is null then return null
+    return VisibleFaceMeshFacts {face_count = face_count, vertex_count = vertex_count_result coalesce 0, index_count = index_count_result coalesce 0, triangle_count = triangle_count_result coalesce 0, position_payload_byte_count = position_bytes_result coalesce 0, color_payload_byte_count = color_bytes_result coalesce 0, index_payload_byte_count = index_bytes_result coalesce 0, total_payload_byte_count = total_bytes_result coalesce 0}
 }

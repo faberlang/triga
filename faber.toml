@@ -14,4 +14,4 @@ kind = "lib"
 targets = ["rust", "ts"]
 
 [reader]
-locale = "la"
+locale = "en"

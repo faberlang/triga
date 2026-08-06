@@ -1,53 +1,53 @@
 # Resource handle identity and lifecycle free functions.
 #
-# Public import: importa ex "triga:resource" privata resource
+# Public import: import from "triga:resource" private resource
 # Public leaf module. Scene store imports this for mesh resource handles.
 
 # A ResourceHandle is a stable logical slot plus a generation. Consumers
 # compare both fields, so a later resource in the same logical slot cannot be
 # mistaken for the handle that named an earlier resource.
-genus ResourceHandle {
-    numerus index
-    numerus generation
+class ResourceHandle {
+    int index
+    int generation
 }
 
 # ResourceTransition describes one slot across a replacement boundary. An
 # unchanged transition repeats the same generation; a changed transition uses
 # the next generation for the same logical index.
-genus ResourceTransition {
+class ResourceTransition {
     ResourceHandle previous
     ResourceHandle current
-    bivalens changed
+    bool changed
 }
 
 # ResourceLifecycleTransition extends the replacement model with creation and
 # removal. Optional handles make the two one-sided states explicit.
-genus ResourceLifecycleTransition {
-    numerus logical_index
-    ResourceHandle previous sponte
-    ResourceHandle current sponte
-    bivalens changed
-    bivalens removed
+class ResourceLifecycleTransition {
+    int logical_index
+    ResourceHandle previous optional
+    ResourceHandle current optional
+    bool changed
+    bool removed
 }
 
 # ResourceLifecycleBatchFacts is the aggregate view used by a resource update
 # pass. The counts are derived only after the transition list passes its
 # uniqueness and generation checks.
-genus ResourceLifecycleBatchFacts {
-    numerus transition_count
-    numerus changed_count
-    numerus unchanged_count
-    numerus created_count
-    numerus removed_count
-    numerus live_count
+class ResourceLifecycleBatchFacts {
+    int transition_count
+    int changed_count
+    int unchanged_count
+    int created_count
+    int removed_count
+    int live_count
 }
 
 # ResourceHandleTraversal is the bounded accumulator used by the handle query
 # helpers below. `remaining` keeps traversal loops fail-closed if a malformed
 # input would otherwise cycle.
-genus ResourceHandleTraversal {
-    lista<ResourceHandle> handles
-    numerus remaining
+class ResourceHandleTraversal {
+    list<ResourceHandle> handles
+    int remaining
 }
 
 # ── Replacement transitions ──────────────────────────────────────────
@@ -56,186 +56,145 @@ genus ResourceHandleTraversal {
 # visible. The list helpers validate the whole batch before returning facts.
 
 
-functio resource_handle_equals(de ResourceHandle a, de ResourceHandle b) → bivalens {
-    redde a.index ≡ b.index et a.generation ≡ b.generation
+fn resource_handle_equals(ref ResourceHandle a, ref ResourceHandle b) → bool {
+    return a.index ≡ b.index and a.generation ≡ b.generation
 }
 
-functio resource_handle_next(de ResourceHandle handle) → ResourceHandle {
-    redde ResourceHandle { index = handle.index, generation = handle.generation + 1 }
+fn resource_handle_next(ref ResourceHandle handle) → ResourceHandle {
+    return ResourceHandle {index = handle.index, generation = handle.generation + 1}
 }
 
-functio resource_transition_unchanged(de ResourceHandle handle) → ResourceTransition {
-    fixum ResourceHandle stable ← ResourceHandle {
-        index = handle.index, generation = handle.generation
-    }
-    redde ResourceTransition {
-        previous = stable,
-        current = stable,
-        changed = falsum
-    }
+fn resource_transition_unchanged(ref ResourceHandle handle) → ResourceTransition {
+    const ResourceHandle stable ← ResourceHandle {index = handle.index, generation = handle.generation}
+    return ResourceTransition {previous = stable, current = stable, changed = false}
 }
 
-functio resource_transition_replaced(de ResourceHandle handle) → ResourceTransition {
-    fixum ResourceHandle previous ← ResourceHandle {
-        index = handle.index, generation = handle.generation
-    }
-    redde ResourceTransition {
-        previous = previous,
-        current = resource_handle_next(previous),
-        changed = verum
-    }
+fn resource_transition_replaced(ref ResourceHandle handle) → ResourceTransition {
+    const ResourceHandle previous ← ResourceHandle {index = handle.index, generation = handle.generation}
+    return ResourceTransition {previous = previous, current = resource_handle_next(previous), changed = true}
 }
 
-functio resource_transition_valid(de ResourceTransition transition) → bivalens {
-    si transition.previous.index ≠ transition.current.index ergo redde falsum
-    si transition.changed {
-        redde transition.current.generation ≡ transition.previous.generation + 1
-    }
-    redde transition.current.generation ≡ transition.previous.generation
+fn resource_transition_valid(ref ResourceTransition transition) → bool {
+    if transition.previous.index ≠ transition.current.index then return false
+    if transition.changed then return transition.current.generation ≡ transition.previous.generation + 1
+    return transition.current.generation ≡ transition.previous.generation
 }
 
-functio _resource_transition_index_seen(
-    de lista<ResourceTransition> transitions,
-    numerus limit,
-    numerus resource_index
-) → bivalens {
-    varia numerus i ← 0
-    dum i < limit {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.current.index ≡ resource_index {
-            redde verum
+fn _resource_transition_index_seen(ref list<ResourceTransition> transitions, int limit, int resource_index) → bool {
+    var int i ← 0
+    while i ≺ limit {
+        const ResourceTransition transition ← transitions[i]
+        if transition.current.index ≡ resource_index then return true
+        i ← i + 1
+    }
+    return false
+}
+
+fn resource_transitions_valid(ref list<ResourceTransition> transitions) → bool {
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if resource_transition_valid(transition) ≡ false then return false
+        if _resource_transition_index_seen(transitions, i, transition.current.index) then return false
+        i ← i + 1
+    }
+    return true
+}
+
+fn resource_transition_changed_count(ref list<ResourceTransition> transitions) → int ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var int count ← 0
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if transition.changed {
+            count ← count + 1
         }
         i ← i + 1
     }
-    redde falsum
+    return count
 }
 
-functio resource_transitions_valid(de lista<ResourceTransition> transitions) → bivalens {
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si resource_transition_valid(transition) ≡ falsum ergo redde falsum
-        si _resource_transition_index_seen(transitions, i, transition.current.index) {
-            redde falsum
+fn resource_transition_unchanged_count(ref list<ResourceTransition> transitions) → int ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var int count ← 0
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if transition.changed ≡ false {
+            count ← count + 1
         }
         i ← i + 1
     }
-    redde verum
+    return count
 }
 
-functio resource_transition_changed_count(
-    de lista<ResourceTransition> transitions
-) → numerus ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.changed { count ← count + 1 }
-        i ← i + 1
-    }
-    redde count
-}
-
-functio resource_transition_unchanged_count(
-    de lista<ResourceTransition> transitions
-) → numerus ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.changed ≡ falsum { count ← count + 1 }
-        i ← i + 1
-    }
-    redde count
-}
-
-functio resource_transition_changed_indices(
-    de lista<ResourceTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.changed {
+fn resource_transition_changed_indices(ref list<ResourceTransition> transitions) → list<int> ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if transition.changed {
             indices.appende(transition.current.index)
         }
         i ← i + 1
     }
-    redde indices
+    return indices
 }
 
-functio resource_transition_changed_handles(
-    de lista<ResourceTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.changed {
-            handles.appende(ResourceHandle {
-                index = transition.current.index,
-                generation = transition.current.generation
-            })
+fn resource_transition_changed_handles(ref list<ResourceTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if transition.changed {
+            handles.appende(ResourceHandle {index = transition.current.index, generation = transition.current.generation})
         }
         i ← i + 1
     }
-    redde handles
+    return handles
 }
 
-functio resource_transition_current_handles(
-    de lista<ResourceTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        handles.appende(ResourceHandle {
-            index = transition.current.index,
-            generation = transition.current.generation
-        })
+fn resource_transition_current_handles(ref list<ResourceTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        handles.appende(ResourceHandle {index = transition.current.index, generation = transition.current.generation})
         i ← i + 1
     }
-    redde handles
+    return handles
 }
 
-functio resource_transition_unchanged_indices(
-    de lista<ResourceTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.changed ≡ falsum {
+fn resource_transition_unchanged_indices(ref list<ResourceTransition> transitions) → list<int> ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if transition.changed ≡ false {
             indices.appende(transition.current.index)
         }
         i ← i + 1
     }
-    redde indices
+    return indices
 }
 
-functio resource_transition_unchanged_handles(
-    de lista<ResourceTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_transitions_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceTransition transition ← transitions[i]
-        si transition.changed ≡ falsum {
-            handles.appende(ResourceHandle {
-                index = transition.current.index,
-                generation = transition.current.generation
-            })
+fn resource_transition_unchanged_handles(ref list<ResourceTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_transitions_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceTransition transition ← transitions[i]
+        if transition.changed ≡ false {
+            handles.appende(ResourceHandle {index = transition.current.index, generation = transition.current.generation})
         }
         i ← i + 1
     }
-    redde handles
+    return handles
 }
 
 # ── Lifecycle transitions ────────────────────────────────────────────
@@ -244,326 +203,246 @@ functio resource_transition_unchanged_handles(
 # preserving the same logical index. Batch accessors intentionally return
 # `nihil` for duplicate or generation-inconsistent input.
 
-functio resource_lifecycle_unchanged(de ResourceHandle handle) → ResourceLifecycleTransition {
-    redde ResourceLifecycleTransition {
-        logical_index = handle.index,
-        previous = handle,
-        current = handle,
-        changed = falsum,
-        removed = falsum
-    }
+fn resource_lifecycle_unchanged(ref ResourceHandle handle) → ResourceLifecycleTransition {
+    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, current = handle, changed = false, removed = false}
 }
 
-functio resource_lifecycle_replaced(de ResourceHandle handle) → ResourceLifecycleTransition {
-    redde ResourceLifecycleTransition {
-        logical_index = handle.index,
-        previous = handle,
-        current = resource_handle_next(handle),
-        changed = verum,
-        removed = falsum
-    }
+fn resource_lifecycle_replaced(ref ResourceHandle handle) → ResourceLifecycleTransition {
+    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, current = resource_handle_next(handle), changed = true, removed = false}
 }
 
-functio resource_lifecycle_removed(de ResourceHandle handle) → ResourceLifecycleTransition {
-    redde ResourceLifecycleTransition {
-        logical_index = handle.index,
-        previous = handle,
-        changed = verum,
-        removed = verum
-    }
+fn resource_lifecycle_removed(ref ResourceHandle handle) → ResourceLifecycleTransition {
+    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, changed = true, removed = true}
 }
 
-functio resource_lifecycle_created(de ResourceHandle handle) → ResourceLifecycleTransition {
-    redde ResourceLifecycleTransition {
-        logical_index = handle.index,
-        current = handle,
-        changed = verum,
-        removed = falsum
-    }
+fn resource_lifecycle_created(ref ResourceHandle handle) → ResourceLifecycleTransition {
+    return ResourceLifecycleTransition {logical_index = handle.index, current = handle, changed = true, removed = false}
 }
 
-functio resource_lifecycle_valid(de ResourceLifecycleTransition transition) → bivalens {
-    si transition.previous est nihil et transition.current est nihil ergo redde falsum
-    si transition.previous non est nihil {
-        si transition.previous!.index ≠ transition.logical_index ergo redde falsum
+fn resource_lifecycle_valid(ref ResourceLifecycleTransition transition) → bool {
+    if transition.previous is null and transition.current is null then return false
+    if transition.previous not is null {
+        if transition.previous!.index ≠ transition.logical_index then return false
     }
-    si transition.current non est nihil {
-        si transition.current!.index ≠ transition.logical_index ergo redde falsum
+    if transition.current not is null {
+        if transition.current!.index ≠ transition.logical_index then return false
     }
-    si transition.removed {
-        redde transition.changed
-            et transition.previous non est nihil
-            et transition.current est nihil
-    }
-    si transition.changed ≡ falsum {
-        redde transition.previous non est nihil
-            et transition.current non est nihil
-            et transition.previous!.generation ≡ transition.current!.generation
-    }
-    si transition.previous est nihil {
-        redde transition.current non est nihil
-    }
-    si transition.current est nihil ergo redde falsum
-    redde transition.current!.generation ≡ transition.previous!.generation + 1
+    if transition.removed then return (transition.changed and transition.previous not is null) and transition.current is null
+    if transition.changed ≡ false then return (transition.previous not is null and transition.current not is null) and transition.previous!.generation ≡ transition.current!.generation
+    if transition.previous is null then return transition.current not is null
+    if transition.current is null then return false
+    return transition.current!.generation ≡ transition.previous!.generation + 1
 }
 
-functio _resource_lifecycle_index_seen(
-    de lista<ResourceLifecycleTransition> transitions,
-    numerus limit,
-    numerus logical_index
-) → bivalens {
-    varia numerus i ← 0
-    dum i < limit {
-        fixum ResourceLifecycleTransition transition ← transitions[i]
-        si transition.logical_index ≡ logical_index {
-            redde verum
-        }
+fn _resource_lifecycle_index_seen(ref list<ResourceLifecycleTransition> transitions, int limit, int logical_index) → bool {
+    var int i ← 0
+    while i ≺ limit {
+        const ResourceLifecycleTransition transition ← transitions[i]
+        if transition.logical_index ≡ logical_index then return true
         i ← i + 1
     }
-    redde falsum
+    return false
 }
 
-functio resource_lifecycles_valid(
-    de lista<ResourceLifecycleTransition> transitions
-) → bivalens {
-    varia numerus i ← 0
-    dum i < transitions.longitudo() {
-        fixum ResourceLifecycleTransition transition ← transitions[i]
-        si resource_lifecycle_valid(transition) ≡ falsum ergo redde falsum
-        si _resource_lifecycle_index_seen(transitions, i, transition.logical_index) {
-            redde falsum
-        }
+fn resource_lifecycles_valid(ref list<ResourceLifecycleTransition> transitions) → bool {
+    var int i ← 0
+    while i ≺ transitions.longitudo() {
+        const ResourceLifecycleTransition transition ← transitions[i]
+        if resource_lifecycle_valid(transition) ≡ false then return false
+        if _resource_lifecycle_index_seen(transitions, i, transition.logical_index) then return false
         i ← i + 1
     }
-    redde verum
+    return true
 }
 
-functio resource_lifecycle_changed_count(
-    de lista<ResourceLifecycleTransition> transitions
-) → numerus ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    itera ex transitions fixum transition {
-        si transition.changed { count ← count + 1 }
-    }
-    redde count
-}
-
-functio resource_lifecycle_unchanged_count(
-    de lista<ResourceLifecycleTransition> transitions
-) → numerus ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    itera ex transitions fixum transition {
-        si transition.changed ≡ falsum { count ← count + 1 }
-    }
-    redde count
-}
-
-functio resource_lifecycle_created_count(
-    de lista<ResourceLifecycleTransition> transitions
-) → numerus ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    itera ex transitions fixum transition {
-        si transition.previous est nihil et transition.current non est nihil {
+fn resource_lifecycle_changed_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var int count ← 0
+    for from transitions const transition {
+        if transition.changed {
             count ← count + 1
         }
     }
-    redde count
+    return count
 }
 
-functio resource_lifecycle_removed_count(
-    de lista<ResourceLifecycleTransition> transitions
-) → numerus ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    itera ex transitions fixum transition {
-        si transition.removed { count ← count + 1 }
+fn resource_lifecycle_unchanged_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var int count ← 0
+    for from transitions const transition {
+        if transition.changed ≡ false {
+            count ← count + 1
+        }
     }
-    redde count
+    return count
 }
 
-functio resource_lifecycle_live_count(
-    de lista<ResourceLifecycleTransition> transitions
-) → numerus ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus count ← 0
-    itera ex transitions fixum transition {
-        si transition.current non est nihil { count ← count + 1 }
+fn resource_lifecycle_created_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var int count ← 0
+    for from transitions const transition {
+        if transition.previous is null and transition.current not is null {
+            count ← count + 1
+        }
     }
-    redde count
+    return count
 }
 
-functio resource_lifecycle_batch_facts(
-    de lista<ResourceLifecycleTransition> transitions
-) → ResourceLifecycleBatchFacts ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia numerus changed_count ← 0
-    varia numerus unchanged_count ← 0
-    varia numerus created_count ← 0
-    varia numerus removed_count ← 0
-    varia numerus live_count ← 0
-    itera ex transitions fixum transition {
-        si transition.changed { changed_count ← changed_count + 1 }
-        si transition.changed ≡ falsum { unchanged_count ← unchanged_count + 1 }
-        si transition.previous est nihil et transition.current non est nihil {
+fn resource_lifecycle_removed_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var int count ← 0
+    for from transitions const transition {
+        if transition.removed {
+            count ← count + 1
+        }
+    }
+    return count
+}
+
+fn resource_lifecycle_live_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var int count ← 0
+    for from transitions const transition {
+        if transition.current not is null {
+            count ← count + 1
+        }
+    }
+    return count
+}
+
+fn resource_lifecycle_batch_facts(ref list<ResourceLifecycleTransition> transitions) → ResourceLifecycleBatchFacts ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var int changed_count ← 0
+    var int unchanged_count ← 0
+    var int created_count ← 0
+    var int removed_count ← 0
+    var int live_count ← 0
+    for from transitions const transition {
+        if transition.changed {
+            changed_count ← changed_count + 1
+        }
+        if transition.changed ≡ false {
+            unchanged_count ← unchanged_count + 1
+        }
+        if transition.previous is null and transition.current not is null {
             created_count ← created_count + 1
         }
-        si transition.removed { removed_count ← removed_count + 1 }
-        si transition.current non est nihil { live_count ← live_count + 1 }
+        if transition.removed {
+            removed_count ← removed_count + 1
+        }
+        if transition.current not is null {
+            live_count ← live_count + 1
+        }
     }
-    redde ResourceLifecycleBatchFacts {
-        transition_count = transitions.longitudo(),
-        changed_count = changed_count,
-        unchanged_count = unchanged_count,
-        created_count = created_count,
-        removed_count = removed_count,
-        live_count = live_count
-    }
+    return ResourceLifecycleBatchFacts {transition_count = transitions.longitudo(), changed_count = changed_count, unchanged_count = unchanged_count, created_count = created_count, removed_count = removed_count, live_count = live_count}
 }
 
-functio resource_lifecycle_changed_indices(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    itera ex transitions fixum transition {
-        si transition.changed {
+fn resource_lifecycle_changed_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    for from transitions const transition {
+        if transition.changed {
             indices.appende(transition.logical_index)
         }
     }
-    redde indices
+    return indices
 }
 
-functio resource_lifecycle_unchanged_indices(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    itera ex transitions fixum transition {
-        si transition.changed ≡ falsum {
+fn resource_lifecycle_unchanged_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    for from transitions const transition {
+        if transition.changed ≡ false {
             indices.appende(transition.logical_index)
         }
     }
-    redde indices
+    return indices
 }
 
-functio resource_lifecycle_removed_indices(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    itera ex transitions fixum transition {
-        si transition.removed {
+fn resource_lifecycle_removed_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    for from transitions const transition {
+        if transition.removed {
             indices.appende(transition.logical_index)
         }
     }
-    redde indices
+    return indices
 }
 
-functio resource_lifecycle_live_indices(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    itera ex transitions fixum transition {
-        si transition.current non est nihil {
+fn resource_lifecycle_live_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    for from transitions const transition {
+        if transition.current not is null {
             indices.appende(transition.logical_index)
         }
     }
-    redde indices
+    return indices
 }
 
-functio resource_lifecycle_retired_indices(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<numerus> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<numerus> indices ← vacua
-    itera ex transitions fixum transition {
-        si transition.changed et transition.previous non est nihil {
+fn resource_lifecycle_retired_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<int> indices ← vacua
+    for from transitions const transition {
+        if transition.changed and transition.previous not is null {
             indices.appende(transition.logical_index)
         }
     }
-    redde indices
+    return indices
 }
 
-functio resource_lifecycle_changed_handles(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    itera ex transitions fixum transition {
-        si transition.changed et transition.current non est nihil {
-            handles.appende(ResourceHandle {
-                index = transition.current!.index,
-                generation = transition.current!.generation
-            })
+fn resource_lifecycle_changed_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    for from transitions const transition {
+        if transition.changed and transition.current not is null {
+            handles.appende(ResourceHandle {index = transition.current!.index, generation = transition.current!.generation})
         }
     }
-    redde handles
+    return handles
 }
 
-functio resource_lifecycle_unchanged_handles(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    itera ex transitions fixum transition {
-        si transition.changed ≡ falsum et transition.current non est nihil {
-            handles.appende(ResourceHandle {
-                index = transition.current!.index,
-                generation = transition.current!.generation
-            })
+fn resource_lifecycle_unchanged_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    for from transitions const transition {
+        if transition.changed ≡ false and transition.current not is null {
+            handles.appende(ResourceHandle {index = transition.current!.index, generation = transition.current!.generation})
         }
     }
-    redde handles
+    return handles
 }
 
-functio resource_lifecycle_removed_handles(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    itera ex transitions fixum transition {
-        si transition.removed et transition.previous non est nihil {
-            handles.appende(ResourceHandle {
-                index = transition.previous!.index,
-                generation = transition.previous!.generation
-            })
+fn resource_lifecycle_removed_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    for from transitions const transition {
+        if transition.removed and transition.previous not is null {
+            handles.appende(ResourceHandle {index = transition.previous!.index, generation = transition.previous!.generation})
         }
     }
-    redde handles
+    return handles
 }
 
-functio resource_lifecycle_retired_handles(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    itera ex transitions fixum transition {
-        si transition.changed et transition.previous non est nihil {
-            handles.appende(ResourceHandle {
-                index = transition.previous!.index,
-                generation = transition.previous!.generation
-            })
+fn resource_lifecycle_retired_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    for from transitions const transition {
+        if transition.changed and transition.previous not is null {
+            handles.appende(ResourceHandle {index = transition.previous!.index, generation = transition.previous!.generation})
         }
     }
-    redde handles
+    return handles
 }
 
-functio resource_lifecycle_current_handles(
-    de lista<ResourceLifecycleTransition> transitions
-) → lista<ResourceHandle> ∪ nihil {
-    si resource_lifecycles_valid(transitions) ≡ falsum ergo redde nihil
-    varia lista<ResourceHandle> handles ← vacua
-    itera ex transitions fixum transition {
-        si transition.current non est nihil {
-            handles.appende(ResourceHandle {
-                index = transition.current!.index,
-                generation = transition.current!.generation
-            })
+fn resource_lifecycle_current_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
+    if resource_lifecycles_valid(transitions) ≡ false then return null
+    var list<ResourceHandle> handles ← vacua
+    for from transitions const transition {
+        if transition.current not is null {
+            handles.appende(ResourceHandle {index = transition.current!.index, generation = transition.current!.generation})
         }
     }
-    redde handles
+    return handles
 }

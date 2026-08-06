@@ -1,6 +1,6 @@
 # Backend-agnostic geometry attributes and validation — package map facade.
 #
-# Public import: importa ex "triga:geometry" privata geometry
+# Public import: import from "triga:geometry" private geometry
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:geometry/data       BufferGeometry, ColoredQuadMesh, free constructors
@@ -11,8 +11,12 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-importa ex "triga:geometry/data" privata data
-importa ex "triga:geometry/attribute" privata attribute
-importa ex "triga:geometry/layout" privata layout
-importa ex "triga:geometry/bounds" privata bounds
-importa ex "triga:geometry/batch" privata batch
+import from "triga:geometry/data" private data
+
+import from "triga:geometry/attribute" private attribute
+
+import from "triga:geometry/layout" private layout
+
+import from "triga:geometry/bounds" private bounds
+
+import from "triga:geometry/batch" private batch

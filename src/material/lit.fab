@@ -1,18 +1,19 @@
 # MeshPhongMaterial — Phong-shaded material contract.
 #
-# Public import: importa ex "triga:material/lit" privata lit
+# Public import: import from "triga:material/lit" private lit
 #
 # Owns: MeshPhongMaterial.
 #
 # Imports: triga:math, triga:material/base.
 
-importa ex "triga:math" privata math
-importa ex "triga:material/base" privata base
+import from "triga:math" private math
+
+import from "triga:material/base" private base
 
 # MeshPhongMaterial is the first lit-material shape. It keeps the three.js
 # familiar carrier name while leaving lighting evaluation to the later shader
 # and host contracts.
-genus MeshPhongMaterial {
+class MeshPhongMaterial {
     base.Material base
     math.Color color
     math.Color specular

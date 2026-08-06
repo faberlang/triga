@@ -1,6 +1,6 @@
 # Typed CPU-side vertex attributes.
 #
-# Public import: importa ex "triga:geometry/attribute" privata attribute
+# Public import: import from "triga:geometry/attribute" private attribute
 #
 # Owns: BufferAttribute (+ all methods), AttributeData, AttributeUsage, and
 # the free constructor float32_attribute. AttributeData lives here so the
@@ -11,35 +11,39 @@
 # Imports: triga:geometry/layout (VertexAttributeLayout, VertexFormat,
 # VertexStepMode, and the VertexFormat / VertexStepMode variant constructors).
 
-importa ex "triga:geometry/layout" privata layout
+import from "triga:geometry/layout" private layout
 
 # Update intent carried alongside a CPU-side attribute. The value is available
 # to upload or streaming code; this leaf records the intent but does not
 # schedule updates itself.
-discretio AttributeUsage {
-    StaticAttribute { }
-    DynamicAttribute { }
-    StreamAttribute { }
+union AttributeUsage {
+    StaticAttribute,
+    DynamicAttribute,
+    StreamAttribute,
 }
 
 # The scalar payload kept by a BufferAttribute. Both representations use
 # four-byte scalars; the typed distinction controls the vertex format and
 # whether a float32 view can be projected for interleaving.
-discretio AttributeData {
-    Float32Attribute { lista<f32> values }
-    Uint32Attribute { lista<u32> values }
+union AttributeData {
+    Float32Attribute {
+        list<f32> values
+    },
+    Uint32Attribute {
+        list<int<u32>> values
+    },
 }
 
 # One named CPU-side vertex stream and the facts needed to describe it to a
 # host. `valida()` is the projection boundary: a valid stream has a non-empty
 # name, an unnormalized component width from 1 through 4, a positive element
 # count, and exactly component_width * element_count scalars.
-genus BufferAttribute {
-    textus name
-    numerus shader_location
-    numerus component_width
-    numerus element_count
-    bivalens normalized
+class BufferAttribute {
+    string name
+    int shader_location
+    int component_width
+    int element_count
+    bool normalized
     AttributeUsage usage
     AttributeData data
 
@@ -48,50 +52,57 @@ genus BufferAttribute {
     # The payload type and component width select the host vertex format.
     # `vertex_layout()` exposes the resulting tightly packed stream with a
     # zero offset, a scalar-derived stride, and per-vertex stepping.
-    @ privata
-    functio _vertex_format() → layout.VertexFormat {
-        discerne ego.data {
-            casu Float32Attribute fixum values {
-                redde layout.vertex_format_from_component_width(ego.component_width, verum)
+    @ private { }
+    fn _vertex_format() → layout.VertexFormat {
+        match self.data {
+            case Float32Attribute const values {
+                return layout.vertex_format_from_component_width(self.component_width, true)
             }
-            casu Uint32Attribute fixum values {
-                redde layout.vertex_format_from_component_width(ego.component_width, falsum)
+            case Uint32Attribute const values {
+                return layout.vertex_format_from_component_width(self.component_width, false)
             }
         }
     }
 
     # Vertex format is exported through vertex_layout; standalone enum
     # results are not file-interface carriers.
-    @ privata
-    functio vertex_format() → layout.VertexFormat ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        redde ego._vertex_format()
+    @ private { }
+    fn vertex_format() → layout.VertexFormat ∪ null {
+        if self.valida() ≡ false then return null
+        return self._vertex_format()
     }
 
     # --- Validation and CPU-side queries ---
 
     # Validation intentionally stays close to the payload: it checks the
     # metadata and the scalar count before any host-facing layout is emitted.
-    functio valida() → bivalens {
-        si ego.name ≡ "" ergo redde falsum
-        si ego.normalized ergo redde falsum
-        si ego.component_width < 1 aut ego.component_width > 4 ergo redde falsum
-        si ego.element_count ≡ 0 ergo redde falsum
-        redde ego.scalar_count() ≡
-            ego.component_width * ego.element_count
+    fn valida() → bool {
+        if self.name ≡ "" then return false
+        if self.normalized then return false
+        if self.component_width ≺ 1 or self.component_width ≻ 4 then return false
+        if self.element_count ≡ 0 then return false
+        return self.scalar_count() ≡ self.component_width * self.element_count
     }
 
-    functio scalar_count() → numerus {
-        discerne ego.data {
-            casu Float32Attribute fixum values { redde values.longitudo() }
-            casu Uint32Attribute fixum values { redde values.longitudo() }
+    fn scalar_count() → int {
+        match self.data {
+            case Float32Attribute const values {
+                return values.longitudo()
+            }
+            case Uint32Attribute const values {
+                return values.longitudo()
+            }
         }
     }
 
-    functio scalar_bytes() → numerus {
-        discerne ego.data {
-            casu Float32Attribute fixum values { redde 4 }
-            casu Uint32Attribute fixum values { redde 4 }
+    fn scalar_bytes() → int {
+        match self.data {
+            case Float32Attribute const values {
+                return 4
+            }
+            case Uint32Attribute const values {
+                return 4
+            }
         }
     }
 
@@ -99,26 +110,24 @@ genus BufferAttribute {
     # host vertex buffers. `nihil` marks a uint32 payload; the variant match is
     # kept here because consumers cannot `discerne` AttributeData across this
     # file boundary.
-    functio float32_values() → lista<f32> ∪ nihil {
-        discerne ego.data {
-            casu Float32Attribute fixum values { redde values }
-            casu Uint32Attribute fixum values { redde nihil }
+    fn float32_values() → list<f32> ∪ null {
+        match self.data {
+            case Float32Attribute const values {
+                return values
+            }
+            case Uint32Attribute const values {
+                return null
+            }
         }
     }
 
-    functio stride_bytes() → numerus {
-        redde ego.component_width * ego.scalar_bytes()
+    fn stride_bytes() → int {
+        return self.component_width * self.scalar_bytes()
     }
 
-    functio vertex_layout() → layout.VertexAttributeLayout ∪ nihil {
-        si ego.valida() ≡ falsum ergo redde nihil
-        redde layout.VertexAttributeLayout {
-            source_name = ego.name,
-            shader_location = ego.shader_location,
-            vertex_format = ego._vertex_format(),
-            offset_bytes = 0, stride_bytes = ego.stride_bytes(),
-            step_mode = layout.vertex_step_mode_vertex_step()
-        }
+    fn vertex_layout() → layout.VertexAttributeLayout ∪ null {
+        if self.valida() ≡ false then return null
+        return layout.VertexAttributeLayout {source_name = self.name, shader_location = self.shader_location, vertex_format = self._vertex_format(), offset_bytes = 0, stride_bytes = self.stride_bytes(), step_mode = layout.vertex_step_mode_vertex_step()}
     }
 }
 
@@ -127,17 +136,6 @@ genus BufferAttribute {
 # The starter constructor makes the common CPU-side case explicit: a static,
 # unnormalized float32 stream. `valida()` remains the authority for checking
 # that the supplied values match the declared element shape.
-functio float32_attribute(
-    textus name,
-    numerus shader_location,
-    numerus component_width,
-    numerus element_count,
-    lista<f32> values
-) → BufferAttribute {
-    redde BufferAttribute {
-        name = name, shader_location = shader_location,
-        component_width = component_width, element_count = element_count,
-        normalized = falsum, usage = finge StaticAttribute,
-        data = finge Float32Attribute { values = values }
-    }
+fn float32_attribute(string name, int shader_location, int component_width, int element_count, list<f32> values) → BufferAttribute {
+    return BufferAttribute {name = name, shader_location = shader_location, component_width = component_width, element_count = element_count, normalized = false, usage = StaticAttribute(), data = Float32Attribute(values)}
 }

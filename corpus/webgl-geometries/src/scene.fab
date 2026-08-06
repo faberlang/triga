@@ -1,9 +1,9 @@
-importa ex "./shapes" privata shapes
+import from "./shapes" private shapes
 
-genus CorpusGeometryManifest {
-    lista<shapes.CorpusMesh> objects
+class CorpusGeometryManifest {
+    list<shapes.CorpusMesh> objects
 }
 
-functio corpus_scene_geometry() → CorpusGeometryManifest {
-    redde CorpusGeometryManifest { objects = shapes.geometry_showcase_meshes() }
+fn corpus_scene_geometry() → CorpusGeometryManifest {
+    return CorpusGeometryManifest {objects = shapes.geometry_showcase_meshes()}
 }

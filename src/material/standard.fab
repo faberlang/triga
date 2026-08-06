@@ -1,18 +1,19 @@
 # MeshStandardMaterial — PBR standard material contract.
 #
-# Public import: importa ex "triga:material/standard" privata standard
+# Public import: import from "triga:material/standard" private standard
 #
 # Owns: MeshStandardMaterial.
 #
 # Imports: triga:math, triga:material/base.
 
-importa ex "triga:math" privata math
-importa ex "triga:material/base" privata base
+import from "triga:math" private math
+
+import from "triga:material/base" private base
 
 # MeshStandardMaterial is the PBR-shaped material carrier. The fields are
 # source data only; texture sampling, environment lighting, and pipeline
 # allocation belong to the future material/render seams.
-genus MeshStandardMaterial {
+class MeshStandardMaterial {
     base.Material base
     math.Color color
     f32 roughness = 1.0

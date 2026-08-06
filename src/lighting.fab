@@ -1,6 +1,6 @@
 # lighting.fab — package map facade for the lighting package.
 #
-# Public import: importa ex "triga:lighting" privata lighting
+# Public import: import from "triga:lighting" private lighting
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:lighting/light    Light family (Light, AmbientLight, DirectionalLight, PointLight)
@@ -12,4 +12,4 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-importa ex "triga:lighting/light" privata lighting
+import from "triga:lighting/light" private lighting

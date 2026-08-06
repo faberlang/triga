@@ -11,14 +11,14 @@ summary = "Minimal @vertex and @fragment function stubs for the source graphics 
 # Demonstrates the annotation contract that radix lowers to shader stages.
 
 
-@ vertex
-functio hello_voxel_vertex() → vacuum {
+@ vertex { }
+fn hello_voxel_vertex() → void {
 }
 
-@ fragment
-functio hello_voxel_fragment() → vacuum {
+@ fragment { }
+fn hello_voxel_fragment() → void {
 }
 
-incipit {
-    nota verum
+main {
+    print true
 }

@@ -10,23 +10,24 @@ summary = "Minimal @vertex and @fragment exemplar with typed vertex layout facts
 # Goal 01 acceptance exemplar: one @vertex function and one @fragment function
 # with Triga-side layout facts that the compiler extracts for WGSL emission.
 
-importa ex "triga:geometry/data" privata data
-importa ex "triga:geometry/attribute" privata attribute
-importa ex "triga:geometry/batch" privata batch
+import from "triga:geometry/data" private data
 
-@ vertex
-functio hello_voxel_vertex() → vacuum {
+import from "triga:geometry/attribute" private attribute
+
+import from "triga:geometry/batch" private batch
+
+@ vertex { }
+fn hello_voxel_vertex() → void {
 }
 
-@ fragment
-functio hello_voxel_fragment() → vacuum {
+@ fragment { }
+fn hello_voxel_fragment() → void {
 }
 
-incipit {
-    fixum lista<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
-    fixum lista<f32> colors ← [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
-    fixum lista<u32> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 5, 2, 0, 3, 7, 0, 7, 4]
-    fixum data.BufferGeometry ∪ nihil cube_result ← data.colored_indexed_geometry(8, positions, colors, indices)
-    fixum data.BufferGeometry cube ← data.BufferGeometry { topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups }
-
+main {
+    const list<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
+    const list<f32> colors ← [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
+    const list<int<u32>> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 5, 2, 0, 3, 7, 0, 7, 4]
+    const data.BufferGeometry ∪ null cube_result ← data.colored_indexed_geometry(8, positions, colors, indices)
+    const data.BufferGeometry cube ← data.BufferGeometry {topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups}
 }

@@ -35,13 +35,18 @@ if [[ ! -x "$RADIX_BIN" ]]; then
   (cd "$RADIX" && cargo build -q -p radix --bin radix)
 fi
 
+# The triga package now reads English (faber.toml `[reader] locale = "en"`);
+# the radix CLI defaults to Latin, so the en reader pack must be passed
+# explicitly for each single-file check.
+LOCALE_PACK="$RADIX/stdlib/locale/en/pack.toml"
+
 export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
 
 echo "check-compile: parsing leaf modules"
 for mod in math graph material face geometry primitives scene resource triga shader_contract; do
   echo "check-compile: parsing src/${mod}.fab"
-  "$RADIX_BIN" check "$ROOT/src/${mod}.fab"
+  "$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/src/${mod}.fab"
 done
 
 echo "check-compile: parsing nested package leaves"
@@ -49,29 +54,29 @@ for leaf in graph/object graph/camera lighting/light \
   geometry/layout geometry/bounds geometry/batch geometry/attribute geometry/data
 do
   echo "check-compile: parsing src/${leaf}.fab"
-  "$RADIX_BIN" check "$ROOT/src/${leaf}.fab"
+  "$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/src/${leaf}.fab"
 done
 
 echo "check-compile: checking geometry attribute exemplar"
-"$RADIX_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/triga-geometry-attributes.fab"
 
 echo "check-compile: checking Stage 4 source-owned facts exemplar"
-"$RADIX_BIN" check "$ROOT/exempla/triga-stage4-source-facts.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/triga-stage4-source-facts.fab"
 
 echo "check-compile: checking Hello Voxel first-draw facts exemplar"
-"$RADIX_BIN" check "$ROOT/exempla/hello-voxel-first-draw-facts.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/hello-voxel-first-draw-facts.fab"
 
 echo "check-compile: checking Hello Voxel shaders exemplar"
-"$RADIX_BIN" check "$ROOT/exempla/triga-hello-voxel-shaders.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/triga-hello-voxel-shaders.fab"
 
 echo "check-compile: checking Hello Voxel pipeline exemplar"
-"$RADIX_BIN" check "$ROOT/exempla/triga-hello-voxel-pipeline.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/triga-hello-voxel-pipeline.fab"
 
 echo "check-compile: checking vertex-fragment stub"
-"$RADIX_BIN" check "$ROOT/exempla/triga-vertex-fragment-stub.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/triga-vertex-fragment-stub.fab"
 
 echo "check-compile: checking scene-store exemplar"
-"$RADIX_BIN" check "$ROOT/exempla/triga-scene-store.fab"
+"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/exempla/triga-scene-store.fab"
 
 echo "check-compile: checking scene-store exemplar through Faber provider path"
 (cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check exempla/triga-scene-store.fab)

@@ -9,53 +9,53 @@ summary = "Triga-side facts for the locked graphics pipeline contract: shader st
 #
 # Triga-side fact codes that map to radix MIR types.
 
-importa ex "triga:math" privata math
-importa ex "triga:material/base" privata base
-importa ex "triga:material/basic" privata basic
+import from "triga:math" private math
 
-incipit {
+import from "triga:material/base" private base
+
+import from "triga:material/basic" private basic
+
+main {
     # Shader stage codes
-    fixum numerus shader_stage_compute ← 0
-    fixum numerus shader_stage_vertex ← 1
-    fixum numerus shader_stage_fragment ← 2
-    nota shader_stage_fragment
+    const int shader_stage_compute ← 0
+    const int shader_stage_vertex ← 1
+    const int shader_stage_fragment ← 2
+    print shader_stage_fragment
 
     # Primitive topology codes
-    fixum numerus topology_triangle_list ← 1
-    fixum numerus topology_line_list ← 2
-    fixum numerus topology_point_list ← 3
-    nota topology_triangle_list
+    const int topology_triangle_list ← 1
+    const int topology_line_list ← 2
+    const int topology_point_list ← 3
+    print topology_triangle_list
 
     # Vertex format codes
-    fixum numerus vertex_format_float32x3 ← 3
-    nota vertex_format_float32x3
+    const int vertex_format_float32x3 ← 3
+    print vertex_format_float32x3
 
     # Step mode codes
-    fixum numerus step_mode_vertex ← 1
-    fixum numerus step_mode_instance ← 2
-    nota step_mode_vertex
+    const int step_mode_vertex ← 1
+    const int step_mode_instance ← 2
+    print step_mode_vertex
 
     # Color target format codes
-    fixum numerus color_target_rgba8_unorm ← 1
-    fixum numerus color_target_bgra8_unorm ← 2
-    fixum numerus color_target_bgra8_unorm_srgb ← 3
-    nota color_target_bgra8_unorm
+    const int color_target_rgba8_unorm ← 1
+    const int color_target_bgra8_unorm ← 2
+    const int color_target_bgra8_unorm_srgb ← 3
+    print color_target_bgra8_unorm
 
     # Depth compare codes
-    fixum numerus depth_compare_never ← 0
-    fixum numerus depth_compare_less ← 1
-    fixum numerus depth_compare_always ← 7
-    nota depth_compare_less
+    const int depth_compare_never ← 0
+    const int depth_compare_less ← 1
+    const int depth_compare_always ← 7
+    print depth_compare_less
 
     # Goal 01 material
-    fixum math.Color goal_color ← math.Color { r = 1.0, g = 0.2, b = 0.2 }
-
-    fixum basic.MeshBasicMaterial ∪ nihil goal_material_result ← basic.mesh_basic_material("goal-material", goal_color)
-    fixum basic.MeshBasicMaterial goal_material ← basic.MeshBasicMaterial { base = goal_material_result!.base, color = goal_material_result!.color }
-
-    fixum base.MaterialPipelineFacts ∪ nihil goal_pipeline_result ← basic.mesh_basic_material_pipeline_facts(goal_material)
-    fixum base.MaterialPipelineFacts goal_pipeline ← base.MaterialPipelineFacts { side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test }
-    nota goal_pipeline.depth_test_enabled
-    nota goal_pipeline.transparent
-    nota goal_pipeline.side_code
+    const math.Color goal_color ← math.Color {r = 1.0, g = 0.2, b = 0.2}
+    const basic.MeshBasicMaterial ∪ null goal_material_result ← basic.mesh_basic_material("goal-material", goal_color)
+    const basic.MeshBasicMaterial goal_material ← basic.MeshBasicMaterial {base = goal_material_result!.base, color = goal_material_result!.color}
+    const base.MaterialPipelineFacts ∪ null goal_pipeline_result ← basic.mesh_basic_material_pipeline_facts(goal_material)
+    const base.MaterialPipelineFacts goal_pipeline ← base.MaterialPipelineFacts {side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test}
+    print goal_pipeline.depth_test_enabled
+    print goal_pipeline.transparent
+    print goal_pipeline.side_code
 }

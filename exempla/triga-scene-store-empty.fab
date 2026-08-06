@@ -8,11 +8,11 @@ syntax = "importa ex \"triga:scene\" privata scene"
 +++
 # exempla/triga-scene-store-empty — empty SceneStore edge case demonstrations.
 
-importa ex "triga:scene" privata scene
+import from "triga:scene" private scene
 
-incipit {
-    fixum scene.SceneStore empty ← scene.scene_store()
-    fixum scene.SceneHandle fresh_root ← scene.SceneHandle { index = 0, generation = 0 }
+main {
+    const scene.SceneStore empty ← scene.scene_store()
+    const scene.SceneHandle fresh_root ← scene.SceneHandle {index = 0, generation = 0}
 
     # Operations on an empty store
 }

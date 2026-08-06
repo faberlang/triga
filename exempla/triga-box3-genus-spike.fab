@@ -13,19 +13,19 @@ syntax = "importa ex \"triga:triga\" privata triga"
 #   2. Mutation through ego works in a file-top-level user genus (Imperativus).
 #   3. File-top-level genus placement supports method declarations.
 
-importa ex "triga:math" privata math
+import from "triga:math" private math
 
-incipit {
+main {
     # Perfectum predicate — receiver method called across triga:* import.
-    fixum math.Box3 bounds ← math.Box3 { min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0) }
+    const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
 
     # intersecat: receiver method taking another Box3.
-    fixum math.Box3 overlap_box ← math.Box3 { min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0) }
+    const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
 
     # inflata: Perfectum — returns a new Box3, receiver unchanged.
-    fixum math.Box3 expanded ← bounds.inflata(1.0)
+    const math.Box3 expanded ← bounds.inflata(1.0)
 
     # Imperativus mutation through ego on a varia receiver.
-    varia math.Box3 mutable_bounds ← math.Box3 { min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0) }
+    var math.Box3 mutable_bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
     mutable_bounds.infla(2.0)
 }

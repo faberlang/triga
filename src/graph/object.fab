@@ -1,29 +1,29 @@
 # Object3D scene-graph node and Scene container shape contracts.
 #
-# Public import: importa ex "triga:graph/object" privata object
+# Public import: import from "triga:graph/object" private object
 # Depends on: triga:math
 
-importa ex "triga:math" privata math
+import from "triga:math" private math
 
 # Object3D is the common scene-graph payload. Triga keeps composition explicit:
 # a camera, light, or scene stores an Object3D in its `base` field instead of
 # relying on inheritance. That makes the data crossing the Faber/host seam
 # visible in the type itself.
-genus Object3D {
+class Object3D {
     math.Vector3 position
     math.Euler rotation
     math.Quaternion quaternion
     math.Vector3 scale
     math.Matrix4 matrix
-    lista<Object3D> children
-    bivalens visible = verum
-    textus name
+    list<Object3D> children
+    bool visible = true
+    string name
 }
 
 # Scene adds only an optional background color to the common Object3D shape.
 # The scene store in `triga:scene` owns identity and hierarchy; this genus is
 # the lightweight value shape used by graph-facing APIs.
-genus Scene {
+class Scene {
     Object3D base
-    math.Color background sponte
+    math.Color background optional
 }

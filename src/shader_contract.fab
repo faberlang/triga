@@ -1,6 +1,6 @@
 # Triga's adapter onto the compiler-owned generic shader-contract surface.
 #
-# Public import: importa ex "triga:shader_contract" privata contract
+# Public import: import from "triga:shader_contract" private contract
 #
 # The compiler (radix) owns the generic shader-contract lane: the
 # `@ shader_contract "<role>"` annotation, identity-resolved ingestion,
@@ -63,41 +63,21 @@
 # format, offset/stride in bytes, and input step mode. Maps Triga's
 # geometry.geometry_vertex_layout_matches real API onto the vertex_layout role.
 @ shader_contract "vertex_layout"
-functio vertex_layout_matches(
-    numerus geo,
-    numerus index,
-    textus source_name,
-    numerus shader_location,
-    numerus format_code,
-    numerus offset_bytes,
-    numerus stride_bytes,
-    numerus step_mode_code,
-    numerus stage_io_role_code
-) → bivalens {
-    redde verum
+fn vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {
+    return true
 }
 
 # Interstage varying: source semantic, location, format, and interpolation.
 # Explicit varying declarations are Triga's contract (decision D3).
 @ shader_contract "varying"
-functio varying_matches(
-    textus source_name,
-    numerus shader_location,
-    numerus format_code,
-    numerus interpolation_code,
-    numerus stage_io_role_code
-) → bivalens {
-    redde verum
+fn varying_matches(string source_name, int shader_location, int format_code, int interpolation_code, int stage_io_role_code) → bool {
+    return true
 }
 
 # Fragment render-target output: location and canonical color format.
 @ shader_contract "fragment_output"
-functio fragment_output_matches(
-    numerus location,
-    numerus format_code,
-    numerus stage_io_role_code
-) → bivalens {
-    redde verum
+fn fragment_output_matches(int location, int format_code, int stage_io_role_code) → bool {
+    return true
 }
 
 # Pipeline state: color target, depth compare + write, topology, vertex count.
@@ -105,31 +85,15 @@ functio fragment_output_matches(
 # pipeline role; the Goal-01 defaults are declared as named constants below
 # (decision D2).
 @ shader_contract "pipeline"
-functio pipeline_matches(
-    numerus color_target_format_code,
-    numerus depth_compare_code,
-    numerus depth_write_enabled_code,
-    numerus primitive_topology_code,
-    numerus vertex_count
-) → bivalens {
-    redde verum
+fn pipeline_matches(int color_target_format_code, int depth_compare_code, int depth_write_enabled_code, int primitive_topology_code, int vertex_count) → bool {
+    return true
 }
 
 # Resource binding: group/binding, kind, role, access, element count + scalar
 # layout, and the source semantic (e.g. "transform").
 @ shader_contract "resource_binding"
-functio resource_binding_matches(
-    numerus group,
-    numerus binding,
-    numerus kind_code,
-    numerus role_code,
-    numerus access_code,
-    numerus element_count,
-    numerus layout_code,
-    textus source_name,
-    numerus stage_io_role_code
-) → bivalens {
-    redde verum
+fn resource_binding_matches(int group, int binding, int kind_code, int role_code, int access_code, int element_count, int layout_code, string source_name, int stage_io_role_code) → bool {
+    return true
 }
 
 # ---------------------------------------------------------------------------
@@ -148,46 +112,46 @@ functio resource_binding_matches(
 #   color target bgra8unorm (1), depth24plus compare less (1) + writes enabled
 #   (1), triangle-list topology (1), 36 vertices, and a group-0 binding-0
 #   read-only transform storage buffer (32 f32).
-@ privata
-fixum numerus goal_color_target_format_code ← 1
-@ privata
-fixum numerus goal_depth_compare_code ← 1
-@ privata
-fixum numerus goal_depth_write_enabled_code ← 1
-@ privata
-fixum numerus goal_primitive_topology_code ← 1
-@ privata
-fixum numerus goal_vertex_count ← 36
+
+const int goal_color_target_format_code ← 1
+
+const int goal_depth_compare_code ← 1
+
+const int goal_depth_write_enabled_code ← 1
+
+const int goal_primitive_topology_code ← 1
+
+const int goal_vertex_count ← 36
 # Position input layout: location 0, float32x3, offset 0, stride 12, vertex
 # step mode.
-@ privata
-fixum numerus goal_position_format_code ← 3
-@ privata
-fixum numerus goal_position_offset_bytes ← 0
-@ privata
-fixum numerus goal_position_stride_bytes ← 12
-@ privata
-fixum numerus goal_step_mode_vertex ← 1
+
+const int goal_position_format_code ← 3
+
+const int goal_position_offset_bytes ← 0
+
+const int goal_position_stride_bytes ← 12
+
+const int goal_step_mode_vertex ← 1
 
 # Transform resource: group 0 binding 0, storage buffer, input role, read
 # access, 32 f32 elements, f32 scalar layout.
-@ privata
-fixum numerus goal_transform_group ← 0
-@ privata
-fixum numerus goal_transform_binding ← 0
-@ privata
-fixum numerus goal_transform_kind_code ← 1
-@ privata
-fixum numerus goal_transform_role_code ← 1
-@ privata
-fixum numerus goal_transform_access_code ← 1
-@ privata
-fixum numerus goal_transform_element_count ← 32
-@ privata
-fixum numerus goal_transform_layout_code ← 1
+
+const int goal_transform_group ← 0
+
+const int goal_transform_binding ← 0
+
+const int goal_transform_kind_code ← 1
+
+const int goal_transform_role_code ← 1
+
+const int goal_transform_access_code ← 1
+
+const int goal_transform_element_count ← 32
+
+const int goal_transform_layout_code ← 1
 
 # Fragment color output: location 0, float32x4.
-@ privata
-fixum numerus goal_fragment_output_location ← 0
-@ privata
-fixum numerus goal_fragment_output_format_code ← 4
+
+const int goal_fragment_output_location ← 0
+
+const int goal_fragment_output_format_code ← 4

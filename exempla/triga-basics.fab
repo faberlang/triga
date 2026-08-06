@@ -9,38 +9,37 @@ related = ["genus", "vector", "lista", "numerus"]
 +++
 # exempla/triga-basics — core triga type instantiation, field access, and material state
 
-importa ex "triga:math" privata math
-importa ex "triga:material/base" privata base
-importa ex "triga:material/basic" privata basic
+import from "triga:math" private math
 
-incipit {
-    fixum math.Vector3 origin ← math.Vector3 { x = 0.0, y = 0.0, z = 0.0 }
-    fixum math.Vector3 offset ← math.Vector3 { x = 1.5, y = 2.5, z = 3.0 }
-    nota origin.x
-    nota offset.z
+import from "triga:material/base" private base
 
-    fixum math.Matrix4 matrix ← math.Matrix4 { elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0] }
+import from "triga:material/basic" private basic
+
+main {
+    const math.Vector3 origin ← math.Vector3 {x = 0.0, y = 0.0, z = 0.0}
+    const math.Vector3 offset ← math.Vector3 {x = 1.5, y = 2.5, z = 3.0}
+    print origin.x
+    print offset.z
+    const math.Matrix4 matrix ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
 
     # Material construction and validation
-    fixum base.Material base_material ← base.materia_ex_nomine("hello-voxel")
-
-    fixum math.Color valid_color ← math.Color { r = 1.0, g = 0.0, b = 0.5 }
-
-    fixum math.Color invalid_color ← math.Color { r = 1.1, g = 0.0, b = 0.0 }
+    const base.Material base_material ← base.materia_ex_nomine("hello-voxel")
+    const math.Color valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
+    const math.Color invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
-    fixum base.MaterialPipelineFacts ∪ nihil base_pipeline_result ← base.material_pipeline_facts(base_material)
-    nota base_pipeline_result
+    const base.MaterialPipelineFacts ∪ null base_pipeline_result ← base.material_pipeline_facts(base_material)
+    print base_pipeline_result
 
     # Double-sided material
-    fixum base.Material double_sided ← base.material_double_sided(base_material)
+    const base.Material double_sided ← base.material_double_sided(base_material)
 
     # MeshBasicMaterial
-    fixum math.Color unlit_color ← math.Color { r = 1.0, g = 0.5, b = 0.0 }
-    fixum basic.MeshBasicMaterial ∪ nihil unlit ← basic.mesh_basic_material("hello-voxel-unlit", unlit_color)
-    fixum basic.MeshBasicMaterial unlit_value ← basic.MeshBasicMaterial { base = unlit!.base, color = unlit!.color }
-    nota unlit_value.color.g
+    const math.Color unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
+    const basic.MeshBasicMaterial ∪ null unlit ← basic.mesh_basic_material("hello-voxel-unlit", unlit_color)
+    const basic.MeshBasicMaterial unlit_value ← basic.MeshBasicMaterial {base = unlit!.base, color = unlit!.color}
+    print unlit_value.color.g
 
     # Invalid material handling
-    fixum base.Material invalid ← base.materia_ex_nomine("")
+    const base.Material invalid ← base.materia_ex_nomine("")
 }

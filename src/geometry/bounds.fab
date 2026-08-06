@@ -1,6 +1,6 @@
 # Geometry-side bounding volumes.
 #
-# Public import: importa ex "triga:geometry/bounds" privata bounds
+# Public import: import from "triga:geometry/bounds" private bounds
 #
 # Owns the geometry-side BoundingBox / BoundingSphere pair used by
 # BufferGeometry. math.Box3 / math.Sphere stay in triga:math — RayBox3Hit
@@ -12,7 +12,7 @@
 # Axis-aligned bounds computed from geometry position data. This is a plain
 # CPU-side result record: BufferGeometry produces it only after its geometry
 # validates, while this leaf keeps the bounds shape independent of triga:math.
-genus BoundingBox {
+class BoundingBox {
     f32 min_x
     f32 min_y
     f32 min_z
@@ -24,7 +24,7 @@ genus BoundingBox {
 # A center-and-radius result derived from validated geometry positions. The
 # radius is the enclosing distance used by BufferGeometry's bounding query;
 # this leaf only carries the result and performs no separate validation.
-genus BoundingSphere {
+class BoundingSphere {
     f32 center_x
     f32 center_y
     f32 center_z
