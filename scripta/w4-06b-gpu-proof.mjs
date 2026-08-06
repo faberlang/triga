@@ -43,16 +43,16 @@ const BASE_URL = `http://127.0.0.1:${PORT}`;
 const TIMEOUT_MS = 60_000;
 
 // ── Files to serve ────────────────────────────────────────────────────────
-// The proof page loads app-matmul.mjs, which imports faber-kernel.js and
-// webgpu-runtime.js from the same origin.
+// The proof page loads app-matmul.mjs, which imports artifact-admission.js
+// (contract) and webgpu-runtime.js (backend) from the same origin.
 
 const STATIC_ROUTES = [
   "/",
   "/index.html",
   "/matmul-proof.html",
   "/src/app-matmul.mjs",
-  "/src/faber-kernel.js",
-  "/src/webgpu-runtime.js",
+  "/src/contract/artifact-admission.js",
+  "/src/backend/webgpu-runtime.js",
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────
