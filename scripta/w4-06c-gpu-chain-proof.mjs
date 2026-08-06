@@ -208,8 +208,8 @@ function serveProofPage(res) {
 import {
   acquireWebGpuDevice,
   dispatchChainFromDescriptor,
-} from "./src/webgpu-runtime.js";
-import { FaberKernelContractError } from "./src/faber-kernel.js";
+} from "./src/backend/webgpu-runtime.js";
+import { FaberKernelContractError } from "./src/contract/artifact-admission.js";
 
 // ── Embedded chain descriptor + input data ────────────────────────────
 const CHAIN_DESCRIPTOR = ${descriptorJson};
