@@ -1,0 +1,172 @@
++++
+locale = "en"
++++
+import from "web:web" private web
+import from "web:dom" private dom
+import from "triga:math" private math
+
+class TerrainMesh {
+    string name
+    int vertex_count
+    int index_count
+    list<f32> vertex_payload
+    list<int<u32>> index_payload
+}
+
+const int GRID_SEGMENTS ← 32
+const f32 GRID_EXTENT ← 44.0
+
+fn floats_textus(de list<f32> values) → string {
+    var string output ← ""
+    var int i ← 0
+    while i < values.longitudo() {
+        if i ≡ 0 {
+            output ← values[i] ↦ string
+        }
+        else {
+            output ← "§ §"(output, values[i] ↦ string)
+        }
+        i ← i + 1
+    }
+    return output
+}
+
+fn indices_textus(de list<int<u32>> values) → string {
+    var string output ← ""
+    var int i ← 0
+    while i < values.longitudo() {
+        if i ≡ 0 {
+            output ← values[i] ↦ string
+        }
+        else {
+            output ← "§ §"(output, values[i] ↦ string)
+        }
+        i ← i + 1
+    }
+    return output
+}
+
+fn terrain_mesh() → TerrainMesh {
+    const int vertices_per_row ← GRID_SEGMENTS + 1
+    const f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
+    const f32 half ← GRID_EXTENT * 0.5
+    var list<f32> payload ← vacua
+    var int row ← 0
+    while row < vertices_per_row {
+        const f32 z ← (0.0 - half) + (row ↦ f32) * cell
+        var int column ← 0
+        while column < vertices_per_row {
+            const f32 x ← (0.0 - half) + (column ↦ f32) * cell
+            # The shader owns height, normal, color, fog, and the terrain
+            # layers. Keep a 36-byte host record with position first.
+            payload.appende(x)
+            payload.appende(0.0)
+            payload.appende(z)
+            payload.appende(0.0)
+            payload.appende(1.0)
+            payload.appende(0.0)
+            payload.appende(0.0)
+            payload.appende(0.0)
+            payload.appende(0.0)
+            column ← column + 1
+        }
+        row ← row + 1
+    }
+
+    var list<int<u32>> indices ← vacua
+    var int index_row ← 0
+    while index_row < GRID_SEGMENTS {
+        var int index_column ← 0
+        while index_column < GRID_SEGMENTS {
+            const int<u32> a ← (index_row * vertices_per_row + index_column) ↦ int<u32>
+            const int<u32> b ← (index_row * vertices_per_row + index_column + 1) ↦ int<u32>
+            const int<u32> c ← ((index_row + 1) * vertices_per_row + index_column) ↦ int<u32>
+            const int<u32> d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ int<u32>
+            indices.appende(a)
+            indices.appende(c)
+            indices.appende(b)
+            indices.appende(b)
+            indices.appende(c)
+            indices.appende(d)
+            index_column ← index_column + 1
+        }
+        index_row ← index_row + 1
+    }
+
+    return TerrainMesh {name = "procedural-terrain", vertex_count = vertices_per_row * vertices_per_row, index_count = indices.longitudo(), vertex_payload = payload, index_payload = indices}
+}
+
+fn scene_geometry_blob(de TerrainMesh mesh) → string {
+    return "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
+}
+
+fn model_matrix(f32 elapsed_seconds) → math.Matrix4 {
+    const math.Quaternion quaternion ← math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}
+    return math.matrix4_composita(math.vector3(elapsed_seconds * 0.7, 0.0, 0.0), quaternion, math.vector3(1.0, 1.0, 1.0))
+}
+
+fn view_projection(f32 elapsed_seconds, f32 aspect) → math.Matrix4 ∪ null {
+    const math.Vector3 target ← math.vector3(-8.0 + elapsed_seconds * 0.75, 1.0, 0.0)
+    const f32 yaw ← -34.0 + elapsed_seconds * 3.4
+    const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(yaw, -30.0)
+    const math.Vector3 eye ← target.subtracta(direction.multiplicata(25.0))
+    const math.Matrix4 ∪ null projection_result ← math.matrix4_perspectiva(48.0, aspect, 0.1, 200.0)
+    if projection_result is null then return null
+    const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
+    if view_result is null then return null
+    const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
+    const math.Matrix4 view ← math.Matrix4 {elements = view_result!.elements}
+    return projection.multiplicata(view)
+}
+
+fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ null {
+    const math.Matrix4 ∪ null view_projection_result ← view_projection(elapsed_seconds, aspect)
+    if view_projection_result is null then return null
+    const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
+    const math.Matrix4 model ← model_matrix(elapsed_seconds)
+    return math.transform_payload(model, view_projection_matrix)
+}
+
+@ WebController { selector = "#triga-corpus-animation-terrain" }
+fn corpus_animation_terrain_controller(dom.Scope scope) → list<dom.Subscription> {
+    const dom.Element status ← dom.require(scope, ".corpus-status")
+    const dom.Element facts ← dom.require(scope, ".triga-facts")
+    const TerrainMesh mesh ← terrain_mesh()
+    var f32 elapsed_seconds ← 0.0
+    const f32 canvas_aspect ← 960.0 / 540.0
+
+    dom.attr_set(facts, "data-scene-name", "triga-corpus-webgl-animation-terrain")
+    dom.attr_set(facts, "data-render-status", "awaiting-host")
+    dom.attr_set(facts, "data-render-gate", "pending-host-init")
+    dom.attr_set(facts, "data-device-status", "unknown")
+    dom.attr_set(facts, "data-scene-geometry", scene_geometry_blob(mesh))
+    dom.attr_set(facts, "data-terrain-grid", GRID_SEGMENTS ↦ string)
+    dom.attr_set(facts, "data-terrain-features", "fbm,ridges,terraces,slope-detail,height-fog")
+    dom.text_set(status, "terrain-ready")
+
+    const math.TransformPayload ∪ null initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
+    if initial_payload is null {
+        dom.attr_set(facts, "data-transform-status", "invalid")
+    }
+    else {
+        dom.attr_set(facts, "data-transform-status", "ready")
+        dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
+    }
+
+    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
+        const f32 delta_seconds ← frame.delta_ms / 1000.0
+        elapsed_seconds ← elapsed_seconds + delta_seconds
+        const math.TransformPayload ∪ null payload ← transform_payload(elapsed_seconds, canvas_aspect)
+        if payload is null {
+            dom.attr_set(facts, "data-transform-status", "invalid")
+        }
+        else {
+            dom.attr_set(facts, "data-transform-status", "ready")
+            dom.attr_set(facts, "data-transform-payload", floats_textus(payload!.values))
+        }
+        dom.attr_set(facts, "data-frame", frame.frame ↦ string)
+        dom.attr_set(facts, "data-animation-seconds", elapsed_seconds ↦ string)
+    })
+
+    return [frame_sub]
+}

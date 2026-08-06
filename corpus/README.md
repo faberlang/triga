@@ -14,6 +14,7 @@ reference, named after its slug:
 | `webgl-geometry-terrain/` | `webgl_geometry_terrain` | Procedural mesh generation at scale (48² heightfield, 4.6k triangles), value noise, central-difference normals, elevation color ramp via `triga:math.color_interpolata` |
 | `webgl-animation-orbit/` | `webgl_animation_multiple` + `webgl_geometry_terrain` | Delta-driven frame updates, automatic camera travel, rotating model transforms, and live transform readback |
 | `webgl-animation-water/` | `webgl_gpgpu_water` | Shader-driven wave displacement over a Triga-generated grid, automatic phase motion, and live transform readback |
+| `webgl-animation-terrain/` | `webgl_geometry_terrain` + `webgpu_tsl_procedural_terrain` | Animated heightmap terrain with fBM, ridged noise, terrace shaping, slope-aware detail, lighting, and valley fog |
 
 Adaptations vs. the originals are deliberate: triga primitives are low-poly
 (the "sphere" is an octahedron), the first two demos remain static geometry
