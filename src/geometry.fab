@@ -1,4 +1,4 @@
-# Backend-agnostic geometry attributes and validation — package map facade.
+# Backend-agnostic geometry data, vertex attributes, layout, bounds, and draw-batch facts — package map facade.
 #
 # Public import: import from "triga:geometry" private geometry
 #
