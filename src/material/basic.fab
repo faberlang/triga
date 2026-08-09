@@ -23,6 +23,12 @@ class MeshBasicMaterial {
 fn mesh_basic_material(string name, ref math.Color color) → MeshBasicMaterial ∪ null {
     const base.Material base_material ← base.materia_ex_nomine(name)
     if base.material_valida(base_material) ≡ false then return null
+    # The ∪ null contract extends to the color: every accessor already
+    # fails closed on an invalid color (mesh_basic_material_valida), so the
+    # constructor must not return a material whose accessors all return
+    # null (the correctness-fix slice — the accessors were the authority,
+    # the constructor now matches the contract).
+    if math.color_valida(color) ≡ false then return null
     return MeshBasicMaterial {base = base_material, color = color}
 }
 
