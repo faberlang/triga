@@ -1,7 +1,8 @@
 {
   "exempla/hello-voxel-first-draw-facts.fab": "2026-08-09T17:46:25.863681+00:00",
-  "exempla/triga-basics.fab": "2026-07-19T17:13:18.879257+00:00",
+  "exempla/triga-basics.fab": "2026-08-09T21:55:25.677851+00:00",
   "exempla/triga-geometry-attributes.fab": "2026-07-19T17:13:18.879257+00:00",
+  "exempla/triga-graphics-pipeline-facts.fab": "2026-08-09T21:55:25.677851+00:00",
   "exempla/triga-hello-voxel-pipeline.fab": "2026-08-09T17:46:25.863681+00:00",
   "exempla/triga-stage4-source-facts.fab": "2026-07-19T17:13:18.879257+00:00",
   "exempla/triga-types-untested.fab": "2026-08-09T17:46:25.863681+00:00",
@@ -9,6 +10,7 @@
   "src/graph/camera.fab": "2026-08-09T07:07:17.126311+00:00",
   "src/graph/object.fab": "2026-08-09T07:07:17.126311+00:00",
   "src/lighting/light.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/material.fab": "2026-08-09T21:55:25.677851+00:00",
   "src/material/base.fab": "2026-08-09T07:07:17.126311+00:00",
   "src/material/basic.fab": "2026-08-09T07:07:17.126311+00:00",
   "src/material/lit.fab": "2026-08-09T07:07:17.126311+00:00",
