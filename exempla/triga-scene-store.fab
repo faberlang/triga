@@ -3,7 +3,7 @@ term = "triga-scene-store"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Stable heterogeneous Triga scene store: insertion, attachment, visibility, and traversal."
+summary = "Stable heterogeneous Triga scene store: insertion, visibility, and traversal."
 +++
 import from "triga:scene" private scene
 
@@ -25,21 +25,13 @@ main {
     const scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
     const scene.SceneHandle mesh_handle ← store.insere(mesh_node)
 
-    # Hierarchy: attach a child mesh
+    # Hierarchy: insert a child mesh
     const scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
     const scene.SceneHandle child_handle ← store.insere(child_node)
-
-    # Visibility and world matrix
-
-    # Name lookup
-
-    # Traversal
 
     # Visibilia query (single traversal, multiple accessors)
     const scene.VisibiliaRetium ∪ null visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
     print visibilia
-
-    # Removal
 
     # SceneNode mesh accessors
     const scene.SceneNode ∪ null fetched ← store.cape(mesh_handle)
