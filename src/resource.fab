@@ -42,9 +42,9 @@ class ResourceLifecycleBatchFacts {
     int live_count
 }
 
-# ResourceHandleTraversal is the bounded accumulator used by the handle query
-# helpers below. `remaining` keeps traversal loops fail-closed if a malformed
-# input would otherwise cycle.
+# ResourceHandleTraversal is the bounded accumulator used by the scene-store
+# traversal (src/scene.fab). `remaining` keeps traversal loops fail-closed if
+# a malformed input would otherwise cycle.
 class ResourceHandleTraversal {
     list<ResourceHandle> handles
     int remaining
@@ -65,12 +65,12 @@ fn resource_handle_next(ref ResourceHandle handle) → ResourceHandle {
 }
 
 fn resource_transition_unchanged(ref ResourceHandle handle) → ResourceTransition {
-    const ResourceHandle stable ← ResourceHandle {index = handle.index, generation = handle.generation}
+    const ResourceHandle stable ← handle
     return ResourceTransition {previous = stable, current = stable, changed = false}
 }
 
 fn resource_transition_replaced(ref ResourceHandle handle) → ResourceTransition {
-    const ResourceHandle previous ← ResourceHandle {index = handle.index, generation = handle.generation}
+    const ResourceHandle previous ← handle
     return ResourceTransition {previous = previous, current = resource_handle_next(previous), changed = true}
 }
 
@@ -150,7 +150,7 @@ fn resource_transition_changed_handles(ref list<ResourceTransition> transitions)
     while i ≺ transitions.longitudo() {
         const ResourceTransition transition ← transitions[i]
         if transition.changed {
-            handles.appende(ResourceHandle {index = transition.current.index, generation = transition.current.generation})
+            handles.appende(transition.current)
         }
         i ← i + 1
     }
@@ -163,7 +163,7 @@ fn resource_transition_current_handles(ref list<ResourceTransition> transitions)
     var int i ← 0
     while i ≺ transitions.longitudo() {
         const ResourceTransition transition ← transitions[i]
-        handles.appende(ResourceHandle {index = transition.current.index, generation = transition.current.generation})
+        handles.appende(transition.current)
         i ← i + 1
     }
     return handles
@@ -190,7 +190,7 @@ fn resource_transition_unchanged_handles(ref list<ResourceTransition> transition
     while i ≺ transitions.longitudo() {
         const ResourceTransition transition ← transitions[i]
         if transition.changed ≡ false {
-            handles.appende(ResourceHandle {index = transition.current.index, generation = transition.current.generation})
+            handles.appende(transition.current)
         }
         i ← i + 1
     }
