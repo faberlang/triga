@@ -56,7 +56,7 @@ main {
     print scene.background
 
     # OrthographicCamera
-    const camera.OrthographicCamera ortho ← camera.OrthographicCamera {base = standalone, left = -10.0 ∷ f32, right = 10.0, top = 10.0, bottom = -10.0 ∷ f32, near = 0.1, far = 2000.0}
+    const camera.OrthographicCamera ortho ← camera.OrthographicCamera {base = standalone, left = -10.0, right = 10.0, top = 10.0, bottom = -10.0, near = 0.1, far = 2000.0}
     print ortho.left
     print ortho.near
 
