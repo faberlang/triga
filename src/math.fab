@@ -337,7 +337,7 @@ class Box3 {
     fn intersecat(ref Box3 alia) → bool {
         if self.max.x ≺ alia.min.x or self.min.x ≻ alia.max.x then return false
         if self.max.y ≺ alia.min.y or self.min.y ≻ alia.max.y then return false
-        if self.max.z ≺ alia.min.z or self.min.y ≻ alia.max.z then return false
+        if self.max.z ≺ alia.min.z or self.min.z ≻ alia.max.z then return false
         return true
     }
 
