@@ -1,0 +1,189 @@
++++
+term = "triga"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Surface-normal oracle for closed caps and sphere poles (winding invariants)."
++++
+# exempla/triga-normal-oracle — dot-product + winding-orientation oracle for
+# the closed-solid cap and pole fans (cylinder caps + sphere poles; the
+# 9f34e71 cap-fan winding fix context).
+#
+# For every fan triangle the oracle verifies two invariants:
+#   1. normal · edge_direction ≈ 0 — the fan is geometrically consistent:
+#      for the planar cylinder caps the DECLARED cap normal must be
+#      perpendicular to every triangle edge (a flat cap with a normal that
+#      really is the cap axis); for the curved sphere poles each triangle's
+#      cross-product normal must be perpendicular to its own edges (a
+#      well-formed, non-degenerate fan). Tolerance: triga's 0.000001 numeric
+#      tolerance (the math.fab normata / rotation guard).
+#   2. dot(geometric normal, declared normal) > 0 — every fan triangle winds
+#      outward, agreeing with the declared surface normal: no inverted
+#      triangles at the cap boundary (the regression the 9f34e71 pair-order
+#      reversal fixed).
+#
+# Prints verum/falsum per check; the sibling .expected records the observed
+# output (the exempla runtime-probe oracle convention — see the Box3 probe
+# triga-box3-genus-spike). The faber generated-Rust lane is blocked for
+# triga imports by the acknowledged emitter defect (CTO-5 registry row 7,
+# E0308 / Vec3; faber lane allowlisted in scripta/check-exempla-inventory),
+# so this probe executes through the radix TS-emit lane (the same lane the
+# 9f34e71 cap smoke used).
+
+import from "triga:math" private math
+
+import from "triga:geometry/data" private data
+
+import from "triga:geometry/attribute" private attribute
+
+import from "triga:primitives/basic" private basic
+
+# --- oracle helpers ------------------------------------------------------
+
+# True when |value| is within triga's numeric tolerance of zero.
+fn _near_zero(f32 value) → bool {
+    return value.absolutum() ≤ 0.000001
+}
+
+# The interleaved scalar at a vertex (position/normal attributes are
+# component_width × vertex_index).
+fn _position_at(list<f32> scalars, int vertex_index) → math.Vector3 {
+    const int i ← vertex_index * 3
+    return math.vector3(scalars[i], scalars[i + 1], scalars[i + 2])
+}
+
+# The triangle's geometric normal (cross product of two edges).
+fn _triangle_normal(math.Vector3 a, math.Vector3 b, math.Vector3 c) → math.Vector3 {
+    const math.Vector3 ab ← b.subtracta(a)
+    const math.Vector3 ac ← c.subtracta(a)
+    return ab.transversum(ac)
+}
+
+# True when the given normal is perpendicular to all three triangle edges.
+fn _edges_perpendicular_to(math.Vector3 normal, math.Vector3 a, math.Vector3 b, math.Vector3 c) → bool {
+    if _near_zero(normal.productum(b.subtracta(a))) ≡ false then return false
+    if _near_zero(normal.productum(c.subtracta(b))) ≡ false then return false
+    if _near_zero(normal.productum(a.subtracta(c))) ≡ false then return false
+    return true
+}
+
+# The declared vertex normal (the "normal" attribute is interleaved scalars).
+fn _declared_normal(list<f32> normals, int vertex_index) → math.Vector3 {
+    return _position_at(normals, vertex_index)
+}
+
+# The named float32 attribute payload (position/normal are Float32 streams).
+fn _attribute_values(data.BufferGeometry geometry, string name) → list<f32> {
+    var int i ← 0
+    while i ≺ geometry.attributes.longitudo() {
+        const attribute.BufferAttribute attr ← geometry.attributes[i]
+        if attr.name ≡ name {
+            const list<f32> ∪ null values ← attr.float32_values()
+            if values not is null {
+                const list<f32> non_null ← values
+                return non_null
+            }
+        }
+        i ← i + 1
+    }
+    return vacua
+}
+
+# Dot-product invariant over a fan using the DECLARED cap normal: for the
+# planar cylinder caps the cap normal must be perpendicular to every edge.
+fn _fan_declared_perpendicular(data.BufferGeometry geometry, list<f32> positions, list<f32> normals, int fan_start, int fan_count) → bool {
+    var int t ← 0
+    while t ≺ fan_count {
+        const int ia ← geometry.indices[fan_start + t * 3] ↦ int
+        const int ib ← geometry.indices[fan_start + t * 3 + 1] ↦ int
+        const int ic ← geometry.indices[fan_start + t * 3 + 2] ↦ int
+        const math.Vector3 a ← _position_at(positions, ia)
+        const math.Vector3 b ← _position_at(positions, ib)
+        const math.Vector3 c ← _position_at(positions, ic)
+        const math.Vector3 normal ← _declared_normal(normals, ia)
+        if _edges_perpendicular_to(normal, a, b, c) ≡ false then return false
+        t ← t + 1
+    }
+    return true
+}
+
+# Dot-product invariant over a fan using each triangle's cross-product
+# normal: for the curved sphere poles every pole triangle is well-formed
+# (its normal is perpendicular to its edges — non-degenerate fan).
+fn _fan_geometric_perpendicular(data.BufferGeometry geometry, list<f32> positions, int fan_start, int fan_count) → bool {
+    var int t ← 0
+    while t ≺ fan_count {
+        const int ia ← geometry.indices[fan_start + t * 3] ↦ int
+        const int ib ← geometry.indices[fan_start + t * 3 + 1] ↦ int
+        const int ic ← geometry.indices[fan_start + t * 3 + 2] ↦ int
+        const math.Vector3 a ← _position_at(positions, ia)
+        const math.Vector3 b ← _position_at(positions, ib)
+        const math.Vector3 c ← _position_at(positions, ic)
+        const math.Vector3 normal ← _triangle_normal(a, b, c)
+        if _edges_perpendicular_to(normal, a, b, c) ≡ false then return false
+        t ← t + 1
+    }
+    return true
+}
+
+# Outward-orientation invariant over a fan: every triangle's cross-product
+# normal agrees with the declared vertex normal (dot > 0) — no inverted
+# triangles at the cap boundary.
+fn _fan_oriented_outward(data.BufferGeometry geometry, list<f32> positions, list<f32> normals, int fan_start, int fan_count) → bool {
+    var int t ← 0
+    while t ≺ fan_count {
+        const int ia ← geometry.indices[fan_start + t * 3] ↦ int
+        const int ib ← geometry.indices[fan_start + t * 3 + 1] ↦ int
+        const int ic ← geometry.indices[fan_start + t * 3 + 2] ↦ int
+        const math.Vector3 a ← _position_at(positions, ia)
+        const math.Vector3 b ← _position_at(positions, ib)
+        const math.Vector3 c ← _position_at(positions, ic)
+        const math.Vector3 geometric ← _triangle_normal(a, b, c)
+        const math.Vector3 declared ← _declared_normal(normals, ia)
+        if geometric.productum(declared) ≤ 0.0 then return false
+        t ← t + 1
+    }
+    return true
+}
+
+# --- probe ---------------------------------------------------------------
+
+main {
+    # Closed cylinder (radius 1, height 2): 96 indices — 16 side quads
+    # (elements 0..47), 8 bottom-cap fan triangles (48..71), 8 top-cap fan
+    # triangles (72..95).
+    const data.BufferGeometry ∪ null cylinder_opt ← basic.cylinder_geometry(1.0, 2.0)
+    if cylinder_opt is null {
+        print falsum
+    } else {
+        const list<f32> cylinder_positions ← _attribute_values(cylinder_opt, "position")
+        const list<f32> cylinder_normals ← _attribute_values(cylinder_opt, "normal")
+
+        # Bottom cap: declared normal (0,-1,0) ⊥ cap edges; fan winds down.
+        print _fan_declared_perpendicular(cylinder_opt, cylinder_positions, cylinder_normals, 48, 8)
+        print _fan_oriented_outward(cylinder_opt, cylinder_positions, cylinder_normals, 48, 8)
+        # Top cap: declared normal (0,1,0) ⊥ cap edges; fan winds up.
+        print _fan_declared_perpendicular(cylinder_opt, cylinder_positions, cylinder_normals, 72, 8)
+        print _fan_oriented_outward(cylinder_opt, cylinder_positions, cylinder_normals, 72, 8)
+        # Side quads: cross-product normals agree with the radial declared ones.
+        print _fan_oriented_outward(cylinder_opt, cylinder_positions, cylinder_normals, 0, 16)
+    }
+
+    # Sphere (radius 1): 144 indices — 8 south-pole fan triangles (0..23),
+    # 32 middle-band triangles (24..119), 8 north-pole fan triangles
+    # (120..143).
+    const data.BufferGeometry ∪ null sphere_opt ← basic.sphere_geometry(1.0)
+    if sphere_opt is null {
+        print falsum
+    } else {
+        const list<f32> sphere_positions ← _attribute_values(sphere_opt, "position")
+        const list<f32> sphere_normals ← _attribute_values(sphere_opt, "normal")
+
+        # South pole: well-formed fan; fan winds outward (down).
+        print _fan_geometric_perpendicular(sphere_opt, sphere_positions, 0, 8)
+        print _fan_oriented_outward(sphere_opt, sphere_positions, sphere_normals, 0, 8)
+        # North pole: well-formed fan; fan winds outward (up).
+        print _fan_geometric_perpendicular(sphere_opt, sphere_positions, 120, 8)
+        print _fan_oriented_outward(sphere_opt, sphere_positions, sphere_normals, 120, 8)
+    }
+}

@@ -45,6 +45,7 @@ exempla/
   triga-hello-voxel-shaders.fab  # @vertex + @fragment with layout + fragment facts
   triga-hello-voxel-pipeline.fab # Full Goal 01 pipeline facts
   triga-box3-genus-spike.fab    # Box3 genus / method surface spike
+  triga-normal-oracle.fab       # Surface-normal winding oracle: cylinder caps + sphere poles
   threejs-host-demo/            # Browser fixture: Triga scene data via three.js
 ```
 
