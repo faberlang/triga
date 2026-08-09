@@ -28,4 +28,30 @@ main {
     # Imperativus mutation through ego on a varia receiver.
     var math.Box3 mutable_bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
     mutable_bounds.infla(2.0)
+
+    # --- intersecat z-separation runtime probe (the dee26f5 fix coverage) --
+    # The intersecat y/z typo fix (dee26f5) corrected the z-axis separation
+    # check (self.min.z vs self.min.y). These four cases exercise the z
+    # path at runtime so the fix has an observable oracle:
+    #   1. sep_corrected vs small — z-separated via the CORRECTED second
+    #      disjunct (self.min.z 3 > alia.max.z 1) -> false. The pre-fix
+    #      code compared self.min.y (0) and would have MISSED the
+    #      separation -> true. Discriminates the fix.
+    #   2. bounds vs sep_corrected — z-separated via the first disjunct
+    #      (self.max.z 2 < alia.min.z 3) -> false. The always-fired
+    #      separation path, control.
+    #   3. bounds vs overlap_box — overlapping on every axis -> true
+    #      (the overlapping control).
+    #   4. bug_discriminator vs bug_low — z OVERLAPS ([0,1]) while the
+    #      pre-fix second disjunct (self.min.y 3 > alia.max.z 1) would
+    #      false-positive -> true. Discriminates the fix.
+    const math.Box3 sep_corrected ← math.Box3 {min = math.vector3(0.0, 0.0, 3.0), max = math.vector3(2.0, 2.0, 5.0)}
+    const math.Box3 small ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
+    const math.Box3 bug_low ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 4.0, 1.0)}
+    const math.Box3 bug_discriminator ← math.Box3 {min = math.vector3(0.0, 3.0, 0.0), max = math.vector3(2.0, 5.0, 4.0)}
+
+    print sep_corrected.intersecat(small)
+    print bounds.intersecat(sep_corrected)
+    print bounds.intersecat(overlap_box)
+    print bug_discriminator.intersecat(bug_low)
 }
