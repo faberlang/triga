@@ -61,8 +61,7 @@ class ColoredQuadMesh {
     fn facts() → batch.VisibleFaceMeshFacts ∪ null {
         const int ∪ null face_count_result ← self.face_count()
         if face_count_result is null then return null
-        const int face_count ← face_count_result coalesce 0
-        return batch.visible_face_mesh_facts(face_count)
+        return batch.visible_face_mesh_facts(face_count_result coalesce 0)
     }
 
     fn draw_batch_facts(int instance_count) → batch.IndexedGeometryDrawBatchFacts ∪ null {
@@ -285,13 +284,7 @@ class BufferGeometry {
                 return null
             }
         }
-        var int remaining ← self.element_count()
-        var int count ← 0
-        while remaining ≥ 3 {
-            remaining ← remaining - 3
-            count ← count + 1
-        }
-        return count
+        return self.element_count() / 3
     }
 
     fn line_count() → int ∪ null {
@@ -306,13 +299,7 @@ class BufferGeometry {
                 return null
             }
         }
-        var int remaining ← self.element_count()
-        var int count ← 0
-        while remaining ≥ 2 {
-            remaining ← remaining - 2
-            count ← count + 1
-        }
-        return count
+        return self.element_count() / 2
     }
 
     # --- Draw commands ---------------------------------------------------
@@ -849,11 +836,7 @@ fn _geometry_radix_f32(f32 value) → f32 {
 
 @ private { }
 fn _element_count_divisible(int element_count, int divisor) → bool {
-    var int remaining ← element_count
-    while remaining ≥ divisor {
-        remaining ← remaining - divisor
-    }
-    return remaining ≡ 0
+    return element_count % divisor ≡ 0
 }
 
 @ private { }
