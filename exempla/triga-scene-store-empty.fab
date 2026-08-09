@@ -3,16 +3,13 @@ term = "triga-scene-store-empty"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Empty scene store edge cases: traversal, visibility, and name lookup."
+summary = "Empty SceneStore construction and a fresh root handle."
 syntax = "importa ex \"triga:scene\" privata scene"
 +++
-# exempla/triga-scene-store-empty — empty SceneStore edge case demonstrations.
 
 import from "triga:scene" private scene
 
 main {
     const scene.SceneStore empty ← scene.scene_store()
     const scene.SceneHandle fresh_root ← scene.SceneHandle {index = 0, generation = 0}
-
-    # Operations on an empty store
 }
