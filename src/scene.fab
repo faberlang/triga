@@ -268,17 +268,18 @@ class SceneStore {
         return false
     }
 
-    # TRAVERSAL — Four preorder variants that share the same structural skeleton:
-    # node fetch → field copy → seen-set guard → visitor action → child iteration.
+    # TRAVERSAL — Five preorder variants that share the same structural skeleton:
+    # node fetch → field copy → seen-set guard → payload accumulation → child iteration.
     # Every variant below must keep these steps in lockstep. If you fix a bug in
     # the skeleton (e.g., seen-set disposal, remaining-counter, child iteration
-    # order), apply the fix to ALL FOUR.
+    # order), apply the fix to ALL FIVE.
     #
-    #   (1) _traverse_preorder               — unfiltered; calls visitor callback
-    #   (2) _traverse_visibile_preorder      — filters to visible nodes only
-    #   (3) _traverse_visibile_rete_preorder — visible mesh-node handles
-    #   (4) _traverse_visibile_rete_opes_preorder — visible mesh
-    #       resource handles + transition facts
+    #   (1) _traverse_preorder                    — unfiltered; all visited handles
+    #   (2) _traverse_visibile_preorder           — visible nodes only
+    #   (3) _traverse_visibile_rete_preorder      — visible mesh-node handles only
+    #   (4) _traverse_visibile_rete_opes_preorder — visible mesh resource pairs
+    #   (5) _visibile_rete_opes_manubria_preorder — visible mesh geometry or
+    #       material handles (selected by `geometria_manubria`)
     #
     # WHEN FABER GAINS CLOSURES/VISITORS: collapse these into a single
     # scene_traverse(store, root, filter, accumulator) and delete the copies.
@@ -601,10 +602,7 @@ class VisibiliaRetium {
     fn octeta() → int {
         var int summa ← 0
         for from self.onera const onus {
-            const int ∪ null bytes ← onus.byte_count()
-            if bytes not is null {
-                summa ← summa + bytes coalesce 0
-            }
+            summa ← summa + (onus.byte_count() coalesce 0)
         }
         return summa
     }
@@ -630,9 +628,8 @@ fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio
     # Single traversal: collect all visible mesh data at once
     const SceneTraversal ∪ null handles_result ← store._traverse_visibile_rete_preorder(radix, vacua, store.slots.longitudo(), true)
     if handles_result is null then return null
-    const SceneTraversal peragratio ← SceneTraversal {handles = handles_result!.handles, remaining = handles_result!.remaining}
     var VisibiliaRetium retia ← VisibiliaRetium {manubria = vacua, geometria_opes = vacua, materia_opes = vacua, onera = vacua}
-    for from peragratio.handles const manubrium {
+    for from handles_result!.handles const manubrium {
         const SceneNode ∪ null nodus_result ← store.cape(manubrium)
         if nodus_result is null then return null
         retia.manubria.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
