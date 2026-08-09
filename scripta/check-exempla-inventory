@@ -97,6 +97,9 @@ compile_allowlist_reason() {
     exempla/triga-basics.fab)
       echo "generated Rust still fails the acknowledged radix emitter defect E0425/E0422 ('cannot find type Vec3 in module crate::math') + E0308 Option-wrap mismatches (CTO-5 registry row 7, E0308 / Vec3, owned by radix-hir-rust; compiler-lane ledger E0308); Radix source check remains required"
       ;;
+    exempla/triga-box3-genus-spike.fab)
+      echo "generated Rust still fails the acknowledged radix emitter E0308 regression (Option-returning calls missing the Some(…) wrap — 'expected Option<f32>, found f32' in model_value/view_projection_value; CTO-5 registry row 7, E0308 / Vec3, owned by radix-hir-rust; compiler-lane ledger E0308); Radix source check remains required"
+      ;;
     exempla/triga-normal-oracle.fab)
       echo "generated Rust still fails the acknowledged radix emitter defect E0425/E0422 ('cannot find type Vec3 in module crate::math') + E0308 Option-wrap mismatches on the triga:* imports (CTO-5 registry row 7, E0308 / Vec3; compiler-lane ledger E0308); the oracle executes through the TS-emit lane; Radix source check remains required"
       ;;
