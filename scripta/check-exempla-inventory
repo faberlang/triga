@@ -39,9 +39,8 @@ export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
 
 # The triga package reads English (faber.toml `[reader] locale = "en"`);
-# the radix CLI defaults to Latin, so the en reader pack must be passed
-# explicitly for each single-file check.
-LOCALE_PACK="$RADIX/stdlib/locale/en/pack.toml"
+# the radix CLI defaults to Latin, so the en reader locale must be passed
+# explicitly for each single-file check (--locale, formerly --locale-pack).
 
 contains() {
   local needle="$1"
@@ -136,7 +135,7 @@ compile_allowlist_reason() {
 
 for file in "${documented[@]}"; do
   echo "check-exempla-inventory: radix check $file"
-  "$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/$file"
+  "$RADIX_BIN" check --locale en "$ROOT/$file"
 done
 
 for file in "${documented[@]}"; do

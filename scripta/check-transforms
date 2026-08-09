@@ -43,12 +43,11 @@ export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
 
 # The triga package reads English (faber.toml `[reader] locale = "en"`);
-# the radix CLI defaults to Latin, so the en reader pack must be passed
-# explicitly for each single-file check.
-LOCALE_PACK="$RADIX/stdlib/locale/en/pack.toml"
+# the radix CLI defaults to Latin, so the en reader locale must be passed
+# explicitly for each single-file check (--locale, formerly --locale-pack).
 
 echo "check-transforms: parsing src/math.fab"
-"$RADIX_BIN" check --locale-pack "$LOCALE_PACK" "$ROOT/src/math.fab"
+"$RADIX_BIN" check --locale en "$ROOT/src/math.fab"
 
 echo "check-transforms: package check exempla/triga-transforms.fab"
 (cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check exempla/triga-transforms.fab)
