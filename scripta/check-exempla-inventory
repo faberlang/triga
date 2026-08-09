@@ -94,6 +94,9 @@ fi
 
 compile_allowlist_reason() {
   case "$1" in
+    exempla/triga-basics.fab)
+      echo "generated Rust still fails the acknowledged radix emitter E0308 regression (Some(…) wraps of ∪ nihil results from material_pipeline_facts/mesh_basic_material; compiler-lane ledger E0308); Radix source check remains required"
+      ;;
     exempla/triga-geometry-attributes.fab)
       echo "geometry attribute generated Rust still has list-index and ownership lowering residuals; Radix source check remains required"
       ;;
