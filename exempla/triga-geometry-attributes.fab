@@ -3,7 +3,7 @@ term = "triga-geometry-attributes"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Triga attribute shape, layout, indexing, draw range, group validation, and primitive generators."
+summary = "Triga attribute construction, indexed/non-indexed geometry with draw ranges and groups, ColoredQuadMesh accumulation, and primitive generators."
 +++
 import from "triga:geometry/data" private data
 
@@ -18,14 +18,6 @@ main {
     const attribute.BufferAttribute positions ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
     const data.BufferGeometry triangle ← data.indexed_triangle_geometry(3, [positions], [0, 1, 2], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
 
-    # Attribute and layout queries
-
-    # Draw commands
-
-    # Bounds
-
-    # Generated attributes
-
     # ColoredQuadMesh accumulation
     const data.ColoredQuadMesh ∪ null first_quad ← data.colored_quad_mesh_append(vacua, vacua, vacua, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.2, 0.4, 0.6)
     const data.ColoredQuadMesh ∪ null two_quads ← data.colored_quad_mesh_append(first_quad!.positions, first_quad!.colors, first_quad!.indices, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 3.0, 1.0, 0.0, 2.0, 1.0, 0.0, 0.7, 0.8, 0.9)
@@ -36,10 +28,6 @@ main {
 
     # Non-indexed geometry
     const data.BufferGeometry nonindexed ← data.triangle_geometry(3, [positions], batch.DrawRange {start = 0, count = 3}, vacua)
-
-    # Visible face utilities
-
-    # Primitive generators
 
     # Wire box (line geometry)
     const data.BufferGeometry ∪ null box_wire_result ← basic.box_wire_geometry(2.0, 4.0, 6.0)
