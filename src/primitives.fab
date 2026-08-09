@@ -4,7 +4,7 @@
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:primitives/basic   plane, circle, sphere, cylinder, cone, torus,
-#                            box, box wire generators (report §1.2)
+#                            box, box wire generators
 #
 # Planned leaves (recorded future homes; do NOT create empty leaves):
 #   triga:primitives/procedural H2
