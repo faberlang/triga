@@ -67,8 +67,6 @@ main {
     const math.RayBox3Hit ∪ null ray_box_hit ← ray.box3_hit(shifted_bounds, 6.0)
     const math.RayBox3Hit ray_box_hit_value ← math.RayBox3Hit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
 
-    # Face code utilities
-
     # Camera yaw-pitch facts
     const math.CameraYawPitchFacts camera_facts ← math.camera_yaw_pitch_facts(math.vector3(2.0, 3.0, 4.0), 90.0, 100.0)
     print camera_facts.clamped_pitch_degrees
