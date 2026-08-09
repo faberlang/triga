@@ -3,7 +3,7 @@
 # Public import: import from "triga:geometry" private geometry
 #
 # Prefer leaf modules (Norma style — one concern per import path):
-#   triga:geometry/data       BufferGeometry, ColoredQuadMesh, free constructors
+#   triga:geometry/data       BufferGeometry, ColoredQuadMesh, PrimitiveTopology, free constructors
 #   triga:geometry/attribute  BufferAttribute, AttributeData, AttributeUsage
 #   triga:geometry/layout     VertexAttributeLayout, VertexFormat, VertexStepMode, code helpers
 #   triga:geometry/bounds     BoundingBox, BoundingSphere
