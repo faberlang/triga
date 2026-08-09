@@ -217,8 +217,7 @@ class TransformPayload {
 
     fn float_count() → int ∪ null {
         if self.values.longitudo() ≠ 32 then return null
-        const int count ← self.values.longitudo()
-        return count
+        return self.values.longitudo()
     }
 
     fn byte_count() → int ∪ null {
@@ -229,15 +228,13 @@ class TransformPayload {
     fn model_value(int index) → f32 ∪ null {
         if self.values.longitudo() ≠ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
-        const f32 value ← self.values[index]
-        return value
+        return self.values[index]
     }
 
     fn view_projection_value(int index) → f32 ∪ null {
         if self.values.longitudo() ≠ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
-        const f32 value ← self.values[index + 16]
-        return value
+        return self.values[index + 16]
     }
 }
 
@@ -698,7 +695,6 @@ fn face_code_facts(int code) → FaceCodeFacts ∪ null {
 # These free constructors keep common literals readable while preserving the
 # named fields used by the public genera.
 #
-# Construct the common three-component vector value.
 fn vector3(f32 x, f32 y, f32 z) → Vector3 {
     return Vector3 {x = x, y = y, z = z}
 }
@@ -798,8 +794,7 @@ fn camera_ray_ex_yaw_pitch(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degree
 }
 
 fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → CameraYawPitchFacts {
-    const f32 clamped_pitch ← camera_pitch_coercita(pitch_degrees)
-    return CameraYawPitchFacts {yaw_degrees = yaw_degrees, pitch_degrees = pitch_degrees, clamped_pitch_degrees = clamped_pitch, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees), planar_forward = camera_prorsum_planus_ex_yaw(yaw_degrees), planar_right = camera_dextra_ex_yaw(yaw_degrees), ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees)}
+    return CameraYawPitchFacts {yaw_degrees = yaw_degrees, pitch_degrees = pitch_degrees, clamped_pitch_degrees = camera_pitch_coercita(pitch_degrees), direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees), planar_forward = camera_prorsum_planus_ex_yaw(yaw_degrees), planar_right = camera_dextra_ex_yaw(yaw_degrees), ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees)}
 }
 
 # Interpolate RGB channels independently; the ratio is not clamped here.
