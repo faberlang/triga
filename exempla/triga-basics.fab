@@ -1,13 +1,10 @@
 +++
-term = "triga"
+term = "triga-basics"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Triga math and material basics."
-syntax = "importa ex \"triga:triga\" privata triga"
-related = ["genus", "vector", "lista", "numerus"]
 +++
-# exempla/triga-basics — core triga type instantiation, field access, and material state
 
 import from "triga:math" private math
 
