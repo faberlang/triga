@@ -4,7 +4,6 @@ kind = "concept"
 category = "library"
 canonical = true
 summary = "Degenerate-input and edge-case examples for triga math."
-syntax = "importa ex \"triga:triga\" privata triga"
 +++
 
 import from "triga:math" private math
