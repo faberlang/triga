@@ -53,8 +53,8 @@ main {
     const math.TransformPayload ∪ null transform_result ← math.transform_payload(model, view_proj)
     const math.TransformPayload transform ← math.TransformPayload {values = transform_result!.values}
 
-    # Pipeline facts
-    const int goal_target_format ← 2
+    # Pipeline facts (canonical codes: color target bgra8unorm = 1, depth compare less = 1, topology triangle-list = 1)
+    const int goal_target_format ← 1
     const int goal_depth_compare ← 1
     const int goal_topology ← 1
     const int goal_index_format ← 1

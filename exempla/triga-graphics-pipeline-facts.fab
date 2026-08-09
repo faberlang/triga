@@ -34,14 +34,13 @@ main {
     const int step_mode_instance ← 2
     print step_mode_vertex
 
-    # Color target format codes
-    const int color_target_rgba8_unorm ← 1
-    const int color_target_bgra8_unorm ← 2
-    const int color_target_bgra8_unorm_srgb ← 3
+    # Color target format codes (canonical radix table: 1 = bgra8unorm, 2 = bgra8unorm-srgb; no rgba8unorm code)
+    const int color_target_bgra8_unorm ← 1
+    const int color_target_bgra8_unorm_srgb ← 2
     print color_target_bgra8_unorm
 
-    # Depth compare codes
-    const int depth_compare_never ← 0
+    # Depth compare codes (canonical radix table: 0 = no depth attachment sentinel, not a compare function; 1-7 = less..always)
+    const int depth_attachment_none ← 0
     const int depth_compare_less ← 1
     const int depth_compare_always ← 7
     print depth_compare_less
