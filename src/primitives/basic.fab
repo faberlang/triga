@@ -259,6 +259,11 @@ fn box_wire_draw_batch_facts(f32 width, f32 height, f32 depth, int instance_coun
     return geom.line_draw_batch_facts(instance_count)
 }
 
+# Manual square root (Newton iteration with power-of-two scaling). The
+# compiler surface has no scalar sqrt primitive, so the cone's side-normal
+# scale reuses the same hand-rolled sqrt as math.fab's private _radix_f32 —
+# the leaf-module self-contained-copy convention (the math helper is not
+# importable). Kept in sync with math.fab's _radix_f32.
 @ private { }
 fn _primitives_radix_f32(f32 value) → f32 {
     if value ≤ 0.0 then return 0.0

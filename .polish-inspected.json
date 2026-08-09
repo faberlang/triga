@@ -3,5 +3,14 @@
   "exempla/triga-basics.fab": "2026-07-19T17:13:18.879257+00:00",
   "exempla/triga-geometry-attributes.fab": "2026-07-19T17:13:18.879257+00:00",
   "exempla/triga-stage4-source-facts.fab": "2026-07-19T17:13:18.879257+00:00",
+  "src/geometry/bounds.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/graph/camera.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/graph/object.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/lighting/light.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/material/base.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/material/basic.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/material/lit.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/material/standard.fab": "2026-08-09T07:07:17.126311+00:00",
+  "src/primitives/basic.fab": "2026-08-09T07:07:17.126311+00:00",
   "src/scene.fab": "2026-07-19T17:13:18.879257+00:00"
 }
