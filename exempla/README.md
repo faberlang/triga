@@ -15,9 +15,9 @@ data into a graphics contract:
    materials, then shows explicit validation and nullable construction.
 2. [`triga-transforms.fab`](triga-transforms.fab) exercises receiver methods
    for transforms, quaternions, camera directions, bounds, and ray hits.
-3. [`triga-geometry-attributes.fab`](triga-geometry-attributes.fab) builds
-   indexed and non-indexed geometry, inspects layout facts, and uses primitive
-   generators.
+3. [`triga-geometry-attributes.fab`](triga-geometry-attributes.fab) constructs
+   typed attributes and indexed/non-indexed geometry with draw ranges and
+   groups, accumulates ColoredQuadMesh faces, and uses primitive generators.
 4. [`triga-scene-store.fab`](triga-scene-store.fab) moves from values to
    stable handles, parent/child relationships, and visible traversal.
 5. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) connects
@@ -32,7 +32,7 @@ contract conformance, and a three.js-shaped browser host demonstration.
 ```text
 exempla/
   triga-basics.fab              # Vector3, Matrix4, and material basics
-  triga-geometry-attributes.fab # Buffer layout + primitive generators
+  triga-geometry-attributes.fab # Typed attributes, indexed/non-indexed geometry, ColoredQuadMesh accumulation, primitive generators
   hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
   triga-stage4-source-facts.fab # Stage 4 vertex-layout handoff (primitives.plane)
