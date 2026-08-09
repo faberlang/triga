@@ -5,9 +5,6 @@ category = "library"
 canonical = true
 summary = "Triga-side facts for the locked graphics pipeline contract: shader stages, color target, depth, topology, and vertex inputs."
 +++
-# exempla/triga-graphics-pipeline-facts
-#
-# Triga-side fact codes that map to radix MIR types.
 
 import from "triga:math" private math
 
