@@ -3,12 +3,8 @@ term = "triga-hello-voxel-shaders"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Minimal @vertex and @fragment exemplar with typed vertex layout facts and fragment output facts."
+summary = "Minimal @vertex/@fragment exemplar: typed cube geometry supplies the vertex layout facts."
 +++
-# exempla/triga-hello-voxel-shaders.fab
-#
-# Goal 01 acceptance exemplar: one @vertex function and one @fragment function
-# with Triga-side layout facts that the compiler extracts for WGSL emission.
 
 import from "triga:geometry/data" private data
 
