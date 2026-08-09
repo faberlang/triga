@@ -80,13 +80,16 @@ import the leaf → construct a typed value → inspect or validate a fact
 and queries return them when input cannot satisfy the contract; the examples
 keep the result visible so failure behavior is easy to study.
 
-## Current state (2026-08-02)
+## Current state (2026-08-09)
 
-Exempla target `radix check` via `./scripta/check-compile`. WGSL emission works
-end-to-end on files with `@ vertex` annotations and vertex layout facts:
-`triga-hello-voxel-shaders.fab` emits valid combined vertex+fragment WGSL with
-reflection sidecar.
+Exempla target `radix check` via `./scripta/check-compile`.
+`triga-hello-voxel-shaders.fab` is a typed-cube vertex-layout demo: it builds a
+cube's positions/colors/indices geometry and declares `@ vertex` / `@ fragment`
+stages. WGSL emit is not currently demonstrated from these exempla — `radix emit
+--reflection -t wgsl-text` fails `PARSE030:expected_expression` on the empty fn
+bodies and the struct/list literals (a compiler-side parse gap, not an exempla
+defect).
 
-Files without vertex layout facts (e.g. `triga-vertex-fragment-stub.fab`)
-correctly fail `radix emit --target wgsl-text` with
-`CODEGEN001:mir_wgsl_vertex_source_layout_missing` — expected, not a regression.
+The `CODEGEN001:mir_wgsl_vertex_source_layout_missing` emit path is no longer
+demonstrable from the stage-annotation exempla: `triga-vertex-fragment-stub.fab`
+trips the same `PARSE030` on its empty bodies before any layout check runs.
