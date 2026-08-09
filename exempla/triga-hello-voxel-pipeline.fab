@@ -3,13 +3,8 @@ term = "triga-hello-voxel-pipeline"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Full graphics pipeline fixture: @vertex/@fragment with vertex layout, varying, fragment output, resource, and pipeline facts."
+summary = "Full graphics pipeline fixture: @vertex/@fragment with varying, fragment output, resource binding, transform, pipeline, and draw facts."
 +++
-# exempla/triga-hello-voxel-pipeline.fab
-#
-# Full graphics pipeline fixture: one @vertex, one @fragment, and Triga-side
-# fact constants for every MIR reflection category.
-
 import from "triga:geometry/data" private data
 
 import from "triga:geometry/attribute" private attribute
@@ -33,7 +28,6 @@ main {
     const list<int<u32>> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 6, 2, 0, 3, 7, 0, 7, 4]
     const data.BufferGeometry ∪ null cube_result ← data.colored_indexed_geometry(8, positions, colors, indices)
     const data.BufferGeometry cube ← data.BufferGeometry {topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups}
-
 
     # Varying facts
     const int varying_color_loc ← 0
