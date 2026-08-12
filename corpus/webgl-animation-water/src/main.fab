@@ -1,8 +1,8 @@
 +++
 locale = "en"
 +++
-import from "web:web" private web
-import from "web:dom" private dom
+import from "tela:web" private web
+import from "tela:dom" private dom
 import from "triga:math" private math
 
 class WaterMesh {

@@ -1,8 +1,8 @@
 +++
 locale = "la"
 +++
-importa ex "web:web" privata web
-importa ex "web:dom" privata dom
+importa ex "tela:web" privata web
+importa ex "tela:dom" privata dom
 importa ex "./camera_controls" privata camera_controls
 importa ex "./scene" privata scene
 importa ex "./terrain" privata terrain
