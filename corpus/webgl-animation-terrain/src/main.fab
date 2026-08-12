@@ -19,7 +19,7 @@ const f32 GRID_EXTENT ← 44.0
 fn floats_textus(de list<f32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.longitudo() {
+    while i < values.length() {
         if i ≡ 0 {
             output ← values[i] ↦ string
         }
@@ -34,7 +34,7 @@ fn floats_textus(de list<f32> values) → string {
 fn indices_textus(de list<int<u32>> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.longitudo() {
+    while i < values.length() {
         if i ≡ 0 {
             output ← values[i] ↦ string
         }
@@ -59,15 +59,15 @@ fn terrain_mesh() → TerrainMesh {
             const f32 x ← (0.0 - half) + (column ↦ f32) * cell
             # The shader owns height, normal, color, fog, and the terrain
             # layers. Keep a 36-byte host record with position first.
-            payload.appende(x)
-            payload.appende(0.0)
-            payload.appende(z)
-            payload.appende(0.0)
-            payload.appende(1.0)
-            payload.appende(0.0)
-            payload.appende(0.0)
-            payload.appende(0.0)
-            payload.appende(0.0)
+            payload.append(x)
+            payload.append(0.0)
+            payload.append(z)
+            payload.append(0.0)
+            payload.append(1.0)
+            payload.append(0.0)
+            payload.append(0.0)
+            payload.append(0.0)
+            payload.append(0.0)
             column ← column + 1
         }
         row ← row + 1
@@ -82,18 +82,18 @@ fn terrain_mesh() → TerrainMesh {
             const int<u32> b ← (index_row * vertices_per_row + index_column + 1) ↦ int<u32>
             const int<u32> c ← ((index_row + 1) * vertices_per_row + index_column) ↦ int<u32>
             const int<u32> d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ int<u32>
-            indices.appende(a)
-            indices.appende(c)
-            indices.appende(b)
-            indices.appende(b)
-            indices.appende(c)
-            indices.appende(d)
+            indices.append(a)
+            indices.append(c)
+            indices.append(b)
+            indices.append(b)
+            indices.append(c)
+            indices.append(d)
             index_column ← index_column + 1
         }
         index_row ← index_row + 1
     }
 
-    return TerrainMesh {name = "procedural-terrain", vertex_count = vertices_per_row * vertices_per_row, index_count = indices.longitudo(), vertex_payload = payload, index_payload = indices}
+    return TerrainMesh {name = "procedural-terrain", vertex_count = vertices_per_row * vertices_per_row, index_count = indices.length(), vertex_payload = payload, index_payload = indices}
 }
 
 fn scene_geometry_blob(de TerrainMesh mesh) → string {

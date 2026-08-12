@@ -1,3 +1,6 @@
++++
+locale = "en"
++++
 import from "triga:math" private math
 
 import from "triga:graph/object" private object as graph_object

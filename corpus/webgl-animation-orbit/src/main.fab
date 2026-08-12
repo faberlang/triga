@@ -19,7 +19,7 @@ class AnimatedMesh {
 fn floats_textus(de list<f32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.longitudo() {
+    while i < values.length() {
         if i ≡ 0 {
             output ← values[i] ↦ string
         }
@@ -34,7 +34,7 @@ fn floats_textus(de list<f32> values) → string {
 fn indices_textus(de list<int<u32>> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.longitudo() {
+    while i < values.length() {
         if i ≡ 0 {
             output ← values[i] ↦ string
         }
@@ -51,29 +51,29 @@ fn _float_values(de attribute.BufferAttribute attr) → list<f32> ∪ null {
 }
 
 fn _mesh_ex_geometry(string name, de data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → AnimatedMesh ∪ null {
-    if geom.attributes.longitudo() ≺ 2 then return null
+    if geom.attributes.length() ≺ 2 then return null
     const list<f32> ∪ null pos_opt ← _float_values(geom.attributes[0])
     const list<f32> ∪ null nrm_opt ← _float_values(geom.attributes[1])
     if pos_opt is null or nrm_opt is null then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
-    if pos.longitudo() ≠ geom.vertex_count * 3 then return null
-    if nrm.longitudo() ≠ geom.vertex_count * 3 then return null
+    if pos.length() ≠ geom.vertex_count * 3 then return null
+    if nrm.length() ≠ geom.vertex_count * 3 then return null
     var list<f32> payload ← vacua
     var int v ← 0
     while v < geom.vertex_count {
-        payload.appende(pos[v * 3] + ox)
-        payload.appende(pos[v * 3 + 1] + oy)
-        payload.appende(pos[v * 3 + 2] + oz)
-        payload.appende(nrm[v * 3])
-        payload.appende(nrm[v * 3 + 1])
-        payload.appende(nrm[v * 3 + 2])
-        payload.appende(r)
-        payload.appende(g)
-        payload.appende(b)
+        payload.append(pos[v * 3] + ox)
+        payload.append(pos[v * 3 + 1] + oy)
+        payload.append(pos[v * 3 + 2] + oz)
+        payload.append(nrm[v * 3])
+        payload.append(nrm[v * 3 + 1])
+        payload.append(nrm[v * 3 + 2])
+        payload.append(r)
+        payload.append(g)
+        payload.append(b)
         v ← v + 1
     }
-    return AnimatedMesh {name = name, vertex_count = geom.vertex_count, index_count = geom.indices.longitudo(), vertex_payload = payload, index_payload = geom.indices}
+    return AnimatedMesh {name = name, vertex_count = geom.vertex_count, index_count = geom.indices.length(), vertex_payload = payload, index_payload = geom.indices}
 }
 
 fn _add_mesh(list<AnimatedMesh> meshes, string name, data.BufferGeometry ∪ null geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<AnimatedMesh> {
@@ -81,7 +81,7 @@ fn _add_mesh(list<AnimatedMesh> meshes, string name, data.BufferGeometry ∪ nul
     const data.BufferGeometry geom ← geom_opt
     const AnimatedMesh ∪ null mesh_opt ← _mesh_ex_geometry(name, geom, ox, oy, oz, r, g, b)
     if mesh_opt is null then return meshes
-    meshes.appende(mesh_opt)
+    meshes.append(mesh_opt)
     return meshes
 }
 
@@ -96,7 +96,7 @@ fn scene_meshes() → list<AnimatedMesh> {
 fn scene_geometry_blob(de list<AnimatedMesh> meshes) → string {
     var string output ← ""
     var int i ← 0
-    while i < meshes.longitudo() {
+    while i < meshes.length() {
         const AnimatedMesh mesh ← meshes[i]
         const string piece ← "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
         if i ≡ 0 {
