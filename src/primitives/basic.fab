@@ -26,7 +26,7 @@ import from "triga:geometry/batch" private batch
 
 @ private { }
 fn _primitive_geometry(int vertex_count, list<f32> positions, list<f32> normals, list<f32> uvs, list<int<u32>> indices) → data.BufferGeometry {
-    return data.indexed_triangle_geometry(vertex_count, [attribute.float32_attribute("position", 0, 3, vertex_count, positions), attribute.float32_attribute("normal", 1, 3, vertex_count, normals), attribute.float32_attribute("uv", 2, 2, vertex_count, uvs)], indices, batch.DrawRange {start = 0, count = indices.longitudo()}, [batch.GeometryGroup {start = 0, count = indices.longitudo(), material_index = 0}])
+    return data.indexed_triangle_geometry(vertex_count, [attribute.float32_attribute("position", 0, 3, vertex_count, positions), attribute.float32_attribute("normal", 1, 3, vertex_count, normals), attribute.float32_attribute("uv", 2, 2, vertex_count, uvs)], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
 }
 
 # --- Free constructors for primitive shapes ---
@@ -72,42 +72,42 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
         const f32 radial_scale ← lat_cos[ring]
         var int j ← 0
         while j ≺ 9 {
-            positions.appende(radial_scale * ring_x[j])
-            positions.appende(y)
-            positions.appende(radial_scale * ring_z[j])
-            normals.appende(radial_scale * ring_n[j])
-            normals.appende(lat_sin[ring])
-            normals.appende(radial_scale * (ring_z[j] / radius))
-            uvs.appende((j ↦ f32) / 8.0)
-            uvs.appende((ring ↦ f32) * 0.25 + 0.25)
+            positions.append(radial_scale * ring_x[j])
+            positions.append(y)
+            positions.append(radial_scale * ring_z[j])
+            normals.append(radial_scale * ring_n[j])
+            normals.append(lat_sin[ring])
+            normals.append(radial_scale * (ring_z[j] / radius))
+            uvs.append((j ↦ f32) / 8.0)
+            uvs.append((ring ↦ f32) * 0.25 + 0.25)
             j ← j + 1
         }
         ring ← ring + 1
     }
     # South pole (27) and north pole (28).
-    positions.appende(0.0)
-    positions.appende(0.0 - radius)
-    positions.appende(0.0)
-    normals.appende(0.0)
-    normals.appende(0.0 - 1.0)
-    normals.appende(0.0)
-    uvs.appende(0.5)
-    uvs.appende(0.0)
-    positions.appende(0.0)
-    positions.appende(radius)
-    positions.appende(0.0)
-    normals.appende(0.0)
-    normals.appende(1.0)
-    normals.appende(0.0)
-    uvs.appende(0.5)
-    uvs.appende(1.0)
+    positions.append(0.0)
+    positions.append(0.0 - radius)
+    positions.append(0.0)
+    normals.append(0.0)
+    normals.append(0.0 - 1.0)
+    normals.append(0.0)
+    uvs.append(0.5)
+    uvs.append(0.0)
+    positions.append(0.0)
+    positions.append(radius)
+    positions.append(0.0)
+    normals.append(0.0)
+    normals.append(1.0)
+    normals.append(0.0)
+    uvs.append(0.5)
+    uvs.append(1.0)
     var list<int<u32>> indices ← vacua
     # South cap: (south, ring0[j], ring0[j+1]) — outward winding (verified).
     var int j ← 0
     while j ≺ 8 {
-        indices.appende(27 ↦ int<u32>)
-        indices.appende(j ↦ int<u32>)
-        indices.appende((j + 1) ↦ int<u32>)
+        indices.append(27 ↦ int<u32>)
+        indices.append(j ↦ int<u32>)
+        indices.append((j + 1) ↦ int<u32>)
         j ← j + 1
     }
     # Middle bands: quad (a, c, d) + (a, d, b) — outward winding (verified).
@@ -119,12 +119,12 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
             const int b ← band * 9 + j + 1
             const int c ← (band + 1) * 9 + j
             const int d ← (band + 1) * 9 + j + 1
-            indices.appende(a ↦ int<u32>)
-            indices.appende(c ↦ int<u32>)
-            indices.appende(d ↦ int<u32>)
-            indices.appende(a ↦ int<u32>)
-            indices.appende(d ↦ int<u32>)
-            indices.appende(b ↦ int<u32>)
+            indices.append(a ↦ int<u32>)
+            indices.append(c ↦ int<u32>)
+            indices.append(d ↦ int<u32>)
+            indices.append(a ↦ int<u32>)
+            indices.append(d ↦ int<u32>)
+            indices.append(b ↦ int<u32>)
             j ← j + 1
         }
         band ← band + 1
@@ -132,9 +132,9 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     # North cap: (north, ring2[j+1], ring2[j]) — outward winding (verified).
     j ← 0
     while j ≺ 8 {
-        indices.appende(28 ↦ int<u32>)
-        indices.appende((19 + j) ↦ int<u32>)
-        indices.appende((18 + j) ↦ int<u32>)
+        indices.append(28 ↦ int<u32>)
+        indices.append((19 + j) ↦ int<u32>)
+        indices.append((18 + j) ↦ int<u32>)
         j ← j + 1
     }
     return _primitive_geometry(29, positions, normals, uvs, indices)
@@ -154,60 +154,60 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     var list<f32> uvs ← vacua
     var int i ← 0
     while i ≺ 9 {
-        positions.appende(ring_x[i])
-        positions.appende(0.0 - half_height)
-        positions.appende(ring_z[i])
-        normals.appende(ring_n[i])
-        normals.appende(0.0)
-        normals.appende(ring_z[i] / radius)
-        uvs.appende(ring_u[i])
-        uvs.appende(0.0)
-        positions.appende(ring_x[i])
-        positions.appende(half_height)
-        positions.appende(ring_z[i])
-        normals.appende(ring_n[i])
-        normals.appende(0.0)
-        normals.appende(ring_z[i] / radius)
-        uvs.appende(ring_u[i])
-        uvs.appende(1.0)
+        positions.append(ring_x[i])
+        positions.append(0.0 - half_height)
+        positions.append(ring_z[i])
+        normals.append(ring_n[i])
+        normals.append(0.0)
+        normals.append(ring_z[i] / radius)
+        uvs.append(ring_u[i])
+        uvs.append(0.0)
+        positions.append(ring_x[i])
+        positions.append(half_height)
+        positions.append(ring_z[i])
+        normals.append(ring_n[i])
+        normals.append(0.0)
+        normals.append(ring_z[i] / radius)
+        uvs.append(ring_u[i])
+        uvs.append(1.0)
         i ← i + 1
     }
     i ← 0
     while i ≺ 9 {
-        positions.appende(ring_x[i])
-        positions.appende(0.0 - half_height)
-        positions.appende(ring_z[i])
-        normals.appende(0.0)
-        normals.appende(0.0 - 1.0)
-        normals.appende(0.0)
-        uvs.appende((ring_x[i] / radius + 1.0) * 0.5)
-        uvs.appende((ring_z[i] / radius + 1.0) * 0.5)
-        positions.appende(ring_x[i])
-        positions.appende(half_height)
-        positions.appende(ring_z[i])
-        normals.appende(0.0)
-        normals.appende(1.0)
-        normals.appende(0.0)
-        uvs.appende((ring_x[i] / radius + 1.0) * 0.5)
-        uvs.appende((ring_z[i] / radius + 1.0) * 0.5)
+        positions.append(ring_x[i])
+        positions.append(0.0 - half_height)
+        positions.append(ring_z[i])
+        normals.append(0.0)
+        normals.append(0.0 - 1.0)
+        normals.append(0.0)
+        uvs.append((ring_x[i] / radius + 1.0) * 0.5)
+        uvs.append((ring_z[i] / radius + 1.0) * 0.5)
+        positions.append(ring_x[i])
+        positions.append(half_height)
+        positions.append(ring_z[i])
+        normals.append(0.0)
+        normals.append(1.0)
+        normals.append(0.0)
+        uvs.append((ring_x[i] / radius + 1.0) * 0.5)
+        uvs.append((ring_z[i] / radius + 1.0) * 0.5)
         i ← i + 1
     }
-    positions.appende(0.0)
-    positions.appende(0.0 - half_height)
-    positions.appende(0.0)
-    normals.appende(0.0)
-    normals.appende(0.0 - 1.0)
-    normals.appende(0.0)
-    uvs.appende(0.5)
-    uvs.appende(0.5)
-    positions.appende(0.0)
-    positions.appende(half_height)
-    positions.appende(0.0)
-    normals.appende(0.0)
-    normals.appende(1.0)
-    normals.appende(0.0)
-    uvs.appende(0.5)
-    uvs.appende(0.5)
+    positions.append(0.0)
+    positions.append(0.0 - half_height)
+    positions.append(0.0)
+    normals.append(0.0)
+    normals.append(0.0 - 1.0)
+    normals.append(0.0)
+    uvs.append(0.5)
+    uvs.append(0.5)
+    positions.append(0.0)
+    positions.append(half_height)
+    positions.append(0.0)
+    normals.append(0.0)
+    normals.append(1.0)
+    normals.append(0.0)
+    uvs.append(0.5)
+    uvs.append(0.5)
     # Cap fans wind outward (bottom −Y, top +Y) — reversed pair order.
     return _primitive_geometry(38, positions, normals, uvs, [0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6, 6, 7, 9, 6, 9, 8, 8, 9, 11, 8, 11, 10, 10, 11, 13, 10, 13, 12, 12, 13, 15, 12, 15, 14, 14, 15, 17, 14, 17, 16, 36, 18, 20, 36, 20, 22, 36, 22, 24, 36, 24, 26, 36, 26, 28, 36, 28, 30, 36, 30, 32, 36, 32, 34, 37, 21, 19, 37, 23, 21, 37, 25, 23, 37, 27, 25, 37, 29, 27, 37, 31, 29, 37, 33, 31, 37, 35, 33])
 }
@@ -228,44 +228,44 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     var list<f32> uvs ← vacua
     var int i ← 0
     while i ≺ 9 {
-        positions.appende(ring_x[i])
-        positions.appende(0.0 - half_height)
-        positions.appende(ring_z[i])
-        normals.appende(ring_n[i] / side_scale)
-        normals.appende(side_slope / side_scale)
-        normals.appende((ring_z[i] / radius) / side_scale)
-        uvs.appende(ring_u[i])
-        uvs.appende(0.0)
-        positions.appende(0.0)
-        positions.appende(half_height)
-        positions.appende(0.0)
-        normals.appende(ring_n[i] / side_scale)
-        normals.appende(side_slope / side_scale)
-        normals.appende((ring_z[i] / radius) / side_scale)
-        uvs.appende(ring_u[i])
-        uvs.appende(1.0)
+        positions.append(ring_x[i])
+        positions.append(0.0 - half_height)
+        positions.append(ring_z[i])
+        normals.append(ring_n[i] / side_scale)
+        normals.append(side_slope / side_scale)
+        normals.append((ring_z[i] / radius) / side_scale)
+        uvs.append(ring_u[i])
+        uvs.append(0.0)
+        positions.append(0.0)
+        positions.append(half_height)
+        positions.append(0.0)
+        normals.append(ring_n[i] / side_scale)
+        normals.append(side_slope / side_scale)
+        normals.append((ring_z[i] / radius) / side_scale)
+        uvs.append(ring_u[i])
+        uvs.append(1.0)
         i ← i + 1
     }
     i ← 0
     while i ≺ 9 {
-        positions.appende(ring_x[i])
-        positions.appende(0.0 - half_height)
-        positions.appende(ring_z[i])
-        normals.appende(0.0)
-        normals.appende(0.0 - 1.0)
-        normals.appende(0.0)
-        uvs.appende((ring_x[i] / radius + 1.0) * 0.5)
-        uvs.appende((ring_z[i] / radius + 1.0) * 0.5)
+        positions.append(ring_x[i])
+        positions.append(0.0 - half_height)
+        positions.append(ring_z[i])
+        normals.append(0.0)
+        normals.append(0.0 - 1.0)
+        normals.append(0.0)
+        uvs.append((ring_x[i] / radius + 1.0) * 0.5)
+        uvs.append((ring_z[i] / radius + 1.0) * 0.5)
         i ← i + 1
     }
-    positions.appende(0.0)
-    positions.appende(0.0 - half_height)
-    positions.appende(0.0)
-    normals.appende(0.0)
-    normals.appende(0.0 - 1.0)
-    normals.appende(0.0)
-    uvs.appende(0.5)
-    uvs.appende(0.5)
+    positions.append(0.0)
+    positions.append(0.0 - half_height)
+    positions.append(0.0)
+    normals.append(0.0)
+    normals.append(0.0 - 1.0)
+    normals.append(0.0)
+    uvs.append(0.5)
+    uvs.append(0.5)
     # Base fan winds outward (down, −Y) — the previous fan order was inverted.
     return _primitive_geometry(28, positions, normals, uvs, [0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 11, 12, 12, 13, 14, 14, 15, 16, 27, 18, 19, 27, 19, 20, 27, 20, 21, 27, 21, 22, 27, 22, 23, 27, 23, 24, 27, 24, 25, 27, 25, 26])
 }
@@ -286,14 +286,14 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null 
         var int tube ← 0
         while tube ≺ 5 {
             const f32 radial ← radius + tube_radius * tube_cos[tube]
-            positions.appende(radial * ring_cos[ring])
-            positions.appende(tube_radius * tube_sin[tube])
-            positions.appende(radial * ring_sin[ring])
-            normals.appende(tube_cos[tube] * ring_cos[ring])
-            normals.appende(tube_sin[tube])
-            normals.appende(tube_cos[tube] * ring_sin[ring])
-            uvs.appende((ring ↦ f32) / 8.0)
-            uvs.appende((tube ↦ f32) / 4.0)
+            positions.append(radial * ring_cos[ring])
+            positions.append(tube_radius * tube_sin[tube])
+            positions.append(radial * ring_sin[ring])
+            normals.append(tube_cos[tube] * ring_cos[ring])
+            normals.append(tube_sin[tube])
+            normals.append(tube_cos[tube] * ring_sin[ring])
+            uvs.append((ring ↦ f32) / 8.0)
+            uvs.append((tube ↦ f32) / 4.0)
             tube ← tube + 1
         }
         ring ← ring + 1
@@ -305,12 +305,12 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null 
         while tube ≺ 4 {
             const int a ← ring * 5 + tube
             const int b ← (ring + 1) * 5 + tube
-            indices.appende(a ↦ int<u32>)
-            indices.appende(b + 1 ↦ int<u32>)
-            indices.appende(b ↦ int<u32>)
-            indices.appende(a ↦ int<u32>)
-            indices.appende(a + 1 ↦ int<u32>)
-            indices.appende(b + 1 ↦ int<u32>)
+            indices.append(a ↦ int<u32>)
+            indices.append(b + 1 ↦ int<u32>)
+            indices.append(b ↦ int<u32>)
+            indices.append(a ↦ int<u32>)
+            indices.append(a + 1 ↦ int<u32>)
+            indices.append(b + 1 ↦ int<u32>)
             tube ← tube + 1
         }
         ring ← ring + 1
@@ -335,7 +335,7 @@ fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry �
     const f32 z ← depth * 0.5
     const attribute.BufferAttribute positions ← attribute.float32_attribute("position", 0, 3, 8, [0.0 - x, 0.0 - y, 0.0 - z, x, 0.0 - y, 0.0 - z, x, y, 0.0 - z, 0.0 - x, y, 0.0 - z, 0.0 - x, 0.0 - y, z, x, 0.0 - y, z, x, y, z, 0.0 - x, y, z])
     const list<int<u32>> indices ← [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
-    const data.BufferGeometry wire ← data.line_geometry(8, [positions], indices, batch.DrawRange {start = 0, count = indices.longitudo()}, [batch.GeometryGroup {start = 0, count = indices.longitudo(), material_index = 0}])
+    const data.BufferGeometry wire ← data.line_geometry(8, [positions], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
     if wire.valida() ≡ false then return null
     return wire
 }
