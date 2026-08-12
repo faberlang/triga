@@ -95,13 +95,13 @@ class SceneStore {
     # preserving the slot/generation identity of every live node.
 
     fn insere(SceneNode nodus) → SceneHandle {
-        const int index ← self.slots.longitudo()
-        self.slots.appende(SceneSlot {generation = 0, alive = true, node = nodus})
+        const int index ← self.slots.length()
+        self.slots.append(SceneSlot {generation = 0, alive = true, node = nodus})
         return SceneHandle {index = index, generation = 0}
     }
 
     fn continet(ref SceneHandle manubrium) → bool {
-        if manubrium.index ≥ self.slots.longitudo() then return false
+        if manubrium.index ≥ self.slots.length() then return false
         const SceneSlot socors ← self.slots[manubrium.index]
         return socors.alive and socors.generation ≡ manubrium.generation
     }
@@ -136,12 +136,12 @@ class SceneStore {
         # Add child to parent's children list
         var list<SceneHandle> liberi ← vacua
         var int i ← 0
-        while i ≺ parens_nodus.children.longitudo() {
+        while i ≺ parens_nodus.children.length() {
             const SceneHandle exsistens ← parens_nodus.children[i]
-            liberi.appende(SceneHandle {index = exsistens.index, generation = exsistens.generation})
+            liberi.append(SceneHandle {index = exsistens.index, generation = exsistens.generation})
             i ← i + 1
         }
-        liberi.appende(SceneHandle {index = filius.index, generation = filius.generation})
+        liberi.append(SceneHandle {index = filius.index, generation = filius.generation})
         const SceneNode renovatus_parens ← SceneNode {name = parens_nodus.name, kind = parens_nodus.kind, parent = parens_nodus.parent, children = liberi, visible = parens_nodus.visible, local_matrix = parens_nodus.local_matrix, world_matrix = parens_nodus.world_matrix, world_dirty = parens_nodus.world_dirty}
         const SceneNode renovatus_filius ← SceneNode {name = filius_nodus.name, kind = filius_nodus.kind, parent = SceneHandle {index = parens.index, generation = parens.generation}, children = filius_nodus.children, visible = filius_nodus.visible, local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix, world_dirty = true}
         self._reple(parens, renovatus_parens)
@@ -171,7 +171,7 @@ class SceneStore {
         if self.continet(manubrium) ≡ false then return false
         const SceneNode ∪ null nodus_result ← self.cape(manubrium)
         if nodus_result is null then return false
-        if nodus_result!.children.longitudo() ≻ 0 then return false
+        if nodus_result!.children.length() ≻ 0 then return false
         if nodus_result!.parent not is null {
             const bool seiunctus ← self.seiunge(manubrium)
             if seiunctus ≡ false then return false
@@ -182,11 +182,11 @@ class SceneStore {
     }
 
     fn inveni(string nomen) → SceneHandle ∪ null {
-        const SceneTraversal ∪ null result ← self._traverse_preorder(SceneHandle {index = 0, generation = 0}, vacua, self.slots.longitudo())
+        const SceneTraversal ∪ null result ← self._traverse_preorder(SceneHandle {index = 0, generation = 0}, vacua, self.slots.length())
         if result is null then return null
         const SceneTraversal peragratio ← SceneTraversal {handles = result!.handles, remaining = result!.remaining}
         var int i ← 0
-        while i ≺ peragratio.handles.longitudo() {
+        while i ≺ peragratio.handles.length() {
             const SceneHandle manubrium ← peragratio.handles[i]
             const SceneNode ∪ null nodus ← self.cape(manubrium)
             if nodus is null then return null
@@ -205,7 +205,7 @@ class SceneStore {
     }
 
     fn pone_matrix_localem(ref SceneHandle manubrium, ref math.Matrix4 matrix) → bool {
-        if matrix.elements.longitudo() ≠ 16 then return false
+        if matrix.elements.length() ≠ 16 then return false
         const SceneNode ∪ null nodus_result ← self.cape(manubrium)
         if nodus_result is null then return false
         const SceneNode nodus ← SceneNode {name = nodus_result!.name, kind = nodus_result!.kind, parent = nodus_result!.parent, children = nodus_result!.children, visible = nodus_result!.visible, local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix, world_dirty = nodus_result!.world_dirty}
@@ -235,7 +235,7 @@ class SceneStore {
 
     fn efficax_visibile(ref SceneHandle manubrium) → bool {
         var SceneHandle cursor ← SceneHandle {index = manubrium.index, generation = manubrium.generation}
-        var int remaining ← self.slots.longitudo() + 1
+        var int remaining ← self.slots.length() + 1
         while remaining ≻ 0 {
             const SceneNode ∪ null current ← self.cape(cursor)
             if current is null then return false
@@ -260,7 +260,7 @@ class SceneStore {
 
     fn _traversal_continet(ref list<SceneHandle> handles, ref SceneHandle manubrium) → bool {
         var int i ← 0
-        while i ≺ handles.longitudo() {
+        while i ≺ handles.length() {
             const SceneHandle exsistens ← handles[i]
             if scene_handle_equals(exsistens, manubrium) ≡ true then return true
             i ← i + 1
@@ -293,10 +293,10 @@ class SceneStore {
         if nodus_result is null then return null
         const SceneNode nodus ← SceneNode {name = nodus_result!.name, kind = nodus_result!.kind, parent = nodus_result!.parent, children = nodus_result!.children, visible = nodus_result!.visible, local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix, world_dirty = nodus_result!.world_dirty}
         var list<SceneHandle> renovata_handles ← handles
-        renovata_handles.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
+        renovata_handles.append(SceneHandle {index = manubrium.index, generation = manubrium.generation})
         var SceneTraversal peragratio ← SceneTraversal {handles = renovata_handles, remaining = remaining - 1}
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             const SceneTraversal ∪ null current ← self._traverse_preorder(nodus.children[i], peragratio.handles, peragratio.remaining)
             if current is null then return null
             const SceneTraversal current_value ← SceneTraversal {handles = current!.handles, remaining = current!.remaining}
@@ -315,11 +315,11 @@ class SceneStore {
         const bool efficax_visibile ← parens_visibile and nodus.visible
         var list<SceneHandle> renovata_handles ← handles
         if efficax_visibile {
-            renovata_handles.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
+            renovata_handles.append(SceneHandle {index = manubrium.index, generation = manubrium.generation})
         }
         var SceneTraversal peragratio ← SceneTraversal {handles = renovata_handles, remaining = remaining - 1}
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             const SceneTraversal ∪ null current ← self._traverse_visibile_preorder(nodus.children[i], peragratio.handles, peragratio.remaining, efficax_visibile)
             if current is null then return null
             const SceneTraversal current_value ← SceneTraversal {handles = current!.handles, remaining = current!.remaining}
@@ -340,7 +340,7 @@ class SceneStore {
         if efficax_visibile {
             match nodus.kind {
                 case SceneMesh const geometry, material {
-                    renovata_handles.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
+                    renovata_handles.append(SceneHandle {index = manubrium.index, generation = manubrium.generation})
                 }
                 case SceneGroup {
                 }
@@ -352,7 +352,7 @@ class SceneStore {
         }
         var SceneTraversal peragratio ← SceneTraversal {handles = renovata_handles, remaining = remaining - 1}
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             const SceneTraversal ∪ null current ← self._traverse_visibile_rete_preorder(nodus.children[i], peragratio.handles, peragratio.remaining, efficax_visibile)
             if current is null then return null
             const SceneTraversal current_value ← SceneTraversal {handles = current!.handles, remaining = current!.remaining}
@@ -370,12 +370,12 @@ class SceneStore {
         const SceneNode nodus ← SceneNode {name = nodus_result!.name, kind = nodus_result!.kind, parent = nodus_result!.parent, children = nodus_result!.children, visible = nodus_result!.visible, local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix, world_dirty = nodus_result!.world_dirty}
         const bool efficax_visibile ← parens_visibile and nodus.visible
         var list<SceneHandle> renovata_seen ← seen
-        renovata_seen.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
+        renovata_seen.append(SceneHandle {index = manubrium.index, generation = manubrium.generation})
         var list<SceneMeshResources> renovata_resources ← resources
         if efficax_visibile {
             match nodus.kind {
                 case SceneMesh const geometry, material {
-                    renovata_resources.appende(SceneMeshResources {node = SceneHandle {index = manubrium.index, generation = manubrium.generation}, geometry = resource.ResourceHandle {index = geometry.index, generation = geometry.generation}, material = resource.ResourceHandle {index = material.index, generation = material.generation}})
+                    renovata_resources.append(SceneMeshResources {node = SceneHandle {index = manubrium.index, generation = manubrium.generation}, geometry = resource.ResourceHandle {index = geometry.index, generation = geometry.generation}, material = resource.ResourceHandle {index = material.index, generation = material.generation}})
                 }
                 case SceneGroup {
                 }
@@ -387,12 +387,12 @@ class SceneStore {
         }
         var SceneMeshResourceTraversal peragratio ← SceneMeshResourceTraversal {resources = renovata_resources, remaining = remaining - 1}
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             const SceneMeshResourceTraversal ∪ null current ← self._traverse_visibile_rete_opes_preorder(nodus.children[i], peragratio.resources, renovata_seen, peragratio.remaining, efficax_visibile)
             if current is null then return null
             const SceneMeshResourceTraversal current_value ← SceneMeshResourceTraversal {resources = current!.resources, remaining = current!.remaining}
             peragratio ← SceneMeshResourceTraversal {resources = current_value.resources, remaining = current_value.remaining}
-            renovata_seen.appende(SceneHandle {index = nodus.children[i].index, generation = nodus.children[i].generation})
+            renovata_seen.append(SceneHandle {index = nodus.children[i].index, generation = nodus.children[i].generation})
             i ← i + 1
         }
         return peragratio
@@ -406,16 +406,16 @@ class SceneStore {
         const SceneNode nodus ← SceneNode {name = nodus_result!.name, kind = nodus_result!.kind, parent = nodus_result!.parent, children = nodus_result!.children, visible = nodus_result!.visible, local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix, world_dirty = nodus_result!.world_dirty}
         const bool efficax_visibile ← parens_visibile and nodus.visible
         var list<SceneHandle> renovata_seen ← seen
-        renovata_seen.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
+        renovata_seen.append(SceneHandle {index = manubrium.index, generation = manubrium.generation})
         var list<resource.ResourceHandle> renovata_handles ← handles
         if efficax_visibile {
             match nodus.kind {
                 case SceneMesh const geometry, material {
                     if geometria_manubria {
-                        renovata_handles.appende(resource.ResourceHandle {index = geometry.index, generation = geometry.generation})
+                        renovata_handles.append(resource.ResourceHandle {index = geometry.index, generation = geometry.generation})
                     }
                     else {
-                        renovata_handles.appende(resource.ResourceHandle {index = material.index, generation = material.generation})
+                        renovata_handles.append(resource.ResourceHandle {index = material.index, generation = material.generation})
                     }
                 }
                 case SceneGroup {
@@ -428,12 +428,12 @@ class SceneStore {
         }
         var resource.ResourceHandleTraversal peragratio ← resource.ResourceHandleTraversal {handles = renovata_handles, remaining = remaining - 1}
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             const resource.ResourceHandleTraversal ∪ null current ← self._visibile_rete_opes_manubria_preorder(nodus.children[i], peragratio.handles, renovata_seen, peragratio.remaining, efficax_visibile, geometria_manubria)
             if current is null then return null
             const resource.ResourceHandleTraversal current_value ← resource.ResourceHandleTraversal {handles = current!.handles, remaining = current!.remaining}
             peragratio ← resource.ResourceHandleTraversal {handles = current_value.handles, remaining = current_value.remaining}
-            renovata_seen.appende(SceneHandle {index = nodus.children[i].index, generation = nodus.children[i].generation})
+            renovata_seen.append(SceneHandle {index = nodus.children[i].index, generation = nodus.children[i].generation})
             i ← i + 1
         }
         return peragratio
@@ -448,10 +448,10 @@ class SceneStore {
     fn _sine_liberis(SceneNode parens, ref SceneHandle filius) → SceneNode {
         var list<SceneHandle> liberi ← vacua
         var int i ← 0
-        while i ≺ parens.children.longitudo() {
+        while i ≺ parens.children.length() {
             const SceneHandle exsistens ← parens.children[i]
             if scene_handle_equals(exsistens, filius) ≡ false {
-                liberi.appende(SceneHandle {index = exsistens.index, generation = exsistens.generation})
+                liberi.append(SceneHandle {index = exsistens.index, generation = exsistens.generation})
             }
             i ← i + 1
         }
@@ -460,7 +460,7 @@ class SceneStore {
 
     fn _circuitum_faceret(ref SceneHandle filius, ref SceneHandle parens) → bool {
         var SceneHandle cursor ← SceneHandle {index = parens.index, generation = parens.generation}
-        var int remaining ← self.slots.longitudo() + 1
+        var int remaining ← self.slots.length() + 1
         while remaining ≻ 0 {
             if scene_handle_equals(cursor, filius) then return true
             const SceneNode ∪ null current ← self.cape(cursor)
@@ -480,7 +480,7 @@ class SceneStore {
         const SceneNode nodus ← SceneNode {name = nodus_result!.name, kind = nodus_result!.kind, parent = nodus_result!.parent, children = nodus_result!.children, visible = nodus_result!.visible, local_matrix = nodus_result!.local_matrix, world_matrix = nodus_result!.world_matrix, world_dirty = nodus_result!.world_dirty}
         self._reple(manubrium, SceneNode {name = nodus.name, kind = nodus.kind, parent = nodus.parent, children = nodus.children, visible = nodus.visible, local_matrix = nodus.local_matrix, world_matrix = nodus.world_matrix, world_dirty = true})
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             self._nota_mundum_sordidum(nodus.children[i])
             i ← i + 1
         }
@@ -494,7 +494,7 @@ class SceneStore {
         const math.Matrix4 mundus ← parens_mundus.multiplicata(nodus.local_matrix)
         self._reple(manubrium, SceneNode {name = nodus.name, kind = nodus.kind, parent = nodus.parent, children = nodus.children, visible = nodus.visible, local_matrix = nodus.local_matrix, world_matrix = mundus, world_dirty = false})
         var int i ← 0
-        while i ≺ nodus.children.longitudo() {
+        while i ≺ nodus.children.length() {
             self._renova_mundum_nodum(nodus.children[i], mundus)
             i ← i + 1
         }
@@ -502,19 +502,19 @@ class SceneStore {
     }
 
     fn traverse(ref SceneHandle radix) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null peragratio ← self._traverse_preorder(radix, vacua, self.slots.longitudo())
+        const SceneTraversal ∪ null peragratio ← self._traverse_preorder(radix, vacua, self.slots.length())
         if peragratio is null then return null
         return peragratio!.handles
     }
 
     fn traverse_visibilia(ref SceneHandle radix) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_preorder(radix, vacua, self.slots.longitudo(), true)
+        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_preorder(radix, vacua, self.slots.length(), true)
         if peragratio is null then return null
         return peragratio!.handles
     }
 
     fn traverse_visibilia_rete(ref SceneHandle radix) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_rete_preorder(radix, vacua, self.slots.longitudo(), true)
+        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_rete_preorder(radix, vacua, self.slots.length(), true)
         if peragratio is null then return null
         return peragratio!.handles
     }
@@ -588,7 +588,7 @@ class VisibiliaRetium {
     list<math.TransformPayload> onera = vacua
 
     fn numerus() → int {
-        return self.manubria.longitudo()
+        return self.manubria.length()
     }
 
     fn geometriae() → list<resource.ResourceHandle> {
@@ -610,8 +610,8 @@ class VisibiliaRetium {
     fn ductus() → list<SceneMeshDrawPacket> {
         var list<SceneMeshDrawPacket> fasciculi ← vacua
         var int i ← 0
-        while i ≺ self.manubria.longitudo() {
-            fasciculi.appende(SceneMeshDrawPacket {node = SceneHandle {index = self.manubria[i].index, generation = self.manubria[i].generation}, geometry = resource.ResourceHandle {index = self.geometria_opes[i].index, generation = self.geometria_opes[i].generation}, material = resource.ResourceHandle {index = self.materia_opes[i].index, generation = self.materia_opes[i].generation}, transform = self.onera[i]})
+        while i ≺ self.manubria.length() {
+            fasciculi.append(SceneMeshDrawPacket {node = SceneHandle {index = self.manubria[i].index, generation = self.manubria[i].generation}, geometry = resource.ResourceHandle {index = self.geometria_opes[i].index, generation = self.geometria_opes[i].generation}, material = resource.ResourceHandle {index = self.materia_opes[i].index, generation = self.materia_opes[i].generation}, transform = self.onera[i]})
             i ← i + 1
         }
         return fasciculi
@@ -626,20 +626,20 @@ class VisibiliaRetium {
 fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio_proiectio) → VisibiliaRetium ∪ null {
     if visio_proiectio.validum() ≡ false then return null
     # Single traversal: collect all visible mesh data at once
-    const SceneTraversal ∪ null handles_result ← store._traverse_visibile_rete_preorder(radix, vacua, store.slots.longitudo(), true)
+    const SceneTraversal ∪ null handles_result ← store._traverse_visibile_rete_preorder(radix, vacua, store.slots.length(), true)
     if handles_result is null then return null
     var VisibiliaRetium retia ← VisibiliaRetium {manubria = vacua, geometria_opes = vacua, materia_opes = vacua, onera = vacua}
     for from handles_result!.handles const manubrium {
         const SceneNode ∪ null nodus_result ← store.cape(manubrium)
         if nodus_result is null then return null
-        retia.manubria.appende(SceneHandle {index = manubrium.index, generation = manubrium.generation})
+        retia.manubria.append(SceneHandle {index = manubrium.index, generation = manubrium.generation})
         match nodus_result!.kind {
             case SceneMesh const geometry, material {
-                retia.geometria_opes.appende(resource.ResourceHandle {index = geometry.index, generation = geometry.generation})
-                retia.materia_opes.appende(resource.ResourceHandle {index = material.index, generation = material.generation})
+                retia.geometria_opes.append(resource.ResourceHandle {index = geometry.index, generation = geometry.generation})
+                retia.materia_opes.append(resource.ResourceHandle {index = material.index, generation = material.generation})
                 const math.TransformPayload ∪ null onus ← math.transform_payload(nodus_result!.world_matrix, visio_proiectio)
                 if onus is null then return null
-                retia.onera.appende(onus coalesce math.TransformPayload {values = vacua})
+                retia.onera.append(onus coalesce math.TransformPayload {values = vacua})
             }
             case SceneGroup {
             }

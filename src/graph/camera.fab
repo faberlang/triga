@@ -26,7 +26,7 @@ class PerspectiveCamera {
         if projection_result is null then return null
         const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
         if projection.validum() ≡ false then return null
-        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = projection.elements.longitudo(), x_scale = projection.elements[0], y_scale = projection.elements[5], depth_scale = projection.elements[10]}
+        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = projection.elements.length(), x_scale = projection.elements[0], y_scale = projection.elements[5], depth_scale = projection.elements[10]}
     }
 
     fn visus_projectio(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → math.Matrix4 ∪ null {
@@ -44,7 +44,7 @@ class PerspectiveCamera {
         if view_projection_result is null then return null
         const math.Matrix4 view_projection ← math.Matrix4 {elements = view_projection_result!.elements}
         if view_projection.validum() ≡ false then return null
-        return ViewProjectionFacts {float_count = view_projection.elements.longitudo(), x_scale = view_projection.elements[0], y_scale = view_projection.elements[5], depth_scale = view_projection.elements[10], view_translation_z = view_projection.elements[14]}
+        return ViewProjectionFacts {float_count = view_projection.elements.length(), x_scale = view_projection.elements[0], y_scale = view_projection.elements[5], depth_scale = view_projection.elements[10], view_translation_z = view_projection.elements[14]}
     }
 }
 
