@@ -107,7 +107,7 @@ class Matrix4 {
     list<f32> elements
 
     fn validum() → bool {
-        return self.elements.longitudo() ≡ 16
+        return self.elements.length() ≡ 16
     }
 
     fn determinans_affinis() → f32 {
@@ -128,7 +128,7 @@ class Matrix4 {
         while column ≺ 4 {
             var int row ← 0
             while row ≺ 4 {
-                result.appende(((ae[0 * 4 + row] * be[column * 4 + 0] + ae[1 * 4 + row] * be[column * 4 + 1]) + ae[2 * 4 + row] * be[column * 4 + 2]) + ae[3 * 4 + row] * be[column * 4 + 3])
+                result.append(((ae[0 * 4 + row] * be[column * 4 + 0] + ae[1 * 4 + row] * be[column * 4 + 1]) + ae[2 * 4 + row] * be[column * 4 + 2]) + ae[3 * 4 + row] * be[column * 4 + 3])
                 row ← row + 1
             }
             column ← column + 1
@@ -140,7 +140,7 @@ class Matrix4 {
         const list<f32> e ← self.elements
         const f32 w ← ((e[3] * punctum.x + e[7] * punctum.y) + e[11] * punctum.z) + e[15]
         var f32 divisor ← w
-        if w.absolutum() ≤ 0.000001 {
+        if w.abs() ≤ 0.000001 {
             divisor ← 1.0
         }
         return vector3((((e[0] * punctum.x + e[4] * punctum.y) + e[8] * punctum.z) + e[12]) / divisor, (((e[1] * punctum.x + e[5] * punctum.y) + e[9] * punctum.z) + e[13]) / divisor, (((e[2] * punctum.x + e[6] * punctum.y) + e[10] * punctum.z) + e[14]) / divisor)
@@ -158,7 +158,7 @@ class Matrix4 {
         const f32 a21 ← e[6]
         const f32 a22 ← e[10]
         const f32 determinant ← self.determinans_affinis()
-        if determinant.absolutum() ≤ 0.000001 then return null
+        if determinant.abs() ≤ 0.000001 then return null
         const f32 d ← 1.0 / determinant
         const f32 i00 ← (a11 * a22 - a12 * a21) * d
         const f32 i01 ← (a02 * a21 - a01 * a22) * d
@@ -216,23 +216,23 @@ class TransformPayload {
     list<f32> values
 
     fn float_count() → int ∪ null {
-        if self.values.longitudo() ≠ 32 then return null
-        return self.values.longitudo()
+        if self.values.length() ≠ 32 then return null
+        return self.values.length()
     }
 
     fn byte_count() → int ∪ null {
-        if self.values.longitudo() ≠ 32 then return null
-        return self.values.longitudo() * 4
+        if self.values.length() ≠ 32 then return null
+        return self.values.length() * 4
     }
 
     fn model_value(int index) → f32 ∪ null {
-        if self.values.longitudo() ≠ 32 then return null
+        if self.values.length() ≠ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
         return self.values[index]
     }
 
     fn view_projection_value(int index) → f32 ∪ null {
-        if self.values.longitudo() ≠ 32 then return null
+        if self.values.length() ≠ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
         return self.values[index + 16]
     }
@@ -824,7 +824,7 @@ fn box3_ex_centro_et_mensura(ref Vector3 center, ref Vector3 size) → Box3 ∪ 
 
 @ private { }
 fn _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ null {
-    if direction.absolutum() ≤ 0.000001 {
+    if direction.abs() ≤ 0.000001 {
         if origin ≺ minimum or origin ≻ maximum then return null
         return RayInterval {minimum = -1000000000.0 ∷ f32, maximum = 1000000000.0}
     }
@@ -839,12 +839,12 @@ fn _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → R
 }
 
 fn _ray_box3_hit_normal(ref Box3 bounds, ref Vector3 point) → Vector3 {
-    if (point.x - bounds.min.x).absolutum() ≤ 0.0001 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
-    if (point.x - bounds.max.x).absolutum() ≤ 0.0001 then return vector3(1.0, 0.0, 0.0)
-    if (point.y - bounds.min.y).absolutum() ≤ 0.0001 then return vector3(0.0, -1.0 ∷ f32, 0.0)
-    if (point.y - bounds.max.y).absolutum() ≤ 0.0001 then return vector3(0.0, 1.0, 0.0)
-    if (point.z - bounds.min.z).absolutum() ≤ 0.0001 then return vector3(0.0, 0.0, -1.0 ∷ f32)
-    if (point.z - bounds.max.z).absolutum() ≤ 0.0001 then return vector3(0.0, 0.0, 1.0)
+    if (point.x - bounds.min.x).abs() ≤ 0.0001 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
+    if (point.x - bounds.max.x).abs() ≤ 0.0001 then return vector3(1.0, 0.0, 0.0)
+    if (point.y - bounds.min.y).abs() ≤ 0.0001 then return vector3(0.0, -1.0 ∷ f32, 0.0)
+    if (point.y - bounds.max.y).abs() ≤ 0.0001 then return vector3(0.0, 1.0, 0.0)
+    if (point.z - bounds.min.z).abs() ≤ 0.0001 then return vector3(0.0, 0.0, -1.0 ∷ f32)
+    if (point.z - bounds.max.z).abs() ≤ 0.0001 then return vector3(0.0, 0.0, 1.0)
     return vector3(0.0, 0.0, 0.0)
 }
 
@@ -862,10 +862,10 @@ fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → Transfo
     if view_projection.validum() ≡ false then return null
     var list<f32> values ← vacua
     for from model.elements const value {
-        values.appende(value)
+        values.append(value)
     }
     for from view_projection.elements const value {
-        values.appende(value)
+        values.append(value)
     }
     return TransformPayload {values = values}
 }
@@ -903,7 +903,7 @@ fn matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Mat
     const f32 half_angle ← radians_ex_gradibus(fov_y_degrees) * 0.5
     const f32 sine ← _sinus_f32(half_angle)
     const f32 cosine ← _cosinus_f32(half_angle)
-    if sine.absolutum() ≤ 0.000001 then return null
+    if sine.abs() ≤ 0.000001 then return null
     const f32 focal ← cosine / sine
     const f32 depth ← far / (near - far)
     return Matrix4 {elements = [focal / aspect, 0.0, 0.0, 0.0, 0.0, focal, 0.0, 0.0, 0.0, 0.0, depth, -1.0 ∷ f32, 0.0, 0.0, near * depth, 0.0]}

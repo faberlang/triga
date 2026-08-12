@@ -41,20 +41,20 @@ class ColoredQuadMesh {
     list<int<u32>> indices
 
     fn face_count() → int ∪ null {
-        if self.positions.longitudo() ≠ self.colors.longitudo() then return null
-        if self.positions.longitudo() % 12 ≠ 0 then return null
-        if self.indices.longitudo() % 6 ≠ 0 then return null
-        const int count ← self.positions.longitudo() / 12
+        if self.positions.length() ≠ self.colors.length() then return null
+        if self.positions.length() % 12 ≠ 0 then return null
+        if self.indices.length() % 6 ≠ 0 then return null
+        const int count ← self.positions.length() / 12
         if count ≡ 0 then return null
-        if self.indices.longitudo() ≠ count * 6 then return null
+        if self.indices.length() ≠ count * 6 then return null
         return count
     }
 
     fn geometry() → BufferGeometry ∪ null {
-        if self.positions.longitudo() ≠ self.colors.longitudo() then return null
-        if self.positions.longitudo() % 3 ≠ 0 then return null
-        if self.indices.longitudo() % 3 ≠ 0 then return null
-        const int vertex_count ← self.positions.longitudo() / 3
+        if self.positions.length() ≠ self.colors.length() then return null
+        if self.positions.length() % 3 ≠ 0 then return null
+        if self.indices.length() % 3 ≠ 0 then return null
+        const int vertex_count ← self.positions.length() / 3
         return colored_indexed_geometry(vertex_count, self.positions, self.colors, self.indices)
     }
 
@@ -120,7 +120,7 @@ class BufferGeometry {
     fn _attributes_valid() → bool {
         var bool has_position ← false
         var int i ← 0
-        while i ≺ self.attributes.longitudo() {
+        while i ≺ self.attributes.length() {
             const attribute.BufferAttribute attr ← self.attributes[i]
             if attr.valida() ≡ false then return false
             if attr.element_count ≠ self.vertex_count then return false
@@ -143,10 +143,10 @@ class BufferGeometry {
 
     @ private { }
     fn _indices_valid() → bool {
-        if self.indexed ≡ false then return self.indices.longitudo() ≡ 0
-        if self.indices.longitudo() ≡ 0 then return false
+        if self.indexed ≡ false then return self.indices.length() ≡ 0
+        if self.indices.length() ≡ 0 then return false
         var int i ← 0
-        while i ≺ self.indices.longitudo() {
+        while i ≺ self.indices.length() {
             const int index ← self.indices[i] ↦ int
             if index ≥ self.vertex_count then return false
             i ← i + 1
@@ -159,7 +159,7 @@ class BufferGeometry {
         const int element_count ← self.element_count()
         var int previous_end ← 0
         var int i ← 0
-        while i ≺ self.groups.longitudo() {
+        while i ≺ self.groups.length() {
             const batch.GeometryGroup group ← self.groups[i]
             if group.count ≡ 0 then return false
             if _primitive_range_valid(self.topology, group.start, group.count) ≡ false then return false
@@ -192,7 +192,7 @@ class BufferGeometry {
 
     fn element_count() → int {
         if self.indexed ≡ false then return self.vertex_count
-        return self.indices.longitudo()
+        return self.indices.length()
     }
 
     fn validated_vertex_count() → int ∪ null {
@@ -203,7 +203,7 @@ class BufferGeometry {
     fn index_count() → int ∪ null {
         if self.valida() ≡ false then return null
         if self.indexed ≡ false then return null
-        const int count ← self.indices.longitudo()
+        const int count ← self.indices.length()
         return count
     }
 
@@ -215,7 +215,7 @@ class BufferGeometry {
 
     fn group_count() → int ∪ null {
         if self.valida() ≡ false then return null
-        const int count ← self.groups.longitudo()
+        const int count ← self.groups.length()
         return count
     }
 
@@ -236,7 +236,7 @@ class BufferGeometry {
     fn attribute_scalar_count(string name) → int ∪ null {
         if self.valida() ≡ false then return null
         var int i ← 0
-        while i ≺ self.attributes.longitudo() {
+        while i ≺ self.attributes.length() {
             const attribute.BufferAttribute attribute ← self.attributes[i]
             if attribute.name ≡ name then return attribute.scalar_count()
             i ← i + 1
@@ -256,7 +256,7 @@ class BufferGeometry {
     fn index_payload_byte_count() → int ∪ null {
         if self.valida() ≡ false then return null
         if self.indexed ≡ false then return null
-        const int bytes ← self.indices.longitudo() * 4
+        const int bytes ← self.indices.length() * 4
         return bytes
     }
 
@@ -312,7 +312,7 @@ class BufferGeometry {
 
     fn group_draw_command(int group_index, int instance_count) → batch.GeometryDrawCommand ∪ null {
         if self.valida() ≡ false then return null
-        if group_index ≥ self.groups.longitudo() then return null
+        if group_index ≥ self.groups.length() then return null
         if instance_count ≡ 0 then return null
         const batch.GeometryGroup group ← self.groups[group_index]
         return batch.GeometryDrawCommand {indexed = self.indexed, element_count = group.count, first_element = group.start, base_vertex = 0, instance_count = instance_count, material_index = group.material_index}
@@ -323,11 +323,11 @@ class BufferGeometry {
         if instance_count ≡ 0 then return null
         var list<batch.GeometryDrawCommand> commands ← vacua
         var int i ← 0
-        while i ≺ self.groups.longitudo() {
+        while i ≺ self.groups.length() {
             const batch.GeometryDrawCommand ∪ null command ← self.group_draw_command(i, instance_count)
             if command is null then return null
             const batch.GeometryDrawCommand value ← batch.GeometryDrawCommand {indexed = command!.indexed, element_count = command!.element_count, first_element = command!.first_element, base_vertex = command!.base_vertex, instance_count = command!.instance_count, material_index = command!.material_index}
-            commands.appende(value)
+            commands.append(value)
             i ← i + 1
         }
         return commands
@@ -337,7 +337,7 @@ class BufferGeometry {
         if self.valida() ≡ false then return null
         var int total ← 0
         var int i ← 0
-        while i ≺ self.groups.longitudo() {
+        while i ≺ self.groups.length() {
             total ← total + self.groups[i].count
             i ← i + 1
         }
@@ -356,7 +356,7 @@ class BufferGeometry {
         var f32 max_y ← positions[1]
         var f32 max_z ← positions[2]
         var int i ← 3
-        while i ≺ positions.longitudo() {
+        while i ≺ positions.length() {
             const f32 x ← positions[i]
             const f32 y ← positions[i + 1]
             const f32 z ← positions[i + 2]
@@ -385,7 +385,7 @@ class BufferGeometry {
 
     fn group_bounding_box(int group_index) → bounds.BoundingBox ∪ null {
         if self.valida() ≡ false then return null
-        if group_index ≥ self.groups.longitudo() then return null
+        if group_index ≥ self.groups.length() then return null
         const batch.GeometryGroup group ← self.groups[group_index]
         const list<f32> positions ← self._position_values()
         var int vertex_index ← group.start
@@ -443,7 +443,7 @@ class BufferGeometry {
         const list<f32> positions ← self._position_values()
         var f32 radius_squared ← 0.0
         var int i ← 0
-        while i ≺ positions.longitudo() {
+        while i ≺ positions.length() {
             const f32 dx ← positions[i] - center_x
             const f32 dy ← positions[i + 1] - center_y
             const f32 dz ← positions[i + 2] - center_z
@@ -503,8 +503,8 @@ class BufferGeometry {
         const list<f32> positions ← self._position_values()
         var list<f32> normals ← vacua
         var int i ← 0
-        while i ≺ positions.longitudo() {
-            normals.appende(0.0)
+        while i ≺ positions.length() {
+            normals.append(0.0)
             i ← i + 1
         }
         i ← 0
@@ -542,10 +542,10 @@ class BufferGeometry {
         }
         i ← 0
         const f32 zero ← 0.0
-        while i ≺ normals.longitudo() {
-            const f32 abs_x ← normals[i].absolutum()
-            const f32 abs_y ← normals[i + 1].absolutum()
-            const f32 abs_z ← normals[i + 2].absolutum()
+        while i ≺ normals.length() {
+            const f32 abs_x ← normals[i].abs()
+            const f32 abs_y ← normals[i + 1].abs()
+            const f32 abs_z ← normals[i + 2].abs()
             var f32 normal_max ← abs_x
             if abs_y ≻ normal_max {
                 normal_max ← abs_y
@@ -576,9 +576,9 @@ class BufferGeometry {
         const list<f32> positions ← self._position_values()
         var list<f32> uvs ← vacua
         var int i ← 0
-        while i ≺ positions.longitudo() {
-            uvs.appende((positions[i] - bounds_result!.min_x) / width)
-            uvs.appende((positions[i + 1] - bounds_result!.min_y) / height)
+        while i ≺ positions.length() {
+            uvs.append((positions[i] - bounds_result!.min_x) / width)
+            uvs.append((positions[i + 1] - bounds_result!.min_y) / height)
             i ← i + 3
         }
         return attribute.float32_attribute("uv", 2, 2, self.vertex_count, uvs)
@@ -589,7 +589,7 @@ class BufferGeometry {
     fn _position_values() → list<f32> {
         var list<f32> positions ← vacua
         var int i ← 0
-        while i ≺ self.attributes.longitudo() {
+        while i ≺ self.attributes.length() {
             const attribute.BufferAttribute attr ← self.attributes[i]
             if attr.name ≡ "position" {
                 const list<f32> ∪ null values ← attr.float32_values()
@@ -605,7 +605,7 @@ class BufferGeometry {
     @ private { }
     fn _vertex_layout_at(int index) → layout.VertexAttributeLayout ∪ null {
         if self.valida() ≡ false then return null
-        if index ≥ self.attributes.longitudo() then return null
+        if index ≥ self.attributes.length() then return null
         const attribute.BufferAttribute attr ← self.attributes[index]
         return attr.vertex_layout()
     }
@@ -617,7 +617,7 @@ class BufferGeometry {
 
     fn vertex_layout_count() → int ∪ null {
         if self.valida() ≡ false then return null
-        const int count ← self.attributes.longitudo()
+        const int count ← self.attributes.length()
         return count
     }
 
@@ -670,12 +670,12 @@ class BufferGeometry {
         if self.valida() ≡ false then return null
         var list<layout.VertexAttributeLayout> layouts ← vacua
         var int i ← 0
-        while i ≺ self.attributes.longitudo() {
+        while i ≺ self.attributes.length() {
             const attribute.BufferAttribute attr ← self.attributes[i]
             const layout.VertexAttributeLayout ∪ null layout_result ← attr.vertex_layout()
             if layout_result is null then return null
             const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
-            layouts.appende(lay)
+            layouts.append(lay)
             i ← i + 1
         }
         return layouts
@@ -699,7 +699,7 @@ class BufferGeometry {
         if index_bytes_result is null then return null
         const int ∪ null total_bytes_result ← self.payload_byte_count()
         if total_bytes_result is null then return null
-        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.longitudo(), grouped_element_total = grouped_elements_result coalesce 0, vertex_payload_byte_count = vertex_bytes_result coalesce 0, index_payload_byte_count = index_bytes_result coalesce 0, total_payload_byte_count = total_bytes_result coalesce 0}
+        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.length(), grouped_element_total = grouped_elements_result coalesce 0, vertex_payload_byte_count = vertex_bytes_result coalesce 0, index_payload_byte_count = index_bytes_result coalesce 0, total_payload_byte_count = total_bytes_result coalesce 0}
     }
 
     fn line_draw_batch_facts(int instance_count) → batch.LineGeometryDrawBatchFacts ∪ null {
@@ -734,7 +734,7 @@ fn line_geometry(int vertex_count, ref list<attribute.BufferAttribute> attribute
 fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> colors, list<int<u32>> indices) → BufferGeometry ∪ null {
     const attribute.BufferAttribute position_attribute ← attribute.float32_attribute("position", 0, 3, vertex_count, positions)
     const attribute.BufferAttribute color_attribute ← attribute.float32_attribute("color", 1, 3, vertex_count, colors)
-    const BufferGeometry geometry ← indexed_triangle_geometry(vertex_count, [position_attribute, color_attribute], indices, batch.DrawRange {start = 0, count = indices.longitudo()}, [batch.GeometryGroup {start = 0, count = indices.longitudo(), material_index = 0}])
+    const BufferGeometry geometry ← indexed_triangle_geometry(vertex_count, [position_attribute, color_attribute], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
     if geometry.valida() ≡ false then return null
     return geometry
 }
@@ -745,53 +745,53 @@ fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> col
 # they are useful when a caller wants to build a mesh one face at a time.
 
 fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>> indices, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 cx, f32 cy, f32 cz, f32 dx, f32 dy, f32 dz, f32 r, f32 g, f32 b) → ColoredQuadMesh ∪ null {
-    if positions.longitudo() ≠ colors.longitudo() then return null
-    if positions.longitudo() % 3 ≠ 0 then return null
-    if indices.longitudo() % 3 ≠ 0 then return null
+    if positions.length() ≠ colors.length() then return null
+    if positions.length() % 3 ≠ 0 then return null
+    if indices.length() % 3 ≠ 0 then return null
     var list<f32> next_positions ← vacua
     var int i ← 0
-    while i ≺ positions.longitudo() {
-        next_positions.appende(positions[i])
+    while i ≺ positions.length() {
+        next_positions.append(positions[i])
         i ← i + 1
     }
     var list<f32> next_colors ← vacua
     i ← 0
-    while i ≺ colors.longitudo() {
-        next_colors.appende(colors[i])
+    while i ≺ colors.length() {
+        next_colors.append(colors[i])
         i ← i + 1
     }
     var list<int<u32>> next_indices ← vacua
     i ← 0
-    while i ≺ indices.longitudo() {
-        next_indices.appende(indices[i])
+    while i ≺ indices.length() {
+        next_indices.append(indices[i])
         i ← i + 1
     }
-    const int vertex_base ← positions.longitudo() / 3
-    next_positions.appende(ax)
-    next_positions.appende(ay)
-    next_positions.appende(az)
-    next_positions.appende(bx)
-    next_positions.appende(by)
-    next_positions.appende(bz)
-    next_positions.appende(cx)
-    next_positions.appende(cy)
-    next_positions.appende(cz)
-    next_positions.appende(dx)
-    next_positions.appende(dy)
-    next_positions.appende(dz)
+    const int vertex_base ← positions.length() / 3
+    next_positions.append(ax)
+    next_positions.append(ay)
+    next_positions.append(az)
+    next_positions.append(bx)
+    next_positions.append(by)
+    next_positions.append(bz)
+    next_positions.append(cx)
+    next_positions.append(cy)
+    next_positions.append(cz)
+    next_positions.append(dx)
+    next_positions.append(dy)
+    next_positions.append(dz)
     i ← 0
     while i ≺ 4 {
-        next_colors.appende(r)
-        next_colors.appende(g)
-        next_colors.appende(b)
+        next_colors.append(r)
+        next_colors.append(g)
+        next_colors.append(b)
         i ← i + 1
     }
-    next_indices.appende(vertex_base ↦ int<u32>)
-    next_indices.appende(vertex_base + 1 ↦ int<u32>)
-    next_indices.appende(vertex_base + 2 ↦ int<u32>)
-    next_indices.appende(vertex_base ↦ int<u32>)
-    next_indices.appende(vertex_base + 2 ↦ int<u32>)
-    next_indices.appende(vertex_base + 3 ↦ int<u32>)
+    next_indices.append(vertex_base ↦ int<u32>)
+    next_indices.append(vertex_base + 1 ↦ int<u32>)
+    next_indices.append(vertex_base + 2 ↦ int<u32>)
+    next_indices.append(vertex_base ↦ int<u32>)
+    next_indices.append(vertex_base + 2 ↦ int<u32>)
+    next_indices.append(vertex_base + 3 ↦ int<u32>)
     return ColoredQuadMesh {positions = next_positions, colors = next_colors, indices = next_indices}
 }
 

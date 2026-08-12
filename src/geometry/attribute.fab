@@ -87,10 +87,10 @@ class BufferAttribute {
     fn scalar_count() → int {
         match self.data {
             case Float32Attribute const values {
-                return values.longitudo()
+                return values.length()
             }
             case Uint32Attribute const values {
-                return values.longitudo()
+                return values.length()
             }
         }
     }
