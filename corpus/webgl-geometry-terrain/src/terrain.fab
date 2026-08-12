@@ -1,3 +1,6 @@
++++
+locale = "en"
++++
 # Procedural heightfield terrain for the triga corpus — recreation reference:
 # three.js `webgl_geometry_terrain`. One generated grid mesh with per-vertex
 # normals and elevation-ramp colors, plus a flat water plane in the valleys.
@@ -136,15 +139,15 @@ fn _terrain_mesh() → TerrainMesh {
             const f32 nz ← hd - hu
             const f32 nlen ← _radix_f32((nx * nx + ny * ny) + nz * nz)
             const math.Color color ← _elevation_color(wy)
-            payload.appende(wx)
-            payload.appende(wy)
-            payload.appende(wz)
-            payload.appende(nx / nlen)
-            payload.appende(ny / nlen)
-            payload.appende(nz / nlen)
-            payload.appende(color.r)
-            payload.appende(color.g)
-            payload.appende(color.b)
+            payload.append(wx)
+            payload.append(wy)
+            payload.append(wz)
+            payload.append(nx / nlen)
+            payload.append(ny / nlen)
+            payload.append(nz / nlen)
+            payload.append(color.r)
+            payload.append(color.g)
+            payload.append(color.b)
             gx ← gx + 1
         }
         gz ← gz + 1
@@ -158,17 +161,17 @@ fn _terrain_mesh() → TerrainMesh {
             const int<u32> b ← (cz * verts_per_row + cx) + 1 ↦ int<u32>
             const int<u32> c ← (cz + 1) * verts_per_row + cx ↦ int<u32>
             const int<u32> d ← ((cz + 1) * verts_per_row + cx) + 1 ↦ int<u32>
-            indices.appende(a)
-            indices.appende(c)
-            indices.appende(b)
-            indices.appende(b)
-            indices.appende(c)
-            indices.appende(d)
+            indices.append(a)
+            indices.append(c)
+            indices.append(b)
+            indices.append(b)
+            indices.append(c)
+            indices.append(d)
             cx ← cx + 1
         }
         cz ← cz + 1
     }
-    return TerrainMesh {name = "terrain", vertex_count = verts_per_row * verts_per_row, index_count = indices.longitudo(), vertex_payload = payload, index_payload = indices}
+    return TerrainMesh {name = "terrain", vertex_count = verts_per_row * verts_per_row, index_count = indices.length(), vertex_payload = payload, index_payload = indices}
 }
 
 @ private { }
@@ -181,15 +184,15 @@ fn _water_mesh() → TerrainMesh {
     const list<f32> corners ← [0.0 - half, level, 0.0 - half, half, level, 0.0 - half, half, level, half, 0.0 - half, level, half]
     var int v ← 0
     while v ≺ 4 {
-        payload.appende(corners[v * 3])
-        payload.appende(corners[v * 3 + 1])
-        payload.appende(corners[v * 3 + 2])
-        payload.appende(0.0)
-        payload.appende(1.0)
-        payload.appende(0.0)
-        payload.appende(0.2)
-        payload.appende(0.45)
-        payload.appende(0.6)
+        payload.append(corners[v * 3])
+        payload.append(corners[v * 3 + 1])
+        payload.append(corners[v * 3 + 2])
+        payload.append(0.0)
+        payload.append(1.0)
+        payload.append(0.0)
+        payload.append(0.2)
+        payload.append(0.45)
+        payload.append(0.6)
         v ← v + 1
     }
     return TerrainMesh {name = "water", vertex_count = 4, index_count = 6, vertex_payload = payload, index_payload = [0, 2, 1, 0, 3, 2]}
@@ -197,7 +200,7 @@ fn _water_mesh() → TerrainMesh {
 
 fn terrain_meshes() → list<TerrainMesh> {
     var list<TerrainMesh> meshes ← vacua
-    meshes.appende(_terrain_mesh())
-    meshes.appende(_water_mesh())
+    meshes.append(_terrain_mesh())
+    meshes.append(_water_mesh())
     return meshes
 }

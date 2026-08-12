@@ -1,3 +1,6 @@
++++
+locale = "en"
++++
 # Primitive showcase for the triga corpus — recreation reference:
 # three.js `webgl_geometries`. One mesh per triga:primitives generator,
 # arranged on a static grid with per-mesh material colors.
@@ -27,29 +30,29 @@ fn _float_values(ref attribute.BufferAttribute attr) → list<f32> ∪ null {
 
 @ private { }
 fn _mesh_ex_geometry(string name, ref data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → CorpusMesh ∪ null {
-    if geom.attributes.longitudo() ≺ 2 then return null
+    if geom.attributes.length() ≺ 2 then return null
     const list<f32> ∪ null pos_opt ← _float_values(geom.attributes[0])
     const list<f32> ∪ null nrm_opt ← _float_values(geom.attributes[1])
     if pos_opt is null or nrm_opt is null then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
-    if pos.longitudo() ≠ geom.vertex_count * 3 then return null
-    if nrm.longitudo() ≠ geom.vertex_count * 3 then return null
+    if pos.length() ≠ geom.vertex_count * 3 then return null
+    if nrm.length() ≠ geom.vertex_count * 3 then return null
     var list<f32> payload ← vacua
     var int v ← 0
     while v ≺ geom.vertex_count {
-        payload.appende(pos[v * 3] + ox)
-        payload.appende(pos[v * 3 + 1] + oy)
-        payload.appende(pos[v * 3 + 2] + oz)
-        payload.appende(nrm[v * 3])
-        payload.appende(nrm[v * 3 + 1])
-        payload.appende(nrm[v * 3 + 2])
-        payload.appende(r)
-        payload.appende(g)
-        payload.appende(b)
+        payload.append(pos[v * 3] + ox)
+        payload.append(pos[v * 3 + 1] + oy)
+        payload.append(pos[v * 3 + 2] + oz)
+        payload.append(nrm[v * 3])
+        payload.append(nrm[v * 3 + 1])
+        payload.append(nrm[v * 3 + 2])
+        payload.append(r)
+        payload.append(g)
+        payload.append(b)
         v ← v + 1
     }
-    return CorpusMesh {name = name, vertex_count = geom.vertex_count, index_count = geom.indices.longitudo(), vertex_payload = payload, index_payload = geom.indices}
+    return CorpusMesh {name = name, vertex_count = geom.vertex_count, index_count = geom.indices.length(), vertex_payload = payload, index_payload = geom.indices}
 }
 
 @ private { }
@@ -59,7 +62,7 @@ fn _add_mesh(list<CorpusMesh> meshes, string name, data.BufferGeometry ∪ null 
     if mesh_opt is null then return meshes
     const CorpusMesh mesh ← mesh_opt
     if mesh.vertex_count ≡ 0 then return meshes
-    meshes.appende(mesh)
+    meshes.append(mesh)
     return meshes
 }
 

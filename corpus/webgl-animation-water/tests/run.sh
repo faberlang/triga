@@ -35,17 +35,17 @@ cp "$APP_DIR/public/triga-lit-reflection.json" "$APP_DIR/src/shaders/test-data/r
 cat > "$APP_DIR/faber.lock" <<LOCK
 
 [[package]]
-name = "web"
+name = "tela"
 version = "0.1.0"
 source = "path"
-package_root = "$WORKSPACE/faber-web"
+package_root = "$WORKSPACE/tela"
 kind = "lib"
 target_language = "ts"
 target_triple = "browser"
 target_manifest = ""
-interface_root = "$WORKSPACE/faber-web/src"
+interface_root = "$WORKSPACE/tela/src"
 artifact = ""
-crate = "web"
+crate = "tela"
 rustc = ""
 
 [[package]]

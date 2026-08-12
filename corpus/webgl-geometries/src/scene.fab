@@ -1,3 +1,6 @@
++++
+locale = "en"
++++
 import from "./shapes" private shapes
 
 class CorpusGeometryManifest {
