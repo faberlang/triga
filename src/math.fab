@@ -29,6 +29,7 @@ class Vector2 {
 
 # Three-dimensional points and directions. Its guarded normalization and
 # projection methods return the zero vector for near-zero inputs.
+@ public
 class Vector3 {
     f32 x
     f32 y
@@ -277,6 +278,7 @@ class Quaternion {
 
 # RGB color carrier. There is no alpha channel here; color_valida accepts
 # exactly the normalized range 0.0 through 1.0 for each component.
+@ public
 class Color {
     f32 r
     f32 g
@@ -695,6 +697,7 @@ fn face_code_facts(int code) → FaceCodeFacts ∪ null {
 # These free constructors keep common literals readable while preserving the
 # named fields used by the public genera.
 #
+@ public
 fn vector3(f32 x, f32 y, f32 z) → Vector3 {
     return Vector3 {x = x, y = y, z = z}
 }
@@ -798,6 +801,7 @@ fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees
 }
 
 # Interpolate RGB channels independently; the ratio is not clamped here.
+@ public
 fn color_interpolata(ref Color a, ref Color b, f32 ratio) → Color {
     return Color {r = a.r + (b.r - a.r) * ratio, g = a.g + (b.g - a.g) * ratio, b = a.b + (b.b - a.b) * ratio}
 }
