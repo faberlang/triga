@@ -8,7 +8,7 @@
 
 **Affected repos**: `triga`, `radix`, `examples`, `faberlang.dev`
 
-**Selected next stage**: Stage 0 — delivery lowered; route [`delivery-stage0.md`](delivery-stage0.md) to Factory after its Radix Shape P4 serialization gate
+**Selected next stage**: Stage 0 — delivery lowered; route [`delivery-stage0.md`](delivery-stage0.md) to Factory after the serial `S0-R0`/`S0-R1` Radix prerequisite gates
 
 **Decision authority**: operator direction on 2026-08-13
 
@@ -106,6 +106,33 @@ The default is transparent aliases over native register types. If that fails,
 prefer direct native types before adding wrappers. A wrapper is justified only
 by demonstrated API behavior, never by a desire to retain `.x`, `.y`, `.z`, an
 `elements` list, or the old names unchanged.
+
+## Stage 0 Correction Locks
+
+Audit `2881778a` fixes these five details without changing the public contract:
+
+1. `S0-R1` includes the actual Faber package producer at
+   `radix/crates/faber/src/package/file_interface.rs` and a non-zero
+   `cargo test -p faber --lib package_interface_preserves_generic_size` proof.
+   Loose-file import success alone is not product package success.
+2. `S0-R0` settles ordered `GenericArgExpr::{Type, Size, Name}` source
+   arguments and checked `AppliedArg::{Type(TypeId), Size(IndexId)}` arguments.
+   It inventories every current exhaustive consumer, including the syntax
+   visitor, both Forma emitters, HIR Faber type rendering, and FHIR validation.
+3. Every Triga probe derives both tools from one assigned Radix packet:
+   `RADIX_BIN="$RADIX_ROOT/target/debug/radix"` and
+   `FABER_BIN="$RADIX_ROOT/target/debug/faber"` after building both packages in
+   `RADIX_ROOT`. The public sibling `faber/` checkout is not a CLI root.
+4. The migration inventory includes bounded Radix metadata/package fixtures and
+   `faberlang.dev/src/en-US/**` plus `dist/en-US/**`. Examples source migrates
+   before `generate-examples.py`; all site source is final before
+   `build-site.sh` regenerates `dist/`.
+5. `Matrix4.validum()` is retired as a type invariant of `Matrix<4,4>`. The
+   migration map removes all lane-count guards while preserving separate domain
+   failures such as invalid perspective, look-at, or affine-inverse inputs.
+
+The exact model, scopes, commands, inventories, and serial unit graph are in
+[`delivery-stage0.md`](delivery-stage0.md).
 
 ## Development Posture
 
@@ -207,6 +234,10 @@ In scope only when Stage 0 proves a gap:
 - generic alias/type-size substitution needed by the selected representation
 - Rust and TypeScript lowering/emission of the selected representation
 - device/backend support or explicit fail-closed behavior
+- the bounded mixed type/size applied-argument model and its exhaustive
+  syntax/semantic consumers
+- loose-file and Faber package-interface producers/importers that must preserve
+  generic declaration parameter order, kind, and shape expressions
 - English locale/library member metadata that directly names Triga's retired
   public types
 - focused regression fixtures created for this campaign
@@ -231,8 +262,13 @@ workflow and checked for byte provenance; they are not hand-edited substitutes.
 
 ### `faberlang.dev` — current documentation
 
-Update the English Triga library source page, then rebuild its generated HTML.
-Do not patch `dist/` without regenerating it from the source page.
+Update the authored English Triga library page at
+`src/en-US/libraries/triga.md`. The Triga Budapest page at
+`src/en-US/examples/triga-budapest.md` is generated from the migrated Examples
+source by `generator/scripts/generate-examples.py`; regenerate that source page
+after Examples migrates. Then run `bash generator/scripts/build-site.sh` and
+commit the corresponding `dist/en-US/**` output. Source and generated Markdown
+precede rendered HTML; do not patch `dist/` independently.
 
 ### Explicit exclusions
 
@@ -251,7 +287,7 @@ Do not patch `dist/` without regenerating it from the source page.
 
 **Lowers to**: Factory via [`delivery-stage0.md`](delivery-stage0.md)
 
-**Routing evidence**: planner delivery task `6349e78e`; the delivery records one proven Radix prerequisite for named size applications/imports/HIR emitters, followed by equal alias/direct/wrapper probes and the selected operation/payload/device/migration freeze. Dispatch is serial and starts only after the delivery's Shape P4 committed-base gate.
+**Routing evidence**: planner delivery task `6349e78e`, corrected by planner task `b4c25788` after audit `2881778a`; the delivery records a bounded kinded type/size applied-argument foundation (`S0-R0`) and a separate loose-file/Faber-package import plus Rust/TypeScript emitter prerequisite (`S0-R1`), followed by equal alias/direct/wrapper probes and the selected operation/payload/device/migration freeze. Dispatch is serial and starts only after each unit's committed-base and Shape P4 overlap gate.
 
 **Mode**: discovery-first
 
@@ -259,9 +295,10 @@ Prove the public contract before broad migration.
 
 Required probes:
 
-1. Parse and type-check generic aliases with `size` parameters.
-2. Substitute vector size and matrix row/column sizes through calls and
-   imported module boundaries.
+1. Parse and type-check generic aliases with `size` parameters through an
+   explicit kinded type/size applied-argument model.
+2. Substitute vector size and matrix row/column sizes through calls, loose-file
+   imports, and the Faber product package-interface producer/importer path.
 3. Reject mismatched vector and matrix shapes at compile time.
 4. Emit and compile representative Rust and TypeScript library consumers.
 5. Prove constructor/literal ergonomics for sizes 2, 3, and 4.
@@ -281,7 +318,8 @@ Deliverables:
 - a representation decision record in this campaign directory;
 - focused positive and negative fixtures;
 - a delivery graph for Stages 1–5;
-- any required Radix unit split, with its own owner and proof;
+- the required serial Radix `S0-R0` foundation and `S0-R1`
+  package-interface/emitter proof, each with its own exact scope and checks;
 - an explicit migration table from each retired symbol and helper to its new
   spelling.
 
@@ -289,7 +327,10 @@ Done oracle:
 
 - one representation is selected with observed Rust and TypeScript proof;
 - compile-time shape rejection is observed;
-- every current Triga operation has a mapped destination;
+- every current Triga operation has a mapped destination or explicit
+  type-invariant retirement; `Matrix4.validum()` is retired because
+  `Matrix<4,4>` cannot carry a non-16-lane shape, and every caller check has a
+  mapped removal action;
 - remaining target gaps are named and fail closed;
 - the suffix-free public contract remains unchanged.
 
@@ -368,7 +409,8 @@ Done oracle:
 
 ```text
 Stage 0 representation proof
-  -> Radix prerequisite, if any
+  -> S0-R0 kinded applied-argument foundation (Radix)
+  -> S0-R1 loose-file/package import and HIR emitter proof (Radix)
   -> Stage 1 Triga core surface
   -> Stage 2 Triga consumers
   -> Stage 3 cross-repo consumers and metadata
@@ -378,7 +420,8 @@ Stage 0 representation proof
 
 - Do not begin broad consumer edits before Stage 0 freezes the representation
   and migration table.
-- A Radix prerequisite must land before Triga depends on it.
+- `S0-R0` must land before `S0-R1`; both Radix prerequisites must land
+  before Triga depends on named size applications.
 - Triga source must land before Examples and site outputs are regenerated.
 - Source docs must change before generated docs.
 - The generated Factory README is last because Triga main already has a
@@ -386,7 +429,9 @@ Stage 0 representation proof
 
 ## Batching and Split Policy
 
-- Stage 0 is one bounded compiler/library seam investigation.
+- Stage 0 is one bounded compiler/library seam investigation split at the
+  real boundary between the kinded applied-argument foundation and the
+  package/import/emitter behavior that consumes it.
 - After Stage 0, split implementation by non-overlapping ownership:
   Radix prerequisite, Triga core math, Triga consumers/corpus, Examples, and
   docs/site.
@@ -403,7 +448,7 @@ Stage 0 representation proof
 | Public names carry no dimension suffix | declaration scan plus classified workspace grep |
 | Shape is compile-time information | positive and negative compiler fixtures |
 | Vector behavior preserved | focused Triga proba and exempla |
-| Matrix transform behavior preserved | `check-transforms` and focused transform fixtures |
+| Matrix transform behavior preserved | `check-transforms`, focused transform fixtures, and an explicit migration row retiring `Matrix4.validum()` as a shaped-carrier invariant |
 | Box behavior preserved | bounds, overlap, containment, and ray fixtures using `Box<3>` |
 | Rust target works | generated library consumer builds and focused Radix test |
 | TypeScript target works | generated library consumer builds and focused Radix test |
@@ -423,10 +468,11 @@ Inner-loop commands from the assigned Triga packet:
 ./scripta/check-transforms
 ```
 
-Stage 0 must add and run focused Radix tests for generic size substitution,
-shape mismatch rejection, and the selected Rust/TypeScript lowering path. The
-delivery artifact must name their exact `cargo test -p ...` commands after the
-owning crate is identified from live code.
+Stage 0 must add and run focused Radix tests for kinded applied arguments,
+generic size substitution, loose-file and Faber package-interface import
+reconstruction, shape mismatch rejection, and the selected Rust/TypeScript
+lowering path. The corrected delivery artifact names the exact crate checks and
+requires every filtered test command to execute at least one test.
 
 After integration, route Radix stages 1–2 to a lint lane. Route the relevant
 stages 3–6 and any declared broader suite to a test lane. Do not use a full
@@ -472,11 +518,12 @@ campaign.
 
 ## Readiness
 
-**Stage 0 is lowered and READY for factory dispatch after its serialization gate.**
+**Stage 0 is corrected and READY for factory dispatch after its serial committed-base gates.**
 
 [`delivery-stage0.md`](delivery-stage0.md) is the implementation authority. It
-keeps Stage 0 active, not complete; defines the proven Radix prerequisite and
-the serial Triga candidate/selection/freeze units; and requires committed Rust,
+keeps Stage 0 active, not complete; defines the serial `S0-R0` kinded
+applied-argument foundation, `S0-R1` package/import/emitter prerequisite, and
+Triga candidate/selection/freeze units; and requires committed Rust,
 TypeScript, host-layout, device-posture, decision-record, and migration-map
 evidence before this campaign may select Stage 1.
 
