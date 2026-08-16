@@ -109,11 +109,12 @@ instantiated at inventory build time by
 - Frozen ABI fields live on shader-contract adapters (`src/shader_contract.fab`:
   `vertex_layout_matches`, `varying_matches`, `fragment_output_matches`,
   `pipeline_matches`, `resource_binding_matches`) and geometry fact methods
-  (`index_format_code()`, `topology_code()` in `src/geometry/data.fab`);
-  `_code`/`offset_bytes`/`stride_bytes`/`source_name` occurrences in `src/`:
-  figure deferred to the `tgh-s0-1` derived inventory —
-  `proof/inventory/derive-inventory.sh` counts these occurrences at
-  generation time, no hand-typed ABI count in this spec.
+  (`index_format_code()`, `topology_code()` in `src/geometry/data.fab`). The
+  committed `tgh-s0-1` inventory derives **172 ABI field occurrences** from
+  `_code` (109), `offset_bytes` (20), `stride_bytes` (22), and `source_name`
+  (21); the authoritative total is
+  `proof/inventory/triga-inventory.json:totals.abi_field_occurrences`, not a
+  hand-typed claim.
 - Transform ABI drift (confirmed live): `src/math.fab`
   `TransformPayload` contract — 32 f32 / 128 bytes (documented canonical);
   `hosts/webgpu-browser/public/generated/graphics-reflection.json` transform
@@ -384,12 +385,28 @@ integrable alone on `triga` main in direct mode. No cross-repo write.
 
 ## 7. Open questions for Mind
 
-- Commit shape: CAMPAIGN.md is currently untracked (WIP); this delivery
-  commits only `docs/factory/triga-hardening/delivery.md`. Mind decides when
-  to commit the campaign document itself.
+- Commit shape: CAMPAIGN.md lands with this Stage-0 closeout, alongside the
+  delivery receipt record; no separate campaign-document commit is needed.
 - Stage-0 audit dispatch: recommend one auditor pass over `tgh-s0-1` +
   `tgh-s0-2` evidence (inventory derivation + profile decision), per the
   campaign's correctness/requirements-review rule.
 - The faber test gap (Q4) will need a Radix-side unit once Stage 1's canonical
   gate names the exact parse/package route; the recorded symptoms in
   `tgh-s0-4` are the evidence handoff.
+
+## 8. Stage 0 closeout receipts
+
+Stage 0 landed on `triga` main. The four delivery units are recorded by their
+commits:
+
+| unit | receipt | landed outcome |
+| --- | --- | --- |
+| `tgh-s0-1` | `8dade06` | Live versioned inventory and validator |
+| `tgh-s0-2` | `2e9daa0` | Core Graphics Profile v0 decision frozen |
+| `tgh-s0-3` | `93750a3` | Live coverage scorecard and stale-report annotations |
+| `tgh-s0-4` | `0dbf376` | Stage-0 open-question answers and routings |
+
+The derived ABI figure for this closeout is **172 ABI field occurrences**,
+from the committed inventory (`_code` 109, `offset_bytes` 20, `stride_bytes`
+22, `source_name` 21). The inventory remains the source of truth for this
+figure and for future regenerated counts.
