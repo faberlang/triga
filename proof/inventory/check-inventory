@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+"""Validate the generated Triga source inventory against the live tree."""
+
+from __future__ import annotations
+
+import copy
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+
+
+ROOT = Path(__file__).resolve().parents[2]
+INVENTORY = ROOT / "proof" / "inventory" / "triga-inventory.json"
+DERIVER = ROOT / "proof" / "inventory" / "derive-inventory.sh"
+EXPECTED_MODULE_COUNT = 26
+
+TOP_LEVEL_FIELDS = {
+    "inventory_schema_version",
+    "inventory_revision",
+    "package",
+    "source_revision",
+    "generation_timestamp",
+    "versions",
+    "totals",
+    "error_null_contract",
+    "abi_fields",
+    "co_located_tests",
+    "consumer_import_map",
+    "modules",
+    "generation",
+}
+VERSION_FIELDS = {"faber", "cista", "package"}
+TOTAL_FIELDS = {
+    "modules",
+    "lines",
+    "classes",
+    "unions",
+    "functions_total",
+    "functions_underscore_private",
+    "functions_public",
+    "imports",
+    "null_returning_functions",
+    "abi_field_occurrences",
+    "co_located_proba_files",
+    "consumer_import_refs",
+}
+ERROR_NULL_FIELDS = {
+    "typed_error_channel",
+    "failable_return_arrow_occurrences",
+    "iace_call_sites",
+    "null_returning_functions",
+    "reserved_for_absence",
+    "notes",
+}
+ABI_FIELDS = {"patterns", "occurrences"}
+ABI_OCCURRENCE_FIELDS = {"_code", "offset_bytes", "stride_bytes", "source_name", "total"}
+GENERATION_FIELDS = {"script", "source_root", "count_method"}
+MODULE_FIELDS = {
+    "path",
+    "lines",
+    "classes",
+    "unions",
+    "functions_total",
+    "functions_underscore_private",
+    "functions_public",
+    "imports",
+    "null_returning_functions",
+    "abi_field_occurrences",
+    "co_located_proba",
+    "co_located_proba_refs",
+    "consumers",
+    "consumer_import_count",
+    "evidence_tier",
+}
+PROBA_FIELDS = {"module", "lines", "groups", "cases"}
+CONSUMER_FIELDS = {"import_count", "consumers"}
+
+
+def error(errors: list[str], message: str) -> None:
+    errors.append(message)
+
+
+def require_keys(errors: list[str], value: object, expected: set[str], label: str) -> None:
+    if not isinstance(value, dict):
+        error(errors, f"{label}: expected an object")
+        return
+    actual = set(value)
+    missing = sorted(expected - actual)
+    extra = sorted(actual - expected)
+    if missing:
+        error(errors, f"{label}: missing fields: {', '.join(missing)}")
+    if extra:
+        error(errors, f"{label}: unexpected fields: {', '.join(extra)}")
+
+
+def load_json(path: Path, errors: list[str], label: str) -> object | None:
+    try:
+        with path.open(encoding="utf-8") as source:
+            return json.load(source)
+    except (OSError, json.JSONDecodeError) as exc:
+        error(errors, f"{label}: cannot load JSON: {exc}")
+        return None
+
+
+def live_modules(errors: list[str]) -> list[str]:
+    result = subprocess.run(
+        ["find", "src", "-name", "*.fab"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        error(errors, f"find src modules failed: {result.stderr.strip()}")
+        return []
+    return sorted(line for line in result.stdout.splitlines() if line)
+
+
+def validate_shape(inventory: object, errors: list[str], label: str) -> None:
+    require_keys(errors, inventory, TOP_LEVEL_FIELDS, label)
+    if not isinstance(inventory, dict):
+        return
+
+    if inventory.get("inventory_schema_version") != 1:
+        error(errors, f"{label}: inventory_schema_version must be 1")
+    if inventory.get("inventory_revision") != 1:
+        error(errors, f"{label}: inventory_revision must be 1")
+    if inventory.get("package") != "triga":
+        error(errors, f"{label}: package must be triga")
+    if not isinstance(inventory.get("source_revision"), str) or not re.fullmatch(
+        r"[0-9a-f]{40}", inventory.get("source_revision", "")
+    ):
+        error(errors, f"{label}: source_revision must be a 40-character git revision")
+    if not isinstance(inventory.get("generation_timestamp"), str) or not re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z",
+        inventory.get("generation_timestamp", ""),
+    ):
+        error(errors, f"{label}: generation_timestamp must be an ISO-8601 UTC timestamp")
+
+    require_keys(errors, inventory.get("versions"), VERSION_FIELDS, f"{label}.versions")
+    require_keys(errors, inventory.get("totals"), TOTAL_FIELDS, f"{label}.totals")
+    require_keys(
+        errors,
+        inventory.get("error_null_contract"),
+        ERROR_NULL_FIELDS,
+        f"{label}.error_null_contract",
+    )
+    require_keys(errors, inventory.get("abi_fields"), ABI_FIELDS, f"{label}.abi_fields")
+    if isinstance(inventory.get("abi_fields"), dict):
+        require_keys(
+            errors,
+            inventory["abi_fields"].get("occurrences"),
+            ABI_OCCURRENCE_FIELDS,
+            f"{label}.abi_fields.occurrences",
+        )
+    require_keys(errors, inventory.get("generation"), GENERATION_FIELDS, f"{label}.generation")
+
+    tests = inventory.get("co_located_tests")
+    if not isinstance(tests, dict):
+        error(errors, f"{label}.co_located_tests: expected an object")
+    else:
+        for path, record in tests.items():
+            require_keys(errors, record, PROBA_FIELDS, f"{label}.co_located_tests[{path!r}]")
+
+    consumers = inventory.get("consumer_import_map")
+    if not isinstance(consumers, dict):
+        error(errors, f"{label}.consumer_import_map: expected an object")
+    else:
+        for module, record in consumers.items():
+            require_keys(errors, record, CONSUMER_FIELDS, f"{label}.consumer_import_map[{module!r}]")
+
+    modules = inventory.get("modules")
+    if not isinstance(modules, list):
+        error(errors, f"{label}.modules: expected an array")
+    else:
+        paths: list[str] = []
+        for index, record in enumerate(modules):
+            require_keys(errors, record, MODULE_FIELDS, f"{label}.modules[{index}]")
+            if isinstance(record, dict):
+                path = record.get("path")
+                if isinstance(path, str):
+                    paths.append(path)
+        if len(paths) != len(set(paths)):
+            error(errors, f"{label}.modules: duplicate module paths")
+
+
+def without_provenance(inventory: object) -> object:
+    if not isinstance(inventory, dict):
+        return inventory
+    normalized = copy.deepcopy(inventory)
+    normalized.pop("source_revision", None)
+    normalized.pop("generation_timestamp", None)
+    return normalized
+
+
+def main() -> int:
+    errors: list[str] = []
+    committed = load_json(INVENTORY, errors, str(INVENTORY.relative_to(ROOT)))
+    if committed is None:
+        return 1
+
+    validate_shape(committed, errors, "committed inventory")
+    live = live_modules(errors)
+    if len(live) != EXPECTED_MODULE_COUNT:
+        error(errors, f"live module count: {len(live)} != {EXPECTED_MODULE_COUNT}")
+
+    if isinstance(committed, dict) and isinstance(committed.get("modules"), list):
+        committed_paths = [
+            record.get("path")
+            for record in committed["modules"]
+            if isinstance(record, dict) and isinstance(record.get("path"), str)
+        ]
+        if sorted(committed_paths) != live:
+            error(errors, "committed inventory module set does not equal find src output")
+
+    with tempfile.TemporaryDirectory(prefix="triga-inventory-check-") as work:
+        derived_path = Path(work) / "triga-inventory.json"
+        result = subprocess.run(
+            [str(DERIVER), str(derived_path)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            error(errors, f"derive-inventory.sh failed: {result.stderr.strip() or result.stdout.strip()}")
+        else:
+            derived = load_json(derived_path, errors, "derived inventory")
+            if derived is not None:
+                validate_shape(derived, errors, "derived inventory")
+                if without_provenance(committed) != without_provenance(derived):
+                    error(errors, "committed inventory differs from a fresh derivation")
+                if isinstance(derived, dict) and isinstance(derived.get("modules"), list):
+                    derived_paths = [
+                        record.get("path")
+                        for record in derived["modules"]
+                        if isinstance(record, dict) and isinstance(record.get("path"), str)
+                    ]
+                    if sorted(derived_paths) != live:
+                        error(errors, "derived inventory module set does not equal find src output")
+
+    if errors:
+        for message in errors:
+            print(f"error: {message}", file=sys.stderr)
+        return 1
+
+    print(f"inventory ok: {EXPECTED_MODULE_COUNT} live modules; derived facts match")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
