@@ -1,6 +1,6 @@
 # Goal: Triga Engine And World-Building Architecture
 
-**Status**: vision / not implementation-ready
+**Status**: active — S0 architecture checkpoint and S1 seam-repair evidence are landed; S2 shared-renderer vertical slice remains planned
 
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 

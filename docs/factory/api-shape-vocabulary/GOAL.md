@@ -1,5 +1,7 @@
 # Goal: Triga API Shape And Vocabulary Rework (Triga-Only)
 
+**Status**: active — the core receiver-method and vocabulary break landed in `8312fc7`; compiler/exempla follow-up remains outside this hygiene repair
+
 ## Summary
 
 Reshape Triga's public `triga:*` surface from free functions with type-name
