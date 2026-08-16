@@ -1,0 +1,350 @@
+{
+  "profile_schema_version": 1,
+  "profile": {
+    "id": "core-graphics-v0",
+    "name": "Triga Core Graphics Profile v0",
+    "decision": "retain",
+    "refinements": [
+      "lit row narrowed to MeshPhongMaterial only (PBR MeshStandardMaterial stays unsupported)",
+      "lighting narrowed to ambient + directional only (PointLight stays unsupported)"
+    ],
+    "decision_date": "2026-08-16",
+    "source_revision": "d6f8e99c41a50a93af7c1108eff678908f3e32c7",
+    "authoritative_doc": "docs/factory/triga-hardening/profile-v0.md",
+    "stage0_unit": "tgh-s0-2"
+  },
+  "supported": [
+    {
+      "row_id": "S1",
+      "name": "Perspective camera",
+      "state": "supported",
+      "state_today": "constructible, no proba",
+      "live_source_facts": [
+        {
+          "module": "src/graph/camera.fab",
+          "symbols": [
+            "PerspectiveCamera",
+            "projectio",
+            "visus_projectio",
+            "projectio_facta",
+            "visus_projectio_facta",
+            "PerspectiveCameraProjectionFacts",
+            "ViewProjectionFacts"
+          ]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Camera projection probas: non-null projection/view for valid fov/aspect/near/far and eye/target/up; degenerate negatives; facts float_count/scale terms match Matrix4 elements; declared-target equivalence at the highest executed tier",
+          "stage": 3,
+          "evidence_level": "executed-proba"
+        },
+        {
+          "requirement": "Camera facts consumed by the admitted render descriptor: projection terms feed the host transform/view binding; view-projection numeric sample in the headless-browser draw matches the Triga-computed matrix",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    },
+    {
+      "row_id": "S2",
+      "name": "Indexed triangle geometry (position/normal/UV)",
+      "state": "supported",
+      "state_today": "constructible, proba absent",
+      "live_source_facts": [
+        {
+          "module": "src/geometry/data.fab",
+          "symbols": [
+            "indexed_triangle_geometry",
+            "index_format_code",
+            "topology_code",
+            "vertex_normals",
+            "planar_uvs"
+          ]
+        },
+        {
+          "module": "src/geometry/attribute.fab",
+          "symbols": ["BufferAttribute", "float32_attribute"]
+        },
+        {
+          "module": "src/geometry/batch.fab",
+          "symbols": ["DrawRange", "GeometryGroup"]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Exact-value probas for positions/normals/UVs/winding/indices; negative validation (wrong attribute counts, malformed ranges, unknown topology); target-equivalence for the generated attributes",
+          "stage": 3,
+          "evidence_level": "executed-proba"
+        },
+        {
+          "requirement": "Indexed geometry consumed by the admitted descriptor: one drawIndexed per mesh with the position/normal/UV vertex-input layout; pixel/numeric sample verifies the drawn triangles",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    },
+    {
+      "row_id": "S3",
+      "name": "Model/view-projection transforms",
+      "state": "supported",
+      "state_today": "32 f32 / 128 bytes vs hosts reflection 64 f32 / 256 bytes — drift",
+      "live_source_facts": [
+        {
+          "module": "src/math.fab",
+          "symbols": [
+            "TransformPayload",
+            "Matrix4",
+            "matrix4_identitas",
+            "matrix4_translatio",
+            "matrix4_scala",
+            "matrix4_composita",
+            "matrix4_perspectiva",
+            "matrix4_conspectus"
+          ]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Value probas for matrix4_* composition and TransformPayload (float_count/byte_count/model_value/view_projection_value); non-finite input cannot hang; target-equivalence at the highest executed tier",
+          "stage": 3,
+          "evidence_level": "executed-proba"
+        },
+        {
+          "requirement": "One versioned schema resolves the 32/128 vs 64/256 transform disagreement and generates/validates every Triga/Radix/Hosts reader; per-frame transform buffer numeric sample in the admitted draw",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    },
+    {
+      "row_id": "S4",
+      "name": "Depth/culling policy",
+      "state": "supported",
+      "state_today": "adapter facts only",
+      "live_source_facts": [
+        {
+          "module": "src/shader_contract.fab",
+          "symbols": [
+            "pipeline_matches",
+            "goal_depth_compare_code",
+            "goal_depth_write_enabled_code",
+            "goal_primitive_topology_code",
+            "goal_color_target_format_code"
+          ]
+        },
+        {
+          "module": "src/material/base.fab",
+          "symbols": [
+            "MaterialPipelineFacts",
+            "material_pipeline_facts",
+            "material_side_code",
+            "material_depth_write_enabled"
+          ]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Typed validation of the pipeline/material facts and profile semantics stating which facts affect culling, depth, and opacity/alpha; composition tests against the profile material/light rows",
+          "stage": 5,
+          "evidence_level": "executed-proba"
+        },
+        {
+          "requirement": "The admitted pipeline's depth_stencil (depth compare + write) matches the Triga facts — no host default silently substitutes; pixel sample verifies depth occlusion/culling in the drawn scene",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    },
+    {
+      "row_id": "S5",
+      "name": "One lit material (MeshPhongMaterial, not PBR)",
+      "state": "supported",
+      "state_today": "shape only — carrier, no constructor/validation",
+      "live_source_facts": [
+        {
+          "module": "src/material/lit.fab",
+          "symbols": ["MeshPhongMaterial"]
+        },
+        {
+          "module": "src/material/base.fab",
+          "symbols": ["Material"]
+        },
+        {
+          "module": "src/renderable/mesh.fab",
+          "symbols": ["Mesh"]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Typed construction + validation negatives for MeshPhongMaterial (color/specular/shininess); composition with the Mesh renderable's material union; probe that PBR MeshStandardMaterial stays outside the profile",
+          "stage": 5,
+          "evidence_level": "executed-proba"
+        },
+        {
+          "requirement": "Lit row rendered through the admitted pipeline; deterministic pixel sample proves Phong shading occurs (not flat/no-lighting)",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    },
+    {
+      "row_id": "S6",
+      "name": "Ambient/directional lighting",
+      "state": "supported",
+      "state_today": "shape only — carriers, no constructor/validation",
+      "live_source_facts": [
+        {
+          "module": "src/lighting/light.fab",
+          "symbols": ["AmbientLight", "DirectionalLight", "Light"]
+        },
+        {
+          "module": "src/graph/object.fab",
+          "symbols": ["Object3D"]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Typed construction + validation of the two light contracts (color/intensity; DirectionalLight.target_position); composition tests in a profile scene; probe that entities not in the profile (PointLight) reject or are excluded at composition",
+          "stage": 5,
+          "evidence_level": "executed-proba"
+        },
+        {
+          "requirement": "Ambient + directional light facts consumed by the admitted descriptor/bindings; pixel/numeric sample verifies the lighting law (ambient term + directional contribution)",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    }
+  ],
+  "hosts_owned_in_profile": [
+    {
+      "row_id": "H1",
+      "name": "Resize and device-loss",
+      "state": "hosts-owned, unproven",
+      "state_today": "no Triga surface; hosts no-draw placeholder state (engine.js triga-lit.* placeholders rejected at admission)",
+      "live_source_facts": [
+        {
+          "module": "hosts/webgpu-browser/public/src/engine/engine.js",
+          "symbols": ["loadGreyboxPipeline", "renderGreyboxSceneFrame", "updateGreyboxTransform"]
+        },
+        {
+          "module": "hosts/webgpu-browser/public/src/contract/artifact-admission.js",
+          "symbols": ["loadFaberGraphicsPipeline"]
+        }
+      ],
+      "proof_requirements": [
+        {
+          "requirement": "Headless-browser draw survives resize (depth/texture resize path) and device-loss rejection/recovery uses published facts or rejects explicitly",
+          "stage": 7,
+          "evidence_level": "browser-numeric-pixel"
+        }
+      ]
+    }
+  ],
+  "unsupported": [
+    {
+      "row_id": "U1",
+      "name": "PBR MeshStandardMaterial",
+      "state": "unsupported",
+      "live_source_fact": {
+        "module": "src/material/standard.fab",
+        "symbols": ["MeshStandardMaterial"]
+      },
+      "reason": "Carrier-only; no render path; broad horizon; lit row is narrowed to MeshPhongMaterial"
+    },
+    {
+      "row_id": "U2",
+      "name": "PointLight",
+      "state": "unsupported",
+      "live_source_fact": {
+        "module": "src/lighting/light.fab",
+        "symbols": ["PointLight"]
+      },
+      "reason": "Carrier-only; not consumed by the retained lighting row (ambient + directional only)"
+    },
+    {
+      "row_id": "U3",
+      "name": "Textures",
+      "state": "unsupported",
+      "live_source_fact": {
+        "module": "src/material/base.fab",
+        "symbols": ["TextureDescriptor"]
+      },
+      "reason": "Placeholder seed only; no sampler/mipmap/render-target pipeline in the profile"
+    },
+    {
+      "row_id": "U4",
+      "name": "Animation/skinning",
+      "state": "unsupported",
+      "live_source_fact": null,
+      "reason": "No live module; renderable/skin and renderable/morph are planned, not present"
+    },
+    {
+      "row_id": "U5",
+      "name": "Shadows",
+      "state": "unsupported",
+      "live_source_fact": null,
+      "reason": "No live module; lighting/shadow is planned, not present"
+    },
+    {
+      "row_id": "U6",
+      "name": "Post-processing",
+      "state": "unsupported",
+      "live_source_fact": null,
+      "reason": "No live module; multipass/render-target surface is absent"
+    },
+    {
+      "row_id": "U7",
+      "name": "Instancing",
+      "state": "unsupported",
+      "live_source_fact": {
+        "module": "src/geometry/batch.fab",
+        "symbols": ["GeometryGroup"]
+      },
+      "reason": "Batch facts carry an instance_count field only; no instanced-draw surface; renderable/instance planned"
+    },
+    {
+      "row_id": "U8",
+      "name": "Terrain/voxel",
+      "state": "unsupported",
+      "live_source_fact": {
+        "module": "src/face.fab",
+        "symbols": ["FaceQuad"]
+      },
+      "reason": "FaceQuad voxel face-code helpers are shape-only and not part of the admitted draw proof; primitives/terrain and primitives/voxel planned"
+    },
+    {
+      "row_id": "U9",
+      "name": "Asset ingestion",
+      "state": "unsupported",
+      "live_source_fact": {
+        "module": "src/resource.fab",
+        "symbols": ["ResourceHandle"]
+      },
+      "reason": "ResourceHandle is pure generation identity; no glTF/GLB ingestion module"
+    }
+  ],
+  "size_assumptions": {
+    "purpose": "assumptions for the bounded Stage 7 draw proof — not the Stage 8 stress budget",
+    "assumptions": [
+      "single small scene",
+      "one camera",
+      "one directional light (plus ambient)",
+      "at most one lit mesh carrying MeshPhongMaterial",
+      "no textures"
+    ],
+    "bounded_proof_facts": [
+      {"fact": "hosts engine TRANSFORM_BYTE_LEN", "value": 128},
+      {"fact": "hosts engine MAX_TRANSFORM_SEQUENCE", "value": 600},
+      {"fact": "hosts graphics-reflection.json vertex_count", "value": 36},
+      {"fact": "triga goal_transform_element_count", "value": 32}
+    ],
+    "stress_budget_stage": 8
+  },
+  "capabilities_ledger": {
+    "state": "unsupported",
+    "note": "proof/capabilities.json (ledger_revision 1) rows remain unsupported; only Core Graphics Profile v0 is eligible for upgrade, at Stage 8",
+    "upgrade_stage": 8
+  }
+}
