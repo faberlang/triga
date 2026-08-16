@@ -100,6 +100,8 @@ varia scene.SceneStore store ← scene.scene_store()
 
 ## Size (after S1 splits)
 
+> **Archive notice (2026-08-16):** live coverage data superseded by `proof/coverage-scorecard.json` (2026-08-16); this section is archival
+
 | File | Lines |
 | --- | --- |
 | `math.fab` | ~850 |
@@ -122,6 +124,8 @@ resource + visibilia** (or similar) under `src/scene/` together — not a lone
 file.
 
 ## Target map (frozen at S0, 2026-08-01)
+
+> **Archive notice (2026-08-16):** live coverage data superseded by `proof/coverage-scorecard.json` (2026-08-16); this section is archival
 
 The engine campaign's S0 architecture checkpoint
 ([report](factory/triga-engine/checkpoint/report.md)) freezes the target ownership

@@ -1,0 +1,718 @@
+{
+  "coverage_schema_version": 1,
+  "coverage_revision": 1,
+  "package": "triga",
+  "stage0_unit": "tgh-s0-3",
+  "inventory": {
+    "path": "proof/inventory/triga-inventory.json",
+    "inventory_schema_version": 1,
+    "inventory_revision": 1,
+    "source_revision": "2e9daa06684269c58f177a8d1c36f0c8c2365152",
+    "module_count": 26
+  },
+  "exempla_inventory": {
+    "readme": "exempla/README.md",
+    "checker": "scripta/check-exempla-inventory",
+    "documented_files": [
+      "exempla/hello-voxel-first-draw-facts.fab",
+      "exempla/triga-basics.fab",
+      "exempla/triga-box3-genus-spike.fab",
+      "exempla/triga-geometry-attributes.fab",
+      "exempla/triga-graphics-pipeline-facts.fab",
+      "exempla/triga-hello-voxel-pipeline.fab",
+      "exempla/triga-hello-voxel-shaders.fab",
+      "exempla/triga-math-edge-cases.fab",
+      "exempla/triga-normal-oracle.fab",
+      "exempla/triga-scene-store-empty.fab",
+      "exempla/triga-scene-store.fab",
+      "exempla/triga-stage4-source-facts.fab",
+      "exempla/triga-transforms.fab",
+      "exempla/triga-types-untested.fab",
+      "exempla/triga-vertex-fragment-stub.fab"
+    ]
+  },
+  "evidence_tier_enum": [
+    "structural",
+    "executed-proba",
+    "target",
+    "browser-numeric-pixel",
+    "stress",
+    "clean-install"
+  ],
+  "stale_claims": [
+    {
+      "id": "module-map-size",
+      "claim": "The approximate post-S1 line counts in the module-map Size section are stale live coverage data.",
+      "stale_source": "docs/module-map.md#size-after-s1-splits",
+      "replacement": "proof/coverage-scorecard.json modules[*].lines"
+    },
+    {
+      "id": "module-map-target-count",
+      "claim": "The module-map Target map's 61 non-facade leaves / 75 import paths describe a frozen future target horizon, not the 26-module live package.",
+      "stale_source": "docs/module-map.md#target-map-frozen-at-s0-2026-08-01",
+      "replacement": "proof/inventory/triga-inventory.json modules and proof/coverage-scorecard.json"
+    },
+    {
+      "id": "test-decomposition-report",
+      "claim": "The test-decomposition report is pre-split evidence; its source paths, line numbers, and symbol coverage claims are not live coverage authority.",
+      "stale_source": "docs/factory/test-decomposition-report.md",
+      "replacement": "proof/coverage-scorecard.json modules[*]"
+    }
+  ],
+  "modules": [
+    {
+      "path": "src/face.fab",
+      "lines": 46,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 0,
+        "functions_total": 2,
+        "functions_underscore_private": 0,
+        "functions_public": 2,
+        "total": 3,
+        "public": 3
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/geometry.fab",
+      "lines": 22,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/geometry/attribute.fab",
+      "lines": 141,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 2,
+        "functions_total": 9,
+        "functions_underscore_private": 1,
+        "functions_public": 8,
+        "total": 12,
+        "public": 11
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/hello-voxel-first-draw-facts.fab",
+        "exempla/triga-geometry-attributes.fab",
+        "exempla/triga-hello-voxel-pipeline.fab",
+        "exempla/triga-hello-voxel-shaders.fab",
+        "exempla/triga-normal-oracle.fab",
+        "exempla/triga-stage4-source-facts.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/geometry/batch.fab",
+      "lines": 150,
+      "symbol_counts": {
+        "classes": 6,
+        "unions": 0,
+        "functions_total": 8,
+        "functions_underscore_private": 0,
+        "functions_public": 8,
+        "total": 14,
+        "public": 14
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/hello-voxel-first-draw-facts.fab",
+        "exempla/triga-geometry-attributes.fab",
+        "exempla/triga-hello-voxel-pipeline.fab",
+        "exempla/triga-hello-voxel-shaders.fab",
+        "exempla/triga-stage4-source-facts.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/geometry/bounds.fab",
+      "lines": 32,
+      "symbol_counts": {
+        "classes": 2,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 2,
+        "public": 2
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/geometry/data.fab",
+      "lines": 868,
+      "symbol_counts": {
+        "classes": 2,
+        "unions": 1,
+        "functions_total": 57,
+        "functions_underscore_private": 10,
+        "functions_public": 47,
+        "total": 60,
+        "public": 50
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/conformance/shader-contract/fragment-entry-naga.fab",
+        "exempla/conformance/shader-contract/source-fragment-body-color-widening.fab",
+        "exempla/conformance/shader-contract/source-fragment-emits-wgsl.fab",
+        "exempla/conformance/shader-contract/source-fragment-lambert-negative-empty.fab",
+        "exempla/conformance/shader-contract/source-fragment-lambert.fab",
+        "exempla/conformance/shader-contract/vertex-body-emits-wgsl.fab",
+        "exempla/conformance/shader-contract/vertex-body-naga.fab",
+        "exempla/hello-voxel-first-draw-facts.fab",
+        "exempla/triga-geometry-attributes.fab",
+        "exempla/triga-hello-voxel-pipeline.fab",
+        "exempla/triga-hello-voxel-shaders.fab",
+        "exempla/triga-normal-oracle.fab",
+        "exempla/triga-stage4-source-facts.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/geometry/layout.fab",
+      "lines": 133,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 2,
+        "functions_total": 6,
+        "functions_underscore_private": 4,
+        "functions_public": 2,
+        "total": 9,
+        "public": 5
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/graph.fab",
+      "lines": 13,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/graph/camera.fab",
+      "lines": 87,
+      "symbol_counts": {
+        "classes": 4,
+        "unions": 0,
+        "functions_total": 4,
+        "functions_underscore_private": 0,
+        "functions_public": 4,
+        "total": 8,
+        "public": 8
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-math-edge-cases.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/graph/object.fab",
+      "lines": 29,
+      "symbol_counts": {
+        "classes": 2,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 2,
+        "public": 2
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-math-edge-cases.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/lighting.fab",
+      "lines": 15,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/lighting/light.fab",
+      "lines": 40,
+      "symbol_counts": {
+        "classes": 4,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 4,
+        "public": 4
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/material.fab",
+      "lines": 24,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/material/base.fab",
+      "lines": 112,
+      "symbol_counts": {
+        "classes": 3,
+        "unions": 0,
+        "functions_total": 9,
+        "functions_underscore_private": 0,
+        "functions_public": 9,
+        "total": 12,
+        "public": 12
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-basics.fab",
+        "exempla/triga-graphics-pipeline-facts.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/material/basic.fab",
+      "lines": 62,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 0,
+        "functions_total": 7,
+        "functions_underscore_private": 0,
+        "functions_public": 7,
+        "total": 8,
+        "public": 8
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-basics.fab",
+        "exempla/triga-graphics-pipeline-facts.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/material/lit.fab",
+      "lines": 21,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 1,
+        "public": 1
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/material/standard.fab",
+      "lines": 23,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 1,
+        "public": 1
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/math.fab",
+      "lines": 925,
+      "symbol_counts": {
+        "classes": 18,
+        "unions": 0,
+        "functions_total": 86,
+        "functions_underscore_private": 6,
+        "functions_public": 80,
+        "total": 104,
+        "public": 98
+      },
+      "co_located_proba_refs": [
+        "src/math.proba"
+      ],
+      "co_located_proba": {
+        "module": "src/math.fab",
+        "lines": 27,
+        "groups": 1,
+        "cases": 3
+      },
+      "exempla_coverage_refs": [
+        "exempla/triga-basics.fab",
+        "exempla/triga-box3-genus-spike.fab",
+        "exempla/triga-graphics-pipeline-facts.fab",
+        "exempla/triga-hello-voxel-pipeline.fab",
+        "exempla/triga-math-edge-cases.fab",
+        "exempla/triga-normal-oracle.fab",
+        "exempla/triga-scene-store.fab",
+        "exempla/triga-transforms.fab",
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "executed-proba",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/primitives.fab",
+      "lines": 16,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/primitives/basic.fab",
+      "lines": 375,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 11,
+        "functions_underscore_private": 2,
+        "functions_public": 9,
+        "total": 11,
+        "public": 9
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/conformance/shader-contract/fragment-entry-naga.fab",
+        "exempla/conformance/shader-contract/source-fragment-body-color-widening.fab",
+        "exempla/conformance/shader-contract/source-fragment-emits-wgsl.fab",
+        "exempla/conformance/shader-contract/source-fragment-lambert-negative-empty.fab",
+        "exempla/conformance/shader-contract/source-fragment-lambert.fab",
+        "exempla/conformance/shader-contract/vertex-body-emits-wgsl.fab",
+        "exempla/conformance/shader-contract/vertex-body-naga.fab",
+        "exempla/triga-geometry-attributes.fab",
+        "exempla/triga-normal-oracle.fab",
+        "exempla/triga-stage4-source-facts.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/renderable.fab",
+      "lines": 13,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/renderable/mesh.fab",
+      "lines": 32,
+      "symbol_counts": {
+        "classes": 1,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 1,
+        "public": 1
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-types-untested.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/resource.fab",
+      "lines": 448,
+      "symbol_counts": {
+        "classes": 5,
+        "unions": 0,
+        "functions_total": 37,
+        "functions_underscore_private": 2,
+        "functions_public": 35,
+        "total": 42,
+        "public": 40
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-scene-store.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/scene.fab",
+      "lines": 687,
+      "symbol_counts": {
+        "classes": 13,
+        "unions": 1,
+        "functions_total": 41,
+        "functions_underscore_private": 11,
+        "functions_public": 30,
+        "total": 55,
+        "public": 44
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [
+        "exempla/triga-scene-store-empty.fab",
+        "exempla/triga-scene-store.fab"
+      ],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/shader_contract.fab",
+      "lines": 157,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 5,
+        "functions_underscore_private": 0,
+        "functions_public": 5,
+        "total": 5,
+        "public": 5
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    },
+    {
+      "path": "src/triga.fab",
+      "lines": 39,
+      "symbol_counts": {
+        "classes": 0,
+        "unions": 0,
+        "functions_total": 0,
+        "functions_underscore_private": 0,
+        "functions_public": 0,
+        "total": 0,
+        "public": 0
+      },
+      "co_located_proba_refs": [],
+      "co_located_proba": null,
+      "exempla_coverage_refs": [],
+      "evidence_tier": "structural",
+      "stale_claims": [
+        "module-map-size",
+        "module-map-target-count",
+        "test-decomposition-report"
+      ]
+    }
+  ]
+}

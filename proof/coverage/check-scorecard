@@ -1,0 +1,367 @@
+#!/usr/bin/env python3
+"""Validate the Stage 0 coverage scorecard against the committed inventory."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+
+
+ROOT = Path(__file__).resolve().parents[2]
+SCORECARD = ROOT / "proof" / "coverage-scorecard.json"
+INVENTORY = ROOT / "proof" / "inventory" / "triga-inventory.json"
+INVENTORY_CHECK = ROOT / "proof" / "inventory" / "check-inventory"
+DERIVER = ROOT / "proof" / "coverage" / "derive-scorecard.sh"
+EXPECTED_MODULE_COUNT = 26
+EXPECTED_TIERS = [
+    "structural",
+    "executed-proba",
+    "target",
+    "browser-numeric-pixel",
+    "stress",
+    "clean-install",
+]
+BANNER = (
+    "live coverage data superseded by `proof/coverage-scorecard.json` "
+    "(2026-08-16); this section is archival"
+)
+STALE_WORDS = re.compile(r"61 non-facade|75 import|pre-split|future", re.IGNORECASE)
+IMPORT_PATTERN = re.compile(r'import from "triga:([^"]+)"')
+README_PATTERN = re.compile(r"^  ([^\s]+\.fab)[^\s]*", re.MULTILINE)
+
+
+def load(path: Path, errors: list[str], label: str) -> object | None:
+    try:
+        with path.open(encoding="utf-8") as source:
+            return json.load(source)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{label}: cannot load JSON: {exc}")
+        return None
+
+
+def expect_keys(errors: list[str], value: object, expected: set[str], label: str) -> None:
+    if not isinstance(value, dict):
+        errors.append(f"{label}: expected object")
+        return
+    actual = set(value)
+    missing = sorted(expected - actual)
+    extra = sorted(actual - expected)
+    if missing:
+        errors.append(f"{label}: missing fields: {', '.join(missing)}")
+    if extra:
+        errors.append(f"{label}: unexpected fields: {', '.join(extra)}")
+
+
+def documented_exempla(errors: list[str]) -> list[str]:
+    try:
+        documented_names = sorted(README_PATTERN.findall((ROOT / "exempla" / "README.md").read_text(encoding="utf-8")))
+    except OSError as exc:
+        errors.append(f"exempla README: cannot read: {exc}")
+        return []
+    actual_names = sorted(path.name for path in (ROOT / "exempla").glob("*.fab"))
+    if documented_names != actual_names:
+        errors.append(
+            "exempla README/file inventory mismatch: "
+            f"documented={documented_names!r} actual={actual_names!r}"
+        )
+    return [f"exempla/{name}" for name in documented_names]
+
+
+def imported_exempla(errors: list[str]) -> dict[str, list[str]]:
+    refs: dict[str, list[str]] = {}
+    for path in sorted((ROOT / "exempla").rglob("*.fab")):
+        relative = path.relative_to(ROOT).as_posix()
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError as exc:
+            errors.append(f"{relative}: cannot read: {exc}")
+            continue
+        for line in lines:
+            for match in IMPORT_PATTERN.finditer(line):
+                module_id = f"triga:{match.group(1)}"
+                refs.setdefault(module_id, []).append(relative)
+    for values in refs.values():
+        values[:] = sorted(set(values))
+    return refs
+
+
+def walk_live_strings(value: object, path: tuple[str, ...] = ()) -> list[tuple[str, str]]:
+    """Return banned strings outside the scorecard's stale-claim registry."""
+    if "stale_claims" in path:
+        return []
+    if isinstance(value, str):
+        return [(".".join(path), value)] if STALE_WORDS.search(value) else []
+    if isinstance(value, list):
+        result: list[tuple[str, str]] = []
+        for index, item in enumerate(value):
+            result.extend(walk_live_strings(item, path + (str(index),)))
+        return result
+    if isinstance(value, dict):
+        result = []
+        for key, item in value.items():
+            result.extend(walk_live_strings(item, path + (key,)))
+        return result
+    return []
+
+
+def check_archives(errors: list[str]) -> None:
+    module_map = (ROOT / "docs" / "module-map.md").read_text(encoding="utf-8")
+    report = (ROOT / "docs" / "factory" / "test-decomposition-report.md").read_text(encoding="utf-8")
+    if module_map.count(BANNER) < 2:
+        errors.append("docs/module-map.md: archive banners missing from both stale sections")
+    if report.count(BANNER) < 1:
+        errors.append("docs/factory/test-decomposition-report.md: archive banner missing")
+
+
+def main() -> int:
+    errors: list[str] = []
+    scorecard = load(SCORECARD, errors, "scorecard")
+    inventory = load(INVENTORY, errors, "inventory")
+    if not isinstance(scorecard, dict) or not isinstance(inventory, dict):
+        return 1
+
+    subprocess_result = subprocess.run(
+        [str(INVENTORY_CHECK)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if subprocess_result.returncode != 0:
+        errors.append(
+            "committed inventory check failed: "
+            + (subprocess_result.stderr.strip() or subprocess_result.stdout.strip())
+        )
+
+    expect_keys(
+        errors,
+        scorecard,
+        {
+            "coverage_schema_version",
+            "coverage_revision",
+            "package",
+            "stage0_unit",
+            "inventory",
+            "exempla_inventory",
+            "evidence_tier_enum",
+            "stale_claims",
+            "modules",
+        },
+        "scorecard",
+    )
+    if scorecard.get("coverage_schema_version") != 1:
+        errors.append("scorecard.coverage_schema_version must be 1")
+    if scorecard.get("coverage_revision") != 1:
+        errors.append("scorecard.coverage_revision must be 1")
+    if scorecard.get("package") != "triga":
+        errors.append("scorecard.package must be triga")
+    if scorecard.get("stage0_unit") != "tgh-s0-3":
+        errors.append("scorecard.stage0_unit must be tgh-s0-3")
+    if scorecard.get("evidence_tier_enum") != EXPECTED_TIERS:
+        errors.append("scorecard.evidence_tier_enum is not the fixed Stage 0 enum")
+
+    score_inventory = scorecard.get("inventory")
+    expect_keys(
+        errors,
+        score_inventory,
+        {"path", "inventory_schema_version", "inventory_revision", "source_revision", "module_count"},
+        "scorecard.inventory",
+    )
+    if isinstance(score_inventory, dict):
+        for key in ("inventory_schema_version", "inventory_revision", "source_revision"):
+            if score_inventory.get(key) != inventory.get(key):
+                errors.append(f"scorecard.inventory.{key} does not match committed inventory")
+        if score_inventory.get("module_count") != inventory.get("totals", {}).get("modules"):
+            errors.append("scorecard.inventory.module_count does not match committed inventory")
+        if score_inventory.get("path") != "proof/inventory/triga-inventory.json":
+            errors.append("scorecard.inventory.path is not the committed inventory path")
+
+    documented = documented_exempla(errors)
+    exemplar_section = scorecard.get("exempla_inventory")
+    expect_keys(
+        errors,
+        exemplar_section,
+        {"readme", "checker", "documented_files"},
+        "scorecard.exempla_inventory",
+    )
+    if isinstance(exemplar_section, dict):
+        if exemplar_section.get("readme") != "exempla/README.md":
+            errors.append("scorecard.exempla_inventory.readme is incorrect")
+        if exemplar_section.get("checker") != "scripta/check-exempla-inventory":
+            errors.append("scorecard.exempla_inventory.checker is incorrect")
+        if exemplar_section.get("documented_files") != documented:
+            errors.append("scorecard.exempla_inventory.documented_files is stale")
+
+    stale_claims = scorecard.get("stale_claims")
+    stale_ids: list[str] = []
+    if not isinstance(stale_claims, list) or not stale_claims:
+        errors.append("scorecard.stale_claims must be a non-empty list")
+    else:
+        for index, claim in enumerate(stale_claims):
+            label = f"scorecard.stale_claims[{index}]"
+            expect_keys(errors, claim, {"id", "claim", "stale_source", "replacement"}, label)
+            if not isinstance(claim, dict):
+                continue
+            claim_id = claim.get("id")
+            if not isinstance(claim_id, str) or not claim_id:
+                errors.append(f"{label}.id must be a non-empty string")
+            elif claim_id in stale_ids:
+                errors.append(f"{label}.id is duplicated: {claim_id}")
+            else:
+                stale_ids.append(claim_id)
+            stale_source = claim.get("stale_source")
+            if not isinstance(stale_source, str):
+                errors.append(f"{label}.stale_source must be a string")
+            else:
+                source_path = stale_source.split("#", 1)[0]
+                if not (ROOT / source_path).is_file():
+                    errors.append(f"{label}.stale_source does not name a repository file: {stale_source}")
+            if not isinstance(claim.get("replacement"), str) or "proof/coverage-scorecard.json" not in claim.get("replacement", ""):
+                errors.append(f"{label}.replacement must point at the live scorecard")
+
+    inventory_modules = inventory.get("modules")
+    if not isinstance(inventory_modules, list):
+        errors.append("inventory.modules must be a list")
+        inventory_modules = []
+    inventory_by_path = {
+        record.get("path"): record
+        for record in inventory_modules
+        if isinstance(record, dict) and isinstance(record.get("path"), str)
+    }
+    if len(inventory_by_path) != EXPECTED_MODULE_COUNT:
+        errors.append(f"committed inventory module count is {len(inventory_by_path)}, expected {EXPECTED_MODULE_COUNT}")
+    live_paths = sorted(str(path.relative_to(ROOT)) for path in (ROOT / "src").rglob("*.fab"))
+    if sorted(inventory_by_path) != live_paths:
+        errors.append("committed inventory module set does not equal live src/**/*.fab")
+
+    rows = scorecard.get("modules")
+    if not isinstance(rows, list):
+        errors.append("scorecard.modules must be a list")
+        rows = []
+    if len(rows) != EXPECTED_MODULE_COUNT:
+        errors.append(f"scorecard module row count is {len(rows)}, expected {EXPECTED_MODULE_COUNT}")
+
+    all_exempla = sorted(
+        path.relative_to(ROOT).as_posix() for path in (ROOT / "exempla").rglob("*.fab")
+    )
+    imported = imported_exempla(errors)
+    consumer_map = inventory.get("consumer_import_map", {})
+    seen: set[str] = set()
+    expected_symbol_counts = {
+        "classes": "classes",
+        "unions": "unions",
+        "functions_total": "functions_total",
+        "functions_underscore_private": "functions_underscore_private",
+        "functions_public": "functions_public",
+    }
+    for index, row in enumerate(rows):
+        label = f"scorecard.modules[{index}]"
+        expect_keys(
+            errors,
+            row,
+            {
+                "path",
+                "lines",
+                "symbol_counts",
+                "co_located_proba_refs",
+                "co_located_proba",
+                "exempla_coverage_refs",
+                "evidence_tier",
+                "stale_claims",
+            },
+            label,
+        )
+        if not isinstance(row, dict):
+            continue
+        path = row.get("path")
+        if not isinstance(path, str):
+            errors.append(f"{label}.path must be a string")
+            continue
+        if path in seen:
+            errors.append(f"{label}.path is duplicated: {path}")
+        seen.add(path)
+        record = inventory_by_path.get(path)
+        if record is None:
+            errors.append(f"{label}.path is absent from committed inventory: {path}")
+            continue
+        if row.get("lines") != record.get("lines"):
+            errors.append(f"{label}.lines does not match committed inventory")
+        symbol_counts = row.get("symbol_counts")
+        expect_keys(
+            errors,
+            symbol_counts,
+            set(expected_symbol_counts) | {"total", "public"},
+            f"{label}.symbol_counts",
+        )
+        if isinstance(symbol_counts, dict):
+            for score_key, inventory_key in expected_symbol_counts.items():
+                if symbol_counts.get(score_key) != record.get(inventory_key):
+                    errors.append(f"{label}.symbol_counts.{score_key} does not match committed inventory")
+            if symbol_counts.get("total") != record.get("classes", 0) + record.get("unions", 0) + record.get("functions_total", 0):
+                errors.append(f"{label}.symbol_counts.total is inconsistent")
+            if symbol_counts.get("public") != record.get("classes", 0) + record.get("unions", 0) + record.get("functions_public", 0):
+                errors.append(f"{label}.symbol_counts.public is inconsistent")
+
+        proba = record.get("co_located_proba")
+        expected_proba_refs = [proba] if isinstance(proba, str) else []
+        if row.get("co_located_proba_refs") != expected_proba_refs:
+            errors.append(f"{label}.co_located_proba_refs does not match committed inventory")
+        expected_proba = inventory.get("co_located_tests", {}).get(proba) if isinstance(proba, str) else None
+        if row.get("co_located_proba") != expected_proba:
+            errors.append(f"{label}.co_located_proba does not match committed inventory")
+
+        module_id = f"triga:{path[len('src/'):-len('.fab')]}" if path.startswith("src/") and path.endswith(".fab") else ""
+        expected_refs = sorted(set(imported.get(module_id, [])))
+        inventory_refs = sorted(set(consumer_map.get(module_id, {}).get("consumers", []))) if isinstance(consumer_map, dict) else []
+        if expected_refs != inventory_refs:
+            errors.append(f"{module_id}: exempla imports disagree with committed inventory consumer map")
+        if row.get("exempla_coverage_refs") != expected_refs:
+            errors.append(f"{label}.exempla_coverage_refs is stale")
+        for ref in row.get("exempla_coverage_refs", []) if isinstance(row.get("exempla_coverage_refs"), list) else []:
+            if ref not in all_exempla or not (ROOT / ref).is_file():
+                errors.append(f"{label}.exempla_coverage_refs names a nonexistent exemplum file: {ref}")
+
+        if row.get("evidence_tier") not in EXPECTED_TIERS:
+            errors.append(f"{label}.evidence_tier is outside the fixed enum")
+        if row.get("evidence_tier") != record.get("evidence_tier"):
+            errors.append(f"{label}.evidence_tier does not match committed inventory")
+        if row.get("stale_claims") != stale_ids:
+            errors.append(f"{label}.stale_claims must reference every scorecard stale claim")
+
+    if sorted(seen) != sorted(inventory_by_path):
+        errors.append("scorecard module row set does not equal committed inventory module set")
+
+    for path, value in walk_live_strings(scorecard):
+        errors.append(f"scorecard live field {path} contains stale/future language: {value!r}")
+
+    check_archives(errors)
+
+    with tempfile.TemporaryDirectory(prefix="triga-scorecard-check-") as work:
+        derived = Path(work) / "coverage-scorecard.json"
+        result = subprocess.run(
+            [str(DERIVER), str(derived)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            errors.append(f"derive-scorecard.sh failed: {result.stderr.strip() or result.stdout.strip()}")
+        elif derived.read_text(encoding="utf-8") != SCORECARD.read_text(encoding="utf-8"):
+            errors.append("committed scorecard differs from a fresh derivation")
+
+    if errors:
+        for message in errors:
+            print(f"error: {message}", file=sys.stderr)
+        return 1
+
+    print(f"scorecard ok: {EXPECTED_MODULE_COUNT} live modules; no stale live claims")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

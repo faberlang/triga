@@ -1,5 +1,7 @@
 # Test Decomposition Analysis — triga
 
+> **Archive notice (2026-08-16):** live coverage data superseded by `proof/coverage-scorecard.json` (2026-08-16); this section is archival
+
 **Date:** 2026-07-19
 **Source files:** `src/triga.fab`, `src/geometry.fab`, `src/scene.fab`
 **Exempla:** `exempla/triga-basics.fab`, `exempla/triga-transforms.fab`, `exempla/triga-geometry-attributes.fab`, `exempla/triga-scene-store.fab`, `exempla/triga-stage4-source-facts.fab`, `exempla/hello-voxel-first-draw-facts.fab`
