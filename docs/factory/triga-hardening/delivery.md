@@ -80,14 +80,17 @@ describe the frozen target horizon, not the live package.
 | **Total** | **4510** | **66** | **6** | **246** | **50** |
 
 Faber count method (live syntax): `class`/`union` declarations at line start,
-`fn name(` at line start, `import from` lines. Totals are instantiated at
-inventory build time by `proof/inventory/derive-inventory.sh`, never hand-typed.
+`fn name(` at line start (indentation allowed), counted for
+non-underscore/public functions only — 282 `fn name(` lines minus 36
+underscore-private (`fn _`) = 246 — and `import from` lines. Totals are
+instantiated at inventory build time by
+`proof/inventory/derive-inventory.sh`, never hand-typed.
 
 ### 3.2 Test / evidence surface (live)
 
 - Only co-located proba: `src/math.proba` (27 lines, 3 cases: `addita`,
   `normata`, `normata` zero). Every other public leaf has none.
-- Exempla inventory (live): 14 documented exempla listed in
+- Exempla inventory (live): 15 documented exempla listed in
   `exempla/README.md` + `conformance/` subdir; `check-exempla-inventory`
   enforces README ⇄ files agreement.
 - No typed public error channel: zero occurrences of the `⇥ E` failable-return
@@ -107,7 +110,10 @@ inventory build time by `proof/inventory/derive-inventory.sh`, never hand-typed.
   `vertex_layout_matches`, `varying_matches`, `fragment_output_matches`,
   `pipeline_matches`, `resource_binding_matches`) and geometry fact methods
   (`index_format_code()`, `topology_code()` in `src/geometry/data.fab`);
-  `_code`/`offset_bytes`/`stride_bytes`/`source_name` occurrences in `src/`: 86.
+  `_code`/`offset_bytes`/`stride_bytes`/`source_name` occurrences in `src/`:
+  figure deferred to the `tgh-s0-1` derived inventory —
+  `proof/inventory/derive-inventory.sh` counts these occurrences at
+  generation time, no hand-typed ABI count in this spec.
 - Transform ABI drift (confirmed live): `src/math.fab`
   `TransformPayload` contract — 32 f32 / 128 bytes (documented canonical);
   `hosts/webgpu-browser/public/generated/graphics-reflection.json` transform
@@ -137,7 +143,7 @@ inventory build time by `proof/inventory/derive-inventory.sh`, never hand-typed.
   radix-emitter E0308/E0425 allowlist.
 - `./scripta/check-transforms` — package-aware transform-chain gate.
 - `./scripta/check-capabilities` — validates `proof/capabilities.json`:
-  all 31 broad proofs `unsupported`, score 0/100, 0/11 floors, 5/5 capstones
+  all 32 broad proofs `unsupported`, score 0/100, 0/11 floors, 5/5 capstones
   unmanifested/unsupported. Ledger is unchanged in Stage 0.
 - `./scripta/check-wgsl-shader-contract-conformance` — pins radix
   `41b4c0411` (revision-pinned; Stage 1 replaces with contract assertion).
@@ -190,8 +196,9 @@ main (path-limited commit). No unit needs a worktree or a merge gate.
   truth; hand-typed counts forbidden).
 - **write_scope** (exact): `triga/proof/inventory/` only (new directory):
   - `derive-inventory.sh` — walks `src/**/*.fab` + `src/**/*.proba` via
-    `find`, counts per module: lines, `class`/`union`/`fn name(` at line
-    start, `import from` lines, null-returning `fn`s (`∪ null` in signature),
+    `find`, counts per module: lines, `class`/`union`, `fn name(` at line
+    start (non-underscore/public only, per §3.1), `import from` lines,
+    null-returning `fn`s (`∪ null` in signature),
     co-located proba refs, `_code`/ABI field occurrences; captures `git
     rev-parse HEAD`, `faber.toml`/`cista.toml` versions, and generation
     timestamp. Shell+awk only, no external tools.
