@@ -1,5 +1,10 @@
 # Triga Agent Instructions
 
+**Workspace work mode.** Ordinary development is **direct** in this
+checkout on `main`. Worktree packets under `../worktrees/<lane>/` are
+optional Tugboat isolation. Do not stand up lanes unless the operator
+asked. Container law: [`../AGENTS.md`](../AGENTS.md).
+
 Triga is the public Faber source library for `triga:*` imports — geometry,
 scene graph, material, and GPU-facing type contracts modeled after three.js
 shapes. This repo owns `.fab` source under `src/`; Radix and `faber` consume it
