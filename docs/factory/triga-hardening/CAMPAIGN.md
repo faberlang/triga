@@ -348,12 +348,12 @@ At campaign closeout:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Supported profile | Core Graphics Profile v0 is frozen; the broad ledger remains honestly all-unsupported | Stage 1 canonical validation |
-| Live inventory | Versioned inventory records all 26 live modules; stale module/test reports remain annotated | Stage 1 canonical validation |
-| Validation spine | Default compile route still targets a missing public-`faber` Cargo path; manual leaf list omits 8/26 modules; WGSL gate still pins Radix `41b4c0411`; Stage 1 spec is [`stage-1-delivery.md`](./stage-1-delivery.md) | Stage 1 units `tgh-s1-1`–`tgh-s1-5` |
+| Supported profile | Core Graphics Profile v0 is frozen; the broad ledger remains honestly all-unsupported | Stage 1 admission **HELD** (CTO `e2ca2b57`); hold at `tgh-s05-gate` + [`stage-1-delivery.md`](./stage-1-delivery.md) |
+| Live inventory | Versioned inventory records all 26 live modules; stale module/test reports remain annotated | Stage 1 admission **HELD**; same gate + spec as Package tests |
+| Validation spine | Default compile route still targets a missing public-`faber` Cargo path; manual leaf list omits 8/26 modules; WGSL gate still pins Radix `41b4c0411`; Stage 1 spec is [`stage-1-delivery.md`](./stage-1-delivery.md) | Units `tgh-s1-1`–`tgh-s1-5` stay specified in [`stage-1-delivery.md`](./stage-1-delivery.md); admission **HELD** — do not start them |
 | Diagnostics | No typed public error families; `bool`/`null` collapse distinct failures | Stage 2 |
 | Numeric invariants | Non-finite policy absent; repeated reduction/sqrt loops; arbitrary-length matrix carriers | Stages 2–3 |
-| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **9/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, 2026-08-17T11:39:03Z) | `tgh-s05-gate` remains open; Stage 1 invokes the gate honestly and does not wait for 26/26 |
+| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **9/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, 2026-08-17T11:39:03Z) | `tgh-s05-gate` remains open. This tip (`fdbbc09`, main) cites receipt `f843205` at **21/26** executed-proba. `76ded8b` on `factory/hand-35` records 22/26 and has **not** merged. Residual fix in flight. Stage 1 admission **HELD**. |
 | Geometry/primitives | Useful validation/builders exist; exact-output and malformed-input proof is thin | Stage 3 |
 | Scene/resource | Generation-aware foundation exists; negative index, traversal duplication, authority/disposal boundaries remain | Stage 4 |
 | Appearance/composition | Cameras/lights/materials/meshes are mostly disconnected carriers | Stage 5 |
