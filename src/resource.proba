@@ -242,9 +242,12 @@ describe "resource lifecycle facts" {
             assert false
         }
         else {
+            # Retired handles are previous identities of changed rows:
+            # replaced (index 11) and removed (index 12). Created has no
+            # previous, so it is live-current, not retired.
             assert retired_handles.length() ≡ 2
-            assert retired_handles[0].index ≡ 10
-            assert retired_handles[1].index ≡ 11
+            assert retired_handles[0].index ≡ 11
+            assert retired_handles[1].index ≡ 12
         }
         if current_handles is null {
             assert false
