@@ -100,18 +100,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include face.proba",
         "exit_status": 1,
-        "passed": 0,
-        "failed": 4,
+        "passed": 3,
+        "failed": 1,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: struct field projection is missing field metadata",
-          "error: named aggregate references unknown field",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 4 declared cases",
-          "runner summary: 4 failed; 0 skipped"
+          "FAIL face quad builders/colored face append publishes exact position color and index arrays",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -1167,17 +1167,23 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include primitives/basic.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 4,
+        "failed": 6,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 16
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "FAIL primitive generator contracts/circle publishes exact fan payload and winding",
+          "FAIL primitive generator contracts/sphere publishes exact rings poles smooth normals spherical UVs and winding",
+          "FAIL primitive generator contracts/cylinder publishes exact side rings caps UVs and winding",
+          "FAIL primitive generator contracts/cone publishes exact side normals base cap UVs and winding",
+          "FAIL primitive generator contracts/torus publishes exact tube grid normals UVs and winding",
+          "FAIL primitive generator contracts/box publishes exact independently shaded faces and winding",
+          "test result: FAILED. 4 passed; 6 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 4 passed for 10 declared cases",
+          "runner summary: 6 failed; 0 skipped"
         ]
       }
     },
@@ -1512,7 +1518,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T08:58:40Z",
+    "run_at_utc": "2026-08-17T09:12:31Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 9,
@@ -1534,7 +1540,7 @@
     },
     "observed_diagnostic_codes": {
       "SEM004.unknown_method": 7,
-      "SEM004.unknown_struct_field": 18,
+      "SEM004.unknown_struct_field": 2,
       "SEM010.assert_condition_type_mismatch": 9,
       "SEM012.callee_not_callable": 2
     },
@@ -1546,11 +1552,11 @@
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: struct field projection is missing field metadata",
-          "error: named aggregate references unknown field",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 4 declared cases",
-          "runner summary: 4 failed; 0 skipped"
+          "FAIL face quad builders/colored face append publishes exact position color and index arrays",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
@@ -1688,13 +1694,19 @@
       {
         "module": "src/primitives/basic.fab",
         "proba_path": "src/primitives/basic.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 16
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "FAIL primitive generator contracts/circle publishes exact fan payload and winding",
+          "FAIL primitive generator contracts/sphere publishes exact rings poles smooth normals spherical UVs and winding",
+          "FAIL primitive generator contracts/cylinder publishes exact side rings caps UVs and winding",
+          "FAIL primitive generator contracts/cone publishes exact side normals base cap UVs and winding",
+          "FAIL primitive generator contracts/torus publishes exact tube grid normals UVs and winding",
+          "FAIL primitive generator contracts/box publishes exact independently shaded faces and winding",
+          "test result: FAILED. 4 passed; 6 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 4 passed for 10 declared cases",
+          "runner summary: 6 failed; 0 skipped"
         ]
       },
       {

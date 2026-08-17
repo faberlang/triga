@@ -37,9 +37,15 @@ failures. This is a partial package-link result, not the historical single-file
 parse-failure snapshot.
 
 This receipt was refreshed with the release Faber built from radix tip
-`17854f61e` after the WARN014 remap. `src/geometry/data.fab` now reaches the
-runner and reports three failed cases plus two unsupported provider symbols;
-it is not counted as executed-proba. The run remains open at 9/26, not 26/26.
+`79a7f6d04` after the supported struct-field remap. `src/geometry/data.fab`
+reaches the runner and reports three failed cases plus two unsupported provider
+symbols; it is not counted as executed-proba. `src/primitives/basic.fab` also
+reaches the runner and reports four passed and six failed cases, replacing its
+prior `SEM004.unknown_struct_field` analysis error. `src/graph.fab` passes, but
+`src/graph/camera.fab` remains an analysis error with
+`SEM004.unknown_method`, `SEM004.unknown_struct_field`,
+`SEM010.assert_condition_type_mismatch`, and `SEM012.callee_not_callable`
+diagnostics. The run remains open at 9/26, not 26/26.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
