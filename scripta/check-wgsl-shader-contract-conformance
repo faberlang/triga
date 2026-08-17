@@ -10,13 +10,14 @@
 # declarations mirrored from triga/src/shader_contract.fab) -> faber emit
 # -t wgsl-text -> Naga-valid WGSL.
 #
-# Pinned radix revision: 41b4c0411 (see ledger.md). The faber binary is built
-# from the sibling faber checkout (faber/Cargo.toml pins radix by path), so
-# the pinned radix revision is the compiled-against radix.
+# Stage 1 (tgh-s1-3) retired the repository-revision pin. The suite asserts
+# emitted-contract behavior against the current sibling Faber binary
+# (FABER_BIN or $FABER_LIBRARY_HOME/radix/target/{release,debug}/faber).
+# A live-Radix needle miss is an honest red — assertions are not deleted.
 #
 # Usage:
 #   ./scripta/check-wgsl-shader-contract-conformance
-#   FABER_ROOT=... RADIX_ROOT=... ./scripta/check-wgsl-shader-contract-conformance
+#   FABER_BIN=... FABER_LIBRARY_HOME=... ./scripta/check-wgsl-shader-contract-conformance
 #
 # Exit non-zero on any compile failure, unexpected WGSL, naga rejection, or
 # absent naga (the suite hard-requires naga — see below).
@@ -26,56 +27,26 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
 
-if [[ -n "${RADIX_ROOT:-}" ]]; then
-  RADIX="$RADIX_ROOT"
-elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
-  RADIX="$ROOT/../radix"
-else
-  RADIX="$ROOT/../../../radix"
+# Same resolution as check-proba-coverage / tgh-s1-2: explicit FABER_BIN, else
+# sibling radix/target/{release,debug}/faber. No public-faber Cargo.toml path
+# and no silent rebuild on crates/ drift.
+if [[ -z "${FABER_BIN:-}" ]]; then
+  if [[ -x "$FABER_LIBRARY_HOME/radix/target/release/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/release/faber"
+  elif [[ -x "$FABER_LIBRARY_HOME/radix/target/debug/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/debug/faber"
+  else
+    echo "check-wgsl-shader-contract-conformance: missing faber binary" >&2
+    echo "  set FABER_BIN or build sibling radix/target/{release,debug}/faber" >&2
+    exit 1
+  fi
 fi
-
-if [[ ! -d "$RADIX/crates/radix" ]]; then
-  echo "check-wgsl-shader-contract-conformance: missing radix checkout at $RADIX" >&2
+if [[ ! -x "$FABER_BIN" ]]; then
+  echo "check-wgsl-shader-contract-conformance: FABER_BIN is not executable: $FABER_BIN" >&2
   exit 1
-fi
-
-if [[ -n "${FABER_ROOT:-}" ]]; then
-  FABER="$FABER_ROOT"
-elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
-  FABER="$ROOT/../faber"
-else
-  FABER="$ROOT/../../../faber"
-fi
-
-if [[ ! -f "$FABER/Cargo.toml" ]]; then
-  echo "check-wgsl-shader-contract-conformance: missing faber checkout at $FABER" >&2
-  exit 1
-fi
-
-# The faber binary must embed the pinned radix revision. Verify the radix
-# checkout still matches the pin (docs-only drift is allowed; code drift is a
-# re-pin decision recorded in the ledger, not a silent rebuild).
-PINNED_RADIX_REV="41b4c0411"
-if [[ ! -d "$RADIX/.git" ]] || ! git -C "$RADIX" merge-base --is-ancestor "$PINNED_RADIX_REV" HEAD >/dev/null 2>&1; then
-  echo "check-wgsl-shader-contract-conformance: radix checkout is not at or after pinned $PINNED_RADIX_REV" >&2
-  echo "  re-pin the compiler-lane ledger (docs/factory/wgsl-shader-contract-boundary/ledger.md)" >&2
-  exit 1
-fi
-PIN_DELTA="$(git -C "$RADIX" diff "$PINNED_RADIX_REV" HEAD -- crates/ 2>/dev/null | wc -l | tr -d ' ')"
-if [[ "$PIN_DELTA" != "0" ]]; then
-  echo "check-wgsl-shader-contract-conformance: radix crates/ moved past pinned $PINNED_RADIX_REV ($PIN_DELTA diff lines)" >&2
-  echo "  re-pin the compiler-lane ledger before running this suite" >&2
-  exit 1
-fi
-
-FABER_BIN="$FABER/target/debug/faber"
-if [[ ! -x "$FABER_BIN" ]] || [[ "$RADIX/crates/radix/src/driver/shader_contract.rs" -nt "$FABER_BIN" ]] || [[ "$RADIX/Cargo.toml" -nt "$FABER_BIN" ]]; then
-  echo "check-wgsl-shader-contract-conformance: building faber against pinned radix $PINNED_RADIX_REV"
-  (cd "$FABER" && cargo build -q -p faber --bin faber)
 fi
 
 export FABER_LIBRARY_HOME
-export RADIX_ROOT="$RADIX"
 
 CONFORMANCE_DIR="$ROOT/exempla/conformance/shader-contract"
 
@@ -111,8 +82,8 @@ emit_file() {
   local file="$2"
   local out
   if ! out="$("$FABER_BIN" emit -t wgsl-text "$file" 2>"$TMPDIR_WORK/$name.err")"; then
-    echo "FAIL $name: faber emit -t wgsl-text failed"
-    sed -n 's/^/    /p' "$TMPDIR_WORK/$name.err" | head -20
+    echo "FAIL $name: faber emit -t wgsl-text failed" >&2
+    sed -n 's/^/    /p' "$TMPDIR_WORK/$name.err" | head -20 >&2
     return 1
   fi
   printf '%s\n' "$out"
@@ -234,7 +205,7 @@ run_source_fragment_lambert_negative_empty() {
   echo "ok $name"
 }
 
-echo "check-wgsl-shader-contract-conformance: faber $FABER_BIN (radix pinned $PINNED_RADIX_REV)"
+echo "check-wgsl-shader-contract-conformance: faber $FABER_BIN"
 echo "check-wgsl-shader-contract-conformance: conformance corpus $CONFORMANCE_DIR"
 
 run_vertex_body_emits || failures=$((failures + 1))
@@ -247,7 +218,7 @@ run_source_fragment_lambert_negative_empty || failures=$((failures + 1))
 
 # The moved source-facts fixture (radix crates/radix/src/fixtures/
 # triga-stage4-source-facts.fab) lands in triga as the existing exempla file;
-# it must stay check-clean against the pinned toolchain.
+# it must stay check-clean against the live sibling Faber binary.
 echo "check-wgsl-shader-contract-conformance: source-facts fixture check"
 if ! "$FABER_BIN" check "$ROOT/exempla/triga-stage4-source-facts.fab" >"$TMPDIR_WORK/fixture.err" 2>&1; then
   echo "FAIL source-facts fixture: faber check rejected triga-stage4-source-facts.fab"
