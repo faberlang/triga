@@ -1,0 +1,139 @@
++++
+locale = "en"
++++
+# Co-located package tests for SceneStore identity, hierarchy, and traversal.
+import from "triga:scene" scene
+import from "triga:resource" resource
+
+describe "scene store lifecycle" {
+    test "empty stores distinguish absent names from invalid handles" {
+        var scene.SceneStore store ← scene.scene_store()
+        const scene.SceneHandle missing ← scene.SceneHandle {index = 0, generation = 0}
+        const scene.SceneHandle negative_generation ← scene.SceneHandle {index = 0, generation = -1}
+
+        # No node named `missing` is genuine absence, not handle rejection.
+        assert store.inveni("missing") is null
+        # These calls reject handles that do not identify a live slot.
+        assert store.continet(missing) ≡ false
+        assert store.cape(missing) is null
+        assert store.continet(negative_generation) ≡ false
+        assert store.cape(negative_generation) is null
+        assert store.traverse(missing) is null
+    }
+
+    test "insertion establishes defaults and deep and orphaned traversal" {
+        var scene.SceneStore store ← scene.scene_store()
+        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
+        const scene.SceneHandle middle ← store.insere(scene.scene_group("middle"))
+        const scene.SceneHandle leaf ← store.insere(scene.scene_group("leaf"))
+        const scene.SceneHandle orphan ← store.insere(scene.scene_group("orphan"))
+
+        assert store.adiunge(middle, root)
+        assert store.adiunge(leaf, middle)
+
+        const scene.SceneNode ∪ null root_value ← store.cape(root)
+        assert root_value not is null
+        assert root_value!.name ≡ "root"
+        assert root_value!.parent is null
+        assert root_value!.children.length() ≡ 1
+        assert root_value!.visible
+        assert root_value!.world_dirty
+
+        const list<scene.SceneHandle> ∪ null deep ← store.traverse(root)
+        assert deep not is null
+        assert deep!.length() ≡ 3
+        assert scene.scene_handle_equals(deep![0], root)
+        assert scene.scene_handle_equals(deep![2], leaf)
+
+        const list<scene.SceneHandle> ∪ null isolated ← store.traverse(orphan)
+        assert isolated not is null
+        assert isolated!.length() ≡ 1
+        assert scene.scene_handle_equals(isolated![0], orphan)
+        assert store.inveni("leaf") not is null
+        assert store.inveni("missing") is null
+    }
+
+    test "self attach and cycles are rejected while reparent and detach update both sides" {
+        var scene.SceneStore store ← scene.scene_store()
+        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
+        const scene.SceneHandle left ← store.insere(scene.scene_group("left"))
+        const scene.SceneHandle right ← store.insere(scene.scene_group("right"))
+        const scene.SceneHandle leaf ← store.insere(scene.scene_group("leaf"))
+
+        assert store.adiunge(root, root) ≡ false
+        assert store.adiunge(left, root)
+        assert store.adiunge(leaf, left)
+        assert store.adiunge(leaf, left) ≡ false
+        assert store.adiunge(root, leaf) ≡ false
+        assert store.adiunge(leaf, right)
+
+        const scene.SceneNode ∪ null old_parent ← store.cape(left)
+        const scene.SceneNode ∪ null new_parent ← store.cape(right)
+        const scene.SceneNode ∪ null moved ← store.cape(leaf)
+        assert old_parent not is null
+        assert old_parent!.children.length() ≡ 0
+        assert new_parent not is null
+        assert new_parent!.children.length() ≡ 1
+        assert moved not is null
+        assert moved!.parent not is null
+        assert moved!.parent!.index ≡ right.index
+        assert moved!.parent!.generation ≡ right.generation
+
+        assert store.seiunge(leaf)
+        const scene.SceneNode ∪ null detached ← store.cape(leaf)
+        assert detached not is null
+        assert detached!.parent is null
+        assert store.seiunge(leaf) ≡ false
+    }
+
+    test "visibility traversal follows inherited visibility and mesh filtering" {
+        var scene.SceneStore store ← scene.scene_store()
+        const resource.ResourceHandle geometry ← resource.ResourceHandle {index = 4, generation = 1}
+        const resource.ResourceHandle material ← resource.ResourceHandle {index = 8, generation = 2}
+        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
+        const scene.SceneHandle mesh ← store.insere(scene.scene_mesh("mesh", geometry, material))
+
+        assert store.adiunge(mesh, root)
+        assert store.efficax_visibile(mesh)
+
+        const list<scene.SceneHandle> ∪ null visible ← store.traverse_visibilia(root)
+        const list<scene.SceneHandle> ∪ null visible_meshes ← store.traverse_visibilia_rete(root)
+        assert visible not is null
+        assert visible!.length() ≡ 2
+        assert visible_meshes not is null
+        assert visible_meshes!.length() ≡ 1
+        assert scene.scene_handle_equals(visible_meshes![0], mesh)
+        assert store.inveni("mesh") not is null
+
+        assert store.pone_visibile(root, false)
+        assert store.efficax_visibile(mesh) ≡ false
+        const list<scene.SceneHandle> ∪ null hidden ← store.traverse_visibilia(root)
+        const list<scene.SceneHandle> ∪ null hidden_meshes ← store.traverse_visibilia_rete(root)
+        assert hidden not is null
+        assert hidden!.length() ≡ 0
+        assert hidden_meshes not is null
+        assert hidden_meshes!.length() ≡ 0
+
+        assert store.pone_visibile(root, true)
+        assert store.efficax_visibile(mesh)
+    }
+
+    test "deletion rejects non-leaves and retires stale generations" {
+        var scene.SceneStore store ← scene.scene_store()
+        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
+        const scene.SceneHandle child ← store.insere(scene.scene_group("child"))
+        assert store.adiunge(child, root)
+        assert store.detrahe(root) ≡ false
+        assert store.detrahe(child)
+        assert store.continet(child) ≡ false
+        assert store.cape(child) is null
+        assert store.detrahe(child) ≡ false
+
+        const scene.SceneHandle stale_generation ← scene.SceneHandle {index = child.index, generation = child.generation + 1}
+        assert store.continet(stale_generation) ≡ false
+        assert store.cape(stale_generation) is null
+        assert store.detrahe(root)
+        assert store.continet(root) ≡ false
+        assert store.traverse(root) is null
+    }
+}
