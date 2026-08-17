@@ -154,12 +154,13 @@ route.
 
 ### 2.5 Triage conclusion
 
-The live honest package-link receipt (`292e119`,
+The current package-link receipt (`0b8b920`,
 `proof/coverage-scorecard.json`, coverage revision 2) records **9/26** module
 selections at `executed-proba`. The remaining 17 rows are all
-`runner-failure`; there are 0 `analysis-error` rows. `src/graph/camera.fab` is
-now a `runner-failure` after Radix `1e1bad3b4` (approximata MIR), rather than an
-analysis error. `src/primitives/basic.fab` is also a `runner-failure` after
+`runner-failure`; there are 0 `analysis-error` rows. `src/graph/camera.fab`
+reaches the runner and fails all five cases, including `provider-sym#30`
+(`FaberScript unsupported: provider sym#30`), after Radix `bb7d7a40d`; it is not
+an analysis error. `src/primitives/basic.fab` is also a `runner-failure` after
 `79a7f6d04`, and `src/geometry/data.fab` is a `runner-failure` after the release
 Faber update at `17854f61e`. The receipt has no `PARSE050` row;
 `PARSE050.import_privata_removed` is historical evidence from the retired
