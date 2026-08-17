@@ -1,0 +1,11 @@
++++
+locale = "en"
++++
+# Co-located package smoke for the renderable facade.
+# The facade is an import map; Mesh remains owned by triga:renderable/mesh.
+
+import from "triga:renderable" renderable
+
+test "renderable facade is discoverable" {
+    assert true
+}
