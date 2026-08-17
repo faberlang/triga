@@ -1,39 +1,39 @@
 # Compiler-Lane Ledger — WGSL Shader Contract Boundary (U5, Triga side)
 
-**Status**: landed (2026-08-02) — triga adapter + conformance suite green against the pinned radix revision; U5-P2 repairs applied (naga hard-require, handover status complete). **Re-pin applied** (2026-08-02, wave-close): pin moved `3cfd578b1` → `02b4cbb14` for radix U6 (explicit `stage_io_role_code` contract calls; F1/F2 role synthesis retired); adapter + exempla re-adapted to the new call shapes, suite green against the new pin (see §0 and §1). **Re-pin applied** (2026-08-03): pin moved `02b4cbb14` → `41b4c0411` — radix `crates/` moved 16,897 diff lines past the old pin (fhir/hir-* extraction, wgsl emitter fixes `abeb97cb7`, wasm/llvm/metal/ts/go fixes, docs); the suite re-ran clean with **no conformance-program re-adaptation** (emitted WGSL unchanged; §0).
+**Status**: landed (2026-08-02) — triga adapter + conformance suite; U5-P2 repairs applied (naga hard-require, handover status complete). **Re-pin applied** (2026-08-02, wave-close): pin moved `3cfd578b1` → `02b4cbb14` for radix U6 (explicit `stage_io_role_code` contract calls; F1/F2 role synthesis retired); adapter + exempla re-adapted to the new call shapes. **Re-pin applied** (2026-08-03): pin moved `02b4cbb14` → `41b4c0411` after radix `crates/` drift. **Stage 1 pin retirement** (2026-08-17, `tgh-s1-3`): repository-revision pin `41b4c0411` and `crates/` drift gates are retired; the harness asserts live emitted-contract behavior against the current sibling Faber binary. No silent rebuild remains.
 **Campaign**: [`radix/docs/factory/wgsl-shader-contract-boundary`](../../../radix/docs/factory/wgsl-shader-contract-boundary/) (goal.md, delivery.md §U5)
 **Repo**: `triga/` (this checkout) — write scope is triga only; radix is untouched
 **Unit**: U5 — Triga adapter + conformance suite (Wave 2, sibling repo); wave-close re-pin to radix U6
 
-## 0. Pinned radix revision
+## 0. Compiler revision (pin retired)
 
-**Pin**: `41b4c0411` (radix main — U6 `02b4cbb14` landed the explicit
-`stage_io_role_code` contract calls and retired F1/F2; since then radix moved
-through the fhir/hir-* crate extraction (`4aeea3633`, `b20f1a82e`,
-`0f6211c27`), wgsl emitter fixes (`abeb97cb7`: forward-chase, relu row-major
-index, workgroup overrides, arm state, device-view scalar-local `let`
-materialization), and wasm/llvm/metal/ts/go/codegen fixes).
+**Stage 1 (`tgh-s1-3`, 2026-08-17)** retired the repository-revision pin.
+The harness no longer defines `PINNED_RADIX_REV` and no longer exits on
+`git diff $PIN HEAD -- crates/` drift. It asserts the seven conformance
+programs plus the source-facts fixture against the current sibling Faber
+binary (`FABER_BIN` or `$FABER_LIBRARY_HOME/radix/target/{release,debug}/faber`).
+A live-Radix needle miss is an honest red; the assertion is not deleted.
+There is no silent rebuild: the suite does not cargo-build a public `faber`
+checkout and does not recompile when radix sources drift.
 
-**Re-pin decision (2026-08-03)**: radix `crates/` moved past the
-`02b4cbb14` pin (16,897 diff lines) — the harness failed loudly (pin drift),
-as designed. Decision: **re-pin to `41b4c0411`** (current radix main tip).
-No conformance-program or adapter re-adaptation was required: the wgsl
-emitter changes in the window (`abeb97cb7`) do not touch the generic
-shader-contract emission surface the suite exercises (simple `@vertex` /
-`@fragment` entry programs), and the suite's positive/negative WGSL
-assertions plus naga validation all hold against the new pin. This is a
-ledger-recorded re-pin decision, never a silent rebuild.
+Historical pins (U5/U6 wave-close, kept as record, not enforced):
 
-- Verified at re-pin: radix main is `41b4c0411`; `git diff 41b4c0411 HEAD --
-  crates/` is **0 lines** — the compiled code the faber binary embeds is
-  byte-identical to the pin.
-- The conformance harness (`scripta/check-wgsl-shader-contract-conformance`)
-  enforces the pin: it fails loudly if the radix checkout is not at/after the
-  pin, or if `crates/` drifted past it (a re-pin is a ledger decision, never a
-  silent rebuild).
-- `faber emit -t wgsl-text` is the product surface; the faber binary is built
-  from the sibling faber checkout (`faber/Cargo.toml` pins radix by path), so
-  the pinned radix revision is the compiled-against radix.
+- `3cfd578b1` — original U5 landing
+- `02b4cbb14` — 2026-08-02 re-pin for radix U6 (`stage_io_role_code`; F1/F2
+  role synthesis retired). Adapter + exempla re-adapted to the new call
+  shapes.
+- `41b4c0411` — 2026-08-03 re-pin after radix `crates/` moved 16,897 diff
+  lines past `02b4cbb14` (fhir/hir-* extraction, wgsl emitter fixes
+  `abeb97cb7`, wasm/llvm/metal/ts/go fixes). No conformance-program
+  re-adaptation was required at that re-pin.
+
+Those re-pins were ledger decisions because the harness used to fail on
+`crates/` drift. Stage 1 replaces that gate with live contract assertions.
+
+- `faber emit -t wgsl-text` remains the product surface. Faber resolution
+  matches `check-proba-coverage` / `tgh-s1-2`: `FABER_BIN` if set, otherwise
+  the sibling radix product binary. The retired public-`faber/Cargo.toml`
+  path is gone.
 
 ## 1. Adapter contract (decision D1 + D2 + D3)
 
@@ -179,17 +179,18 @@ the radix-side deletion is done. Verified 2026-08-02: zero `triga_stage4_*` /
 `radix/crates/radix/src/fixtures/triga-stage4-source-facts.fab` is gone
 (replaced by the triga-free U4-A fixtures). The radix-side delivery doc's
 staleness is Mind's closeout item; the triga ledger reflects the actual state.
-Re-pin policy: if radix `crates/` moves past the pin, the harness fails loudly
-and the pin is re-validated in this ledger — never a silent rebuild.
+Stage 1 (`tgh-s1-3`) retired the re-pin policy: live contract assertions
+replace revision/`crates/` drift gates. A needle miss on current Radix is
+an honest red, not a deleted assertion and not a silent rebuild.
 
 ## 4. Harness + validation evidence
 
 Harness: `scripta/check-wgsl-shader-contract-conformance`.
 
 ```
-$ ./scripta/check-wgsl-shader-contract-conformance
+$ FABER_BIN=<sibling radix/target/.../faber> ./scripta/check-wgsl-shader-contract-conformance
 check-wgsl-shader-contract-conformance: naga validation required (/Users/ianzepp/.cargo/bin/naga)
-check-wgsl-shader-contract-conformance: faber .../faber/target/debug/faber (radix pinned 41b4c0411)
+check-wgsl-shader-contract-conformance: faber .../radix/target/debug/faber
 check-wgsl-shader-contract-conformance: conformance corpus .../exempla/conformance/shader-contract
 ok vertex-body-emits-wgsl
 ok vertex-body-naga
@@ -201,6 +202,26 @@ ok source-fragment-lambert-negative-empty
 check-wgsl-shader-contract-conformance: source-facts fixture check
 check-wgsl-shader-contract-conformance: ok (7 moved conformance tests + source-facts fixture)
 ```
+
+Faber resolution (Stage 1): `FABER_BIN` if set, else
+`$FABER_LIBRARY_HOME/radix/target/release/faber`, else
+`$FABER_LIBRARY_HOME/radix/target/debug/faber`. Missing or non-executable
+binary is a hard fail. The suite does not build Faber and does not pin a
+radix revision.
+
+**Live-Radix receipt (tgh-s1-3, 2026-08-17)**: packet Faber
+`worktrees/hand-10/radix/target/debug/faber` (radix detached `6d2fb3bc2`).
+Naga present (`naga-cli` 30.0.0). Suite exit 1 with **8 failures** — all
+seven conformance programs plus the source-facts fixture. First live
+diagnostics (honest red; assertions not deleted; exempla not rewritten):
+
+- `PARSE050:import_privata_removed` on `import from "…" private …`
+- `PARSE001:retired_prefix_predicate` on `assert … not is null`
+- `PARSE060:invalid_comment_placement` on leading `#` comments
+
+Emit never produced WGSL, so the WGSL needles and Naga checks did not
+run. That is a live-compiler miss of the old surface, not a pin-gate
+failure and not permission to drop a needle.
 
 Each file: `faber emit -t wgsl-text` → positive/negative WGSL assertions
 (carrying the moved tests' assertions: `@vertex`/`@fragment` entries, position
@@ -214,9 +235,9 @@ must fail the suite, never silently pass without validation. The harness exits
 non-zero with a clear message when naga is absent from PATH or when `NAGA` is
 set empty (forced-absent path); `NAGA=/path/to/naga` overrides detection.
 
-## 5. Pinned end-to-end run (done_when)
+## 5. Live end-to-end run (done_when)
 
-One pinned `faber emit -t wgsl-text` run on a triga corpus package — the
+One live `faber emit -t wgsl-text` run on a triga corpus package — the
 flagship conformance file:
 
 ```
@@ -239,11 +260,11 @@ fn hello_voxel_vertex(input: HelloVoxelVertexInput) -> HelloVoxelVertexOutput {
 ```
 
 Real `triga:*` imports → generic contract → `faber emit -t wgsl-text` → naga
-validates the same file in the harness (`vertex-body-naga`). Re-verified at the
-re-pins (2026-08-02 against `02b4cbb14`, 2026-08-03 against `41b4c0411`):
-emission output is byte-identical — the explicit `stage_io_role_code` facts are
-carried in reflections and do not change WGSL emission, and the wgsl emitter
-fixes in the `02b4cbb14`→`41b4c0411` window do not touch this surface.
+validates the same file in the harness (`vertex-body-naga`). Historical
+re-pins (2026-08-02 against `02b4cbb14`, 2026-08-03 against `41b4c0411`)
+kept emission byte-identical on this surface. Stage 1 no longer treats that
+byte-identity as a revision pin: the suite re-runs the same needles against
+the current sibling Faber binary and fails honestly if a needle is missing.
 
 ## 6. Radix unaffected
 
