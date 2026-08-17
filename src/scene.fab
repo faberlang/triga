@@ -37,7 +37,7 @@ union SceneNodeKind {
 class SceneNode {
     string name
     SceneNodeKind kind
-    SceneHandle ∪ null parent = null
+    SceneHandle parent optional
     list<SceneHandle> children
     bool visible
     math.Matrix4 local_matrix
@@ -171,7 +171,7 @@ class SceneStore {
         const SceneNode ∪ null parens_result ← self.cape(parens_manubrium)
         if parens_result is null then return false
         const SceneNode parens_nodus ← SceneNode {name = parens_result!.name, kind = parens_result!.kind, parent = parens_result!.parent, children = parens_result!.children, visible = parens_result!.visible, local_matrix = parens_result!.local_matrix, world_matrix = parens_result!.world_matrix, world_dirty = parens_result!.world_dirty}
-        const SceneNode seiunctus_filius ← SceneNode {name = filius_nodus.name, kind = filius_nodus.kind, parent = null, children = filius_nodus.children, visible = filius_nodus.visible, local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix, world_dirty = true}
+        const SceneNode seiunctus_filius ← SceneNode {name = filius_nodus.name, kind = filius_nodus.kind, children = filius_nodus.children, visible = filius_nodus.visible, local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix, world_dirty = true}
         self._reple(parens_manubrium, self._sine_liberis(parens_nodus, filius))
         self._reple(filius, seiunctus_filius)
         self._nota_mundum_sordidum(filius)
@@ -688,7 +688,7 @@ fn scene_store() → SceneStore {
 
 @ public
 fn scene_node(string name, SceneNodeKind kind) → SceneNode {
-    return SceneNode {name = name, kind = kind, parent = null, children = vacua, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
+    return SceneNode {name = name, kind = kind, children = vacua, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
 }
 
 @ public
