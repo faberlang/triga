@@ -392,9 +392,7 @@
           "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
           "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
           "test result: FAILED. 4 passed; 3 failed; 0 skipped",
-          "FaberScript unsupported: provider package:triga:geometry/layout::layout::vertex_layout_count",
           "FaberScript unsupported: provider package:BufferAttribute::return::dele",
-          "FaberScript unsupported: provider package:indexed_geometry::BufferGeometry::vertex_layout_count",
           "runner reported 4 passed for 7 declared cases",
           "runner summary: 3 failed; 0 skipped"
         ]
@@ -1519,7 +1517,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T10:42:19Z",
+    "run_at_utc": "2026-08-17T11:09:42Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 9,
@@ -1565,9 +1563,7 @@
           "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
           "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
           "test result: FAILED. 4 passed; 3 failed; 0 skipped",
-          "FaberScript unsupported: provider package:triga:geometry/layout::layout::vertex_layout_count",
           "FaberScript unsupported: provider package:BufferAttribute::return::dele",
-          "FaberScript unsupported: provider package:indexed_geometry::BufferGeometry::vertex_layout_count",
           "runner reported 4 passed for 7 declared cases",
           "runner summary: 3 failed; 0 skipped"
         ]
