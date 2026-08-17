@@ -2,7 +2,10 @@
 locale = "en"
 +++
 # Co-located package smoke for the renderable facade.
-# The facade is an import map; Mesh remains owned by triga:renderable/mesh.
+#
+# The facade intentionally contains only imports. This case proves that the
+# public `triga:renderable` path is discoverable without claiming that it
+# re-exports Mesh or that a host draws the composed carrier.
 
 import from "triga:renderable" renderable
 
