@@ -154,16 +154,15 @@ route.
 
 ### 2.5 Triage conclusion
 
-The current package-link receipt (`148226b`,
-`proof/coverage-scorecard.json`, coverage revision 2) records **9/26** module
-selections at `executed-proba`. The remaining 17 rows are all
+The refreshed package-link receipt (`358d074`,
+`proof/coverage-scorecard.json`, coverage revision 2) still records **9/26**
+module selections at `executed-proba`. The remaining 17 rows are all
 `runner-failure`; there are 0 `analysis-error` rows. `src/graph/camera.fab`
-reaches the runner and fails all five cases, including unsupported provider
-route `package:triga:graph/camera::camera::children`; it is not an analysis
-error. `src/primitives/basic.fab` is also a `runner-failure`, and
+reaches the runner and fails all five cases; the prior named camera-provider
+route is gone from this receipt. `src/primitives/basic.fab` is also a
+`runner-failure`, and
 `src/geometry/data.fab` is a `runner-failure` with three failed cases. The
-remaining named unsupported provider routes are
-`package:triga:graph/camera::camera::children` and
+remaining named unsupported provider route is
 `package:BufferAttribute::return::dele`. The receipt has no `PARSE050` row;
 `PARSE050.import_privata_removed` is historical evidence from the retired
 import-modifier and single-file/roundtrip routes, not the current Triga
