@@ -38,4 +38,27 @@ describe "geometry batch facts" {
         assert batch.visible_face_mesh_facts(0) is null
         assert batch.visible_face_mesh_facts(-1) is null
     }
+
+    test "draw ranges groups and commands publish their scalar fields" {
+        const batch.DrawRange range ← batch.DrawRange {start = 3, count = 6}
+        const batch.GeometryGroup group ← batch.GeometryGroup {start = 6, count = 3, material_index = 4}
+        const batch.GeometryDrawCommand command ← batch.GeometryDrawCommand {indexed = true, element_count = 6, first_element = 3, base_vertex = 0, instance_count = 2, material_index = 4}
+        const batch.IndexedGeometryDrawBatchFacts indexed_facts ← batch.IndexedGeometryDrawBatchFacts {draw_count = 1, grouped_element_total = 6, vertex_payload_byte_count = 72, index_payload_byte_count = 24, total_payload_byte_count = 96}
+        const batch.LineGeometryDrawBatchFacts line_facts ← batch.LineGeometryDrawBatchFacts {draw_count = 1, line_count = 3, grouped_element_total = 6, vertex_payload_byte_count = 48, index_payload_byte_count = 16, total_payload_byte_count = 64}
+        assert range.start ≡ 3
+        assert range.count ≡ 6
+        assert group.start ≡ 6
+        assert group.count ≡ 3
+        assert group.material_index ≡ 4
+        assert command.indexed
+        assert command.element_count ≡ 6
+        assert command.first_element ≡ 3
+        assert command.base_vertex ≡ 0
+        assert command.instance_count ≡ 2
+        assert command.material_index ≡ 4
+        assert indexed_facts.draw_count ≡ 1
+        assert indexed_facts.total_payload_byte_count ≡ 96
+        assert line_facts.line_count ≡ 3
+        assert line_facts.total_payload_byte_count ≡ 64
+    }
 }
