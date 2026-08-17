@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Restore the executable check-inventory invocation removed from
+# check-scorecard by ca784f6.  A stale committed proba baseline is a
+# reportable mismatch, not 26/26 progress.  This caller never rewrites
+# proof/inventory/triga-inventory.json.
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+WORK=$(mktemp -d "${TMPDIR:-/tmp}/triga-inventory-caller.XXXXXX")
+trap 'rm -rf "$WORK"' EXIT
+
+git -C "$ROOT" archive HEAD | tar -x -C "$WORK"
+# Overlay the in-tree checker so this caller tests the restored reporting
+# without committing a regenerated inventory. derive-inventory.sh needs a
+# git revision; the archive is not a repo, so give the fixture tree its own.
+cp "$ROOT/proof/inventory/check-inventory" "$WORK/proof/inventory/check-inventory"
+git -C "$WORK" init -q
+git -C "$WORK" add -A
+git -C "$WORK" \
+  -c user.name=triga-inventory-caller \
+  -c user.email=triga-inventory-caller@faberlang.local \
+  commit -qm "inventory caller fixture"
+cd "$WORK"
+
+echo "=== committed inventory (live report) ==="
+set +e
+committed_output=$(./proof/inventory/check-inventory 2>&1)
+committed_status=$?
+set -e
+printf '%s\n' "$committed_output"
+echo "committed inventory check exit: $committed_status"
+if printf '%s\n' "$committed_output" | grep -Fq "inventory ok:"; then
+    if printf '%s\n' "$committed_output" | grep -Eq '26/26|treat(ed)? as 26'; then
+        printf '%s\n' "error: checker claimed 26/26 progress" >&2
+        exit 1
+    fi
+fi
+
+python3 - proof/inventory/triga-inventory.json <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, encoding="utf-8") as source:
+    inventory = json.load(source)
+
+only = "src/math.proba"
+record = inventory.get("co_located_tests", {}).get(only)
+if not isinstance(record, dict):
+    record = {
+        "module": "src/math.fab",
+        "lines": 0,
+        "groups": 0,
+        "cases": 0,
+    }
+inventory["co_located_tests"] = {only: record}
+totals = inventory.get("totals")
+if isinstance(totals, dict):
+    totals["co_located_proba_files"] = 1
+for row in inventory.get("modules", []):
+    if not isinstance(row, dict):
+        continue
+    module = row.get("path")
+    if module == "src/math.fab":
+        row["co_located_proba"] = only
+        row["co_located_proba_refs"] = 1
+    else:
+        row["co_located_proba"] = None
+        row["co_located_proba_refs"] = 0
+        if row.get("evidence_tier") == "executed-proba":
+            row["evidence_tier"] = "structural"
+with open(path, "w", encoding="utf-8") as target:
+    json.dump(inventory, target, indent=2)
+    target.write("\n")
+PY
+
+echo "=== 1-proba committed baseline (must report mismatch) ==="
+if output=$(./proof/inventory/check-inventory 2>&1); then
+    printf '%s\n' "error: checker accepted a 1-proba inventory against the live tree" >&2
+    printf '%s\n' "$output" >&2
+    exit 1
+fi
+printf '%s\n' "$output"
+printf '%s\n' "$output" | grep -Fq \
+    "committed inventory records 1 co-located proba file(s); live tree has"
+if printf '%s\n' "$output" | grep -Fq "inventory ok:"; then
+    printf '%s\n' "error: 1-proba mismatch was reported as inventory ok" >&2
+    exit 1
+fi
+
+printf '%s\n' "inventory caller ok: 1-proba committed baseline is a reported mismatch, not 26/26"
+exit "$committed_status"
