@@ -540,23 +540,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph/camera.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_method": 7,
-          "SEM004.unknown_struct_field": 2,
-          "SEM010.assert_condition_type_mismatch": 9,
-          "SEM012.callee_not_callable": 2
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: SEM012.callee_not_callable",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: SEM004.unknown_method",
-          "error: package analysis failed"
+          "error: invalid MIR: approximate comparison receiver is not fractus",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     },
@@ -1518,7 +1512,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T09:12:31Z",
+    "run_at_utc": "2026-08-17T10:25:29Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 9,
@@ -1538,12 +1532,7 @@
       "rdx-s05-1": "not-observed",
       "rdx-s05-3": "unresolved"
     },
-    "observed_diagnostic_codes": {
-      "SEM004.unknown_method": 7,
-      "SEM004.unknown_struct_field": 2,
-      "SEM010.assert_condition_type_mismatch": 9,
-      "SEM012.callee_not_callable": 2
-    },
+    "observed_diagnostic_codes": {},
     "discovery_errors": [],
     "failures": [
       {
@@ -1578,19 +1567,13 @@
       {
         "module": "src/graph/camera.fab",
         "proba_path": "src/graph/camera.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_method": 7,
-          "SEM004.unknown_struct_field": 2,
-          "SEM010.assert_condition_type_mismatch": 9,
-          "SEM012.callee_not_callable": 2
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: SEM012.callee_not_callable",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: SEM004.unknown_method",
-          "error: package analysis failed"
+          "error: invalid MIR: approximate comparison receiver is not fractus",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       },
       {
