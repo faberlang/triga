@@ -2,14 +2,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+FABER_LIBRARY_HOME="$(cd "${FABER_LIBRARY_HOME:-$ROOT/..}" && pwd)"
 
 if [[ -n "${RADIX_ROOT:-}" ]]; then
-  RADIX="$RADIX_ROOT"
+  RADIX="$(cd "$RADIX_ROOT" && pwd)"
 elif [[ -d "$ROOT/../radix/crates/radix" ]]; then
-  RADIX="$ROOT/../radix"
+  RADIX="$(cd "$ROOT/../radix" && pwd)"
 else
-  RADIX="$ROOT/../../../radix"
+  RADIX="$(cd "$ROOT/../../../radix" && pwd)"
 fi
 
 if [[ ! -d "$RADIX/crates/radix" ]]; then
@@ -17,22 +17,41 @@ if [[ ! -d "$RADIX/crates/radix" ]]; then
   exit 1
 fi
 
-if [[ -n "${FABER_ROOT:-}" ]]; then
-  FABER="$FABER_ROOT"
-elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
-  FABER="$ROOT/../faber"
-else
-  FABER="$ROOT/../../../faber"
+# Sibling product CLI: FABER_BIN, else release then debug under the library home.
+# Do not require a public ../faber/Cargo.toml checkout.
+if [[ -z "${FABER_BIN:-}" ]]; then
+  if [[ -x "$FABER_LIBRARY_HOME/radix/target/release/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/release/faber"
+  elif [[ -x "$FABER_LIBRARY_HOME/radix/target/debug/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/debug/faber"
+  else
+    echo "check-compile: missing faber binary (set FABER_BIN or build $FABER_LIBRARY_HOME/radix/target/{release,debug}/faber)" >&2
+    exit 1
+  fi
 fi
 
-if [[ ! -f "$FABER/Cargo.toml" ]]; then
-  echo "check-compile: missing faber checkout at $FABER" >&2
+if [[ "$FABER_BIN" != /* ]]; then
+  FABER_BIN="$(cd "$(dirname "$FABER_BIN")" && pwd)/$(basename "$FABER_BIN")"
+fi
+
+if [[ ! -x "$FABER_BIN" ]]; then
+  echo "check-compile: faber binary not executable: $FABER_BIN" >&2
   exit 1
 fi
 
-RADIX_BIN="$RADIX/target/debug/radix"
+# Child rungs still resolve a public-faber Cargo.toml unless FABER_ROOT is set.
+# Point them at the sibling product crate so those rungs still run.
+export FABER_ROOT="${FABER_ROOT:-$RADIX/crates/faber}"
+
+RADIX_BIN="${RADIX_BIN:-$RADIX/target/debug/radix}"
 if [[ ! -x "$RADIX_BIN" ]]; then
-  (cd "$RADIX" && cargo build -q -p radix --bin radix)
+  (cd "$RADIX" && cargo build -q -p radix-module --bin radix)
+  RADIX_BIN="$RADIX/target/debug/radix"
+fi
+
+if [[ ! -x "$RADIX_BIN" ]]; then
+  echo "check-compile: radix binary not executable: $RADIX_BIN" >&2
+  exit 1
 fi
 
 # The triga package now reads English (faber.toml `[reader] locale = "en"`);
@@ -41,20 +60,22 @@ fi
 
 export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
+export FABER_BIN
 
 echo "check-compile: parsing leaf modules"
-for mod in math graph material face geometry primitives scene resource triga shader_contract; do
-  echo "check-compile: parsing src/${mod}.fab"
-  "$RADIX_BIN" check --locale en "$ROOT/src/${mod}.fab"
-done
+leaf_count=0
+while IFS= read -r -d '' leaf; do
+  rel="${leaf#"$ROOT/"}"
+  echo "check-compile: parsing $rel"
+  "$RADIX_BIN" check --locale en "$leaf"
+  leaf_count=$((leaf_count + 1))
+done < <(find "$ROOT/src" -type f -name '*.fab' -print0 | LC_ALL=C sort -z)
 
-echo "check-compile: parsing nested package leaves"
-for leaf in graph/object graph/camera lighting/light \
-  geometry/layout geometry/bounds geometry/batch geometry/attribute geometry/data
-do
-  echo "check-compile: parsing src/${leaf}.fab"
-  "$RADIX_BIN" check --locale en "$ROOT/src/${leaf}.fab"
-done
+if [[ "$leaf_count" -eq 0 ]]; then
+  echo "check-compile: find discovered no src/**/*.fab leaves" >&2
+  exit 1
+fi
+echo "check-compile: parsed $leaf_count live leaves"
 
 echo "check-compile: checking geometry attribute exemplar"
 "$RADIX_BIN" check --locale en "$ROOT/exempla/triga-geometry-attributes.fab"
@@ -78,7 +99,7 @@ echo "check-compile: checking scene-store exemplar"
 "$RADIX_BIN" check --locale en "$ROOT/exempla/triga-scene-store.fab"
 
 echo "check-compile: checking scene-store exemplar through Faber provider path"
-(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check exempla/triga-scene-store.fab)
+(cd "$ROOT" && "$FABER_BIN" check "$ROOT/exempla/triga-scene-store.fab")
 
 # Scene-store acceptance vs the current faber tips: un-targeted `faber run
 # --compile` on a manifest package routes to the store-based FHIR package
@@ -94,7 +115,7 @@ echo "check-compile: checking scene-store exemplar through Faber provider path"
 # generated-Rust lane), so the acceptance here is the faber default package
 # route's FHIR envelope build (analyze + encode), which is green.
 echo "check-compile: building scene-store FHIR package envelope (faber default route; run not applicable to library self-exempla)"
-(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- build exempla/triga-scene-store.fab)
+(cd "$ROOT" && "$FABER_BIN" build "$ROOT/exempla/triga-scene-store.fab")
 
 "$ROOT/scripta/check-transforms"
 "$ROOT/scripta/check-exempla-inventory"
