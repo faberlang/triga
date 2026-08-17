@@ -154,20 +154,20 @@ route.
 
 ### 2.5 Triage conclusion
 
-The current package-link receipt (`fd93601`,
+The current package-link receipt (`148226b`,
 `proof/coverage-scorecard.json`, coverage revision 2) records **9/26** module
 selections at `executed-proba`. The remaining 17 rows are all
 `runner-failure`; there are 0 `analysis-error` rows. `src/graph/camera.fab`
-reaches the runner and fails all five cases, including stable unsupported
-provider route `package:triga:graph/camera::camera::children`; it is not an
-analysis error. `src/primitives/basic.fab` is also a `runner-failure`, and
-`src/geometry/data.fab` is a `runner-failure` with three failed cases and stable
-provider routes `package:triga:geometry/layout::layout::vertex_layout_count`,
-`package:BufferAttribute::return::dele`, and
-`package:indexed_geometry::BufferGeometry::vertex_layout_count`. The receipt
-has no `PARSE050` row; `PARSE050.import_privata_removed` is historical evidence
-from the retired import-modifier and single-file/roundtrip routes, not the
-current Triga package-link verdict.
+reaches the runner and fails all five cases, including unsupported provider
+route `package:triga:graph/camera::camera::children`; it is not an analysis
+error. `src/primitives/basic.fab` is also a `runner-failure`, and
+`src/geometry/data.fab` is a `runner-failure` with three failed cases. The
+remaining named unsupported provider routes are
+`package:triga:graph/camera::camera::children` and
+`package:BufferAttribute::return::dele`. The receipt has no `PARSE050` row;
+`PARSE050.import_privata_removed` is historical evidence from the retired
+import-modifier and single-file/roundtrip routes, not the current Triga
+package-link verdict.
 
 The Stage-0 Q4 conclusion remains in force: the executed-proba tier is open,
 but not because of an unresolved Radix link architecture. The classification
