@@ -9,7 +9,7 @@ import from "triga:material/base" base
 import from "triga:math" math
 
 test "Phong material preserves lit carrier fields and base pipeline facts" {
-    const base.Material policy ← base.Material {name = "phong", side = 1, transparent = true, opacity = 0.75, depth_write = false, depth_test = true, alpha_test = 0.2}
+    const base.Material policy ← base.Material {name = "phong", side = 1 ∷ int<u32>, transparent = true, opacity = 0.75, depth_write = false, depth_test = true, alpha_test = 0.2}
     const math.Color color ← math.Color {r = 0.3, g = 0.5, b = 0.7}
     const math.Color specular ← math.Color {r = 0.9, g = 0.8, b = 0.6}
     const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = policy, color = color, specular = specular, shininess = 60.0}
@@ -43,7 +43,7 @@ test "Phong defaults remain explicit carrier values" {
 }
 
 test "Phong carrier exposes invalid base facts as unsupported" {
-    const base.Material invalid_base ← base.Material {name = "invalid-phong", opacity = 1.2}
+    const base.Material invalid_base ← base.Material {name = "invalid-phong", side = 0 ∷ int<u32>, opacity = 1.2}
     const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert base.material_valida(material.base) ≡ false
