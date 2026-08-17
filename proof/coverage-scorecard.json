@@ -77,12 +77,12 @@
       ],
       "co_located_proba": {
         "module": "src/face.fab",
-        "lines": 71,
+        "lines": 72,
         "groups": 1,
         "cases": 4
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -92,27 +92,21 @@
         "proba_path": "src/face.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "face.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include face.proba",
-        "exit_status": 1,
-        "passed": 3,
-        "failed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include face.proba",
+        "exit_status": 0,
+        "passed": 4,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL face quad builders/colored face append publishes exact position color and index arrays",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -147,13 +141,13 @@
         "proba_path": "src/geometry.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "geometry.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry.proba",
         "exit_status": 0,
         "passed": 1,
         "failed": 0,
@@ -181,7 +175,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/attribute.fab",
-        "lines": 55,
+        "lines": 74,
         "groups": 1,
         "cases": 3
       },
@@ -204,13 +198,13 @@
         "proba_path": "src/geometry/attribute.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "geometry/attribute.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/attribute.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/attribute.proba",
         "exit_status": 0,
         "passed": 3,
         "failed": 0,
@@ -238,9 +232,9 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/batch.fab",
-        "lines": 41,
+        "lines": 64,
         "groups": 1,
-        "cases": 3
+        "cases": 4
       },
       "exempla_coverage_refs": [
         "exempla/hello-voxel-first-draw-facts.fab",
@@ -258,17 +252,17 @@
       ],
       "proba_execution": {
         "proba_path": "src/geometry/batch.proba",
-        "case_count": 3,
+        "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "geometry/batch.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/batch.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/batch.proba",
         "exit_status": 0,
-        "passed": 3,
+        "passed": 4,
         "failed": 0,
         "skipped": 0,
         "status": "passed",
@@ -309,13 +303,13 @@
         "proba_path": "src/geometry/bounds.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "geometry/bounds.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/bounds.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/bounds.proba",
         "exit_status": 0,
         "passed": 3,
         "failed": 0,
@@ -363,7 +357,7 @@
         "exempla/triga-stage4-source-facts.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -373,29 +367,21 @@
         "proba_path": "src/geometry/data.proba",
         "case_count": 7,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "geometry/data.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/data.proba",
-        "exit_status": 1,
-        "passed": 4,
-        "failed": 3,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/data.proba",
+        "exit_status": 0,
+        "passed": 7,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL buffer geometry contracts/indexed geometry publishes counts payloads and topology",
-          "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
-          "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
-          "test result: FAILED. 4 passed; 3 failed; 0 skipped",
-          "FaberScript unsupported: provider package:BufferAttribute::float32_values",
-          "runner reported 4 passed for 7 declared cases",
-          "runner summary: 3 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -415,7 +401,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/layout.fab",
-        "lines": 29,
+        "lines": 64,
         "groups": 1,
         "cases": 2
       },
@@ -430,13 +416,13 @@
         "proba_path": "src/geometry/layout.proba",
         "case_count": 2,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "geometry/layout.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/layout.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/layout.proba",
         "exit_status": 0,
         "passed": 2,
         "failed": 0,
@@ -479,13 +465,13 @@
         "proba_path": "src/graph.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "graph.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph.proba",
         "exit_status": 0,
         "passed": 1,
         "failed": 0,
@@ -513,7 +499,7 @@
       ],
       "co_located_proba": {
         "module": "src/graph/camera.fab",
-        "lines": 92,
+        "lines": 104,
         "groups": 0,
         "cases": 5
       },
@@ -521,7 +507,7 @@
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -531,31 +517,21 @@
         "proba_path": "src/graph/camera.proba",
         "case_count": 5,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "graph/camera.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph/camera.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 5,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph/camera.proba",
+        "exit_status": 0,
+        "passed": 5,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL PerspectiveCamera emits a valid projection and projection facts",
-          "FAIL PerspectiveCamera emits view-projection output and facts",
-          "FAIL OrthographicCamera preserves extents and camera defaults",
-          "FAIL PerspectiveCamera rejects invalid projection field ranges",
-          "FAIL PerspectiveCamera rejects degenerate view inputs",
-          "test result: FAILED. 0 passed; 5 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -575,7 +551,7 @@
       ],
       "co_located_proba": {
         "module": "src/graph/object.fab",
-        "lines": 54,
+        "lines": 55,
         "groups": 0,
         "cases": 4
       },
@@ -583,7 +559,7 @@
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -593,26 +569,21 @@
         "proba_path": "src/graph/object.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "graph/object.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph/object.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 4,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph/object.proba",
+        "exit_status": 0,
+        "passed": 4,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 4 declared cases",
-          "runner summary: 4 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -647,13 +618,13 @@
         "proba_path": "src/lighting.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "lighting.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include lighting.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include lighting.proba",
         "exit_status": 0,
         "passed": 1,
         "failed": 0,
@@ -681,12 +652,12 @@
       ],
       "co_located_proba": {
         "module": "src/lighting/light.fab",
-        "lines": 61,
+        "lines": 105,
         "groups": 0,
-        "cases": 4
+        "cases": 7
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -694,29 +665,23 @@
       ],
       "proba_execution": {
         "proba_path": "src/lighting/light.proba",
-        "case_count": 4,
+        "case_count": 7,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "lighting/light.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include lighting/light.proba",
-        "exit_status": 1,
-        "passed": 3,
-        "failed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include lighting/light.proba",
+        "exit_status": 0,
+        "passed": 7,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL PointLight defaults remain explicit carrier values",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -741,7 +706,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -751,26 +716,21 @@
         "proba_path": "src/material.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "material.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 1 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -790,7 +750,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/base.fab",
-        "lines": 93,
+        "lines": 101,
         "groups": 0,
         "cases": 4
       },
@@ -809,25 +769,26 @@
         "proba_path": "src/material/base.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "material/base.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/base.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/base.proba",
         "exit_status": 1,
-        "passed": 0,
-        "failed": 4,
+        "passed": 3,
+        "failed": 1,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 4 declared cases",
-          "runner summary: 4 failed; 0 skipped"
+          "ok   opacity alpha and unsupported side values fail closed",
+          "FAIL texture descriptor preserves its placeholder shape",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -848,7 +809,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/basic.fab",
-        "lines": 73,
+        "lines": 74,
         "groups": 0,
         "cases": 3
       },
@@ -866,25 +827,25 @@
         "proba_path": "src/material/basic.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "material/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/basic.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/basic.proba",
         "exit_status": 1,
-        "passed": 0,
-        "failed": 3,
+        "passed": 2,
+        "failed": 1,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 3 declared cases",
-          "runner summary: 3 failed; 0 skipped"
+          "FAIL basic material rejects invalid names and colors",
+          "test result: FAILED. 2 passed; 1 failed; 0 skipped",
+          "runner reported 2 passed for 3 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -922,25 +883,27 @@
         "proba_path": "src/material/lit.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "material/lit.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/lit.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/lit.proba",
         "exit_status": 1,
-        "passed": 0,
-        "failed": 3,
+        "passed": 1,
+        "failed": 2,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 3 declared cases",
-          "runner summary: 3 failed; 0 skipped"
+          "FAIL Phong defaults remain explicit carrier values",
+          "FAIL Phong carrier exposes invalid base facts as unsupported",
+          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 1 passed for 3 declared cases",
+          "runner summary: 2 failed; 0 skipped"
         ]
       }
     },
@@ -978,25 +941,27 @@
         "proba_path": "src/material/standard.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "material/standard.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/standard.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/standard.proba",
         "exit_status": 1,
-        "passed": 0,
-        "failed": 3,
+        "passed": 1,
+        "failed": 2,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 3 declared cases",
-          "runner summary: 3 failed; 0 skipped"
+          "FAIL standard defaults remain explicit carrier values",
+          "FAIL standard carrier exposes invalid base facts as unsupported",
+          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 1 passed for 3 declared cases",
+          "runner summary: 2 failed; 0 skipped"
         ]
       }
     },
@@ -1017,9 +982,9 @@
       ],
       "co_located_proba": {
         "module": "src/math.fab",
-        "lines": 369,
+        "lines": 384,
         "groups": 6,
-        "cases": 13
+        "cases": 17
       },
       "exempla_coverage_refs": [
         "exempla/triga-basics.fab",
@@ -1032,7 +997,7 @@
         "exempla/triga-transforms.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1040,29 +1005,23 @@
       ],
       "proba_execution": {
         "proba_path": "src/math.proba",
-        "case_count": 13,
+        "case_count": 17,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "math.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include math.proba",
-        "exit_status": 1,
-        "passed": 12,
-        "failed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include math.proba",
+        "exit_status": 0,
+        "passed": 17,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL box, sphere, and plane volumes/box constructors and overlap operations preserve bounds",
-          "test result: FAILED. 12 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 12 passed for 13 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1097,13 +1056,13 @@
         "proba_path": "src/primitives.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "primitives.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include primitives.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include primitives.proba",
         "exit_status": 0,
         "passed": 1,
         "failed": 0,
@@ -1131,7 +1090,7 @@
       ],
       "co_located_proba": {
         "module": "src/primitives/basic.fab",
-        "lines": 409,
+        "lines": 442,
         "groups": 1,
         "cases": 10
       },
@@ -1147,7 +1106,7 @@
         "exempla/triga-normal-oracle.fab",
         "exempla/triga-stage4-source-facts.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1157,32 +1116,21 @@
         "proba_path": "src/primitives/basic.proba",
         "case_count": 10,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "primitives/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include primitives/basic.proba",
-        "exit_status": 1,
-        "passed": 4,
-        "failed": 6,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include primitives/basic.proba",
+        "exit_status": 0,
+        "passed": 10,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL primitive generator contracts/circle publishes exact fan payload and winding",
-          "FAIL primitive generator contracts/sphere publishes exact rings poles smooth normals spherical UVs and winding",
-          "FAIL primitive generator contracts/cylinder publishes exact side rings caps UVs and winding",
-          "FAIL primitive generator contracts/cone publishes exact side normals base cap UVs and winding",
-          "FAIL primitive generator contracts/torus publishes exact tube grid normals UVs and winding",
-          "FAIL primitive generator contracts/box publishes exact independently shaded faces and winding",
-          "test result: FAILED. 4 passed; 6 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 4 passed for 10 declared cases",
-          "runner summary: 6 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1202,12 +1150,12 @@
       ],
       "co_located_proba": {
         "module": "src/renderable.fab",
-        "lines": 11,
+        "lines": 14,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1217,26 +1165,21 @@
         "proba_path": "src/renderable.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "renderable.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include renderable.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include renderable.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 1 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1256,14 +1199,14 @@
       ],
       "co_located_proba": {
         "module": "src/renderable/mesh.fab",
-        "lines": 122,
-        "groups": 0,
-        "cases": 5
+        "lines": 167,
+        "groups": 3,
+        "cases": 6
       },
       "exempla_coverage_refs": [
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1271,28 +1214,23 @@
       ],
       "proba_execution": {
         "proba_path": "src/renderable/mesh.proba",
-        "case_count": 5,
+        "case_count": 6,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "renderable/mesh.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include renderable/mesh.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 5,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include renderable/mesh.proba",
+        "exit_status": 0,
+        "passed": 6,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1329,25 +1267,26 @@
         "proba_path": "src/resource.proba",
         "case_count": 6,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "resource.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include resource.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include resource.proba",
         "exit_status": 1,
-        "passed": 0,
-        "failed": 6,
+        "passed": 5,
+        "failed": 1,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 6 declared cases",
-          "runner summary: 6 failed; 0 skipped"
+          "FAIL resource lifecycle facts/lifecycle accessors separate live current handles from retired handles",
+          "test result: FAILED. 5 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 5 passed for 6 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -1376,7 +1315,7 @@
         "exempla/triga-scene-store-empty.fab",
         "exempla/triga-scene-store.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1386,26 +1325,21 @@
         "proba_path": "src/scene.proba",
         "case_count": 5,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "scene.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include scene.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 5,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include scene.proba",
+        "exit_status": 0,
+        "passed": 5,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1425,9 +1359,9 @@
       ],
       "co_located_proba": {
         "module": "src/shader_contract.fab",
-        "lines": 33,
-        "groups": 1,
-        "cases": 5
+        "lines": 242,
+        "groups": 3,
+        "cases": 15
       },
       "exempla_coverage_refs": [],
       "evidence_tier": "executed-proba",
@@ -1438,17 +1372,17 @@
       ],
       "proba_execution": {
         "proba_path": "src/shader_contract.proba",
-        "case_count": 5,
+        "case_count": 15,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "shader_contract.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include shader_contract.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include shader_contract.proba",
         "exit_status": 0,
-        "passed": 5,
+        "passed": 15,
         "failed": 0,
         "skipped": 0,
         "status": "passed",
@@ -1479,7 +1413,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1489,26 +1423,21 @@
         "proba_path": "src/triga.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
           "--include",
           "triga.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include triga.proba",
-        "exit_status": 1,
-        "passed": 0,
-        "failed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include triga.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 1 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     }
   ],
@@ -1516,19 +1445,19 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T11:39:03Z",
+    "run_at_utc": "2026-08-17T17:37:09Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 9,
+    "executed_module_count": 21,
     "executed_tier": "executed-proba",
-    "package_path": "/Users/ianzepp/work/faberlang/triga",
-    "faber_bin": "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+    "package_path": "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+    "faber_bin": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
     "faber_library_home": "/Users/ianzepp/work/faberlang",
     "filter_mode": "package-include-per-proba",
     "command_template": [
-      "/Users/ianzepp/work/faberlang/radix/target/release/faber",
+      "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
       "test",
-      "/Users/ianzepp/work/faberlang/triga",
+      "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
       "--include",
       "<source-relative>.proba"
     ],
@@ -1540,97 +1469,16 @@
     "discovery_errors": [],
     "failures": [
       {
-        "module": "src/face.fab",
-        "proba_path": "src/face.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL face quad builders/colored face append publishes exact position color and index arrays",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/geometry/data.fab",
-        "proba_path": "src/geometry/data.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL buffer geometry contracts/indexed geometry publishes counts payloads and topology",
-          "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
-          "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
-          "test result: FAILED. 4 passed; 3 failed; 0 skipped",
-          "FaberScript unsupported: provider package:BufferAttribute::float32_values",
-          "runner reported 4 passed for 7 declared cases",
-          "runner summary: 3 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/graph/camera.fab",
-        "proba_path": "src/graph/camera.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL PerspectiveCamera emits a valid projection and projection facts",
-          "FAIL PerspectiveCamera emits view-projection output and facts",
-          "FAIL OrthographicCamera preserves extents and camera defaults",
-          "FAIL PerspectiveCamera rejects invalid projection field ranges",
-          "FAIL PerspectiveCamera rejects degenerate view inputs",
-          "test result: FAILED. 0 passed; 5 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/graph/object.fab",
-        "proba_path": "src/graph/object.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 4 declared cases",
-          "runner summary: 4 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/lighting/light.fab",
-        "proba_path": "src/lighting/light.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL PointLight defaults remain explicit carrier values",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/material.fab",
-        "proba_path": "src/material.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 1 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
-      },
-      {
         "module": "src/material/base.fab",
         "proba_path": "src/material/base.proba",
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 4 declared cases",
-          "runner summary: 4 failed; 0 skipped"
+          "ok   opacity alpha and unsupported side values fail closed",
+          "FAIL texture descriptor preserves its placeholder shape",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
@@ -1639,10 +1487,10 @@
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 3 declared cases",
-          "runner summary: 3 failed; 0 skipped"
+          "FAIL basic material rejects invalid names and colors",
+          "test result: FAILED. 2 passed; 1 failed; 0 skipped",
+          "runner reported 2 passed for 3 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
@@ -1651,10 +1499,12 @@
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 3 declared cases",
-          "runner summary: 3 failed; 0 skipped"
+          "FAIL Phong defaults remain explicit carrier values",
+          "FAIL Phong carrier exposes invalid base facts as unsupported",
+          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 1 passed for 3 declared cases",
+          "runner summary: 2 failed; 0 skipped"
         ]
       },
       {
@@ -1663,65 +1513,12 @@
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 3 declared cases",
-          "runner summary: 3 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/math.fab",
-        "proba_path": "src/math.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL box, sphere, and plane volumes/box constructors and overlap operations preserve bounds",
-          "test result: FAILED. 12 passed; 1 failed; 0 skipped",
+          "FAIL standard defaults remain explicit carrier values",
+          "FAIL standard carrier exposes invalid base facts as unsupported",
+          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
           "assertion failed",
-          "runner reported 12 passed for 13 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/primitives/basic.fab",
-        "proba_path": "src/primitives/basic.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL primitive generator contracts/circle publishes exact fan payload and winding",
-          "FAIL primitive generator contracts/sphere publishes exact rings poles smooth normals spherical UVs and winding",
-          "FAIL primitive generator contracts/cylinder publishes exact side rings caps UVs and winding",
-          "FAIL primitive generator contracts/cone publishes exact side normals base cap UVs and winding",
-          "FAIL primitive generator contracts/torus publishes exact tube grid normals UVs and winding",
-          "FAIL primitive generator contracts/box publishes exact independently shaded faces and winding",
-          "test result: FAILED. 4 passed; 6 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 4 passed for 10 declared cases",
-          "runner summary: 6 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/renderable.fab",
-        "proba_path": "src/renderable.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 1 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/renderable/mesh.fab",
-        "proba_path": "src/renderable/mesh.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
+          "runner reported 1 passed for 3 declared cases",
+          "runner summary: 2 failed; 0 skipped"
         ]
       },
       {
@@ -1730,33 +1527,10 @@
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 6 declared cases",
-          "runner summary: 6 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/scene.fab",
-        "proba_path": "src/scene.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/triga.fab",
-        "proba_path": "src/triga.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "error: invalid MIR: named aggregate field type mismatch",
-          "error: package MIR test link failed",
-          "runner reported 0 passed for 1 declared cases",
+          "FAIL resource lifecycle facts/lifecycle accessors separate live current handles from retired handles",
+          "test result: FAILED. 5 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 5 passed for 6 declared cases",
           "runner summary: 1 failed; 0 skipped"
         ]
       }
