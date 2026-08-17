@@ -1,0 +1,11 @@
++++
+locale = "en"
++++
+# Co-located package smoke for the map-only lighting facade.
+# Light family behavior belongs to triga:lighting/light; this case proves
+# only that the public facade path is discoverable.
+import from "triga:lighting" lighting
+
+test "lighting facade is discoverable" {
+    assert true
+}

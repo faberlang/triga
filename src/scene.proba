@@ -31,6 +31,7 @@ describe "scene store lifecycle" {
         assert store.adiunge(middle, root)
         assert store.adiunge(leaf, middle)
 
+        const list<scene.SceneHandle> empty_handles ← vacua
         const scene.SceneNode ∪ null root_value ← store.cape(root)
         assert root_value not is null
         assert root_value!.name ≡ "root"
@@ -40,15 +41,17 @@ describe "scene store lifecycle" {
         assert root_value!.world_dirty
 
         const list<scene.SceneHandle> ∪ null deep ← store.traverse(root)
+        const list<scene.SceneHandle> deep_value ← deep coalesce empty_handles
         assert deep not is null
-        assert deep!.length() ≡ 3
-        assert scene.scene_handle_equals(deep![0], root)
-        assert scene.scene_handle_equals(deep![2], leaf)
+        assert deep_value.length() ≡ 3
+        assert scene.scene_handle_equals(deep_value[0], root)
+        assert scene.scene_handle_equals(deep_value[2], leaf)
 
         const list<scene.SceneHandle> ∪ null isolated ← store.traverse(orphan)
+        const list<scene.SceneHandle> isolated_value ← isolated coalesce empty_handles
         assert isolated not is null
-        assert isolated!.length() ≡ 1
-        assert scene.scene_handle_equals(isolated![0], orphan)
+        assert isolated_value.length() ≡ 1
+        assert scene.scene_handle_equals(isolated_value[0], orphan)
         assert store.inveni("leaf") not is null
         assert store.inveni("missing") is null
     }
@@ -96,23 +99,28 @@ describe "scene store lifecycle" {
         assert store.adiunge(mesh, root)
         assert store.efficax_visibile(mesh)
 
+        const list<scene.SceneHandle> empty_handles ← vacua
         const list<scene.SceneHandle> ∪ null visible ← store.traverse_visibilia(root)
+        const list<scene.SceneHandle> visible_value ← visible coalesce empty_handles
         const list<scene.SceneHandle> ∪ null visible_meshes ← store.traverse_visibilia_rete(root)
+        const list<scene.SceneHandle> visible_meshes_value ← visible_meshes coalesce empty_handles
         assert visible not is null
-        assert visible!.length() ≡ 2
+        assert visible_value.length() ≡ 2
         assert visible_meshes not is null
-        assert visible_meshes!.length() ≡ 1
-        assert scene.scene_handle_equals(visible_meshes![0], mesh)
+        assert visible_meshes_value.length() ≡ 1
+        assert scene.scene_handle_equals(visible_meshes_value[0], mesh)
         assert store.inveni("mesh") not is null
 
         assert store.pone_visibile(root, false)
         assert store.efficax_visibile(mesh) ≡ false
         const list<scene.SceneHandle> ∪ null hidden ← store.traverse_visibilia(root)
+        const list<scene.SceneHandle> hidden_value ← hidden coalesce empty_handles
         const list<scene.SceneHandle> ∪ null hidden_meshes ← store.traverse_visibilia_rete(root)
+        const list<scene.SceneHandle> hidden_meshes_value ← hidden_meshes coalesce empty_handles
         assert hidden not is null
-        assert hidden!.length() ≡ 0
+        assert hidden_value.length() ≡ 0
         assert hidden_meshes not is null
-        assert hidden_meshes!.length() ≡ 0
+        assert hidden_meshes_value.length() ≡ 0
 
         assert store.pone_visibile(root, true)
         assert store.efficax_visibile(mesh)

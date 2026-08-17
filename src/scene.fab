@@ -1,15 +1,16 @@
 # Stable, backend-agnostic scene identity and heterogeneous node storage.
 #
-# Public import: import from "triga:scene" private scene
+# Public import: import from "triga:scene" scene
 # Depends on: triga:math, triga:resource
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:resource" private resource
+import from "triga:resource" resource
 
 # A SceneHandle names a slot and its generation. Handles are the stable value
 # passed between scene edits and render queries; callers never need to hold a
 # mutable SceneNode reference.
+@ public
 class SceneHandle {
     int index
     int generation
@@ -18,6 +19,7 @@ class SceneHandle {
 # SceneNodeKind keeps the heterogeneous scene payload explicit. Mesh nodes
 # carry resource handles; groups, cameras, and lights remain distinct cases so
 # traversal can filter without guessing from a name or field convention.
+@ public
 union SceneNodeKind {
     SceneGroup,
     SceneMesh {
@@ -31,6 +33,7 @@ union SceneNodeKind {
 # SceneNode stores local and cached world transforms together with hierarchy
 # links. `world_dirty` marks the cache after a local edit or reparent; the store
 # refreshes it before a render-facing query.
+@ public
 class SceneNode {
     string name
     SceneNodeKind kind
@@ -78,6 +81,7 @@ class SceneNode {
 
 # SceneSlot is the store's generation-checked storage cell. A deleted node
 # leaves its slot behind so an old handle cannot silently refer to a new node.
+@ public
 class SceneSlot {
     int generation
     bool alive
@@ -87,6 +91,7 @@ class SceneSlot {
 # SceneStore owns mutation, hierarchy validation, world-transform refresh, and
 # bounded preorder traversal. It is the stateful boundary of this otherwise
 # backend-agnostic source module, so callers bind it with `varia`.
+@ public
 class SceneStore {
     list<SceneSlot> slots
 
@@ -523,12 +528,14 @@ class SceneStore {
 # Traversal fact carriers keep internal bounds and the render-facing payload
 # separate. The `remaining` field belongs to the bounded traversal machinery;
 # the other genera are compact projections consumed by examples or hosts.
+@ public
 class SceneTraversal {
     list<SceneHandle> handles
     int remaining
 }
 
 # SceneCount is the count-only traversal projection.
+@ public
 class SceneCount {
     int count
     int remaining
@@ -536,6 +543,7 @@ class SceneCount {
 
 # SceneMeshResources associates a visible mesh node with the two logical
 # resources needed to draw it.
+@ public
 class SceneMeshResources {
     SceneHandle node
     resource.ResourceHandle geometry
@@ -544,6 +552,7 @@ class SceneMeshResources {
 
 # SceneMeshTransformPayload pairs a mesh identity with the packed model/view
 # projection data described by `triga:math`.
+@ public
 class SceneMeshTransformPayload {
     SceneHandle node
     math.TransformPayload payload
@@ -551,6 +560,7 @@ class SceneMeshTransformPayload {
 
 # SceneMeshDrawPacket is the source-side draw unit assembled by `visibilia`.
 # It contains identities and facts, not host GPU objects.
+@ public
 class SceneMeshDrawPacket {
     SceneHandle node
     resource.ResourceHandle geometry
@@ -560,11 +570,13 @@ class SceneMeshDrawPacket {
 
 # These two fact genera summarize the number of packets and resource identities
 # without forcing a consumer to inspect the full traversal payload.
+@ public
 class SceneVisibleMeshDrawBatchFacts {
     int packet_count
     int transform_payload_byte_count
 }
 
+@ public
 class SceneVisibleMeshResourceFacts {
     int mesh_count
     int resource_pair_count
@@ -573,6 +585,7 @@ class SceneVisibleMeshResourceFacts {
 }
 
 # SceneMeshResourceTraversal is the resource-only traversal projection.
+@ public
 class SceneMeshResourceTraversal {
     list<SceneMeshResources> resources
     int remaining
@@ -581,6 +594,7 @@ class SceneMeshResourceTraversal {
 # VisibiliaRetium is the deliberately small result of one visible-mesh walk.
 # Its parallel lists stay aligned by index; `ductus()` turns them into the
 # explicit draw packets used by the next stage.
+@ public
 class VisibiliaRetium {
     list<SceneHandle> manubria = vacua
     list<resource.ResourceHandle> geometria_opes = vacua
@@ -656,32 +670,39 @@ fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio
 
 # Constructors establish identity defaults in one place: empty children,
 # identity local/world matrices, and a dirty world cache.
+@ public
 fn scene_store() → SceneStore {
     return SceneStore {slots = vacua}
 }
 
+@ public
 fn scene_node(string name, SceneNodeKind kind) → SceneNode {
     return SceneNode {name = name, kind = kind, children = vacua, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
 }
 
+@ public
 fn scene_group(string name) → SceneNode {
     return scene_node(name, SceneGroup())
 }
 
+@ public
 fn scene_mesh(string name, ref resource.ResourceHandle geometry, ref resource.ResourceHandle material) → SceneNode {
     return scene_node(name, SceneMesh(resource.ResourceHandle {index = geometry.index, generation = geometry.generation}, resource.ResourceHandle {index = material.index, generation = material.generation}))
 }
 
+@ public
 fn scene_camera(string name) → SceneNode {
     return scene_node(name, SceneCamera())
 }
 
+@ public
 fn scene_light(string name) → SceneNode {
     return scene_node(name, SceneLight())
 }
 
 # ── Free utilities on handles ─────────────────────────────────────────
 
+@ public
 fn scene_handle_equals(ref SceneHandle a, ref SceneHandle b) → bool {
     return a.index ≡ b.index and a.generation ≡ b.generation
 }
