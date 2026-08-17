@@ -10,6 +10,44 @@ if [[ ! -d "$SRC" ]]; then
   exit 1
 fi
 
+# Derive the live public genus set from `class Name` declarations so a new
+# genus cannot stay invisible. PascalCase → snake_case; every underscore-
+# boundary prefix is a family stem (ResourceHandle → resource, resource_handle).
+# See docs/api-shape-policy.md § 5.
+GENUS_PREFIXES="$(
+  {
+    while IFS= read -r -d '' file; do
+      grep -hE '^class [A-Za-z][A-Za-z0-9_]*' "$file" || true
+    done < <(find "$SRC" -name '*.fab' -print0)
+  } \
+    | sed -E 's/^class ([A-Za-z][A-Za-z0-9_]*).*/\1/' \
+    | sort -u \
+    | sed -E 's/([a-z])([A-Z])/\1_\2/g' \
+    | tr '[:upper:]' '[:lower:]' \
+    | awk -F_ '{
+        acc = $1
+        print acc
+        for (i = 2; i <= NF; i++) {
+          acc = acc "_" $i
+          print acc
+        }
+      }' \
+    | sort -u
+)"
+
+if [[ -z "$GENUS_PREFIXES" ]]; then
+  echo "check-source: no class declarations found under $SRC" >&2
+  exit 1
+fi
+
+GENUS_ALT="${GENUS_PREFIXES//$'\n'/|}"
+
+# Existing exemptions stay explicit. Patterns are anchored to '(' so they match
+# exact constructor / helper names, not prefixed methods (e.g. scene_mesh( is
+# exempt, scene_mesh_geometry( is not). Recorded in docs/api-shape-policy.md § 5.
+# Do not add exemptions that hide resource_*/material_*/mesh_basic_material_*.
+EXEMPT='(vector[234]\(|box3_ex_|matrix[34]_(identitas|translatio|scala|composita|perspectiva|conspectus)|plane_geometry|sphere_geometry|colored_quad_mesh_append|scene_(store|node|group|mesh|camera|light)\(|scene_handle_equals\(|camera_(pitch_coercita|directio_ex|prorsum|dextra|motus|ray_ex|yaw_pitch)|geometry_vertex_layout_matches\()'
+
 while IFS= read -r -d '' file; do
   if grep -nE '^[[:space:]]*//' "$file"; then
     echo "check-source: line-start comments are not allowed in $file" >&2
@@ -31,15 +69,11 @@ while IFS= read -r -d '' file; do
     status=1
   fi
 
-  # Naming lint: reject public functions with genus-type prefixes that indicate
-  # a receiver-method anti-pattern. Constructors and pure scalar helpers are
-  # exempt — they have no genus receiver. See docs/api-shape-policy.md § 5.
-  # Exempt patterns are anchored to '(' so they match exact constructor names,
-  # not prefixed methods (e.g. scene_mesh( is exempt, scene_mesh_geometry( is not).
-  # The vertex-layout adapter is a standalone compiler-contract bridge, not a
-  # receiver operation; its exemption is recorded in docs/api-shape-policy.md.
-  if grep -nE '^(functio|fn) (vector[234]|box3|matrix[34]|quaternion|euler|sphere|plane|ray|scene|geometry|transform_payload)_[a-z]' "$file" \
-     | grep -vE '(vector[234]\(|box3_ex_|matrix[34]_(identitas|translatio|scala|composita|perspectiva|conspectus)|plane_geometry|sphere_geometry|colored_quad_mesh_append|scene_(store|node|group|mesh|camera|light)\(|scene_handle_equals\(|camera_(pitch_coercita|directio_ex|prorsum|dextra|motus|ray_ex|yaw_pitch)|geometry_vertex_layout_matches\()'; then
+  # Naming lint: reject public functions with a live genus-type prefix.
+  # resource_*/material_*/mesh_basic_material_* families are expected red
+  # until Stage 2 migrates them to receiver methods.
+  if grep -nE "^(functio|fn) (${GENUS_ALT})_[a-z]" "$file" \
+     | grep -vE "$EXEMPT"; then
     echo "check-source: genus-prefixed function should be a receiver method (see docs/api-shape-policy.md) in $file" >&2
     status=1
   fi

@@ -128,10 +128,28 @@ Genuine absence (e.g., non-overlap) stays nullable.
 - No line-start `//` comments.
 - No retired `@ externa`/`@ subsidia` annotations.
 - No retired optional genus field syntax.
-- **(New)** No public `functio` with a type-name prefix matching a defined genus
-  (`vector3_*`, `box3_*`, `matrix4_*`, `camera_*`, `scene_*`, `geometry_*`,
-  `transform_payload_*`) except constructors and pure scalar helpers explicitly
-  documented in this policy. The compiler contract adapter
-  `geometry_vertex_layout_matches` is also exempt: its standalone signature
-  is the canonical `@ shader_contract "vertex_layout"` bridge and is not a
-  receiver operation.
+- No public `functio`/`fn` whose name is a live genus prefix plus `_`.
+  The script derives the genus set from every `class Name` declaration in
+  `src/**/*.fab` (PascalCase → snake_case, plus each underscore-boundary
+  family stem) so a new genus cannot stay invisible. The selected-vocabulary
+  list (`vector3_*`, `box3_*`, `matrix4_*`, `camera_*`, `scene_*`,
+  `geometry_*`, `transform_payload_*`) is retired.
+
+  Existing exemptions stay free functions. They are anchored to `(` so
+  `scene_mesh(` is exempt and `scene_mesh_geometry(` is not:
+  - constructors: `vector2(`, `vector3(`, `vector4(`, `box3_ex_*`,
+    `matrix3_`/`matrix4_` `identitas`/`translatio`/`scala`/`composita`/
+    `perspectiva`/`conspectus`, `scene_store(`, `scene_node(`, `scene_group(`,
+    `scene_mesh(`, `scene_camera(`, `scene_light(`, `scene_handle_equals(`
+  - primitive generators: `plane_geometry`, `sphere_geometry`,
+    `colored_quad_mesh_append`
+  - camera scalar helpers: `camera_pitch_coercita`, `camera_directio_ex`,
+    `camera_prorsum`, `camera_dextra`, `camera_motus`, `camera_ray_ex`,
+    `camera_yaw_pitch`
+  - compiler-contract adapter: `geometry_vertex_layout_matches` — its
+    standalone signature is the canonical `@ shader_contract "vertex_layout"`
+    bridge and is not a receiver operation.
+
+  Live `resource_*`, `material_*`, and `mesh_basic_material_*` free-function
+  families are lint failures until Stage 2 migrates them to receiver methods.
+  Do not add exemptions that hide those families.
