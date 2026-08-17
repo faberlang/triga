@@ -27,7 +27,7 @@ what the toolchain can execute, and labels every other tier honestly. Those
 architecture locks are already in the campaign (split-on-boundary; sibling
 Radix for local work; public CI must not pretend a private checkout is
 consumable). The live scripts name the exact starting files. The blocked
-`tgh-s05-gate` 9/26 receipt is an executed-proba closeout, not a missing Stage 1
+`tgh-s05-gate` 22/26 receipt is an executed-proba closeout, not a missing Stage 1
 design.
 
 **Key points**
@@ -66,9 +66,10 @@ Today:
 
 Stage 0.5 already added the 26 sibling `.proba` files and the package-link
 gate `scripta/check-proba-coverage`. That gate’s last committed receipt is
-**blocked at 9/26**. Stage 1 must invoke that gate and keep its honest red.
-Stage 1 must not turn 9/26 into a skip, and must not wait for 26/26 before
-repairing the spine.
+**blocked at 22/26** (`complete: false`). Stage 1 must invoke that gate and
+label the blocked receipt honestly. Stage 1 must not turn 22/26 into a skip,
+must not remasure or repair `src/**/*.fab`, and must not wait for 26/26
+before repairing the spine.
 
 ## 2. Normalized spec
 
@@ -99,10 +100,10 @@ Non-goals:
 | Claim | Owner | Stage 1 consequence |
 | --- | --- | --- |
 | 26 sibling `.proba` sources exist | Stage 0.5 c01–c09 (landed) | discover them; do not re-author |
-| executed-proba **9/26**, status `blocked`, `complete: false` | `tgh-s05-gate` ledger | invoke the gate; keep the red |
+| executed-proba **22/26**, status `blocked`, `complete: false` | `tgh-s05-gate` ledger | invoke the gate; report the blocked receipt honestly |
 | 26/26 executed-proba + `complete: true` | `tgh-s05-gate` close | **not** a start dependency; named as `tgh-s1-proba-rung` |
 | Spine cannot find a leaf, cannot invoke sibling `faber`, or pins a revision | Stage 1 | must fix before Stage 1 closes |
-| Per-module MIR / assertion reds on the 17 open rows | `tgh-s05-gate` + owning Radix residual units | report honestly; do not fix in Stage 1 Hands |
+| Per-module MIR / assertion reds on the 4 remaining rows | `tgh-s05-gate` + owning Radix residual units | report honestly; do not fix in Stage 1 Hands |
 
 Default: Stage 1 campaign close is the spine, not 26/26. The campaign sentence
 “compiler/CLI defects must land before this stage closes” applies to defects
@@ -112,10 +113,12 @@ that break the spine, not to every remaining module red.
 
 ### 3.1 `tgh-s05-gate` ledger (read first; not remasured)
 
+This spec rebases the Stage 1 baseline off the retired 9/26 freeze onto the
+live `54e4c65` receipt.
+
 Source of truth: `proof/coverage-scorecard.json` object `stage0_5`, coverage
-revision 2, receipt `run_at_utc = 2026-08-17T11:39:03Z` (commit `97da931`,
-Faber `/Users/ianzepp/work/faberlang/radix/target/release/faber` at radix
-`60f495870`).
+revision 2, receipt `run_at_utc = 2026-08-17T17:58:11Z` (commit `54e4c65`,
+Faber `/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber`).
 
 | Field | Ledger value |
 | --- | --- |
@@ -124,7 +127,7 @@ Faber `/Users/ianzepp/work/faberlang/radix/target/release/faber` at radix
 | `complete` | `false` |
 | `module_count` | 26 |
 | `proba_source_count` | 26 |
-| `executed_module_count` | **9** |
+| `executed_module_count` | **22** |
 | `executed_tier` | `executed-proba` |
 | `filter_mode` | `package-include-per-proba` |
 | `discovery_errors` | `[]` |
@@ -136,36 +139,26 @@ The `prerequisites` fields are receipt-derived heuristics inside
 `9919d480c` / `018cc8b25` / `736b14766`. Do not treat them as a new Stage 1
 Radix fork.
 
-**9 executed-proba rows:** `src/geometry.fab`, `src/geometry/attribute.fab`,
-`src/geometry/batch.fab`, `src/geometry/bounds.fab`, `src/geometry/layout.fab`,
-`src/graph.fab`, `src/lighting.fab`, `src/primitives.fab`,
-`src/shader_contract.fab`.
+**22 executed-proba rows:** `src/face.fab`, `src/geometry.fab`,
+`src/geometry/attribute.fab`, `src/geometry/batch.fab`,
+`src/geometry/bounds.fab`, `src/geometry/data.fab`, `src/geometry/layout.fab`,
+`src/graph.fab`, `src/graph/camera.fab`, `src/graph/object.fab`,
+`src/lighting.fab`, `src/lighting/light.fab`, `src/material.fab`,
+`src/material/basic.fab`, `src/math.fab`, `src/primitives.fab`,
+`src/primitives/basic.fab`, `src/renderable.fab`, `src/renderable/mesh.fab`,
+`src/resource.fab`, `src/shader_contract.fab`, `src/triga.fab`.
 
-**17 runner-failure rows** (ledger text, not remasured):
+**4 runner-failure rows** (ledger text, not remasured):
 
 | Module | First recorded failure |
 | --- | --- |
-| `src/face.fab` | assertion: colored face append exact arrays |
-| `src/geometry/data.fab` | assertion: indexed geometry counts/payloads/topology |
-| `src/graph/camera.fab` | assertion: PerspectiveCamera projection |
-| `src/graph/object.fab` | `invalid MIR: option unwrap operand is not nullable` |
-| `src/lighting/light.fab` | assertion: PointLight default carrier values |
-| `src/material.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/material/base.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/material/basic.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/material/lit.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/material/standard.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/math.fab` | assertion: box/sphere/plane volume bounds |
-| `src/primitives/basic.fab` | assertion: circle fan payload/winding |
-| `src/renderable.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/renderable/mesh.fab` | `invalid MIR: named aggregate field type mismatch` |
-| `src/resource.fab` | `invalid MIR: option unwrap operand is not nullable` |
+| `src/material/base.fab` | assertion: texture descriptor preserves its placeholder shape |
+| `src/material/lit.fab` | assertion: Phong defaults remain explicit carrier values |
+| `src/material/standard.fab` | assertion: standard defaults remain explicit carrier values |
 | `src/scene.fab` | `invalid MIR: option unwrap operand is not nullable` |
-| `src/triga.fab` | `invalid MIR: named aggregate field type mismatch` |
 
-Later Triga commits `dfe9eb5` (resource/scene unwraps) and `50e99c0`
-(Material.side `int<u32>`) landed **after** this receipt. They were not
-remasured. Stage 1 Hands must not refresh the scorecard.
+Stage 1 Hands must not remasure the scorecard and must not repair
+`src/**/*.fab`.
 
 ### 3.2 Compile gate (live `scripta/check-compile`)
 
@@ -357,9 +350,9 @@ disjoint and may run in parallel. `tgh-s1-5` is serial after them.
      `check-exempla-inventory` if `check-compile` does not already);
   2. each rung is labeled `structural`, `executed-proba`, `target`/`wgsl`,
      or `public-execution` as appropriate;
-  3. `check-proba-coverage` is invoked; a non-zero 9/26 receipt is a labeled
-     `executed-proba` result, not a skip and not a rewrite of the scorecard
-     schema;
+  3. `check-proba-coverage` is invoked; a non-zero 22/26 blocked receipt is a
+     labeled `executed-proba` result, not a skip and not a rewrite of the
+     scorecard schema;
   4. the wrapper’s overall exit is non-zero when any rung is red, including
      the known source-lint and executed-proba reds;
   5. `AGENTS.md` §Validation names `./scripta/check` as the local spine.
@@ -385,16 +378,18 @@ disjoint and may run in parallel. `tgh-s1-5` is serial after them.
   is green. Filing it now would force assertion weakening or a remasure.
 - **write_scope** (when later lowered): `triga/scripta/check` and, if public
   Faber then exists, `triga/.github/workflows/`
-- **non_goals now**: any Stage 1 Hand changing the 9/26 contract
+- **non_goals now**: any Stage 1 Hand remasuring the scorecard, repairing
+  `src/**/*.fab`, or treating 22/26 as 26/26
 
-Owning-repo residuals visible in the 11:39Z ledger (not Triga Stage 1 write
+Owning-repo residuals visible in the 17:58:11Z ledger (not Triga Stage 1 write
 scopes):
 
 | Residual class | Modules in the receipt | Owner |
 | --- | --- | --- |
-| `invalid MIR: option unwrap operand is not nullable` | `graph/object`, `resource`, `scene` | Radix MIR (later Triga unwrap rewrite `dfe9eb5` not remasured) |
-| `invalid MIR: named aggregate field type mismatch` | material family, renderable family, `triga` facade | Radix MIR (later `Material.side` typing `50e99c0` not remasured) |
-| assertion-red cases | `face`, `geometry/data`, `graph/camera`, `lighting/light`, `math`, `primitives/basic` | remain on `tgh-s05-gate` / later correctness stages |
+| assertion: texture descriptor placeholder shape | `material/base` | remain on `tgh-s05-gate` / later correctness stages |
+| assertion: Phong defaults / unsupported base facts | `material/lit` | remain on `tgh-s05-gate` / later correctness stages |
+| assertion: standard defaults / unsupported base facts | `material/standard` | remain on `tgh-s05-gate` / later correctness stages |
+| `invalid MIR: option unwrap operand is not nullable` | `scene` | Radix MIR |
 
 Do not invent Radix architecture here. Mind routes those residuals; Stage 1
 Hands do not.
@@ -421,7 +416,7 @@ child Hand.
 
 ```bash
 cd /Users/ianzepp/work/faberlang/triga
-./scripta/check                 # after tgh-s1-5; expected non-zero while 9/26
+./scripta/check                 # after tgh-s1-5; expected non-zero while 22/26
 ./scripta/check-source
 ./scripta/check-compile
 ./scripta/check-proba-coverage  # must remain honest-red until tgh-s05-gate
@@ -461,11 +456,10 @@ It is not done by remasuring, implementing, or closing Stage 0.5.
    until Stage 2. Other campaigns that assume `check-source` exit 0 need a
    Mind note, not a Stage 1 exemption list.
 3. Scorecard `prerequisites.rdx-s05-3 = unresolved` is a heuristic on the
-   11:39Z receipt. Do not reopen `rdx-s05-3`. Route remaining MIR strings as
+   17:58:11Z receipt. Do not reopen `rdx-s05-3`. Route remaining MIR strings as
    new owning-repo residuals if they survive a future gate refresh.
-4. Commits `dfe9eb5` and `50e99c0` landed after the ledger. A future
-   `tgh-s05-gate` refresh (not this assignment) may move some of the 17
-   rows. Stage 1 must not refresh.
+4. A future `tgh-s05-gate` refresh (not a Stage 1 Hand) may move the four
+   remaining rows. Stage 1 Hands must not remasure or repair `src/**/*.fab`.
 5. Public-CI `check-source` red after `tgh-s1-1`: workflow must not hide it.
    Default in `tgh-s1-4` is report-as-structural-red. If Mind wants public
    CI green while Stage 2 is open, that is a campaign amendment, not a
