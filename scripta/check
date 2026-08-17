@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Canonical local spine. Discovers every live leaf and proba by invoking the
+# existing rungs in order and printing a per-tier label. A red rung is
+# evidence, not a skip. check-compile already runs check-transforms and
+# check-exempla-inventory.
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+if [[ -z "${FABER_BIN:-}" ]]; then
+  if [[ -x "$FABER_LIBRARY_HOME/radix/target/release/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/release/faber"
+  elif [[ -x "$FABER_LIBRARY_HOME/radix/target/debug/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/debug/faber"
+  fi
+  if [[ -n "${FABER_BIN:-}" ]]; then
+    export FABER_BIN
+  fi
+fi
+
+status=0
+
+run_rung() {
+  local label="$1"
+  local script="$2"
+  local rc=0
+  echo "check: ${label}: ${script}"
+  "$ROOT/scripta/${script}" || rc=$?
+  if [[ "$rc" -eq 0 ]]; then
+    echo "check: ${label}: ${script} green"
+  else
+    echo "check: ${label}: ${script} red (exit ${rc})"
+    status=1
+  fi
+}
+
+run_rung structural check-source
+run_rung structural check-compile
+run_rung executed-proba check-proba-coverage
+run_rung wgsl check-wgsl-shader-contract-conformance
+run_rung public-execution check-capabilities
+
+if [[ "$status" -eq 0 ]]; then
+  echo "check: overall green"
+else
+  echo "check: overall red"
+fi
+exit "$status"

@@ -64,7 +64,10 @@ library (example: `BufferAttribute.float32_values()`), not grow workarounds.
 
 ## Validation
 
+The local spine is `./scripta/check`. Public CI is
+`.github/workflows/ci.yml` (no-Faber rungs only). Do not re-list the
+rungs here.
+
 ```bash
-./scripta/check-source
-./scripta/check-compile
+./scripta/check
 ```
