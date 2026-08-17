@@ -1,6 +1,6 @@
 # Campaign: Triga Library Hardening
 
-**Status**: active (2026-08-17 Stage 0 landed; Stage 0.5 sources landed, tgh-s05-gate blocked 9/26; Stage 1 delivery ready) — professional source-library baseline
+**Status**: active (2026-08-17 Stage 0 landed; Stage 0.5 sources landed, tgh-s05-gate blocked at 22/26 executed-proba; Stage 1 spine units landed on main — known-red list: source-lint [intentional], exempla PARSE050, proba 22/26, WGSL PARSE family) — professional source-library baseline
 **Mode**: run — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga` (primary); `radix` and `hosts` for the mandatory
@@ -114,6 +114,15 @@ host integration, and package consumption did not mature together.
   `unsupported`, while README language calls several layers stable. The
   campaign needs one smaller admitted profile rather than upgrading the broad
   horizon by prose.
+
+The first three items were superseded by the Stage 1 spine landings on main
+2026-08-17 (canonical `./scripta/check` wrapper, complete-exported-surface
+source lint, all-26-leaf compile with sibling Radix faber CLI, WGSL
+revision-pin retirement, committed no-Faber public CI — merged via factory/
+hand-10/13/15). The live reds those repairs intentionally preserve are the
+known-red list: source-lint (complete-genus, intentional until Stage 2),
+exempla PARSE050 (`import_privata_removed`), executed-proba 22/26, and the
+WGSL PARSE family.
 
 ### Runtime and package boundary
 
@@ -288,12 +297,14 @@ At campaign closeout:
 - [`faber.toml`](../../../faber.toml) declares the `en` locale and package
   version `0.2.0`; [`cista.toml`](../../../cista.toml) agrees on `0.2.0`.
 - Every live `src/**/*.fab` now has a sibling `.proba` (Stage 0.5 c01–c09).
-  The executed-proba ledger is still 9/26 blocked (`tgh-s05-gate`).
+  The executed-proba ledger is still blocked at **22/26** (`tgh-s05-gate`;
+  receipt `76ded8b`, run 2026-08-17T17:58:11Z, `complete: false`).
 - [`proof/capabilities.json`](../../../proof/capabilities.json) is the honest
   broad-horizon ledger: all current domain proofs are `unsupported`.
-- [`API shape policy`](../../api-shape-policy.md) is accepted law, but live
-  resource/material free-function families and the selective source lint need
-  reconciliation.
+- [`API shape policy`](../../api-shape-policy.md) is accepted law; the
+  exported-surface source lint is now complete (hand-13 `1172762`) and reports
+  the resource/material free-function families as an intentional red until
+  Stage 2 aligns them.
 - [`module map`](../../module-map.md) is useful for ownership, but its size and
   target-map sections are stale/mixed. The 61/75 figures describe a future
   horizon, not the 26-module live package.
@@ -348,12 +359,12 @@ At campaign closeout:
 
 | Track | State | Next action |
 | --- | --- | --- |
-| Supported profile | Core Graphics Profile v0 is frozen; the broad ledger remains honestly all-unsupported | Stage 1 admission **HELD** (CTO `e2ca2b57`); hold at `tgh-s05-gate` + [`stage-1-delivery.md`](./stage-1-delivery.md) |
-| Live inventory | Versioned inventory records all 26 live modules; stale module/test reports remain annotated | Stage 1 admission **HELD**; same gate + spec as Package tests |
-| Validation spine | Default compile route still targets a missing public-`faber` Cargo path; manual leaf list omits 8/26 modules; WGSL gate still pins Radix `41b4c0411`; Stage 1 spec is [`stage-1-delivery.md`](./stage-1-delivery.md) | Units `tgh-s1-1`–`tgh-s1-5` stay specified in [`stage-1-delivery.md`](./stage-1-delivery.md); admission **HELD** — do not start them |
+| Supported profile | Core Graphics Profile v0 is frozen; the broad ledger remains honestly all-unsupported | Stage 1 spine landed on main 2026-08-17; hard-green executed-proba rung `tgh-s1-proba-rung` stays unlowered (gate `tgh-s05-gate` 22/26) |
+| Live inventory | Versioned inventory records all 26 live modules; stale module/test reports remain annotated | Same gate + spec as Package tests; hard-green rung unlowered until `tgh-s05-gate` |
+| Validation spine | Canonical `./scripta/check` landed on main 2026-08-17 (hands 10/13/15): complete-genus source lint, all-26-leaf compile with sibling Radix faber CLI, WGSL revision-pin retirement, committed no-Faber public CI, tier-labeled wrapper. Live reds (known-red list): source-lint (intentional), exempla PARSE050, proba 22/26, WGSL PARSE family | `tgh-s1-proba-rung` (hard-green executed-proba) stays unlowered until `tgh-s05-gate` is 26/26; [`stage-1-delivery.md`](./stage-1-delivery.md) records the landed units and receipts |
 | Diagnostics | No typed public error families; `bool`/`null` collapse distinct failures | Stage 2 |
 | Numeric invariants | Non-finite policy absent; repeated reduction/sqrt loops; arbitrary-length matrix carriers | Stages 2–3 |
-| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **9/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, 2026-08-17T11:39:03Z) | `tgh-s05-gate` remains open. This tip (`d5dd671`+) cites receipt `76ded8b` at **22/26** executed-proba. `76ded8b` landed via `ec7a7f3` before this tip. Residual fix in flight. Stage 1 admission **HELD**. |
+| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **22/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, receipt `76ded8b`, run 2026-08-17T17:58:11Z, `complete: false`) | `tgh-s05-gate` remains open; 4 runner-failure rows (`material/base`, `material/lit`, `material/standard`, `scene`). Residual fixes route through the owning gate/Radix MIR, not a Stage 1 Hand. Stage 1 spine already landed; hard-green `tgh-s1-proba-rung` stays unlowered. |
 | Geometry/primitives | Useful validation/builders exist; exact-output and malformed-input proof is thin | Stage 3 |
 | Scene/resource | Generation-aware foundation exists; negative index, traversal duplication, authority/disposal boundaries remain | Stage 4 |
 | Appearance/composition | Cameras/lights/materials/meshes are mostly disconnected carriers | Stage 5 |
@@ -385,7 +396,7 @@ module counted as live.
 ### Stage 0.5 — Co-located proba coverage and executed-proba gate
 
 **Status**: sources complete (c01–c09 landed); gate blocked (2026-08-17
-`tgh-s05-gate` ledger 9/26 executed-proba, `complete: false`)
+`tgh-s05-gate` ledger 22/26 executed-proba, receipt `76ded8b`, `complete: false`)
 **Source**: [`stage-0-5-delivery.md`](./stage-0-5-delivery.md),
 [`stage-0-5-triage.md`](./stage-0-5-triage.md),
 `scripta/check-proba-coverage`, `proof/coverage-scorecard.json`
@@ -393,7 +404,8 @@ module counted as live.
 **Why now**: operator amendment — evidence cannot accumulate as a single
 stale probe; every live module needs a sibling `.proba` and a machine gate.
 **Gate**: 26/26 modules at `executed-proba` and `stage0_5.complete: true`.
-The last committed receipt is 9/26 blocked; it was not remasured for Stage 1.
+The last committed receipt is 22/26 blocked (`76ded8b`, run
+2026-08-17T17:58:11Z); it was not remasured for Stage 1.
 **Overlap rule**: test-and-evidence only; remaining module reds stay on this
 gate and owning-repo residuals. Stage 1 may invoke the gate and must not
 close it.
@@ -403,8 +415,15 @@ close it.
 
 ### Stage 1 — Canonical validation and continuous-evidence spine
 
-**Status**: planned — delivery spec ready (`stage-1-delivery.md`); admission
-**HELD** (CTO `e2ca2b57`) — do not start the five units
+**Status**: spine units landed on triga main 2026-08-17 (hands 10/13/15:
+complete-genus source lint `1172762`; all-26-leaf compile + sibling Radix
+faber CLI `5eb7971`; WGSL pin retirement `a01cc28`; no-Faber public CI
+`2fe90f5`; canonical `./scripta/check` + AGENTS pointer `7c6caf4`). Known-red
+list (documented, not papered over): source-lint (intentional), exempla
+PARSE050, proba 22/26, WGSL PARSE family. The prior admission HELD posture
+(CTO `e2ca2b57`) predates those landings; the hard-green executed-proba rung
+(`tgh-s1-proba-rung`) remains explicitly **not lowered** until `tgh-s05-gate`
+is 26/26.
 **Source**: `scripta/check-*`, `faber.toml`, current Radix/Faber product route,
 current proba discovery, corpus/browser runners
 **Depends on**: Stage 0. Stage 0.5 *sources* are present. Stage 0.5 *gate

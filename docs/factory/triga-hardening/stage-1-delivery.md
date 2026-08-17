@@ -1,11 +1,18 @@
 # Triga Hardening — Stage 1 Delivery Spec
 ## Canonical validation and continuous-evidence spine (gate-independent units)
 
-**Status**: delivery — READY for the five gate-independent units below
+**Status**: delivery — five gate-independent units landed on triga main
+2026-08-17 (hands 10/13/15: complete-genus source lint `1172762`;
+all-26-leaf compile + sibling Radix faber CLI `5eb7971`; WGSL pin retirement
+`a01cc28`; no-Faber public CI `2fe90f5`; canonical `./scripta/check` + AGENTS
+pointer `7c6caf4`). The hard-green executed-proba rung (`tgh-s1-proba-rung`)
+remains **not lowered** until `tgh-s05-gate` reads 26/26; the known-red list
+(source-lint [intentional], exempla PARSE050, proba 22/26, WGSL PARSE family)
+stays documented in the campaign and in §1 below.
 **Date**: 2026-08-17
 **Planner**: `planner` handle `80460d33`
 **Campaign**: [`CAMPAIGN.md`](./CAMPAIGN.md) Stage 1
-**Landed prior**: Stage 0 (`delivery.md`); Stage 0.5 sources c01–c09 (`stage-0-5-delivery.md`)
+**Landed prior**: Stage 0 (`delivery.md`); Stage 0.5 sources c01–c09 (`stage-0-5-delivery.md`); Stage 1 units per the status line above
 **Blocked prior**: `tgh-s05-gate` — not a start dependency for these units
 **Repository**: `/Users/ianzepp/work/faberlang/triga`
 **Scope**: Triga `scripta/`, public-CI workflow, API-shape lint policy, WGSL
@@ -45,6 +52,13 @@ design.
 
 **Recommended next step:** file the five units in §4. Do not wait for
 `tgh-s05-gate` to go green before those Hands start.
+
+> **Landing note (2026-08-17).** The five units in §4 all landed on triga main
+> via hands 10/13/15 (`1172762`, `5eb7971`, `a01cc28`, `2fe90f5`, `7c6caf4`).
+> The "Today:" baseline below describes the pre-landing state those units
+> repaired; the live `./scripta/check` spine and its known reds are documented
+> in the CAMPAIGN Current State table and §7. Keep `tgh-s1-proba-rung`
+> unlowered until `tgh-s05-gate` is 26/26.
 
 ## 1. Interpreted theme
 
@@ -110,6 +124,13 @@ Default: Stage 1 campaign close is the spine, not 26/26. The campaign sentence
 that break the spine, not to every remaining module red.
 
 ## 3. Repo-aware baseline (live, not remasured)
+
+> **Capture note.** This section is the pre-landing baseline (as of this
+> spec's receipt `54e4c65`). The units in §4 landed on 2026-08-17 via hands
+> 10/13/15; claims below that the compile route hardcodes leaves, requires a
+> missing `../faber/Cargo.toml`, pins a revision, or says no CI/workflow exists
+> describe the retired state and are superseded by the landed spine (see §1
+> landing note and the CAMPAIGN Current State table).
 
 ### 3.1 `tgh-s05-gate` ledger (read first; not remasured)
 
