@@ -353,7 +353,7 @@ At campaign closeout:
 | Validation spine | Default compile route still targets a missing public-`faber` Cargo path; manual leaf list omits 8/26 modules; WGSL gate still pins Radix `41b4c0411`; Stage 1 spec is [`stage-1-delivery.md`](./stage-1-delivery.md) | Units `tgh-s1-1`–`tgh-s1-5` stay specified in [`stage-1-delivery.md`](./stage-1-delivery.md); admission **HELD** — do not start them |
 | Diagnostics | No typed public error families; `bool`/`null` collapse distinct failures | Stage 2 |
 | Numeric invariants | Non-finite policy absent; repeated reduction/sqrt loops; arbitrary-length matrix carriers | Stages 2–3 |
-| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **9/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, 2026-08-17T11:39:03Z) | `tgh-s05-gate` remains open. This tip (`fdbbc09`, main) cites receipt `f843205` at **21/26** executed-proba. `76ded8b` on `factory/hand-35` records 22/26 and has **not** merged. Residual fix in flight. Stage 1 admission **HELD**. |
+| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **9/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, 2026-08-17T11:39:03Z) | `tgh-s05-gate` remains open. This tip (`d5dd671`+) cites receipt `76ded8b` at **22/26** executed-proba. `76ded8b` landed via `ec7a7f3` before this tip. Residual fix in flight. Stage 1 admission **HELD**. |
 | Geometry/primitives | Useful validation/builders exist; exact-output and malformed-input proof is thin | Stage 3 |
 | Scene/resource | Generation-aware foundation exists; negative index, traversal duplication, authority/disposal boundaries remain | Stage 4 |
 | Appearance/composition | Cameras/lights/materials/meshes are mostly disconnected carriers | Stage 5 |
@@ -403,8 +403,8 @@ close it.
 
 ### Stage 1 — Canonical validation and continuous-evidence spine
 
-**Status**: planned — delivery spec ready (`stage-1-delivery.md`); five
-gate-independent units may start
+**Status**: planned — delivery spec ready (`stage-1-delivery.md`); admission
+**HELD** (CTO `e2ca2b57`) — do not start the five units
 **Source**: `scripta/check-*`, `faber.toml`, current Radix/Faber product route,
 current proba discovery, corpus/browser runners
 **Depends on**: Stage 0. Stage 0.5 *sources* are present. Stage 0.5 *gate
