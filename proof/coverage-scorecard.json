@@ -381,17 +381,21 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/data.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 4,
+        "failed": 3,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.namespace_missing_export": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL buffer geometry contracts/indexed geometry publishes counts payloads and topology",
+          "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
+          "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
+          "test result: FAILED. 4 passed; 3 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#62",
+          "FaberScript unsupported: provider sym#217",
+          "runner reported 4 passed for 7 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       }
     },
@@ -1508,7 +1512,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T08:26:54Z",
+    "run_at_utc": "2026-08-17T08:58:40Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 9,
@@ -1529,7 +1533,6 @@
       "rdx-s05-3": "unresolved"
     },
     "observed_diagnostic_codes": {
-      "SEM004.namespace_missing_export": 1,
       "SEM004.unknown_method": 7,
       "SEM004.unknown_struct_field": 18,
       "SEM010.assert_condition_type_mismatch": 9,
@@ -1553,13 +1556,17 @@
       {
         "module": "src/geometry/data.fab",
         "proba_path": "src/geometry/data.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.namespace_missing_export": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL buffer geometry contracts/indexed geometry publishes counts payloads and topology",
+          "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
+          "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
+          "test result: FAILED. 4 passed; 3 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#62",
+          "FaberScript unsupported: provider sym#217",
+          "runner reported 4 passed for 7 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       },
       {

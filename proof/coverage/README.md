@@ -36,6 +36,11 @@ passing selections are `src/geometry.fab`, `src/geometry/attribute.fab`,
 failures. This is a partial package-link result, not the historical single-file
 parse-failure snapshot.
 
+This receipt was refreshed with the release Faber built from radix tip
+`17854f61e` after the WARN014 remap. `src/geometry/data.fab` now reaches the
+runner and reports three failed cases plus two unsupported provider symbols;
+it is not counted as executed-proba. The run remains open at 9/26, not 26/26.
+
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
 bound one module run; its default is 180 seconds.
