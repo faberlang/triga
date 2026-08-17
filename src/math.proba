@@ -227,7 +227,7 @@ describe "color, angle, and camera contracts" {
 }
 
 describe "box, sphere, and plane volumes" {
-    test "box constructors and overlap operations preserve bounds" {
+    test "box constructors accept valid bounds and reject reversed or non-positive size" {
         const math.Vector3 minimum ← math.vector3(0.0, 0.0, 0.0)
         const math.Vector3 maximum ← math.vector3(2.0, 2.0, 2.0)
         const math.Vector3 size ← math.vector3(2.0, 2.0, 2.0)
@@ -242,21 +242,14 @@ describe "box, sphere, and plane volumes" {
         assert centered_result not is null
         assert invalid_bounds is null
         assert invalid_size is null
+    }
 
-        const math.Box3 bounds ← math.Box3 {min = minimum, max = maximum}
-        const math.Box3 sized ← math.Box3 {min = minimum, max = math.vector3(2.0, 2.0, 2.0)}
+    test "box containment and intersection preserve inclusive bounds" {
+        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
+        const math.Box3 sized ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
         const math.Box3 centered ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
         const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
         const math.Box3 disjoint_box ← math.Box3 {min = math.vector3(3.0, 3.0, 3.0), max = math.vector3(4.0, 4.0, 4.0)}
-        const math.Box3 expanded ← bounds.inflata(1.0)
-        var math.Box3 mutable_bounds ← bounds
-        mutable_bounds.infla(1.0)
-        const math.Vector3 measure ← bounds.mensura() coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 center ← bounds.centrum() coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 overlap ← bounds.superpositio(overlap_box) coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Box3OverlapFacts facts ← bounds.superpositio_facta(overlap_box) coalesce math.Box3OverlapFacts {overlap = math.vector3(0.0, 0.0, 0.0), x = 0.0, y = 0.0, z = 0.0}
-        const math.Box3 unioned ← bounds.unio(overlap_box) coalesce bounds
-        const math.Box3 translated ← bounds.translata(math.vector3(2.0, 0.0, 0.0))
 
         assert bounds.validum()
         assert bounds.continet(math.vector3((2.0 ∷ f32), (2.0 ∷ f32), (2.0 ∷ f32)))
@@ -265,10 +258,32 @@ describe "box, sphere, and plane volumes" {
         assert bounds.intersecat(disjoint_box) ≡ false
         assert sized.max.x ≡ (2.0 ∷ f32)
         assert centered.min.x ≡ (0.0 ∷ f32)
+    }
+
+    test "box inflation mutates or copies by the published contract" {
+        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
+        const math.Box3 expanded ← bounds.inflata(1.0)
+        var math.Box3 mutable_bounds ← bounds
+        mutable_bounds.infla(1.0)
         assert expanded.min.x ≡ (-1.0 ∷ f32)
         assert mutable_bounds.min.x ≡ (-1.0 ∷ f32)
+    }
+
+    test "box measure and center match the published corners" {
+        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
+        const math.Vector3 measure ← bounds.mensura() coalesce math.vector3(0.0, 0.0, 0.0)
+        const math.Vector3 center ← bounds.centrum() coalesce math.vector3(0.0, 0.0, 0.0)
         assert measure.x ≡ (2.0 ∷ f32)
         assert center.x ≡ (1.0 ∷ f32)
+    }
+
+    test "box overlap union and translation preserve bound facts" {
+        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
+        const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
+        const math.Vector3 overlap ← bounds.superpositio(overlap_box) coalesce math.vector3(0.0, 0.0, 0.0)
+        const math.Box3OverlapFacts facts ← bounds.superpositio_facta(overlap_box) coalesce math.Box3OverlapFacts {overlap = math.vector3(0.0, 0.0, 0.0), x = 0.0, y = 0.0, z = 0.0}
+        const math.Box3 unioned ← bounds.unio(overlap_box) coalesce bounds
+        const math.Box3 translated ← bounds.translata(math.vector3(2.0, 0.0, 0.0))
         assert overlap.x ≡ (1.0 ∷ f32)
         assert facts.overlap.y ≡ (1.0 ∷ f32)
         assert facts.x ≡ (1.0 ∷ f32)
