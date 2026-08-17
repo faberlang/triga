@@ -27,8 +27,8 @@ class ResourceTransition {
 @ public
 class ResourceLifecycleTransition {
     int logical_index
-    ResourceHandle ∪ null previous = null
-    ResourceHandle ∪ null current = null
+    ResourceHandle previous optional
+    ResourceHandle current optional
     bool changed
     bool removed
 }
@@ -239,12 +239,12 @@ fn resource_lifecycle_replaced(ref ResourceHandle handle) → ResourceLifecycleT
 
 @ public
 fn resource_lifecycle_removed(ref ResourceHandle handle) → ResourceLifecycleTransition {
-    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, current = null, changed = true, removed = true}
+    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, changed = true, removed = true}
 }
 
 @ public
 fn resource_lifecycle_created(ref ResourceHandle handle) → ResourceLifecycleTransition {
-    return ResourceLifecycleTransition {logical_index = handle.index, previous = null, current = handle, changed = true, removed = false}
+    return ResourceLifecycleTransition {logical_index = handle.index, current = handle, changed = true, removed = false}
 }
 
 @ public
