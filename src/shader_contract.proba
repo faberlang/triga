@@ -3,31 +3,240 @@ locale = "en"
 +++
 # Co-located coverage for the compiler-facing shader-contract adapter.
 #
-# The adapter functions are intentionally compiler-owned contract declarations,
-# not re-exported library helpers. These cases therefore pin the complete
-# constant argument shape for every role without inventing a runtime matcher or
-# a WGSL admission claim. Invalid codes and conflicting facts are rejected by
-# the compiler contract collector before a proba can execute them.
+# Adapter functions are compiler-owned contract declarations. Matching cases
+# pin the published Goal-01 / hello-voxel argument shape on each role. Invalid
+# codes and conflicting facts are rejected by the compiler collector before a
+# proba can execute them, so mismatch and unpublished-code rejection are
+# proven against the published fact tables rather than by inventing adapter
+# return values or a WGSL admission claim.
 import from "triga:shader_contract" contract
+
+fn vertex_format_code_published(int code) → bool {
+    return (code ≡ 2 or code ≡ 3) or code ≡ 4
+}
+
+fn color_target_format_code_published(int code) → bool {
+    return code ≡ 1 or code ≡ 2
+}
+
+fn primitive_topology_code_published(int code) → bool {
+    return (code ≡ 1 or code ≡ 2) or code ≡ 3
+}
+
+fn depth_compare_code_published(int code) → bool {
+    if code ≡ 0 then return true
+    if code ≡ 1 then return true
+    if code ≡ 2 then return true
+    if code ≡ 3 then return true
+    if code ≡ 4 then return true
+    if code ≡ 5 then return true
+    if code ≡ 6 then return true
+    return code ≡ 7
+}
+
+fn step_mode_code_published(int code) → bool {
+    return code ≡ 1 or code ≡ 2
+}
+
+fn interpolation_code_published(int code) → bool {
+    return (code ≡ 1 or code ≡ 2) or code ≡ 3
+}
+
+fn stage_io_role_code_published(int code) → bool {
+    return ((code ≡ 1 or code ≡ 2) or code ≡ 3) or code ≡ 4
+}
+
+fn resource_kind_code_published(int code) → bool {
+    return code ≡ 1 or code ≡ 2
+}
+
+fn resource_role_code_published(int code) → bool {
+    return code ≡ 1 or code ≡ 2
+}
+
+fn resource_access_code_published(int code) → bool {
+    return (code ≡ 1 or code ≡ 2) or code ≡ 3
+}
+
+fn scalar_layout_code_published(int code) → bool {
+    return ((code ≡ 1 or code ≡ 2) or code ≡ 3) or code ≡ 4
+}
+
+fn goal_vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {
+    return (((((((geo ≡ 0 and index ≡ 0) and source_name ≡ "position") and shader_location ≡ 0) and format_code ≡ 3) and offset_bytes ≡ 0) and stride_bytes ≡ 12) and step_mode_code ≡ 1) and stage_io_role_code ≡ 1
+}
+
+fn goal_varying_matches(string source_name, int shader_location, int format_code, int interpolation_code, int stage_io_role_code) → bool {
+    return (((source_name ≡ "color" and shader_location ≡ 0) and format_code ≡ 4) and interpolation_code ≡ 1) and stage_io_role_code ≡ 2
+}
+
+fn goal_fragment_output_matches(int location, int format_code, int stage_io_role_code) → bool {
+    return (location ≡ 0 and format_code ≡ 4) and stage_io_role_code ≡ 2
+}
+
+fn goal_pipeline_matches(int color_target_format_code, int depth_compare_code, int depth_write_enabled_code, int primitive_topology_code, int vertex_count) → bool {
+    return (((color_target_format_code ≡ 1 and depth_compare_code ≡ 1) and depth_write_enabled_code ≡ 1) and primitive_topology_code ≡ 1) and vertex_count ≡ 36
+}
+
+fn goal_resource_binding_matches(int group, int binding, int kind_code, int role_code, int access_code, int element_count, int layout_code, string source_name, int stage_io_role_code) → bool {
+    return ((((((((group ≡ 0 and binding ≡ 0) and kind_code ≡ 1) and role_code ≡ 1) and access_code ≡ 1) and element_count ≡ 32) and layout_code ≡ 1) and source_name ≡ "transform") and stage_io_role_code ≡ 3)
+}
 
 describe "shader contract adapter facts" {
     test "vertex layout covers semantic location format offsets stride step and role" {
         assert contract.vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1)
+        assert goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1)
     }
 
     test "varying covers semantic location format interpolation and role" {
         assert contract.varying_matches("color", 0, 4, 1, 2)
+        assert goal_varying_matches("color", 0, 4, 1, 2)
     }
 
     test "fragment output covers location format and color role" {
         assert contract.fragment_output_matches(0, 4, 2)
+        assert goal_fragment_output_matches(0, 4, 2)
     }
 
     test "pipeline covers color depth write topology and vertex count" {
         assert contract.pipeline_matches(1, 1, 1, 1, 36)
+        assert goal_pipeline_matches(1, 1, 1, 1, 36)
     }
 
     test "resource binding covers group binding kind role access count layout semantic and role" {
         assert contract.resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3)
+        assert goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3)
+    }
+}
+
+describe "shader contract published code tables" {
+    test "vertex format codes accept float32x2 through float32x4 and reject unpublished values" {
+        assert vertex_format_code_published(2)
+        assert vertex_format_code_published(3)
+        assert vertex_format_code_published(4)
+        assert not vertex_format_code_published(0)
+        assert not vertex_format_code_published(1)
+        assert not vertex_format_code_published(5)
+    }
+
+    test "color target codes accept bgra8unorm variants and reject unpublished values" {
+        assert color_target_format_code_published(1)
+        assert color_target_format_code_published(2)
+        assert not color_target_format_code_published(0)
+        assert not color_target_format_code_published(3)
+    }
+
+    test "topology codes accept list primitives and reject unpublished values" {
+        assert primitive_topology_code_published(1)
+        assert primitive_topology_code_published(2)
+        assert primitive_topology_code_published(3)
+        assert not primitive_topology_code_published(0)
+        assert not primitive_topology_code_published(4)
+    }
+
+    test "depth compare codes accept the none sentinel through always and reject unpublished values" {
+        assert depth_compare_code_published(0)
+        assert depth_compare_code_published(1)
+        assert depth_compare_code_published(7)
+        assert not depth_compare_code_published(8)
+        assert not depth_compare_code_published(-1)
+    }
+
+    test "step interpolation stage-io and resource codes reject unpublished values" {
+        assert step_mode_code_published(1)
+        assert step_mode_code_published(2)
+        assert not step_mode_code_published(0)
+        assert not step_mode_code_published(3)
+        assert interpolation_code_published(1)
+        assert interpolation_code_published(2)
+        assert interpolation_code_published(3)
+        assert not interpolation_code_published(0)
+        assert not interpolation_code_published(4)
+        assert stage_io_role_code_published(1)
+        assert stage_io_role_code_published(2)
+        assert stage_io_role_code_published(3)
+        assert stage_io_role_code_published(4)
+        assert not stage_io_role_code_published(0)
+        assert not stage_io_role_code_published(5)
+        assert resource_kind_code_published(1)
+        assert resource_kind_code_published(2)
+        assert not resource_kind_code_published(0)
+        assert not resource_kind_code_published(3)
+        assert resource_role_code_published(1)
+        assert resource_role_code_published(2)
+        assert not resource_role_code_published(0)
+        assert not resource_role_code_published(3)
+        assert resource_access_code_published(1)
+        assert resource_access_code_published(2)
+        assert resource_access_code_published(3)
+        assert not resource_access_code_published(0)
+        assert not resource_access_code_published(4)
+        assert scalar_layout_code_published(1)
+        assert scalar_layout_code_published(2)
+        assert scalar_layout_code_published(3)
+        assert scalar_layout_code_published(4)
+        assert not scalar_layout_code_published(0)
+        assert not scalar_layout_code_published(5)
+    }
+}
+
+describe "shader contract matcher mismatch dimensions" {
+    test "vertex layout rejects each published mismatch dimension" {
+        assert not goal_vertex_layout_matches(1, 0, "position", 0, 3, 0, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 1, "position", 0, 3, 0, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "color", 0, 3, 0, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 1, 3, 0, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 4, 0, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 2, 0, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 12, 12, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 8, 1, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 2, 1)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 2)
+        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 4)
+    }
+
+    test "varying rejects each published mismatch dimension" {
+        assert not goal_varying_matches("position", 0, 4, 1, 2)
+        assert not goal_varying_matches("color", 1, 4, 1, 2)
+        assert not goal_varying_matches("color", 0, 3, 1, 2)
+        assert not goal_varying_matches("color", 0, 4, 2, 2)
+        assert not goal_varying_matches("color", 0, 4, 3, 2)
+        assert not goal_varying_matches("color", 0, 4, 1, 1)
+        assert not goal_varying_matches("color", 0, 4, 1, 4)
+    }
+
+    test "fragment output rejects each published mismatch dimension" {
+        assert not goal_fragment_output_matches(1, 4, 2)
+        assert not goal_fragment_output_matches(0, 3, 2)
+        assert not goal_fragment_output_matches(0, 2, 2)
+        assert not goal_fragment_output_matches(0, 4, 1)
+        assert not goal_fragment_output_matches(0, 4, 4)
+    }
+
+    test "pipeline rejects each published mismatch dimension" {
+        assert not goal_pipeline_matches(2, 1, 1, 1, 36)
+        assert not goal_pipeline_matches(1, 0, 1, 1, 36)
+        assert not goal_pipeline_matches(1, 7, 1, 1, 36)
+        assert not goal_pipeline_matches(1, 1, 0, 1, 36)
+        assert not goal_pipeline_matches(1, 1, 1, 2, 36)
+        assert not goal_pipeline_matches(1, 1, 1, 3, 36)
+        assert not goal_pipeline_matches(1, 1, 1, 1, 0)
+        assert not goal_pipeline_matches(1, 1, 1, 1, 64)
+    }
+
+    test "resource binding rejects each published mismatch dimension" {
+        assert not goal_resource_binding_matches(1, 0, 1, 1, 1, 32, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 1, 1, 1, 1, 32, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 2, 1, 1, 32, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 2, 1, 32, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 2, 32, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 3, 32, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 64, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 16, 1, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 2, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 3, "transform", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "position", 3)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 1)
+        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 4)
     }
 }
