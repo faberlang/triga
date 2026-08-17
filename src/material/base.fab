@@ -29,7 +29,7 @@
 class Material {
     string name
     # side: 0=FrontSide 1=BackSide 2=DoubleSide
-    int<u32> side = 0
+    int<u32> side = 0 ∷ int<u32>
     bool transparent = false
     f32 opacity = 1.0
     bool depth_write = true
@@ -74,7 +74,7 @@ class TextureDescriptor {
 
 @ public
 fn materia_ex_nomine(string name) → Material {
-    return Material {name = name, side = 0, transparent = false, opacity = 1.0, depth_write = true, depth_test = true, alpha_test = 0.0}
+    return Material {name = name, side = 0 ∷ int<u32>, transparent = false, opacity = 1.0, depth_write = true, depth_test = true, alpha_test = 0.0}
 }
 
 @ public
@@ -88,7 +88,7 @@ fn material_valida(ref Material value) → bool {
 
 @ public
 fn material_double_sided(ref Material value) → Material {
-    return Material {name = value.name, side = 2, transparent = value.transparent, opacity = value.opacity, depth_write = value.depth_write, depth_test = value.depth_test, alpha_test = value.alpha_test}
+    return Material {name = value.name, side = 2 ∷ int<u32>, transparent = value.transparent, opacity = value.opacity, depth_write = value.depth_write, depth_test = value.depth_test, alpha_test = value.alpha_test}
 }
 
 @ public
