@@ -140,13 +140,16 @@ replace method/field assertions with count-only tests.
 
 ## 5. Triage conclusion (delivery §2.5)
 
-The live honest package-link receipt (`215c761`,
+The live honest package-link receipt (`2c4559a`,
 `proof/coverage-scorecard.json`, coverage revision 2) records **9/26** module
-selections at `executed-proba`. The remaining 17 rows comprise 3
-`analysis-error` rows and 14 `runner-failure` rows. The current receipt has no
-`PARSE050` row; `PARSE050.import_privata_removed`
-is historical evidence from the retired import-modifier and single-file/roundtrip
-routes, not the current Triga package-link verdict.
+selections at `executed-proba`. The remaining 17 rows comprise 2
+`analysis-error` rows (`src/graph/camera.fab` and `src/primitives/basic.fab`)
+and 15 `runner-failure` rows. `src/geometry/data.fab` is now a
+`runner-failure` after the release Faber update at `17854f61e`; it is no longer
+counted among the analysis errors. The current receipt has no `PARSE050` row;
+`PARSE050.import_privata_removed` is historical evidence from the retired
+import-modifier and single-file/roundtrip routes, not the current Triga
+package-link verdict.
 
 The Stage-0 Q4 conclusion remains in force: the executed-proba tier is open.
 
