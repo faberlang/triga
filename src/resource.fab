@@ -23,12 +23,12 @@ class ResourceTransition {
 }
 
 # ResourceLifecycleTransition extends the replacement model with creation and
-# removal. Optional handles make the two one-sided states explicit.
+# removal. Nullable handles make the two one-sided states explicit.
 @ public
 class ResourceLifecycleTransition {
     int logical_index
-    ResourceHandle previous optional
-    ResourceHandle current optional
+    ResourceHandle ∪ null previous = null
+    ResourceHandle ∪ null current = null
     bool changed
     bool removed
 }
@@ -221,6 +221,12 @@ fn resource_transition_unchanged_handles(ref list<ResourceTransition> transition
 # preserving the same logical index. Batch accessors intentionally return
 # `nihil` for duplicate or generation-inconsistent input.
 
+fn _lifecycle_handle(ResourceHandle ∪ null handle) → ResourceHandle ∪ null {
+    if handle is null then return null
+    const ResourceHandle copy ← handle
+    return copy
+}
+
 @ public
 fn resource_lifecycle_unchanged(ref ResourceHandle handle) → ResourceLifecycleTransition {
     return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, current = handle, changed = false, removed = false}
@@ -233,28 +239,50 @@ fn resource_lifecycle_replaced(ref ResourceHandle handle) → ResourceLifecycleT
 
 @ public
 fn resource_lifecycle_removed(ref ResourceHandle handle) → ResourceLifecycleTransition {
-    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, changed = true, removed = true}
+    return ResourceLifecycleTransition {logical_index = handle.index, previous = handle, current = null, changed = true, removed = true}
 }
 
 @ public
 fn resource_lifecycle_created(ref ResourceHandle handle) → ResourceLifecycleTransition {
-    return ResourceLifecycleTransition {logical_index = handle.index, current = handle, changed = true, removed = false}
+    return ResourceLifecycleTransition {logical_index = handle.index, previous = null, current = handle, changed = true, removed = false}
 }
 
 @ public
 fn resource_lifecycle_valid(ref ResourceLifecycleTransition transition) → bool {
     if transition.previous is null and transition.current is null then return false
     if transition.previous not is null {
-        if transition.previous!.index ≠ transition.logical_index then return false
+        const ResourceHandle ∪ null previous_opt ← _lifecycle_handle(transition.previous)
+        if previous_opt is null then return false
+        const ResourceHandle previous ← previous_opt
+        if previous.index ≠ transition.logical_index then return false
     }
     if transition.current not is null {
-        if transition.current!.index ≠ transition.logical_index then return false
+        const ResourceHandle ∪ null current_opt ← _lifecycle_handle(transition.current)
+        if current_opt is null then return false
+        const ResourceHandle current ← current_opt
+        if current.index ≠ transition.logical_index then return false
     }
     if transition.removed then return (transition.changed and transition.previous not is null) and transition.current is null
-    if transition.changed ≡ false then return (transition.previous not is null and transition.current not is null) and transition.previous!.generation ≡ transition.current!.generation
+    if transition.changed ≡ false {
+        if transition.previous is null then return false
+        if transition.current is null then return false
+        const ResourceHandle ∪ null previous_opt ← _lifecycle_handle(transition.previous)
+        const ResourceHandle ∪ null current_opt ← _lifecycle_handle(transition.current)
+        if previous_opt is null then return false
+        if current_opt is null then return false
+        const ResourceHandle previous ← previous_opt
+        const ResourceHandle current ← current_opt
+        return previous.generation ≡ current.generation
+    }
     if transition.previous is null then return transition.current not is null
     if transition.current is null then return false
-    return transition.current!.generation ≡ transition.previous!.generation + 1
+    const ResourceHandle ∪ null previous_opt ← _lifecycle_handle(transition.previous)
+    const ResourceHandle ∪ null current_opt ← _lifecycle_handle(transition.current)
+    if previous_opt is null then return false
+    if current_opt is null then return false
+    const ResourceHandle previous ← previous_opt
+    const ResourceHandle current ← current_opt
+    return current.generation ≡ previous.generation + 1
 }
 
 fn _resource_lifecycle_index_seen(ref list<ResourceLifecycleTransition> transitions, int limit, int logical_index) → bool {
@@ -433,7 +461,11 @@ fn resource_lifecycle_changed_handles(ref list<ResourceLifecycleTransition> tran
     var list<ResourceHandle> handles ← vacua
     for from transitions const transition {
         if transition.changed and transition.current not is null {
-            handles.append(ResourceHandle {index = transition.current!.index, generation = transition.current!.generation})
+            const ResourceHandle ∪ null current_opt ← _lifecycle_handle(transition.current)
+            if current_opt not is null {
+                const ResourceHandle current ← current_opt
+                handles.append(ResourceHandle {index = current.index, generation = current.generation})
+            }
         }
     }
     return handles
@@ -445,7 +477,11 @@ fn resource_lifecycle_unchanged_handles(ref list<ResourceLifecycleTransition> tr
     var list<ResourceHandle> handles ← vacua
     for from transitions const transition {
         if transition.changed ≡ false and transition.current not is null {
-            handles.append(ResourceHandle {index = transition.current!.index, generation = transition.current!.generation})
+            const ResourceHandle ∪ null current_opt ← _lifecycle_handle(transition.current)
+            if current_opt not is null {
+                const ResourceHandle current ← current_opt
+                handles.append(ResourceHandle {index = current.index, generation = current.generation})
+            }
         }
     }
     return handles
@@ -457,7 +493,11 @@ fn resource_lifecycle_removed_handles(ref list<ResourceLifecycleTransition> tran
     var list<ResourceHandle> handles ← vacua
     for from transitions const transition {
         if transition.removed and transition.previous not is null {
-            handles.append(ResourceHandle {index = transition.previous!.index, generation = transition.previous!.generation})
+            const ResourceHandle ∪ null previous_opt ← _lifecycle_handle(transition.previous)
+            if previous_opt not is null {
+                const ResourceHandle previous ← previous_opt
+                handles.append(ResourceHandle {index = previous.index, generation = previous.generation})
+            }
         }
     }
     return handles
@@ -469,7 +509,11 @@ fn resource_lifecycle_retired_handles(ref list<ResourceLifecycleTransition> tran
     var list<ResourceHandle> handles ← vacua
     for from transitions const transition {
         if transition.changed and transition.previous not is null {
-            handles.append(ResourceHandle {index = transition.previous!.index, generation = transition.previous!.generation})
+            const ResourceHandle ∪ null previous_opt ← _lifecycle_handle(transition.previous)
+            if previous_opt not is null {
+                const ResourceHandle previous ← previous_opt
+                handles.append(ResourceHandle {index = previous.index, generation = previous.generation})
+            }
         }
     }
     return handles
@@ -481,7 +525,11 @@ fn resource_lifecycle_current_handles(ref list<ResourceLifecycleTransition> tran
     var list<ResourceHandle> handles ← vacua
     for from transitions const transition {
         if transition.current not is null {
-            handles.append(ResourceHandle {index = transition.current!.index, generation = transition.current!.generation})
+            const ResourceHandle ∪ null current_opt ← _lifecycle_handle(transition.current)
+            if current_opt not is null {
+                const ResourceHandle current ← current_opt
+                handles.append(ResourceHandle {index = current.index, generation = current.generation})
+            }
         }
     }
     return handles
