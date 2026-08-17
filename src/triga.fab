@@ -1,6 +1,6 @@
 # triga.fab — package map facade for the graphics library.
 #
-# Public import: import from "triga:triga" private triga
+# Public import: import from "triga:triga" triga
 #
 # Full module map (facade modules included): docs/module-map.md
 #
@@ -22,18 +22,18 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:graph/object" private object as graph_object
+import from "triga:graph/object" object as graph_object
 
-import from "triga:graph/camera" private camera
+import from "triga:graph/camera" camera
 
-import from "triga:material/base" private base
+import from "triga:material/base" base
 
-import from "triga:material/basic" private basic
+import from "triga:material/basic" basic
 
-import from "triga:material/lit" private lit
+import from "triga:material/lit" lit
 
-import from "triga:material/standard" private standard
+import from "triga:material/standard" standard
 
-import from "triga:face" private face
+import from "triga:face" face
