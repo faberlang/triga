@@ -1,17 +1,18 @@
 # Voxel face quad construction helpers.
 #
-# Public import: import from "triga:face" private face
+# Public import: import from "triga:face" face
 # Face-code tables (valida/normal/color/offsets) live in triga:math so RayBox3Hit
 # can call them without a math↔face import cycle.
 # Depends on: triga:math, triga:geometry/data
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:geometry/data" private data
+import from "triga:geometry/data" data
 
 # FaceQuad is the four-corner source shape used by voxel-style face builders.
 # Face-code orientation and color stay in `triga:math`; this leaf only turns a
 # code plus an origin/size into geometry-ready corners.
+@ public
 class FaceQuad {
     math.Vector3 a
     math.Vector3 b
@@ -21,6 +22,7 @@ class FaceQuad {
 
 # Build one oriented quad. Invalid face codes and non-positive sizes return
 # `nihil` so callers can keep malformed voxel input out of geometry buffers.
+@ public
 fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ null {
     if math.face_code_valida(code) ≡ false then return null
     if size ≤ 0.0 then return null
@@ -37,6 +39,7 @@ fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪
 
 # Append the same face directly into position/color/index arrays, preserving
 # the accumulation shape used by the voxel exempla.
+@ public
 fn face_code_colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>> indices, int code, f32 x, f32 y, f32 z, f32 size) → data.ColoredQuadMesh ∪ null {
     const FaceQuad ∪ null quad_result ← face_code_unit_quad(code, x, y, z, size)
     if quad_result is null then return null

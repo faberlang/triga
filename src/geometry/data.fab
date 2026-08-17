@@ -1,6 +1,6 @@
 # CPU-side geometry data, topology, and mesh construction.
 #
-# Public import: import from "triga:geometry/data" private data
+# Public import: import from "triga:geometry/data" data
 #
 # Owns: BufferGeometry (+ all methods, including index_format_code() and
 # topology_code()), ColoredQuadMesh (+ methods), colored_quad_mesh_append,
@@ -16,16 +16,17 @@
 # Imports: triga:geometry/attribute, triga:geometry/layout,
 # triga:geometry/bounds, triga:geometry/batch.
 
-import from "triga:geometry/attribute" private attribute
+import from "triga:geometry/attribute" attribute
 
-import from "triga:geometry/layout" private layout
+import from "triga:geometry/layout" layout
 
-import from "triga:geometry/bounds" private bounds
+import from "triga:geometry/bounds" bounds
 
-import from "triga:geometry/batch" private batch
+import from "triga:geometry/batch" batch
 
 # PrimitiveTopology is the small source-side choice that controls element
 # grouping, draw-range validity, and the numeric code passed to shader facts.
+@ public
 union PrimitiveTopology {
     TriangleList,
     LineList,
@@ -35,6 +36,7 @@ union PrimitiveTopology {
 # ColoredQuadMesh is the accumulation-friendly shape used by voxel and face
 # examples. Positions, colors, and indices remain parallel lists until the
 # `geometry()` projection turns them into a validated BufferGeometry.
+@ public
 class ColoredQuadMesh {
     list<f32> positions
     list<f32> colors
@@ -90,6 +92,7 @@ class ColoredQuadMesh {
 # streams, optional indices, draw ranges, and material groups together so every
 # query can validate the same shape before exposing counts, bounds, layout, or
 # host draw facts.
+@ public
 class BufferGeometry {
     PrimitiveTopology topology
     int vertex_count
@@ -719,18 +722,22 @@ class BufferGeometry {
 # These constructors make the indexed/non-indexed choice explicit while
 # sharing the same attribute, range, and group validation path.
 
+@ public
 fn indexed_triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<int<u32>> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
     return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = true, indices = indices, draw_range = draw_range, groups = groups}
 }
 
+@ public
 fn triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
     return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = false, indices = vacua, draw_range = draw_range, groups = groups}
 }
 
+@ public
 fn line_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<int<u32>> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
     return BufferGeometry {topology = LineList(), vertex_count = vertex_count, attributes = attributes, indexed = true, indices = indices, draw_range = draw_range, groups = groups}
 }
 
+@ public
 fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> colors, list<int<u32>> indices) → BufferGeometry ∪ null {
     const attribute.BufferAttribute position_attribute ← attribute.float32_attribute("position", 0, 3, vertex_count, positions)
     const attribute.BufferAttribute color_attribute ← attribute.float32_attribute("color", 1, 3, vertex_count, colors)
@@ -744,6 +751,7 @@ fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> col
 # Append helpers preserve the same parallel-list contract as ColoredQuadMesh;
 # they are useful when a caller wants to build a mesh one face at a time.
 
+@ public
 fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>> indices, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 cx, f32 cy, f32 cz, f32 dx, f32 dy, f32 dz, f32 r, f32 g, f32 b) → ColoredQuadMesh ∪ null {
     if positions.length() ≠ colors.length() then return null
     if positions.length() % 3 ≠ 0 then return null
@@ -862,6 +870,7 @@ fn _primitive_range_valid(ref PrimitiveTopology topology, int start, int count) 
 # the canonical vertex_layout role: (geo, index, source_name, location,
 # format_code, offset_bytes, stride_bytes, step_mode_code).
 
+@ public
 @ shader_contract "vertex_layout"
 fn geometry_vertex_layout_matches(BufferGeometry geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code) → bool {
     return geo.vertex_layout_matches(index, source_name, shader_location, format_code, offset_bytes, stride_bytes, step_mode_code)

@@ -1,6 +1,6 @@
 # Geometry draw-range, draw-command, group, and payload byte-count facts.
 #
-# Public import: import from "triga:geometry/batch" private batch
+# Public import: import from "triga:geometry/batch" batch
 #
 # Owns: DrawRange, GeometryDrawCommand, GeometryGroup, the indexed/line
 # draw-batch fact genera, VisibleFaceMeshFacts, and the visible_face_*
@@ -13,6 +13,7 @@
 # count is non-zero, that start + count stays within the available elements,
 # and that the range matches the active primitive topology before it becomes a
 # draw command.
+@ public
 class DrawRange {
     int start
     int count
@@ -21,6 +22,7 @@ class DrawRange {
 # The complete scalar fact set for one host draw. BufferGeometry fills this
 # record from a validated draw range or group, preserving indexed mode,
 # element origin/count, instance count, and material selection.
+@ public
 class GeometryDrawCommand {
     bool indexed
     int element_count
@@ -33,6 +35,7 @@ class GeometryDrawCommand {
 # One material-owned element range. Groups are CPU-side batching metadata;
 # BufferGeometry requires non-empty, topology-aligned, in-bounds ranges in
 # non-overlapping order before producing group commands.
+@ public
 class GeometryGroup {
     int start
     int count
@@ -42,6 +45,7 @@ class GeometryGroup {
 # Upload and draw facts for indexed geometry. The payload fields are byte
 # counts, while grouped_element_total describes the elements covered by the
 # generated group commands.
+@ public
 class IndexedGeometryDrawBatchFacts {
     int draw_count
     int grouped_element_total
@@ -53,6 +57,7 @@ class IndexedGeometryDrawBatchFacts {
 # Batch facts for line geometry. `line_count` records the number of line
 # primitives; the remaining fields carry the same draw, grouped-element, and
 # payload-byte facts as the indexed batch shape.
+@ public
 class LineGeometryDrawBatchFacts {
     int draw_count
     int line_count
@@ -66,6 +71,7 @@ class LineGeometryDrawBatchFacts {
 # geometry helpers: four vertices, six u32 indices, and two triangles per face.
 # Position and color each use three float32 scalars per vertex, so the byte
 # helpers can describe the host upload without allocating a buffer.
+@ public
 class VisibleFaceMeshFacts {
     int face_count
     int vertex_count
@@ -82,21 +88,25 @@ class VisibleFaceMeshFacts {
 # Non-positive face counts are rejected with `nihil`; accepted counts are
 # expanded into the fixed visible-face topology and byte counts above.
 
+@ public
 fn visible_face_vertex_count(int face_count) → int ∪ null {
     if face_count ≤ 0 then return null
     return face_count * 4
 }
 
+@ public
 fn visible_face_index_count(int face_count) → int ∪ null {
     if face_count ≤ 0 then return null
     return face_count * 6
 }
 
+@ public
 fn visible_face_triangle_count(int face_count) → int ∪ null {
     if face_count ≤ 0 then return null
     return face_count * 2
 }
 
+@ public
 fn visible_face_position_payload_byte_count(int face_count) → int ∪ null {
     const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
     if vertex_count_result is null then return null
@@ -104,6 +114,7 @@ fn visible_face_position_payload_byte_count(int face_count) → int ∪ null {
     return (vertex_count * 3) * 4
 }
 
+@ public
 fn visible_face_color_payload_byte_count(int face_count) → int ∪ null {
     const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
     if vertex_count_result is null then return null
@@ -111,6 +122,7 @@ fn visible_face_color_payload_byte_count(int face_count) → int ∪ null {
     return (vertex_count * 3) * 4
 }
 
+@ public
 fn visible_face_index_payload_byte_count(int face_count) → int ∪ null {
     const int ∪ null index_count_result ← visible_face_index_count(face_count)
     if index_count_result is null then return null
@@ -118,6 +130,7 @@ fn visible_face_index_payload_byte_count(int face_count) → int ∪ null {
     return index_count * 4
 }
 
+@ public
 fn visible_face_payload_byte_count(int face_count) → int ∪ null {
     const int ∪ null position_bytes_result ← visible_face_position_payload_byte_count(face_count)
     if position_bytes_result is null then return null
@@ -131,6 +144,7 @@ fn visible_face_payload_byte_count(int face_count) → int ∪ null {
     return (position_bytes + color_bytes) + index_bytes
 }
 
+@ public
 fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ null {
     const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
     if vertex_count_result is null then return null

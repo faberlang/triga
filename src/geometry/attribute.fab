@@ -1,6 +1,6 @@
 # Typed CPU-side vertex attributes.
 #
-# Public import: import from "triga:geometry/attribute" private attribute
+# Public import: import from "triga:geometry/attribute" attribute
 #
 # Owns: BufferAttribute (+ all methods), AttributeData, AttributeUsage, and
 # the free constructor float32_attribute. AttributeData lives here so the
@@ -11,11 +11,12 @@
 # Imports: triga:geometry/layout (VertexAttributeLayout, VertexFormat,
 # VertexStepMode, and the VertexFormat / VertexStepMode variant constructors).
 
-import from "triga:geometry/layout" private layout
+import from "triga:geometry/layout" layout
 
 # Update intent carried alongside a CPU-side attribute. The value is available
 # to upload or streaming code; this leaf records the intent but does not
 # schedule updates itself.
+@ public
 union AttributeUsage {
     StaticAttribute,
     DynamicAttribute,
@@ -25,6 +26,7 @@ union AttributeUsage {
 # The scalar payload kept by a BufferAttribute. Both representations use
 # four-byte scalars; the typed distinction controls the vertex format and
 # whether a float32 view can be projected for interleaving.
+@ public
 union AttributeData {
     Float32Attribute {
         list<f32> values
@@ -38,6 +40,7 @@ union AttributeData {
 # host. `valida()` is the projection boundary: a valid stream has a non-empty
 # name, an unnormalized component width from 1 through 4, a positive element
 # count, and exactly component_width * element_count scalars.
+@ public
 class BufferAttribute {
     string name
     int shader_location
@@ -136,6 +139,7 @@ class BufferAttribute {
 # The starter constructor makes the common CPU-side case explicit: a static,
 # unnormalized float32 stream. `valida()` remains the authority for checking
 # that the supplied values match the declared element shape.
+@ public
 fn float32_attribute(string name, int shader_location, int component_width, int element_count, list<f32> values) → BufferAttribute {
     return BufferAttribute {name = name, shader_location = shader_location, component_width = component_width, element_count = element_count, normalized = false, usage = StaticAttribute(), data = Float32Attribute(values)}
 }
