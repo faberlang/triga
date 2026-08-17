@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+WORK=$(mktemp -d "${TMPDIR:-/tmp}/triga-scorecard-regression.XXXXXX")
+trap 'rm -rf "$WORK"' EXIT
+
+git -C "$ROOT" archive HEAD | tar -x -C "$WORK"
+cd "$WORK"
+
+# The worktree may contain unrelated inventory edits, so validate the committed
+# receipt from a clean archive rather than borrowing the caller's dirty tree.
+./proof/coverage/check-scorecard
+cp proof/coverage-scorecard.json "$WORK/scorecard-good.json"
+
+python3 - proof/coverage-scorecard.json <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, encoding="utf-8") as source:
+    scorecard = json.load(source)
+scorecard["coverage_revision"] = 1
+with open(path, "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+
+if output=$(./proof/coverage/check-scorecard 2>&1); then
+    printf '%s\n' "error: checker accepted a non-revision-2 scorecard" >&2
+    exit 1
+fi
+printf '%s\n' "$output" | grep -Fq \
+    "error: scorecard.coverage_revision must be 2"
+
+cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
+python3 - proof/coverage-scorecard.json <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, encoding="utf-8") as source:
+    scorecard = json.load(source)
+scorecard["stage0_5"]["module_count"] = 25
+with open(path, "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+
+if output=$(./proof/coverage/check-scorecard 2>&1); then
+    printf '%s\n' "error: checker accepted a malformed stage0_5 schema" >&2
+    exit 1
+fi
+printf '%s\n' "$output" | grep -Fq \
+    "error: scorecard.stage0_5.module_count must remain 26"
+
+printf '%s\n' "scorecard regression ok: committed receipt passes; revision-2 and stage0_5 shape failures are rejected"
