@@ -1,0 +1,41 @@
++++
+locale = "en"
++++
+# Co-located package tests for visible-face payload and draw-batch facts.
+import from "triga:geometry/batch" batch
+
+describe "geometry batch facts" {
+    test "visible face helpers return exact counts and byte totals" {
+        assert (batch.visible_face_vertex_count(2) coalesce 0) ≡ 8
+        assert (batch.visible_face_index_count(2) coalesce 0) ≡ 12
+        assert (batch.visible_face_triangle_count(2) coalesce 0) ≡ 4
+        assert (batch.visible_face_position_payload_byte_count(2) coalesce 0) ≡ 96
+        assert (batch.visible_face_color_payload_byte_count(2) coalesce 0) ≡ 96
+        assert (batch.visible_face_index_payload_byte_count(2) coalesce 0) ≡ 48
+        assert (batch.visible_face_payload_byte_count(2) coalesce 0) ≡ 240
+    }
+
+    test "visible face mesh facts preserve topology and payload shape" {
+        const batch.VisibleFaceMeshFacts facts ← batch.visible_face_mesh_facts(2) coalesce batch.VisibleFaceMeshFacts {face_count = 0, vertex_count = 0, index_count = 0, triangle_count = 0, position_payload_byte_count = 0, color_payload_byte_count = 0, index_payload_byte_count = 0, total_payload_byte_count = 0}
+        assert facts.face_count ≡ 2
+        assert facts.vertex_count ≡ 8
+        assert facts.index_count ≡ 12
+        assert facts.triangle_count ≡ 4
+        assert facts.position_payload_byte_count ≡ 96
+        assert facts.color_payload_byte_count ≡ 96
+        assert facts.index_payload_byte_count ≡ 48
+        assert facts.total_payload_byte_count ≡ 240
+    }
+
+    test "empty and malformed face counts are rejected" {
+        assert batch.visible_face_vertex_count(0) is null
+        assert batch.visible_face_index_count(0) is null
+        assert batch.visible_face_triangle_count(0) is null
+        assert batch.visible_face_position_payload_byte_count(0) is null
+        assert batch.visible_face_color_payload_byte_count(0) is null
+        assert batch.visible_face_index_payload_byte_count(0) is null
+        assert batch.visible_face_payload_byte_count(0) is null
+        assert batch.visible_face_mesh_facts(0) is null
+        assert batch.visible_face_mesh_facts(-1) is null
+    }
+}

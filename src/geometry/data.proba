@@ -1,0 +1,246 @@
++++
+locale = "en"
++++
+# Co-located package tests for BufferGeometry, ColoredQuadMesh, topology,
+# bounds, normals, UVs, layouts, draw commands, and malformed buffers.
+import from "triga:geometry/data" data
+import from "triga:geometry/attribute" attribute
+import from "triga:geometry/batch" batch
+import from "triga:geometry/bounds" bounds
+import from "triga:geometry/layout" layout
+
+fn indexed_positions() → attribute.BufferAttribute {
+    return attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 2.0, 0.0, 3.0, 2.0, 0.0, 2.0, 3.0, 0.0])
+}
+
+fn indexed_colors() → attribute.BufferAttribute {
+    return attribute.float32_attribute("color", 1, 3, 6, [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0])
+}
+
+fn indexed_geometry() → data.BufferGeometry {
+    return data.indexed_triangle_geometry(6, [indexed_positions(), indexed_colors()], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 2}, batch.GeometryGroup {start = 3, count = 3, material_index = 7}])
+}
+
+describe "buffer geometry contracts" {
+    test "indexed geometry publishes counts payloads and topology" {
+        const data.BufferGeometry geometry ← indexed_geometry()
+        const list<layout.VertexAttributeLayout> empty_layouts ← vacua
+        const list<layout.VertexAttributeLayout> layouts ← geometry.vertex_layouts() coalesce empty_layouts
+        assert geometry.valida()
+        assert geometry.indexed
+        assert geometry.element_count() ≡ 6
+        assert (geometry.validated_vertex_count() coalesce 0) ≡ 6
+        assert (geometry.index_count() coalesce 0) ≡ 6
+        assert (geometry.index_format_code() coalesce 0) ≡ 1
+        assert (geometry.group_count() coalesce 0) ≡ 2
+        assert (geometry.attribute_byte_count("position") coalesce 0) ≡ 72
+        assert (geometry.attribute_scalar_count("position") coalesce 0) ≡ 18
+        assert geometry.attribute_byte_count("missing") is null
+        assert (geometry.vertex_payload_byte_count() coalesce 0) ≡ 144
+        assert (geometry.index_payload_byte_count() coalesce 0) ≡ 24
+        assert (geometry.payload_byte_count() coalesce 0) ≡ 168
+        assert (geometry.triangle_count() coalesce 0) ≡ 2
+        assert geometry.line_count() is null
+        assert (geometry.topology_code() coalesce 0) ≡ 1
+        assert (geometry.vertex_layout_count() coalesce 0) ≡ 2
+        assert (geometry.vertex_layout_location(0) coalesce 0) ≡ 0
+        assert (geometry.vertex_layout_location(1) coalesce 0) ≡ 1
+        assert (geometry.vertex_layout_source_name(0) coalesce "") ≡ "position"
+        assert (geometry.vertex_layout_format_code(0) coalesce 0) ≡ 3
+        assert (geometry.vertex_layout_offset_bytes(0) coalesce 0) ≡ 0
+        assert (geometry.vertex_layout_stride_bytes(0) coalesce 0) ≡ 12
+        assert (geometry.vertex_layout_step_mode_code(0) coalesce 0) ≡ 1
+        assert geometry.vertex_layout_matches(0, "position", 0, 3, 0, 12, 1)
+        assert not geometry.vertex_layout_matches(0, "position", 0, 4, 0, 12, 1)
+        assert layouts.length() ≡ 2
+        assert layouts[0].source_name ≡ "position"
+        assert layouts[1].source_name ≡ "color"
+        assert data.geometry_vertex_layout_matches(geometry, 1, "color", 1, 3, 0, 12, 1)
+    }
+
+    test "indexed geometry publishes groups draw commands and batch facts" {
+        const data.BufferGeometry geometry ← indexed_geometry()
+        const batch.GeometryDrawCommand ∪ null draw ← geometry.draw_command(3)
+        const batch.GeometryDrawCommand ∪ null group_draw ← geometry.group_draw_command(1, 4)
+        const list<batch.GeometryDrawCommand> empty_commands ← vacua
+        const list<batch.GeometryDrawCommand> commands ← geometry.group_draw_commands(2) coalesce empty_commands
+        const batch.IndexedGeometryDrawBatchFacts ∪ null facts ← geometry.indexed_draw_batch_facts(2)
+        assert draw not is null
+        assert draw!.indexed
+        assert draw!.element_count ≡ 6
+        assert draw!.first_element ≡ 0
+        assert draw!.instance_count ≡ 3
+        assert group_draw not is null
+        assert group_draw!.element_count ≡ 3
+        assert group_draw!.first_element ≡ 3
+        assert group_draw!.instance_count ≡ 4
+        assert group_draw!.material_index ≡ 7
+        assert geometry.group_draw_command(2, 1) is null
+        assert commands.length() ≡ 2
+        assert commands[0].material_index ≡ 2
+        assert commands[1].material_index ≡ 7
+        assert (geometry.group_element_total() coalesce 0) ≡ 6
+        assert geometry.draw_command(0) is null
+        assert geometry.group_draw_commands(0) is null
+        assert facts not is null
+        assert facts!.draw_count ≡ 2
+        assert facts!.grouped_element_total ≡ 6
+        assert facts!.vertex_payload_byte_count ≡ 144
+        assert facts!.index_payload_byte_count ≡ 24
+        assert facts!.total_payload_byte_count ≡ 168
+        assert geometry.indexed_draw_batch_facts(0) is null
+    }
+
+    test "bounds normals and planar UVs preserve exact geometry facts" {
+        const data.BufferGeometry geometry ← indexed_geometry()
+        const bounds.BoundingBox ∪ null box ← geometry.bounding_box()
+        const bounds.BoundingSphere ∪ null sphere ← geometry.bounding_sphere()
+        const bounds.BoundingBox ∪ null first_box ← geometry.group_bounding_box(0)
+        const bounds.BoundingBox ∪ null second_box ← geometry.group_bounding_box(1)
+        const bounds.BoundingSphere ∪ null first_sphere ← geometry.group_bounding_sphere(0)
+        const bounds.BoundingSphere ∪ null second_sphere ← geometry.group_bounding_sphere(1)
+        const attribute.BufferAttribute ∪ null normals ← geometry.vertex_normals()
+        const attribute.BufferAttribute ∪ null uvs ← geometry.planar_uvs()
+        const attribute.BufferAttribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
+        const attribute.BufferAttribute empty_uv ← attribute.float32_attribute("uv", 2, 2, 0, [])
+        const attribute.BufferAttribute normal ← normals coalesce empty_normal
+        const attribute.BufferAttribute uv ← uvs coalesce empty_uv
+        const list<f32> empty_values ← vacua
+        const list<f32> normal_values ← normal.float32_values() coalesce empty_values
+        const list<f32> uv_values ← uv.float32_values() coalesce empty_values
+        assert box not is null
+        assert box!.min_x ≡ (0.0 ∷ f32)
+        assert box!.min_y ≡ (0.0 ∷ f32)
+        assert box!.max_x ≡ (3.0 ∷ f32)
+        assert box!.max_y ≡ (3.0 ∷ f32)
+        assert first_box!.max_x ≡ (1.0 ∷ f32)
+        assert first_box!.max_y ≡ (1.0 ∷ f32)
+        assert second_box!.min_x ≡ (2.0 ∷ f32)
+        assert second_box!.min_y ≡ (2.0 ∷ f32)
+        assert geometry.group_bounding_box(2) is null
+        assert sphere!.center_x ≡ (1.5 ∷ f32)
+        assert sphere!.center_y ≡ (1.5 ∷ f32)
+        assert first_sphere!.center_x ≡ (0.5 ∷ f32)
+        assert second_sphere!.center_y ≡ (2.5 ∷ f32)
+        assert normals not is null
+        assert normal.name ≡ "normal"
+        assert normal.element_count ≡ 6
+        assert normal_values[0] ≡ (0.0 ∷ f32)
+        assert normal_values[1] ≡ (0.0 ∷ f32)
+        assert normal_values[2] ≡ (1.0 ∷ f32)
+        assert normal_values[15] ≡ (0.0 ∷ f32)
+        assert normal_values[17] ≡ (1.0 ∷ f32)
+        assert uvs not is null
+        assert uv.name ≡ "uv"
+        assert uv.component_width ≡ 2
+        assert uv_values[0] ≡ (0.0 ∷ f32)
+        assert uv_values[1] ≡ (0.0 ∷ f32)
+        assert uv_values[8] ≡ (1.0 ∷ f32)
+        assert uv_values[9] ≡ (1.0 ∷ f32)
+    }
+
+    test "non-indexed triangles and indexed lines select their own facts" {
+        const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+        const data.BufferGeometry triangles ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, vacua)
+        const batch.GeometryDrawCommand ∪ null triangle_draw ← triangles.draw_command(2)
+        assert triangles.valida()
+        assert not triangles.indexed
+        assert triangles.element_count() ≡ 3
+        assert triangles.index_count() is null
+        assert triangles.index_format_code() is null
+        assert (triangles.vertex_payload_byte_count() coalesce 0) ≡ 36
+        assert (triangles.payload_byte_count() coalesce 0) ≡ 36
+        assert triangles.indexed_draw_batch_facts(1) is null
+        assert triangle_draw not is null
+        assert triangle_draw!.indexed ≡ false
+
+        const attribute.BufferAttribute line_position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0])
+        const data.BufferGeometry lines ← data.line_geometry(4, [line_position], [0, 1, 2, 3], batch.DrawRange {start = 0, count = 4}, [batch.GeometryGroup {start = 0, count = 4, material_index = 4}])
+        const batch.LineGeometryDrawBatchFacts ∪ null line_facts ← lines.line_draw_batch_facts(2)
+        assert lines.valida()
+        assert (lines.line_count() coalesce 0) ≡ 2
+        assert lines.triangle_count() is null
+        assert (lines.topology_code() coalesce 0) ≡ 2
+        assert lines.indexed_draw_batch_facts(1) not is null
+        assert line_facts not is null
+        assert line_facts!.draw_count ≡ 1
+        assert line_facts!.line_count ≡ 2
+        assert line_facts!.grouped_element_total ≡ 4
+        assert line_facts!.vertex_payload_byte_count ≡ 48
+        assert line_facts!.index_payload_byte_count ≡ 16
+        assert line_facts!.total_payload_byte_count ≡ 64
+    }
+
+    test "empty malformed and misaligned buffers are rejected" {
+        const attribute.BufferAttribute position ← indexed_positions()
+        const attribute.BufferAttribute short_position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0])
+        const attribute.BufferAttribute duplicate_name ← attribute.float32_attribute("position", 2, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 2.0, 0.0, 3.0, 2.0, 0.0, 2.0, 3.0, 0.0])
+        const attribute.BufferAttribute duplicate_location ← attribute.float32_attribute("uv", 0, 2, 6, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        const data.BufferGeometry short_geometry ← data.indexed_triangle_geometry(6, [short_position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, vacua)
+        const data.BufferGeometry bad_index ← data.indexed_triangle_geometry(6, [position], [0, 1, 6], batch.DrawRange {start = 0, count = 3}, vacua)
+        const data.BufferGeometry empty_index ← data.indexed_triangle_geometry(6, [position], [], batch.DrawRange {start = 0, count = 0}, vacua)
+        const data.BufferGeometry bad_range ← data.indexed_triangle_geometry(6, [position], [0, 1, 2], batch.DrawRange {start = 1, count = 2}, vacua)
+        const data.BufferGeometry bad_groups ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 2, count = 3, material_index = 1}])
+        const data.BufferGeometry duplicate_names ← data.indexed_triangle_geometry(6, [position, duplicate_name], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, vacua)
+        const data.BufferGeometry duplicate_locations ← data.indexed_triangle_geometry(6, [position, duplicate_location], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, vacua)
+        assert not short_geometry.valida()
+        assert not bad_index.valida()
+        assert not empty_index.valida()
+        assert not bad_range.valida()
+        assert not bad_groups.valida()
+        assert not duplicate_names.valida()
+        assert not duplicate_locations.valida()
+        assert short_geometry.bounding_box() is null
+        assert bad_index.draw_command(1) is null
+        assert data.colored_indexed_geometry(3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0], [], [0, 1, 2]) is null
+        assert data.colored_indexed_geometry(3, [], [1.0, 1.0, 1.0], [0, 1, 2]) is null
+    }
+
+    test "colored quad accumulation preserves exact topology and derived facts" {
+        const data.ColoredQuadMesh mesh ← data.colored_quad_mesh_append(vacua, vacua, vacua, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 2.0, 0.0, 0.2, 0.4, 0.6) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
+        const batch.VisibleFaceMeshFacts ∪ null mesh_facts ← mesh.facts()
+        const batch.IndexedGeometryDrawBatchFacts ∪ null draw_facts ← mesh.draw_batch_facts(2)
+        const bounds.BoundingBox ∪ null mesh_box ← mesh.bounding_box()
+        const bounds.BoundingSphere ∪ null mesh_sphere ← mesh.bounding_sphere()
+        assert mesh.positions.length() ≡ 12
+        assert mesh.colors.length() ≡ 12
+        assert mesh.indices.length() ≡ 6
+        assert mesh.indices[0] ≡ (0 ∷ int<u32>)
+        assert mesh.indices[1] ≡ (1 ∷ int<u32>)
+        assert mesh.indices[2] ≡ (2 ∷ int<u32>)
+        assert mesh.indices[3] ≡ (0 ∷ int<u32>)
+        assert mesh.indices[4] ≡ (2 ∷ int<u32>)
+        assert mesh.indices[5] ≡ (3 ∷ int<u32>)
+        assert (mesh.face_count() coalesce 0) ≡ 1
+        assert mesh.geometry() not is null
+        assert mesh_facts not is null
+        assert mesh_facts!.face_count ≡ 1
+        assert mesh_facts!.vertex_count ≡ 4
+        assert mesh_facts!.index_count ≡ 6
+        assert mesh_facts!.triangle_count ≡ 2
+        assert mesh_facts!.total_payload_byte_count ≡ 120
+        assert draw_facts not is null
+        assert draw_facts!.draw_count ≡ 1
+        assert draw_facts!.grouped_element_total ≡ 6
+        assert mesh_box!.max_x ≡ (2.0 ∷ f32)
+        assert mesh_box!.max_y ≡ (2.0 ∷ f32)
+        assert mesh_sphere!.center_x ≡ (1.0 ∷ f32)
+        assert mesh_sphere!.center_y ≡ (1.0 ∷ f32)
+        assert mesh.draw_batch_facts(0) is null
+    }
+
+    test "colored quad and degenerate triangle malformed inputs stay absent" {
+        const data.ColoredQuadMesh mismatch ← data.ColoredQuadMesh {positions = [0.0, 0.0, 0.0], colors = [], indices = []}
+        const data.ColoredQuadMesh malformed_face ← data.ColoredQuadMesh {positions = [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0], colors = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], indices = [0, 1, 2]}
+        assert mismatch.face_count() is null
+        assert mismatch.geometry() is null
+        assert malformed_face.face_count() is null
+        assert malformed_face.geometry() is null
+
+        const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 3, [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        const data.BufferGeometry degenerate ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, vacua)
+        assert degenerate.valida()
+        assert degenerate.vertex_normals() is null
+        assert degenerate.planar_uvs() is null
+    }
+}

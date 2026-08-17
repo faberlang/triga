@@ -1,0 +1,71 @@
++++
+locale = "en"
++++
+# Co-located package tests for oriented FaceQuad construction and colored
+# mesh accumulation.
+import from "triga:face" face
+import from "triga:geometry/data" data
+import from "triga:math" math
+
+describe "face quad builders" {
+    test "negative X face publishes exact corners" {
+        const face.FaceQuad quad ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0) coalesce face.FaceQuad {a = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}, b = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}, c = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}, d = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}}
+        assert quad.a.x ≡ (10.0 ∷ f32)
+        assert quad.a.y ≡ (20.0 ∷ f32)
+        assert quad.a.z ≡ (30.0 ∷ f32)
+        assert quad.b.z ≡ (32.0 ∷ f32)
+        assert quad.c.y ≡ (22.0 ∷ f32)
+        assert quad.d.x ≡ (10.0 ∷ f32)
+    }
+
+    test "all face codes preserve their orientation and winding" {
+        const face.FaceQuad positive_x ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
+        const face.FaceQuad negative_y ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
+        const face.FaceQuad positive_y ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
+        const face.FaceQuad negative_z ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
+        const face.FaceQuad positive_z ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
+        assert positive_x.a.x ≡ (5.0 ∷ f32)
+        assert positive_x.a.z ≡ (7.0 ∷ f32)
+        assert positive_x.d.z ≡ (7.0 ∷ f32)
+        assert negative_y.a.y ≡ (2.0 ∷ f32)
+        assert negative_y.b.x ≡ (5.0 ∷ f32)
+        assert positive_y.a.y ≡ (6.0 ∷ f32)
+        assert positive_y.c.z ≡ (3.0 ∷ f32)
+        assert negative_z.a.z ≡ (3.0 ∷ f32)
+        assert negative_z.b.x ≡ (1.0 ∷ f32)
+        assert positive_z.a.z ≡ (7.0 ∷ f32)
+        assert positive_z.c.y ≡ (6.0 ∷ f32)
+    }
+
+    test "invalid codes and non-positive sizes return absence" {
+        assert face.face_code_unit_quad(0, 0.0, 0.0, 0.0, 1.0) is null
+        assert face.face_code_unit_quad(7, 0.0, 0.0, 0.0, 1.0) is null
+        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, 0.0) is null
+        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, -1.0) is null
+        assert face.face_code_colored_quad_mesh_append(vacua, vacua, vacua, 9, 0.0, 0.0, 0.0, 1.0) is null
+        assert face.face_code_colored_quad_mesh_append([0.0], vacua, vacua, 1, 0.0, 0.0, 0.0, 1.0) is null
+    }
+
+    test "colored face append publishes exact position color and index arrays" {
+        const data.ColoredQuadMesh mesh ← face.face_code_colored_quad_mesh_append(vacua, vacua, vacua, 6, 1.0, 2.0, 3.0, 2.0) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
+        assert mesh.positions.length() ≡ 12
+        assert mesh.colors.length() ≡ 12
+        assert mesh.indices.length() ≡ 6
+        assert mesh.positions[0] ≡ (1.0 ∷ f32)
+        assert mesh.positions[2] ≡ (5.0 ∷ f32)
+        assert mesh.positions[5] ≡ (5.0 ∷ f32)
+        assert mesh.positions[8] ≡ (5.0 ∷ f32)
+        assert mesh.positions[11] ≡ (1.0 ∷ f32)
+        assert mesh.colors[0] ≡ (0.4 ∷ f32)
+        assert mesh.colors[1] ≡ (0.4 ∷ f32)
+        assert mesh.colors[2] ≡ (1.0 ∷ f32)
+        assert mesh.indices[0] ≡ (0 ∷ int<u32>)
+        assert mesh.indices[1] ≡ (1 ∷ int<u32>)
+        assert mesh.indices[2] ≡ (2 ∷ int<u32>)
+        assert mesh.indices[3] ≡ (0 ∷ int<u32>)
+        assert mesh.indices[4] ≡ (2 ∷ int<u32>)
+        assert mesh.indices[5] ≡ (3 ∷ int<u32>)
+        assert (mesh.face_count() coalesce 0) ≡ 1
+        assert mesh.geometry() not is null
+    }
+}

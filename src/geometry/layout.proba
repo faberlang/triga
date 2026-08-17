@@ -1,0 +1,29 @@
++++
+locale = "en"
++++
+# Co-located package tests for vertex formats, step modes, and layout records.
+import from "triga:geometry/layout" layout
+
+describe "vertex layout contracts" {
+    test "format constructors cover float and uint widths" {
+        const layout.VertexFormat float_one ← layout.vertex_format_from_component_width(1, true)
+        const layout.VertexFormat float_four ← layout.vertex_format_from_component_width(4, true)
+        const layout.VertexFormat uint_two ← layout.vertex_format_from_component_width(2, false)
+        const layout.VertexFormat uint_three ← layout.vertex_format_from_component_width(3, false)
+    }
+
+    test "vertex step constructor produces a usable layout" {
+        const layout.VertexAttributeLayout value ← layout.VertexAttributeLayout {
+            source_name = "position",
+            shader_location = 0,
+            vertex_format = layout.vertex_format_from_component_width(3, true),
+            offset_bytes = 0,
+            stride_bytes = 12,
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+        assert value.source_name ≡ "position"
+        assert value.shader_location ≡ 0
+        assert value.offset_bytes ≡ 0
+        assert value.stride_bytes ≡ 12
+    }
+}
