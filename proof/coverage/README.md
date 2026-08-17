@@ -37,7 +37,7 @@ failures. This is a partial package-link result, not the historical single-file
 parse-failure snapshot.
 
 This receipt was refreshed with the release Faber built from radix tip
-`10f6971b4` (`fix(runner): execute float32 attribute provider`).
+`781a9a467` (`fix(runner): execute camera children provider`).
 `src/geometry/data.fab` reaches the runner and reports three failed cases plus
 the remaining named unsupported provider route
 `package:BufferAttribute::return::dele`; it is not counted as
@@ -45,11 +45,10 @@ executed-proba. `src/primitives/basic.fab` also reaches the runner and reports
 four passed and six failed cases, replacing its prior
 `SEM004.unknown_struct_field` analysis error. `src/graph.fab` remains at
 executed-proba, while `src/graph/camera.fab` reaches the runner but reports
-zero passed and five failed cases, including named unsupported provider route
-`package:triga:graph/camera::camera::children`; it is not counted as
-executed-proba. The refreshed receipt retains these two named unsupported
-provider routes and the other runner/MIR failures. The run remains open at 9/26,
-not 26/26.
+zero passed and five failed cases. The camera failure text no longer contains
+`package:triga:graph/camera::camera::children`; the refreshed receipt retains
+`package:BufferAttribute::return::dele` and the other runner/MIR failures. The
+run remains open at 9/26, not 26/26.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may

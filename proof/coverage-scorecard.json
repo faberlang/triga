@@ -552,7 +552,6 @@
           "FAIL PerspectiveCamera rejects invalid projection field ranges",
           "FAIL PerspectiveCamera rejects degenerate view inputs",
           "test result: FAILED. 0 passed; 5 failed; 0 skipped",
-          "FaberScript unsupported: provider package:triga:graph/camera::camera::children",
           "assertion failed",
           "runner reported 0 passed for 5 declared cases",
           "runner summary: 5 failed; 0 skipped"
@@ -1517,7 +1516,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T11:09:42Z",
+    "run_at_utc": "2026-08-17T11:21:17Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 9,
@@ -1580,7 +1579,6 @@
           "FAIL PerspectiveCamera rejects invalid projection field ranges",
           "FAIL PerspectiveCamera rejects degenerate view inputs",
           "test result: FAILED. 0 passed; 5 failed; 0 skipped",
-          "FaberScript unsupported: provider package:triga:graph/camera::camera::children",
           "assertion failed",
           "runner reported 0 passed for 5 declared cases",
           "runner summary: 5 failed; 0 skipped"
