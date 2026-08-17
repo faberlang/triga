@@ -7,6 +7,12 @@
 **Type**: record-only triage/routing receipt. Contains no Radix implementation and
 no Triga source or scorecard edits.
 
+**Update (2026-08-17)**: the original `rdx-s05-2` route was superseded by
+`rdx-s05-3` after block-ship evidence (`76f5a125`). Its link-path portion
+landed in Radix as `e56d45f70`; the remaining proba link-then-run versus
+runner-resolved-stubs fork is routed to head-cto, so executed-proba evidence
+remains open.
+
 All commands were re-run live from the Triga root on 2026-08-16 with the
 in-workspace binaries `radix/target/debug/faber` and `radix/target/debug/radix`
 (built 2026-08-16 20:06; includes the proba-runner extraction commits
@@ -111,9 +117,10 @@ not the `targets` list (checked both ways). This package-route variance does
 not change the triage conclusion; it is recorded here so the coverage gate
 re-tests both surfaces after the Radix prerequisites land.
 
-**Classification** — Radix MIR runner: unsupported lowering defect for method
-calls and field projections. **Consequence**: named prerequisite `rdx-s05-2`; no
-assertion weakening or count-only substitutions.
+**Classification** — Radix MIR/link path: the link-path portion landed in
+`e56d45f70`, but `faber test` still does not invoke the linker for independent
+`.proba` units. **Consequence**: named successor `rdx-s05-3` plus the head-cto
+architecture ruling; no assertion weakening or count-only substitutions.
 
 ## 5. Triage conclusion (delivery §2.5)
 
@@ -123,12 +130,13 @@ The Stage-0 Q4 conclusion remains in force: the executed-proba tier is open.
 | --- | --- | --- | --- |
 | `src/math.proba` emits SEM001/SEM008 | Triga test source | stale Latin probe against the current `en` locale; not a module rename | rewrite as `en` in `tgh-s05-c01` |
 | `faber test .` emits `cannot read '.'` | Radix/Faber package route | relative package-path normalization defect | named prerequisite `rdx-s05-1` |
-| converted probe reaches runner but MIR lowering rejects method/field shapes | Radix MIR runner | unsupported lowering defect | named prerequisite `rdx-s05-2` |
+| converted probe reaches runner but MIR lowering rejects method/field shapes | Radix MIR/link path | link-path portion landed; proba execution architecture remains unresolved | named successor `rdx-s05-3` plus head-cto ruling |
 
 Coverage units may author their `.proba` files while the owning-repo routes are
 in flight, but **no coverage unit may claim executed-proba completion until
-`rdx-s05-1` and `rdx-s05-2` land and the gate runs the cases successfully**.
-Executed-proba evidence remains open until those prerequisites land.
+`rdx-s05-1`, `rdx-s05-3`, and the head-cto ruling land and the gate runs the
+cases successfully**. Executed-proba evidence remains open until those
+prerequisites land.
 
 ## 6. Named external routes (delivery §5)
 
@@ -139,15 +147,19 @@ Executed-proba evidence remains open until those prerequisites land.
   from the Triga root, `faber test .` no longer emits `cannot read '.'`; a
   relative Triga package path from the workspace parent and an absolute Triga
   package path enter the same package discovery path.
-- **`rdx-s05-2`** (repo `radix`) — lower the converted Triga
-  method/projection probe. Write scope: `radix/crates/radix/src/mir/lower/place.rs`,
-  `radix/crates/radix/src/mir/lower/runtime.rs`, and focused MIR/proba
-  regression fixtures. Done-when: a package fixture containing the unchanged
-  Triga math module and the converted three-case `math.proba` reaches
-  `3 passed, 0 failed`, naming both observed lowering failures.
+- **`rdx-s05-3`** (repo `radix`) — complete the link-path route and resolve
+  the proba execution architecture. The link-path portion landed in
+  `radix/crates/radix-package/src/mir/link.rs` (`e56d45f70`), where local
+  imported nominal methods now link and the linked-package main executes the
+  converted shapes with zero diagnostics. The remaining choice is proba
+  link-then-run versus runner-resolved stubs; head-cto owns that ruling.
+  Done-when: the selected route makes the unchanged converted three-case
+  `math.proba` reach `3 passed, 0 failed`, naming both original lowering
+  failures.
 
-Both are owning-repository units dispatched in `radix/`. This receipt contains
-**no Radix implementation**; routing only.
+Both are owning-repository units dispatched in `radix/`; `rdx-s05-2` is a
+superseded route, not an active prerequisite. This receipt contains **no Radix
+implementation**; routing only.
 
 ## 7. Sanity / verification log
 
