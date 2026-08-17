@@ -9,22 +9,24 @@ FABER_LIBRARY_HOME=/Users/ianzepp/work/faberlang \
 ```
 
 The gate discovers `src/**/*.fab`, requires exactly one sibling
-`src/**/*.proba` for every module, and invokes Faber's single-source runner
-once per proba file:
+`src/**/*.proba` for every module, and invokes Faber's package linker/test
+runner once per proba file:
 
 ```text
-<FABER_BIN> test src/math.proba
+<FABER_BIN> test /absolute/path/to/triga --include math.proba
+<FABER_BIN> test /absolute/path/to/triga --include geometry/attribute.proba
 ```
 
-Passing the package directory with `--filter src/math.proba` is deliberately
-not used here. That package-wide route analyzes every package source before
-applying the test filter, so one unrelated package diagnostic makes all 26
-module rows report the same analysis failure. The single-source route keeps
-module results independent while still using `FABER_LIBRARY_HOME` for the
-workspace runtime and provider configuration.
+The package path is absolute so Faber uses its package link-then-run route.
+`--include` is relative to the package `src/` root and selects exactly one
+proba source for that module. Imported `.fab` modules remain available to the
+selected test. The gate continues through all 26 selections, so an analysis,
+MIR, or runner failure is isolated to its module row rather than fail-closing
+the remaining rows. The direct single-`.proba` route is deliberately not used;
+it skips the package link step that resolves receiver methods before lowering.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
-`$FABER_LIBRARY_HOME/radix/target/debug/faber`. `PROBA_TIMEOUT_SECONDS` may
+`$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
 bound one module run; its default is 180 seconds.
 
 ## Evidence rules
@@ -32,7 +34,7 @@ bound one module run; its default is 180 seconds.
 A module is `executed-proba` only when all declared `test` cases are reported
 as passed, with zero failed and zero skipped cases, and the runner exits zero.
 A parsed source, structural check, case count, or facade file by itself cannot
-promote a row. Missing probes, orphan probes, single-source analysis errors,
+promote a row. Missing probes, orphan probes, package analysis errors,
 MIR lowering errors, runner failures, and count-only output keep the row below the
 executed tier and make the gate exit non-zero.
 

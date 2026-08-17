@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run every co-located Triga proba through Faber's single-source runner and
+# Run every co-located Triga proba through Faber's package linker/test runner and
 # refresh the Stage-0.5 section of proof/coverage-scorecard.json.
 #
 # The gate writes its receipt before returning a non-zero status.  A parse,
@@ -45,6 +45,10 @@ SUMMARY_RE = re.compile(
 
 def rel(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
+
+
+def source_rel(path: Path) -> str:
+    return path.relative_to(SRC).as_posix()
 
 
 def load_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
@@ -114,19 +118,19 @@ def command_text(command: list[str]) -> str:
 
 
 def run_one(
-    module_path: Path,
+    package_path: Path,
     proba_path: Path,
     faber: Path,
     library_home: Path,
     timeout_seconds: float,
 ) -> dict[str, Any]:
     proba_name = rel(proba_path)
+    include_name = source_rel(proba_path)
     declared = proba_shape(proba_path)
-    # Passing the .proba file itself selects Faber's single-source route.  A
-    # package directory plus --filter still analyzes every package source
-    # before applying the test filter, so one unrelated package diagnostic
-    # incorrectly turns every module into the same analysis error.
-    command = [str(faber), "test", proba_name]
+    # The package path selects Faber's link-then-run route.  --include limits
+    # the loaded proba source to this module while retaining imported package
+    # modules, so one module failure does not zero the other module rows.
+    command = [str(faber), "test", str(package_path), "--include", include_name]
     base: dict[str, Any] = {
         "proba_path": proba_name,
         "case_count": declared["cases"],
@@ -184,7 +188,14 @@ def run_one(
     base["diagnostic_codes"] = diagnostic_counts(output)
     base["failures"] = error_lines(output)
     if not base["failures"] and completed.returncode != 0:
-        base["failures"] = unique_lines(output.splitlines())[-3:]
+        relevant_lines = [
+            line
+            for line in output.splitlines()
+            if re.search(r"\b(?:FAIL|FaberScript unsupported|test result:)", line, re.IGNORECASE)
+        ]
+        base["failures"] = unique_lines(relevant_lines)
+        if not base["failures"]:
+            base["failures"] = unique_lines(output.splitlines())[-3:]
 
     if summary is None:
         # A zero exit without a runner result is not execution evidence.  This
@@ -308,7 +319,7 @@ def main() -> int:
     faber_value = os.environ.get("FABER_BIN")
     library_value = os.environ.get("FABER_LIBRARY_HOME")
     library_home = Path(library_value).expanduser().resolve() if library_value else ROOT.parent.resolve()
-    faber = Path(faber_value).expanduser().resolve() if faber_value else library_home / "radix" / "target" / "debug" / "faber"
+    faber = Path(faber_value).expanduser().resolve() if faber_value else library_home / "radix" / "target" / "release" / "faber"
     timeout_seconds = float(os.environ.get("PROBA_TIMEOUT_SECONDS", "180"))
     package_path = ROOT.resolve()
 
@@ -326,13 +337,15 @@ def main() -> int:
         module_name = rel(module)
         proba = expected_by_module[module_name]
         if proba.is_file():
-            execution = run_one(module, proba, faber, library_home, timeout_seconds)
+            execution = run_one(package_path, proba, faber, library_home, timeout_seconds)
         else:
             execution = {
                 "proba_path": rel(proba),
                 "case_count": 0,
-                "command": [str(faber), "test", rel(proba)],
-                "command_text": command_text([str(faber), "test", rel(proba)]),
+                "command": [str(faber), "test", str(package_path), "--include", source_rel(proba)],
+                "command_text": command_text(
+                    [str(faber), "test", str(package_path), "--include", source_rel(proba)]
+                ),
                 "exit_status": None,
                 "passed": None,
                 "failed": None,
@@ -399,8 +412,8 @@ def main() -> int:
         "package_path": str(package_path),
         "faber_bin": str(faber),
         "faber_library_home": str(library_home),
-        "filter_mode": "single-proba-path",
-        "command_template": [str(faber), "test", "<src-relative>.proba"],
+        "filter_mode": "package-include-per-proba",
+        "command_template": [str(faber), "test", str(package_path), "--include", "<source-relative>.proba"],
         "prerequisites": prerequisite_status,
         "observed_diagnostic_codes": dict(sorted(observed_codes.items())),
         "discovery_errors": errors,
