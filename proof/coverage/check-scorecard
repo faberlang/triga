@@ -85,6 +85,18 @@ BANNER = (
 STALE_WORDS = re.compile(r"61 non-facade|75 import|pre-split|future", re.IGNORECASE)
 IMPORT_PATTERN = re.compile(r'import from "triga:([^"]+)"')
 README_PATTERN = re.compile(r"^  ([^\s]+\.fab)[^\s]*", re.MULTILINE)
+REVISION_RE = re.compile(r"[0-9a-f]{40}")
+DIGEST_RE = re.compile(r"sha256:[0-9a-f]{64}")
+INVENTORY_KEYS = {
+    "path",
+    "inventory_schema_version",
+    "inventory_revision",
+    "source_revision",
+    "module_count",
+    "observed_source_revision",
+    "observed_source_digest",
+    "inventory_mismatch",
+}
 
 
 def load(path: Path, errors: list[str], label: str) -> object | None:
@@ -194,6 +206,13 @@ def baseline_projection(value: object) -> object:
     if not isinstance(projected, dict):
         return projected
     projected.pop("stage0_5", None)
+    inventory = projected.get("inventory")
+    if isinstance(inventory, dict):
+        # Observed provenance is a write-time mark, not the structural census.
+        inventory.pop("observed_source_revision", None)
+        inventory.pop("observed_source_digest", None)
+        inventory.pop("inventory_mismatch", None)
+        inventory.pop("source_revision", None)
     rows = projected.get("modules")
     if isinstance(rows, list):
         for row in rows:
@@ -341,17 +360,43 @@ def main() -> int:
     expect_keys(
         errors,
         score_inventory,
-        {"path", "inventory_schema_version", "inventory_revision", "source_revision", "module_count"},
+        INVENTORY_KEYS,
         "scorecard.inventory",
     )
     if isinstance(score_inventory, dict):
-        for key in ("inventory_schema_version", "inventory_revision", "source_revision"):
+        for key in ("inventory_schema_version", "inventory_revision"):
             if score_inventory.get(key) != inventory.get(key):
                 errors.append(f"scorecard.inventory.{key} does not match committed inventory")
         if score_inventory.get("module_count") != inventory.get("totals", {}).get("modules"):
             errors.append("scorecard.inventory.module_count does not match committed inventory")
         if score_inventory.get("path") != "proof/inventory/triga-inventory.json":
             errors.append("scorecard.inventory.path is not the committed inventory path")
+        snapshot = score_inventory.get("source_revision")
+        observed = score_inventory.get("observed_source_revision")
+        digest = score_inventory.get("observed_source_digest")
+        mismatch = score_inventory.get("inventory_mismatch")
+        if not isinstance(snapshot, str) or not REVISION_RE.fullmatch(snapshot):
+            errors.append("scorecard.inventory.source_revision must be a 40-character git revision")
+        if not isinstance(observed, str) or not REVISION_RE.fullmatch(observed):
+            errors.append(
+                "scorecard.inventory.observed_source_revision must be a 40-character git revision"
+            )
+        if not isinstance(digest, str) or not DIGEST_RE.fullmatch(digest):
+            errors.append(
+                "scorecard.inventory.observed_source_digest must be a sha256:<hex> digest"
+            )
+        if not isinstance(mismatch, bool):
+            errors.append("scorecard.inventory.inventory_mismatch must be boolean")
+        elif isinstance(snapshot, str) and isinstance(observed, str):
+            if mismatch != (snapshot != observed):
+                errors.append(
+                    "scorecard.inventory.inventory_mismatch disagrees with observed vs snapshot revision"
+                )
+            if snapshot != inventory.get("source_revision") and mismatch is not True:
+                errors.append(
+                    "scorecard.inventory.source_revision differs from committed inventory "
+                    "without inventory_mismatch=true"
+                )
 
     documented = documented_exempla(errors)
     exemplar_section = scorecard.get("exempla_inventory")

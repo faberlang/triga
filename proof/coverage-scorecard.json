@@ -8,7 +8,10 @@
     "inventory_schema_version": 1,
     "inventory_revision": 1,
     "source_revision": "2e9daa06684269c58f177a8d1c36f0c8c2365152",
-    "module_count": 26
+    "module_count": 26,
+    "observed_source_revision": "97da931826b9548c40cb2ee1f52249b1a0e244aa",
+    "observed_source_digest": "sha256:72725c2178b007500045ee6e75d2d91287535382919e87cb936c7289d087ae80",
+    "inventory_mismatch": true
   },
   "exempla_inventory": {
     "readme": "exempla/README.md",
