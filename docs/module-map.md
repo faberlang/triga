@@ -82,14 +82,14 @@ see the [engine checkpoint](factory/triga-engine/checkpoint/report.md) §8).
 ## Import examples
 
 ```fab
-importa ex "triga:math" privata math
-importa ex "triga:graph/object" privata object
-importa ex "triga:graph/camera" privata camera
-importa ex "triga:material" privata material
-importa ex "triga:geometry/data" privata data
-importa ex "triga:primitives/basic" privata basic
-importa ex "triga:scene" privata scene
-importa ex "triga:resource" privata resource
+import from "triga:math" math
+import from "triga:graph/object" object
+import from "triga:graph/camera" camera
+import from "triga:material" material
+import from "triga:geometry/data" data
+import from "triga:primitives/basic" basic
+import from "triga:scene" scene
+import from "triga:resource" resource
 ```
 
 ```fab

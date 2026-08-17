@@ -19,9 +19,9 @@ The smallest useful Triga program constructs a typed attribute and wraps it in
 an indexed geometry value:
 
 ```fab
-importa ex "triga:geometry/data" privata data
-importa ex "triga:geometry/attribute" privata attribute
-importa ex "triga:geometry/batch" privata batch
+import from "triga:geometry/data" data
+import from "triga:geometry/attribute" attribute
+import from "triga:geometry/batch" batch
 
 incipit {
     fixum attribute.BufferAttribute position ← attribute.float32_attribute(
@@ -91,13 +91,13 @@ Full module ownership: [`docs/module-map.md`](docs/module-map.md) (Norma-style m
 ## Import
 
 ```fab
-importa ex "triga:math" privata math
-importa ex "triga:graph" privata graph
-importa ex "triga:material" privata material
-importa ex "triga:geometry" privata geometry
-importa ex "triga:primitives" privata primitives
-importa ex "triga:scene" privata scene
-importa ex "triga:resource" privata resource
+import from "triga:math" math
+import from "triga:graph" graph
+import from "triga:material" material
+import from "triga:geometry" geometry
+import from "triga:primitives" primitives
+import from "triga:scene" scene
+import from "triga:resource" resource
 ```
 
 This is an orientation map. In application code, import the leaf that owns the
