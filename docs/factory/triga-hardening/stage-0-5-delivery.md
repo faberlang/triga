@@ -282,6 +282,14 @@ scopes and must be dispatched in `radix/`.
 > `b7934c6a`) — link-path lowering in `crates/radix-package/src/mir/link.rs`
 > (`link_library_method_targets`), same done_when proofs. Evidence memo:
 > `5aa20bf8`.
+>
+> **rdx-s05-3 update 2026-08-17** — link-path portion landed
+> (`e56d45f70`: local imported nominal methods link, converted shapes
+> included; linked package main executes the failing shapes with 0
+> diagnostics). Remaining blocker is the reserved architecture fork: `faber
+> test` lowers each `.proba` independently and never invokes the linker.
+> Routed to head-cto (proba link-then-run vs runner-resolved stubs). Probes
+> stay 0/3 and 21 respectively until that ruling lands.
 
 - **repo**: `radix`
 - **outcome**: the MIR runner lowers and executes the minimal current-English
