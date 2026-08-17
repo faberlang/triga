@@ -1,6 +1,6 @@
 # Deterministic mesh primitive generators — package map facade.
 #
-# Public import: import from "triga:primitives" private primitives
+# Public import: import from "triga:primitives" primitives
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:primitives/basic   plane, circle, sphere, cylinder, cone, torus,
@@ -13,4 +13,4 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:primitives/basic" private basic
+import from "triga:primitives/basic" basic

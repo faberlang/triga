@@ -7,13 +7,13 @@
 #   - primitives/basic: free generators that build BufferGeometry (plane, box, …).
 #   - Do not add GPU reflection enums here; do not grow three.js mirror genera.
 #
-# Import: triga:primitives/basic
+# Public import: import from "triga:primitives/basic" basic
 
-import from "triga:geometry/data" private data
+import from "triga:geometry/data" data
 
-import from "triga:geometry/attribute" private attribute
+import from "triga:geometry/attribute" attribute
 
-import from "triga:geometry/batch" private batch
+import from "triga:geometry/batch" batch
 
 # --- Free primitive helpers ---
 
@@ -32,6 +32,7 @@ fn _primitive_geometry(int vertex_count, list<f32> positions, list<f32> normals,
 # --- Free constructors for primitive shapes ---
 
 # A centered plane on the XY axes, with its normal pointing along +Z.
+@ public
 fn plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ null {
     if width ≤ 0.0 or height ≤ 0.0 then return null
     const f32 half_width ← width * 0.5
@@ -40,6 +41,7 @@ fn plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ null {
 }
 
 # An eight-sector, center-fan circle on the XY plane.
+@ public
 fn circle_geometry(f32 radius) → data.BufferGeometry ∪ null {
     if radius ≤ 0.0 then return null
     const f32 diagonal ← radius * 0.70710678
@@ -54,6 +56,7 @@ fn circle_geometry(f32 radius) → data.BufferGeometry ∪ null {
 # old "faceted" header was corrected to match) and a proper per-vertex
 # spherical UV mapping: u = sector/8 (the seam quad spans u ∈ [7/8, 1]),
 # v = (lat/90 + 1)/2.
+@ public
 fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     if radius ≤ 0.0 then return null
     const f32 diagonal ← radius * 0.70710678
@@ -141,6 +144,7 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
 }
 
 # A closed cylinder with side rings and cap centers.
+@ public
 fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     if radius ≤ 0.0 or height ≤ 0.0 then return null
     const f32 half_height ← height * 0.5
@@ -213,6 +217,7 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
 }
 
 # A cone with a circular base, cap center, and apex.
+@ public
 fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     if radius ≤ 0.0 or height ≤ 0.0 then return null
     const f32 half_height ← height * 0.5
@@ -271,6 +276,7 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
 }
 
 # A torus represented by the fixed ring/tube tessellation used by this leaf.
+@ public
 fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null {
     if (radius ≤ 0.0 or tube_radius ≤ 0.0) or tube_radius ≥ radius then return null
     const f32 diagonal ← 0.70710678
@@ -319,6 +325,7 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null 
 }
 
 # A six-sided box with one independently shaded face set per side.
+@ public
 fn box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ null {
     if (width ≤ 0.0 or height ≤ 0.0) or depth ≤ 0.0 then return null
     const f32 x ← width * 0.5
@@ -328,6 +335,7 @@ fn box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nu
 }
 
 # A line-list box useful for debug views and early host bring-up.
+@ public
 fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ null {
     if (width ≤ 0.0 or height ≤ 0.0) or depth ≤ 0.0 then return null
     const f32 x ← width * 0.5
@@ -340,6 +348,7 @@ fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry �
     return wire
 }
 
+@ public
 fn box_wire_draw_batch_facts(f32 width, f32 height, f32 depth, int instance_count) → batch.LineGeometryDrawBatchFacts ∪ null {
     const data.BufferGeometry ∪ null geometry_result ← box_wire_geometry(width, height, depth)
     if geometry_result is null then return null
