@@ -1,13 +1,13 @@
 # Campaign: Triga Library Hardening
 
-**Status**: active (2026-08-16 Stage 0 landed; Stages 1–8 remain) — professional source-library baseline
+**Status**: active — Stage 0 landed (2026-08-16); Stage 0.5 (full co-located proba coverage / executed-proba scorecard) in progress — gate blocked at 9/26 modules at executed-proba (coverage revision 2 receipt; re-measure in flight, Vivi handle 8ec67846, result not yet cited); Stages 1–8 remain — professional source-library baseline
 **Mode**: run — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga` (primary); `radix` and `hosts` for the mandatory
 vertical-profile proof; `cista` and the Faber product release path as
 clean-install/release consumers
 **Vision source**: [Triga Engine And World-Building Architecture](../triga-engine/GOAL.md) — the world-building and engine contract this library serves
-**Selected next stage**: Stage 1 — canonical validation and continuous-evidence spine
+**Selected next stage**: Stage 0.5 — full co-located proba coverage and executed-proba scorecard (operator amendment). Stage 1 is NOT selected/open — the Stage 0.5 gate is blocked at 9/26 executed (re-measure in flight, Vivi handle 8ec67846; do not cite its result)
 **Release posture**: pre-1.0 source package consumed through the Faber product;
 Triga has no standalone release protocol
 
@@ -381,6 +381,27 @@ module counted as live.
 **Overlap rule**: discovery only; no source correction or support upgrade.
 **Lowers to**: `delivery` → `factory`
 **Batching**: discovery-first
+
+### Stage 0.5 — Full co-located proba coverage and executed-proba scorecard
+
+**Status**: in progress — gate blocked at 9/26 modules at executed-proba
+(coverage revision 2 receipt, 2026-08-17T11:39:03Z at radix `60f495870`);
+re-measure in flight (Vivi handle `8ec67846`)
+**Source**: `src/**/*.proba`, `scripta/check-proba-coverage`,
+`proof/coverage-scorecard.json`,
+[`stage-0-5-delivery.md`](./stage-0-5-delivery.md),
+[`stage-0-5-triage.md`](./stage-0-5-triage.md)
+**Depends on**: Stage 0
+**Why now**: the live evidence contract is one stale probe; later hardening
+stages cannot score from a single executed proba
+**Gate**: every live `src/**/*.fab` module has exactly one sibling co-located
+proba; the package-link gate (`scripta/check-proba-coverage`) runs all 26
+selections and reports 26/26 at executed-proba with aggregate `complete: true`;
+no count-only, skip, or zero-pass row promotes a module
+**Overlap rule**: test-and-evidence only; no Triga product-source repair, no
+profile/capability or ABI change; Radix/Faber defects route to owning-repo units
+**Lowers to**: `delivery` → `factory`
+**Batching**: module-family batches
 
 ### Stage 1 — Canonical validation and continuous-evidence spine
 
