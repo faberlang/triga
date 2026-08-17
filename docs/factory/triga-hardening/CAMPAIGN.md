@@ -1,6 +1,6 @@
 # Campaign: Triga Library Hardening
 
-**Status**: active (2026-08-16 Stage 0 landed; Stages 1–8 remain) — professional source-library baseline
+**Status**: active (2026-08-17 Stage 0 landed; Stage 0.5 sources landed, tgh-s05-gate blocked 9/26; Stage 1 delivery ready) — professional source-library baseline
 **Mode**: run — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga` (primary); `radix` and `hosts` for the mandatory
@@ -287,8 +287,8 @@ At campaign closeout:
   geometry/facade leaves are smaller.
 - [`faber.toml`](../../../faber.toml) declares the `en` locale and package
   version `0.2.0`; [`cista.toml`](../../../cista.toml) agrees on `0.2.0`.
-- [`src/math.proba`](../../../src/math.proba) is the only co-located proba and
-  contains three Vector3 cases.
+- Every live `src/**/*.fab` now has a sibling `.proba` (Stage 0.5 c01–c09).
+  The executed-proba ledger is still 9/26 blocked (`tgh-s05-gate`).
 - [`proof/capabilities.json`](../../../proof/capabilities.json) is the honest
   broad-horizon ledger: all current domain proofs are `unsupported`.
 - [`API shape policy`](../../api-shape-policy.md) is accepted law, but live
@@ -350,10 +350,10 @@ At campaign closeout:
 | --- | --- | --- |
 | Supported profile | Core Graphics Profile v0 is frozen; the broad ledger remains honestly all-unsupported | Stage 1 canonical validation |
 | Live inventory | Versioned inventory records all 26 live modules; stale module/test reports remain annotated | Stage 1 canonical validation |
-| Validation spine | Default compile route targets obsolete checkout shape; manual leaf list incomplete; WGSL gate rejects later Radix drift | Stage 1 |
+| Validation spine | Default compile route still targets a missing public-`faber` Cargo path; manual leaf list omits 8/26 modules; WGSL gate still pins Radix `41b4c0411`; Stage 1 spec is [`stage-1-delivery.md`](./stage-1-delivery.md) | Stage 1 units `tgh-s1-1`–`tgh-s1-5` |
 | Diagnostics | No typed public error families; `bool`/`null` collapse distinct failures | Stage 2 |
 | Numeric invariants | Non-finite policy absent; repeated reduction/sqrt loops; arbitrary-length matrix carriers | Stages 2–3 |
-| Package tests | One `.proba`, three Vector3 cases | Stages 2–5 add complete leaf-family coverage |
+| Package tests | 26 sibling `.proba` sources landed (Stage 0.5 c01–c09); `tgh-s05-gate` ledger blocked at **9/26** executed-proba (`proof/coverage-scorecard.json` `stage0_5`, 2026-08-17T11:39:03Z) | `tgh-s05-gate` remains open; Stage 1 invokes the gate honestly and does not wait for 26/26 |
 | Geometry/primitives | Useful validation/builders exist; exact-output and malformed-input proof is thin | Stage 3 |
 | Scene/resource | Generation-aware foundation exists; negative index, traversal duplication, authority/disposal boundaries remain | Stage 4 |
 | Appearance/composition | Cameras/lights/materials/meshes are mostly disconnected carriers | Stage 5 |
@@ -382,12 +382,34 @@ module counted as live.
 **Lowers to**: `delivery` → `factory`
 **Batching**: discovery-first
 
+### Stage 0.5 — Co-located proba coverage and executed-proba gate
+
+**Status**: sources complete (c01–c09 landed); gate blocked (2026-08-17
+`tgh-s05-gate` ledger 9/26 executed-proba, `complete: false`)
+**Source**: [`stage-0-5-delivery.md`](./stage-0-5-delivery.md),
+[`stage-0-5-triage.md`](./stage-0-5-triage.md),
+`scripta/check-proba-coverage`, `proof/coverage-scorecard.json`
+**Depends on**: Stage 0
+**Why now**: operator amendment — evidence cannot accumulate as a single
+stale probe; every live module needs a sibling `.proba` and a machine gate.
+**Gate**: 26/26 modules at `executed-proba` and `stage0_5.complete: true`.
+The last committed receipt is 9/26 blocked; it was not remasured for Stage 1.
+**Overlap rule**: test-and-evidence only; remaining module reds stay on this
+gate and owning-repo residuals. Stage 1 may invoke the gate and must not
+close it.
+**Lowers to**: already lowered (`stage-0-5-delivery.md`); remaining unit is
+`tgh-s05-gate`
+**Batching**: coverage families landed; gate is serial and still open
+
 ### Stage 1 — Canonical validation and continuous-evidence spine
 
-**Status**: planned
+**Status**: planned — delivery spec ready (`stage-1-delivery.md`); five
+gate-independent units may start
 **Source**: `scripta/check-*`, `faber.toml`, current Radix/Faber product route,
 current proba discovery, corpus/browser runners
-**Depends on**: Stage 0
+**Depends on**: Stage 0. Stage 0.5 *sources* are present. Stage 0.5 *gate
+green* is **not** a start dependency; it is the named dependency of the
+unlowered `tgh-s1-proba-rung` only.
 **Why now**: hardening cannot accumulate evidence behind a broken, partial, or
 revision-frozen gate.
 **Gate**: one canonical command discovers every live source leaf and proba,
@@ -620,8 +642,8 @@ The second search must return only the explicit scope amendment, stale-count
 diagnosis, and this validation command—never a current no-cross-repo
 completion rule or a 61/75 live-inventory claim.
 
-Stage 1 defines the final canonical command. Until then, the known intended
-rungs are:
+Stage 1 defines the final canonical command (`tgh-s1-5` → `./scripta/check`).
+Until that unit lands, the known intended rungs are:
 
 ```bash
 ./scripta/check-source
