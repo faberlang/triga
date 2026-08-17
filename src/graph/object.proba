@@ -11,7 +11,7 @@ import from "triga:graph/object" graph_object
 import from "triga:math" math
 
 fn objectum(string nomen) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, name = nomen}
+    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = true, name = nomen}
 }
 
 test "Object3D preserves identity and default node state" {
@@ -30,7 +30,7 @@ test "Object3D preserves identity and default node state" {
 
 test "Object3D child lists preserve parent and child defaults" {
     const graph_object.Object3D child ← objectum("child")
-    const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = [child], name = "parent"}
+    const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = [child], visible = true, name = "parent"}
     assert parent.name ≡ "parent"
     assert parent.children.length() ≡ 1
     assert parent.children[0].name ≡ "child"
@@ -41,11 +41,12 @@ test "Object3D child lists preserve parent and child defaults" {
 test "Scene preserves its Object3D base and optional background" {
     const graph_object.Object3D base ← objectum("scene-root")
     const graph_object.Scene scene ← graph_object.Scene {base = base, background = math.Color {r = 0.2, g = 0.4, b = 0.6}}
+    const math.Color background ← scene.background coalesce math.Color {r = -1.0, g = -1.0, b = -1.0}
     assert scene.base.name ≡ "scene-root"
     assert scene.background not is null
-    assert scene.background!.r ≡ (0.2 ∷ f32)
-    assert scene.background!.g ≡ (0.4 ∷ f32)
-    assert scene.background!.b ≡ (0.6 ∷ f32)
+    assert background.r ≡ (0.2 ∷ f32)
+    assert background.g ≡ (0.4 ∷ f32)
+    assert background.b ≡ (0.6 ∷ f32)
 }
 
 test "Scene background is absent by default" {
