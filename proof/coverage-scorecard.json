@@ -100,17 +100,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include face.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 4,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: struct field projection is missing field metadata",
+          "error: named aggregate references unknown field",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       }
     },
@@ -136,7 +137,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -153,19 +154,14 @@
           "geometry.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -198,7 +194,7 @@
         "exempla/triga-stage4-source-facts.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -215,19 +211,14 @@
           "geometry/attribute.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/attribute.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -259,7 +250,7 @@
         "exempla/triga-stage4-source-facts.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -276,21 +267,14 @@
           "geometry/batch.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/batch.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 8,
-          "SEM004.unknown_struct_field": 8
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -315,7 +299,7 @@
         "cases": 3
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -332,19 +316,14 @@
           "geometry/bounds.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/bounds.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -408,10 +387,10 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "SEM004.unknown_field": 1
+          "SEM004.namespace_missing_export": 1
         },
         "failures": [
-          "error: SEM004.unknown_field",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -438,7 +417,7 @@
         "cases": 2
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -455,21 +434,14 @@
           "geometry/layout.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/layout.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 6,
-          "SEM004.unknown_struct_field": 4
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -494,7 +466,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -511,19 +483,14 @@
           "graph.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -575,10 +542,16 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "SEM004.unknown_field": 1
+          "SEM004.unknown_method": 7,
+          "SEM004.unknown_struct_field": 2,
+          "SEM010.assert_condition_type_mismatch": 9,
+          "SEM012.callee_not_callable": 2
         },
         "failures": [
-          "error: SEM004.unknown_field",
+          "error: SEM004.unknown_struct_field",
+          "error: SEM012.callee_not_callable",
+          "error: SEM010.assert_condition_type_mismatch",
+          "error: SEM004.unknown_method",
           "error: package analysis failed"
         ]
       }
@@ -626,23 +599,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph/object.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 4,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 17,
-          "SEM004.unknown_struct_field": 21,
-          "SEM010.assert_condition_type_mismatch": 2,
-          "SEM011.indexing_requires_array_or_map": 3
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: SEM011.indexing_requires_array_or_map",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       }
     },
@@ -735,19 +702,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include lighting/light.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 3,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 23,
-          "SEM004.unknown_struct_field": 24
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "FAIL PointLight defaults remain explicit carrier values",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -791,17 +757,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -849,21 +815,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/base.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 4,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 41,
-          "SEM004.unknown_struct_field": 30,
-          "SEM010.assert_condition_type_mismatch": 9
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       }
     },
@@ -910,17 +872,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/basic.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       }
     },
@@ -966,25 +928,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/lit.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 25,
-          "SEM004.unknown_struct_field": 21,
-          "SEM010.argument_type_mismatch": 5,
-          "SEM010.assert_condition_type_mismatch": 2,
-          "SEM010.expression_type_mismatch": 5
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.expression_type_mismatch",
-          "error: SEM010.argument_type_mismatch",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       }
     },
@@ -1030,25 +984,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/standard.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 27,
-          "SEM004.unknown_struct_field": 27,
-          "SEM010.argument_type_mismatch": 5,
-          "SEM010.assert_condition_type_mismatch": 2,
-          "SEM010.expression_type_mismatch": 5
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.expression_type_mismatch",
-          "error: SEM010.argument_type_mismatch",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       }
     },
@@ -1102,21 +1048,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include math.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 12,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 78,
-          "SEM004.unknown_struct_field": 90,
-          "SEM011.indexing_requires_array_or_map": 12
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM011.indexing_requires_array_or_map",
-          "error: package analysis failed"
+          "FAIL box, sphere, and plane volumes/box constructors and overlap operations preserve bounds",
+          "test result: FAILED. 12 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 12 passed for 13 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -1142,7 +1085,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1159,19 +1102,14 @@
           "primitives.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include primitives.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -1231,10 +1169,10 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "SEM004.unknown_field": 1
+          "SEM004.unknown_struct_field": 16
         },
         "failures": [
-          "error: SEM004.unknown_field",
+          "error: SEM004.unknown_struct_field",
           "error: package analysis failed"
         ]
       }
@@ -1279,17 +1217,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include renderable.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -1335,17 +1273,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include renderable/mesh.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     },
@@ -1391,21 +1329,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include resource.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 6,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 44,
-          "SEM004.unknown_struct_field": 23,
-          "SEM010.assert_condition_type_mismatch": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 6 failed; 0 skipped"
         ]
       }
     },
@@ -1452,17 +1386,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include scene.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     },
@@ -1555,17 +1489,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include triga.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     }
@@ -1574,10 +1508,10 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T08:14:47Z",
+    "run_at_utc": "2026-08-17T08:26:54Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 2,
+    "executed_module_count": 9,
     "executed_tier": "executed-proba",
     "package_path": "/Users/ianzepp/work/faberlang/triga",
     "faber_bin": "/Users/ianzepp/work/faberlang/radix/target/release/faber",
@@ -1592,78 +1526,28 @@
     ],
     "prerequisites": {
       "rdx-s05-1": "not-observed",
-      "rdx-s05-3": "not-observed"
+      "rdx-s05-3": "unresolved"
     },
     "observed_diagnostic_codes": {
-      "SEM004.unknown_field": 281,
-      "SEM004.unknown_struct_field": 251,
-      "SEM010.argument_type_mismatch": 10,
-      "SEM010.assert_condition_type_mismatch": 16,
-      "SEM010.expression_type_mismatch": 10,
-      "SEM011.indexing_requires_array_or_map": 15
+      "SEM004.namespace_missing_export": 1,
+      "SEM004.unknown_method": 7,
+      "SEM004.unknown_struct_field": 18,
+      "SEM010.assert_condition_type_mismatch": 9,
+      "SEM012.callee_not_callable": 2
     },
     "discovery_errors": [],
     "failures": [
       {
         "module": "src/face.fab",
         "proba_path": "src/face.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/geometry.fab",
-        "proba_path": "src/geometry.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/geometry/attribute.fab",
-        "proba_path": "src/geometry/attribute.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/geometry/batch.fab",
-        "proba_path": "src/geometry/batch.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 8,
-          "SEM004.unknown_struct_field": 8
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/geometry/bounds.fab",
-        "proba_path": "src/geometry/bounds.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: struct field projection is missing field metadata",
+          "error: named aggregate references unknown field",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       },
       {
@@ -1671,36 +1555,10 @@
         "proba_path": "src/geometry/data.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM004.unknown_field": 1
+          "SEM004.namespace_missing_export": 1
         },
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/geometry/layout.fab",
-        "proba_path": "src/geometry/layout.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 6,
-          "SEM004.unknown_struct_field": 4
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/graph.fab",
-        "proba_path": "src/graph.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1709,151 +1567,115 @@
         "proba_path": "src/graph/camera.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM004.unknown_field": 1
+          "SEM004.unknown_method": 7,
+          "SEM004.unknown_struct_field": 2,
+          "SEM010.assert_condition_type_mismatch": 9,
+          "SEM012.callee_not_callable": 2
         },
         "failures": [
-          "error: SEM004.unknown_field",
+          "error: SEM004.unknown_struct_field",
+          "error: SEM012.callee_not_callable",
+          "error: SEM010.assert_condition_type_mismatch",
+          "error: SEM004.unknown_method",
           "error: package analysis failed"
         ]
       },
       {
         "module": "src/graph/object.fab",
         "proba_path": "src/graph/object.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 17,
-          "SEM004.unknown_struct_field": 21,
-          "SEM010.assert_condition_type_mismatch": 2,
-          "SEM011.indexing_requires_array_or_map": 3
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: SEM011.indexing_requires_array_or_map",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       },
       {
         "module": "src/lighting/light.fab",
         "proba_path": "src/lighting/light.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 23,
-          "SEM004.unknown_struct_field": 24
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "FAIL PointLight defaults remain explicit carrier values",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material.fab",
         "proba_path": "src/material.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material/base.fab",
         "proba_path": "src/material/base.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 41,
-          "SEM004.unknown_struct_field": 30,
-          "SEM010.assert_condition_type_mismatch": 9
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material/basic.fab",
         "proba_path": "src/material/basic.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material/lit.fab",
         "proba_path": "src/material/lit.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 25,
-          "SEM004.unknown_struct_field": 21,
-          "SEM010.argument_type_mismatch": 5,
-          "SEM010.assert_condition_type_mismatch": 2,
-          "SEM010.expression_type_mismatch": 5
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.expression_type_mismatch",
-          "error: SEM010.argument_type_mismatch",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material/standard.fab",
         "proba_path": "src/material/standard.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 27,
-          "SEM004.unknown_struct_field": 27,
-          "SEM010.argument_type_mismatch": 5,
-          "SEM010.assert_condition_type_mismatch": 2,
-          "SEM010.expression_type_mismatch": 5
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.expression_type_mismatch",
-          "error: SEM010.argument_type_mismatch",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       },
       {
         "module": "src/math.fab",
         "proba_path": "src/math.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 78,
-          "SEM004.unknown_struct_field": 90,
-          "SEM011.indexing_requires_array_or_map": 12
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM011.indexing_requires_array_or_map",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/primitives.fab",
-        "proba_path": "src/primitives.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
-        "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "FAIL box, sphere, and plane volumes/box constructors and overlap operations preserve bounds",
+          "test result: FAILED. 12 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 12 passed for 13 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
@@ -1861,75 +1683,71 @@
         "proba_path": "src/primitives/basic.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM004.unknown_field": 1
+          "SEM004.unknown_struct_field": 16
         },
         "failures": [
-          "error: SEM004.unknown_field",
+          "error: SEM004.unknown_struct_field",
           "error: package analysis failed"
         ]
       },
       {
         "module": "src/renderable.fab",
         "proba_path": "src/renderable.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
         "module": "src/renderable/mesh.fab",
         "proba_path": "src/renderable/mesh.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       },
       {
         "module": "src/resource.fab",
         "proba_path": "src/resource.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 44,
-          "SEM004.unknown_struct_field": 23,
-          "SEM010.assert_condition_type_mismatch": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: SEM004.unknown_struct_field",
-          "error: SEM010.assert_condition_type_mismatch",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 6 failed; 0 skipped"
         ]
       },
       {
         "module": "src/scene.fab",
         "proba_path": "src/scene.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_struct_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_struct_field",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       },
       {
         "module": "src/triga.fab",
         "proba_path": "src/triga.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.unknown_field": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.unknown_field",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     ]

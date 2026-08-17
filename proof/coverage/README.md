@@ -26,13 +26,15 @@ MIR, or runner failure is isolated to its module row rather than fail-closing
 the remaining rows. The direct single-`.proba` route is deliberately not used;
 it skips the package link step that resolves receiver methods before lowering.
 
-The current committed receipt (`proof/coverage-scorecard.json`, coverage
-revision 2) records **2/26** module selections at `executed-proba` through this
-package-link route, using `/Users/ianzepp/work/faberlang/radix/target/release/faber`.
-The passing selections are `src/lighting.fab` and `src/shader_contract.fab`. The
-remaining 24 rows are structural package-analysis errors; no runner-failure rows
-remain in this receipt. This is a partial package-link result, not the historical
-single-file parse-failure snapshot.
+The current receipt (`proof/coverage-scorecard.json`, coverage revision 2)
+records **9/26** module selections at `executed-proba` through this package-link
+route, using `/Users/ianzepp/work/faberlang/radix/target/release/faber`. The
+passing selections are `src/geometry.fab`, `src/geometry/attribute.fab`,
+`src/geometry/batch.fab`, `src/geometry/bounds.fab`, `src/geometry/layout.fab`,
+`src/graph.fab`, `src/lighting.fab`, `src/primitives.fab`, and
+`src/shader_contract.fab`. The remaining 17 rows contain analysis or runner
+failures. This is a partial package-link result, not the historical single-file
+parse-failure snapshot.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
