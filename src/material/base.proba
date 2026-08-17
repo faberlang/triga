@@ -1,0 +1,93 @@
++++
+locale = "en"
++++
+# Co-located package tests for material/base.fab.
+# These cases cover validation, side/depth/alpha policy, compact pipeline
+# facts, and the temporary texture descriptor carrier.
+import from "triga:material/base" base
+
+test "base material construction preserves defaults and pipeline facts" {
+    const base.Material material ← base.materia_ex_nomine("base")
+    const int side_code ← base.material_side_code(material) coalesce -1
+    const base.MaterialPipelineFacts facts ← base.material_pipeline_facts(material) coalesce base.MaterialPipelineFacts {side_code = -1, depth_test_enabled = false, depth_write_enabled = false, transparent = false, alpha = 0.0, alpha_test = 0.0}
+
+    assert material.name ≡ "base"
+    assert material.side ≡ (0 ∷ int<u32>)
+    assert material.transparent ≡ false
+    assert material.opacity ≡ (1.0 ∷ f32)
+    assert material.depth_write
+    assert material.depth_test
+    assert material.alpha_test ≡ (0.0 ∷ f32)
+    assert base.material_valida(material)
+    assert side_code ≡ 0
+    assert base.material_depth_enabled(material)
+    assert base.material_depth_test_enabled(material)
+    assert base.material_depth_write_enabled(material)
+    assert facts.side_code ≡ 0
+    assert facts.depth_test_enabled
+    assert facts.depth_write_enabled
+    assert facts.transparent ≡ false
+    assert facts.alpha ≡ (1.0 ∷ f32)
+    assert facts.alpha_test ≡ (0.0 ∷ f32)
+}
+
+test "side and depth policies project into validated facts" {
+    const base.Material policy ← base.Material {name = "policy", side = 1, transparent = true, opacity = 0.4, depth_write = false, depth_test = true, alpha_test = 0.25}
+    const int side_code ← base.material_side_code(policy) coalesce -1
+    const base.MaterialPipelineFacts facts ← base.material_pipeline_facts(policy) coalesce base.MaterialPipelineFacts {side_code = -1, depth_test_enabled = false, depth_write_enabled = false, transparent = false, alpha = 0.0, alpha_test = 0.0}
+    const base.Material double_sided ← base.material_double_sided(policy)
+
+    assert base.material_valida(policy)
+    assert side_code ≡ 1
+    assert base.material_est_double_sided(policy) ≡ false
+    assert base.material_depth_enabled(policy) ≡ false
+    assert base.material_depth_test_enabled(policy)
+    assert base.material_depth_write_enabled(policy) ≡ false
+    assert facts.side_code ≡ 1
+    assert facts.depth_test_enabled
+    assert facts.depth_write_enabled ≡ false
+    assert facts.transparent
+    assert facts.alpha ≡ (0.4 ∷ f32)
+    assert facts.alpha_test ≡ (0.25 ∷ f32)
+
+    assert double_sided.side ≡ (2 ∷ int<u32>)
+    assert base.material_est_double_sided(double_sided)
+    assert (base.material_side_code(double_sided) coalesce -1) ≡ 2
+    assert double_sided.transparent
+    assert double_sided.opacity ≡ (0.4 ∷ f32)
+    assert double_sided.depth_write ≡ false
+    assert double_sided.depth_test
+    assert double_sided.alpha_test ≡ (0.25 ∷ f32)
+}
+
+test "opacity alpha and unsupported side values fail closed" {
+    const base.Material empty_name ← base.Material {name = "", opacity = 1.0, alpha_test = 0.0}
+    const base.Material invalid_side ← base.Material {name = "invalid-side", side = 3, opacity = 1.0, alpha_test = 0.0}
+    const base.Material opacity_low ← base.Material {name = "opacity-low", opacity = -0.01, alpha_test = 0.0}
+    const base.Material opacity_high ← base.Material {name = "opacity-high", opacity = 1.01, alpha_test = 0.0}
+    const base.Material alpha_low ← base.Material {name = "alpha-low", opacity = 1.0, alpha_test = -0.01}
+    const base.Material alpha_high ← base.Material {name = "alpha-high", opacity = 1.0, alpha_test = 1.01}
+
+    assert base.material_valida(empty_name) ≡ false
+    assert base.material_valida(invalid_side) ≡ false
+    assert base.material_valida(opacity_low) ≡ false
+    assert base.material_valida(opacity_high) ≡ false
+    assert base.material_valida(alpha_low) ≡ false
+    assert base.material_valida(alpha_high) ≡ false
+    assert base.material_side_code(empty_name) is null
+    assert base.material_side_code(invalid_side) is null
+    assert base.material_pipeline_facts(opacity_low) is null
+    assert base.material_pipeline_facts(opacity_high) is null
+    assert base.material_pipeline_facts(alpha_low) is null
+    assert base.material_pipeline_facts(alpha_high) is null
+}
+
+test "texture descriptor preserves its placeholder shape" {
+    const base.TextureDescriptor descriptor ← base.TextureDescriptor {width = 4, height = 2, format = "rgba8unorm"}
+
+    assert descriptor.width ≡ (4 ∷ int<u32>)
+    assert descriptor.height ≡ (2 ∷ int<u32>)
+    assert descriptor.format ≡ "rgba8unorm"
+    assert descriptor.data is null
+    assert descriptor.generate_mipmaps
+}

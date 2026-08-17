@@ -1,0 +1,73 @@
++++
+locale = "en"
++++
+# Co-located package tests for material/basic.fab.
+# The basic leaf owns construction, color accessors, alpha, and projection of
+# the validated base pipeline facts.
+import from "triga:material/basic" basic
+import from "triga:material/base" base
+import from "triga:math" math
+
+test "basic material construction exposes color alpha and pipeline facts" {
+    const math.Color color ← math.Color {r = 0.2, g = 0.4, b = 0.8}
+    const basic.MeshBasicMaterial ∪ null result ← basic.mesh_basic_material("basic", color)
+
+    assert result not is null
+    if result not is null {
+        const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = result!.base, color = result!.color}
+        const base.MaterialPipelineFacts ∪ null facts_result ← basic.mesh_basic_material_pipeline_facts(material)
+
+        assert basic.mesh_basic_material_valida(material)
+        assert (basic.mesh_basic_material_color_r(material) coalesce -1.0) ≡ (0.2 ∷ f32)
+        assert (basic.mesh_basic_material_color_g(material) coalesce -1.0) ≡ (0.4 ∷ f32)
+        assert (basic.mesh_basic_material_color_b(material) coalesce -1.0) ≡ (0.8 ∷ f32)
+        assert (basic.mesh_basic_material_alpha(material) coalesce -1.0) ≡ (1.0 ∷ f32)
+        assert facts_result not is null
+        if facts_result not is null {
+            assert facts_result!.side_code ≡ 0
+            assert facts_result!.depth_test_enabled
+            assert facts_result!.depth_write_enabled
+            assert facts_result!.transparent ≡ false
+            assert facts_result!.alpha ≡ (1.0 ∷ f32)
+            assert facts_result!.alpha_test ≡ (0.0 ∷ f32)
+        }
+    }
+}
+
+test "basic material preserves a custom base policy" {
+    const base.Material policy ← base.Material {name = "basic-policy", side = 2, transparent = true, opacity = 0.6, depth_write = false, depth_test = false, alpha_test = 0.5}
+    const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = policy, color = math.Color {r = 1.0, g = 0.5, b = 0.0}}
+    const base.MaterialPipelineFacts ∪ null facts_result ← basic.mesh_basic_material_pipeline_facts(material)
+
+    assert basic.mesh_basic_material_valida(material)
+    assert (basic.mesh_basic_material_color_r(material) coalesce -1.0) ≡ (1.0 ∷ f32)
+    assert (basic.mesh_basic_material_color_g(material) coalesce -1.0) ≡ (0.5 ∷ f32)
+    assert (basic.mesh_basic_material_color_b(material) coalesce -1.0) ≡ (0.0 ∷ f32)
+    assert (basic.mesh_basic_material_alpha(material) coalesce -1.0) ≡ (0.6 ∷ f32)
+    assert facts_result not is null
+    if facts_result not is null {
+        assert facts_result!.side_code ≡ 2
+        assert facts_result!.depth_test_enabled ≡ false
+        assert facts_result!.depth_write_enabled ≡ false
+        assert facts_result!.transparent
+        assert facts_result!.alpha ≡ (0.6 ∷ f32)
+        assert facts_result!.alpha_test ≡ (0.5 ∷ f32)
+    }
+}
+
+test "basic material rejects invalid names and colors" {
+    const math.Color invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
+    const math.Color valid_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}
+    const basic.MeshBasicMaterial ∪ null invalid_color_result ← basic.mesh_basic_material("invalid-color", invalid_color)
+    const basic.MeshBasicMaterial ∪ null invalid_name_result ← basic.mesh_basic_material("", valid_color)
+    const basic.MeshBasicMaterial invalid ← basic.MeshBasicMaterial {base = base.Material {name = "invalid", opacity = 1.0}, color = invalid_color}
+
+    assert invalid_color_result is null
+    assert invalid_name_result is null
+    assert basic.mesh_basic_material_valida(invalid) ≡ false
+    assert basic.mesh_basic_material_color_r(invalid) is null
+    assert basic.mesh_basic_material_color_g(invalid) is null
+    assert basic.mesh_basic_material_color_b(invalid) is null
+    assert basic.mesh_basic_material_alpha(invalid) is null
+    assert basic.mesh_basic_material_pipeline_facts(invalid) is null
+}

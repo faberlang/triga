@@ -1,0 +1,58 @@
++++
+locale = "en"
++++
+# Co-located package tests for material/standard.fab.
+# MeshStandardMaterial is a PBR-shaped source carrier; these cases verify its
+# fields and the validated base pipeline projection without claiming host PBR.
+import from "triga:material/standard" standard
+import from "triga:material/base" base
+import from "triga:math" math
+
+test "standard material preserves PBR carrier fields and pipeline facts" {
+    const base.Material policy ← base.Material {name = "standard", side = 2, transparent = true, opacity = 0.65, depth_write = true, depth_test = false, alpha_test = 0.3}
+    const math.Color color ← math.Color {r = 0.2, g = 0.3, b = 0.4}
+    const math.Color emissive ← math.Color {r = 0.05, g = 0.1, b = 0.15}
+    const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = policy, color = color, roughness = 0.35, metalness = 0.8, emissive = emissive, emissive_intensity = 1.5}
+    const base.MaterialPipelineFacts ∪ null facts_result ← base.material_pipeline_facts(material.base)
+
+    assert material.base.name ≡ "standard"
+    assert material.color.r ≡ (0.2 ∷ f32)
+    assert material.color.g ≡ (0.3 ∷ f32)
+    assert material.color.b ≡ (0.4 ∷ f32)
+    assert material.roughness ≡ (0.35 ∷ f32)
+    assert material.metalness ≡ (0.8 ∷ f32)
+    assert material.emissive.r ≡ (0.05 ∷ f32)
+    assert material.emissive.g ≡ (0.1 ∷ f32)
+    assert material.emissive.b ≡ (0.15 ∷ f32)
+    assert material.emissive_intensity ≡ (1.5 ∷ f32)
+    assert facts_result not is null
+    if facts_result not is null {
+        assert facts_result!.side_code ≡ 2
+        assert facts_result!.depth_test_enabled ≡ false
+        assert facts_result!.depth_write_enabled
+        assert facts_result!.transparent
+        assert facts_result!.alpha ≡ (0.65 ∷ f32)
+        assert facts_result!.alpha_test ≡ (0.3 ∷ f32)
+    }
+}
+
+test "standard defaults remain explicit carrier values" {
+    const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = base.materia_ex_nomine("standard-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+
+    assert material.roughness ≡ (1.0 ∷ f32)
+    assert material.metalness ≡ (0.0 ∷ f32)
+    assert material.emissive_intensity ≡ (0.0 ∷ f32)
+    assert base.material_valida(material.base)
+    assert base.material_pipeline_facts(material.base) not is null
+}
+
+test "standard carrier exposes invalid base facts as unsupported" {
+    const base.Material invalid_base ← base.Material {name = "invalid-standard", alpha_test = -0.1}
+    const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+
+    assert base.material_valida(material.base) ≡ false
+    assert base.material_pipeline_facts(material.base) is null
+    assert material.roughness ≡ (1.0 ∷ f32)
+    assert material.metalness ≡ (0.0 ∷ f32)
+    assert material.emissive_intensity ≡ (0.0 ∷ f32)
+}
