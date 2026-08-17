@@ -6,10 +6,43 @@ import from "triga:geometry/layout" layout
 
 describe "vertex layout contracts" {
     test "format constructors cover float and uint widths" {
-        const layout.VertexFormat float_one ← layout.vertex_format_from_component_width(1, true)
-        const layout.VertexFormat float_four ← layout.vertex_format_from_component_width(4, true)
-        const layout.VertexFormat uint_two ← layout.vertex_format_from_component_width(2, false)
-        const layout.VertexFormat uint_three ← layout.vertex_format_from_component_width(3, false)
+        const layout.VertexAttributeLayout float_one ← layout.VertexAttributeLayout {
+            source_name = "weight",
+            shader_location = 3,
+            vertex_format = layout.vertex_format_from_component_width(1, true),
+            offset_bytes = 0,
+            stride_bytes = 4,
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+        const layout.VertexAttributeLayout float_four ← layout.VertexAttributeLayout {
+            source_name = "tangent",
+            shader_location = 4,
+            vertex_format = layout.vertex_format_from_component_width(4, true),
+            offset_bytes = 0,
+            stride_bytes = 16,
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+        const layout.VertexAttributeLayout uint_two ← layout.VertexAttributeLayout {
+            source_name = "joint",
+            shader_location = 5,
+            vertex_format = layout.vertex_format_from_component_width(2, false),
+            offset_bytes = 0,
+            stride_bytes = 8,
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+        const layout.VertexAttributeLayout uint_three ← layout.VertexAttributeLayout {
+            source_name = "index",
+            shader_location = 6,
+            vertex_format = layout.vertex_format_from_component_width(3, false),
+            offset_bytes = 0,
+            stride_bytes = 12,
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+        assert layout._vertex_layout_format_code(float_one) ≡ 1
+        assert layout._vertex_layout_format_code(float_four) ≡ 4
+        assert layout._vertex_layout_format_code(uint_two) ≡ 6
+        assert layout._vertex_layout_format_code(uint_three) ≡ 7
+        assert layout._vertex_layout_step_mode_code(float_one) ≡ 1
     }
 
     test "vertex step constructor produces a usable layout" {
@@ -25,5 +58,7 @@ describe "vertex layout contracts" {
         assert value.shader_location ≡ 0
         assert value.offset_bytes ≡ 0
         assert value.stride_bytes ≡ 12
+        assert layout._vertex_layout_format_code(value) ≡ 3
+        assert layout._vertex_layout_step_mode_code(value) ≡ 1
     }
 }

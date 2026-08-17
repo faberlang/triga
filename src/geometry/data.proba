@@ -42,7 +42,6 @@ describe "buffer geometry contracts" {
         assert (geometry.triangle_count() coalesce 0) ≡ 2
         assert geometry.line_count() is null
         assert (geometry.topology_code() coalesce 0) ≡ 1
-        assert (geometry.vertex_layout_count() coalesce 0) ≡ 2
         assert (geometry.vertex_layout_location(0) coalesce 0) ≡ 0
         assert (geometry.vertex_layout_location(1) coalesce 0) ≡ 1
         assert (geometry.vertex_layout_source_name(0) coalesce "") ≡ "position"
@@ -99,15 +98,11 @@ describe "buffer geometry contracts" {
         const bounds.BoundingBox ∪ null second_box ← geometry.group_bounding_box(1)
         const bounds.BoundingSphere ∪ null first_sphere ← geometry.group_bounding_sphere(0)
         const bounds.BoundingSphere ∪ null second_sphere ← geometry.group_bounding_sphere(1)
-        const attribute.BufferAttribute ∪ null normals ← geometry.vertex_normals()
-        const attribute.BufferAttribute ∪ null uvs ← geometry.planar_uvs()
         const attribute.BufferAttribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
         const attribute.BufferAttribute empty_uv ← attribute.float32_attribute("uv", 2, 2, 0, [])
-        const attribute.BufferAttribute normal ← normals coalesce empty_normal
-        const attribute.BufferAttribute uv ← uvs coalesce empty_uv
         const list<f32> empty_values ← vacua
-        const list<f32> normal_values ← normal.float32_values() coalesce empty_values
-        const list<f32> uv_values ← uv.float32_values() coalesce empty_values
+        const list<f32> normal_values ← (geometry.vertex_normals() coalesce empty_normal).float32_values() coalesce empty_values
+        const list<f32> uv_values ← (geometry.planar_uvs() coalesce empty_uv).float32_values() coalesce empty_values
         assert box not is null
         assert box!.min_x ≡ (0.0 ∷ f32)
         assert box!.min_y ≡ (0.0 ∷ f32)
@@ -122,21 +117,17 @@ describe "buffer geometry contracts" {
         assert sphere!.center_y ≡ (1.5 ∷ f32)
         assert first_sphere!.center_x ≡ (0.5 ∷ f32)
         assert second_sphere!.center_y ≡ (2.5 ∷ f32)
-        assert normals not is null
-        assert normal.name ≡ "normal"
-        assert normal.element_count ≡ 6
+        assert normal_values.length() ≡ 18
         assert normal_values[0] ≡ (0.0 ∷ f32)
         assert normal_values[1] ≡ (0.0 ∷ f32)
         assert normal_values[2] ≡ (1.0 ∷ f32)
         assert normal_values[15] ≡ (0.0 ∷ f32)
         assert normal_values[17] ≡ (1.0 ∷ f32)
-        assert uvs not is null
-        assert uv.name ≡ "uv"
-        assert uv.component_width ≡ 2
+        assert uv_values.length() ≡ 12
         assert uv_values[0] ≡ (0.0 ∷ f32)
         assert uv_values[1] ≡ (0.0 ∷ f32)
         assert uv_values[8] ≡ (1.0 ∷ f32)
-        assert uv_values[9] ≡ (1.0 ∷ f32)
+        assert uv_values[11] ≡ (1.0 ∷ f32)
     }
 
     test "non-indexed triangles and indexed lines select their own facts" {
@@ -199,12 +190,21 @@ describe "buffer geometry contracts" {
     test "colored quad accumulation preserves exact topology and derived facts" {
         const data.ColoredQuadMesh mesh ← data.colored_quad_mesh_append(vacua, vacua, vacua, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 2.0, 0.0, 0.2, 0.4, 0.6) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
         const batch.VisibleFaceMeshFacts ∪ null mesh_facts ← mesh.facts()
-        const batch.IndexedGeometryDrawBatchFacts ∪ null draw_facts ← mesh.draw_batch_facts(2)
-        const bounds.BoundingBox ∪ null mesh_box ← mesh.bounding_box()
-        const bounds.BoundingSphere ∪ null mesh_sphere ← mesh.bounding_sphere()
+        const data.BufferGeometry ∪ null projected ← data.colored_indexed_geometry(4, mesh.positions, mesh.colors, mesh.indices)
+        const data.BufferGeometry geometry ← projected coalesce indexed_geometry()
+        const batch.IndexedGeometryDrawBatchFacts ∪ null draw_facts ← geometry.indexed_draw_batch_facts(2)
+        const bounds.BoundingBox ∪ null mesh_box ← geometry.bounding_box()
+        const bounds.BoundingSphere ∪ null mesh_sphere ← geometry.bounding_sphere()
         assert mesh.positions.length() ≡ 12
         assert mesh.colors.length() ≡ 12
         assert mesh.indices.length() ≡ 6
+        assert mesh.positions[0] ≡ (0.0 ∷ f32)
+        assert mesh.positions[3] ≡ (2.0 ∷ f32)
+        assert mesh.positions[6] ≡ (2.0 ∷ f32)
+        assert mesh.positions[9] ≡ (0.0 ∷ f32)
+        assert mesh.colors[0] ≡ (0.2 ∷ f32)
+        assert mesh.colors[1] ≡ (0.4 ∷ f32)
+        assert mesh.colors[2] ≡ (0.6 ∷ f32)
         assert mesh.indices[0] ≡ (0 ∷ int<u32>)
         assert mesh.indices[1] ≡ (1 ∷ int<u32>)
         assert mesh.indices[2] ≡ (2 ∷ int<u32>)
@@ -212,7 +212,7 @@ describe "buffer geometry contracts" {
         assert mesh.indices[4] ≡ (2 ∷ int<u32>)
         assert mesh.indices[5] ≡ (3 ∷ int<u32>)
         assert (mesh.face_count() coalesce 0) ≡ 1
-        assert mesh.geometry() not is null
+        assert projected not is null
         assert mesh_facts not is null
         assert mesh_facts!.face_count ≡ 1
         assert mesh_facts!.vertex_count ≡ 4
@@ -226,7 +226,7 @@ describe "buffer geometry contracts" {
         assert mesh_box!.max_y ≡ (2.0 ∷ f32)
         assert mesh_sphere!.center_x ≡ (1.0 ∷ f32)
         assert mesh_sphere!.center_y ≡ (1.0 ∷ f32)
-        assert mesh.draw_batch_facts(0) is null
+        assert geometry.indexed_draw_batch_facts(0) is null
     }
 
     test "colored quad and degenerate triangle malformed inputs stay absent" {

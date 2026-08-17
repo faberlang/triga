@@ -2,9 +2,10 @@
 locale = "en"
 +++
 # Co-located package tests for BufferAttribute validation and scalar payload
-# projections. Layout code is exercised through geometry/data's public scalar
-# layout queries, which keep the cross-leaf enum carrier private.
+# projections. Layout projection stays on this leaf so the public
+# vertex_layout fact is named without crossing into geometry/data.
 import from "triga:geometry/attribute" attribute
+import from "triga:geometry/layout" layout
 
 describe "buffer attribute contracts" {
     test "float32 attribute exposes scalar facts and exact values" {
@@ -16,6 +17,7 @@ describe "buffer attribute contracts" {
         assert value.shader_location ≡ 0
         assert value.component_width ≡ 3
         assert value.element_count ≡ 2
+        assert value.normalized ≡ false
         assert value.scalar_count() ≡ 6
         assert value.scalar_bytes() ≡ 4
         assert value.stride_bytes() ≡ 12
@@ -23,6 +25,23 @@ describe "buffer attribute contracts" {
         assert values.length() ≡ 6
         assert values[0] ≡ (1.0 ∷ f32)
         assert values[5] ≡ (6.0 ∷ f32)
+        const layout.VertexAttributeLayout ∪ null projected ← value.vertex_layout()
+        const layout.VertexAttributeLayout empty_layout ← layout.VertexAttributeLayout {
+            source_name = "",
+            shader_location = 0,
+            vertex_format = layout.vertex_format_from_component_width(3, true),
+            offset_bytes = 0,
+            stride_bytes = 0,
+            step_mode = layout.vertex_step_mode_vertex_step()
+        }
+        const layout.VertexAttributeLayout lay ← projected coalesce empty_layout
+        assert projected not is null
+        assert lay.source_name ≡ "position"
+        assert lay.shader_location ≡ 0
+        assert lay.offset_bytes ≡ 0
+        assert lay.stride_bytes ≡ 12
+        assert layout._vertex_layout_format_code(lay) ≡ 3
+        assert layout._vertex_layout_step_mode_code(lay) ≡ 1
     }
 
     test "wrong scalar lengths remain invalid" {
