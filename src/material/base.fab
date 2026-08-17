@@ -25,6 +25,7 @@
 # material leaves and the sibling renderer.
 # =========================================================================
 
+@ public
 class Material {
     string name
     # side: 0=FrontSide 1=BackSide 2=DoubleSide
@@ -39,6 +40,7 @@ class Material {
 # MaterialPipelineFacts is the validated, compact view used by pipeline-facing
 # examples. `side_code` is a frozen ABI field; the remaining fields expose the
 # depth and alpha decisions without requiring consumers to inspect Material.
+@ public
 class MaterialPipelineFacts {
     int side_code
     bool depth_test_enabled
@@ -58,6 +60,7 @@ class MaterialPipelineFacts {
 # Relocates to material/texture.fab at H3; see header comment.
 # =========================================================================
 
+@ public
 class TextureDescriptor {
     int<u32> width
     int<u32> height
@@ -69,10 +72,12 @@ class TextureDescriptor {
 
 # --- Base material free helpers ---
 
+@ public
 fn materia_ex_nomine(string name) → Material {
     return Material {name = name, side = 0, transparent = false, opacity = 1.0, depth_write = true, depth_test = true, alpha_test = 0.0}
 }
 
+@ public
 fn material_valida(ref Material value) → bool {
     if value.name ≡ "" then return false
     if value.side ≻ 2 then return false
@@ -81,31 +86,38 @@ fn material_valida(ref Material value) → bool {
     return true
 }
 
+@ public
 fn material_double_sided(ref Material value) → Material {
     return Material {name = value.name, side = 2, transparent = value.transparent, opacity = value.opacity, depth_write = value.depth_write, depth_test = value.depth_test, alpha_test = value.alpha_test}
 }
 
+@ public
 fn material_est_double_sided(ref Material value) → bool {
     return value.side ≡ (2 ↦ int<u32>)
 }
 
+@ public
 fn material_side_code(ref Material value) → int ∪ null {
     if material_valida(value) ≡ false then return null
     return value.side ↦ int
 }
 
+@ public
 fn material_depth_enabled(ref Material value) → bool {
     return value.depth_test and value.depth_write
 }
 
+@ public
 fn material_depth_test_enabled(ref Material value) → bool {
     return value.depth_test
 }
 
+@ public
 fn material_depth_write_enabled(ref Material value) → bool {
     return value.depth_write
 }
 
+@ public
 fn material_pipeline_facts(ref Material value) → MaterialPipelineFacts ∪ null {
     if material_valida(value) ≡ false then return null
     return MaterialPipelineFacts {side_code = value.side ↦ int, depth_test_enabled = value.depth_test, depth_write_enabled = value.depth_write, transparent = value.transparent, alpha = value.opacity, alpha_test = value.alpha_test}

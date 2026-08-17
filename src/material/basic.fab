@@ -15,11 +15,13 @@ import from "triga:material/base" private base
 # MeshBasicMaterial is the unlit material path. Its base contract carries
 # depth, alpha, and side state; this leaf adds only the source color used by
 # the basic pipeline facts.
+@ public
 class MeshBasicMaterial {
     base.Material base
     math.Color color
 }
 
+@ public
 fn mesh_basic_material(string name, ref math.Color color) → MeshBasicMaterial ∪ null {
     const base.Material base_material ← base.materia_ex_nomine(name)
     if base.material_valida(base_material) ≡ false then return null
@@ -32,30 +34,36 @@ fn mesh_basic_material(string name, ref math.Color color) → MeshBasicMaterial 
     return MeshBasicMaterial {base = base_material, color = color}
 }
 
+@ public
 fn mesh_basic_material_valida(ref MeshBasicMaterial value) → bool {
     return base.material_valida(value.base) and math.color_valida(value.color)
 }
 
+@ public
 fn mesh_basic_material_color_r(ref MeshBasicMaterial value) → f32 ∪ null {
     if mesh_basic_material_valida(value) ≡ false then return null
     return value.color.r
 }
 
+@ public
 fn mesh_basic_material_color_g(ref MeshBasicMaterial value) → f32 ∪ null {
     if mesh_basic_material_valida(value) ≡ false then return null
     return value.color.g
 }
 
+@ public
 fn mesh_basic_material_color_b(ref MeshBasicMaterial value) → f32 ∪ null {
     if mesh_basic_material_valida(value) ≡ false then return null
     return value.color.b
 }
 
+@ public
 fn mesh_basic_material_alpha(ref MeshBasicMaterial value) → f32 ∪ null {
     if mesh_basic_material_valida(value) ≡ false then return null
     return value.base.opacity
 }
 
+@ public
 fn mesh_basic_material_pipeline_facts(ref MeshBasicMaterial value) → base.MaterialPipelineFacts ∪ null {
     if mesh_basic_material_valida(value) ≡ false then return null
     return base.material_pipeline_facts(value.base)

@@ -13,6 +13,7 @@ import from "triga:material/base" private base
 # MeshStandardMaterial is the PBR-shaped material carrier. The fields are
 # source data only; texture sampling, environment lighting, and pipeline
 # allocation belong to the future material/render seams.
+@ public
 class MeshStandardMaterial {
     base.Material base
     math.Color color

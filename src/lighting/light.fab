@@ -10,6 +10,7 @@ import from "triga:graph/object" private object as graph_object
 # Light is the shared scene-graph payload for the current light families.
 # `color` and `intensity` are source-side facts; the host decides how a later
 # renderer turns them into bindings or shader inputs.
+@ public
 class Light {
     graph_object.Object3D base
     math.Color color
@@ -18,6 +19,7 @@ class Light {
 
 # AmbientLight contributes a light family with no direction or position of its
 # own. It keeps the common Object3D and Light data visible through `base`.
+@ public
 class AmbientLight {
     Light base
 }
@@ -25,6 +27,7 @@ class AmbientLight {
 # DirectionalLight points at an explicit target position. Keeping the target in
 # the source contract makes the intended direction deterministic for examples
 # and host adapters.
+@ public
 class DirectionalLight {
     Light base
     math.Vector3 target_position
@@ -33,6 +36,7 @@ class DirectionalLight {
 # PointLight carries the distance and decay fields for the point-light path.
 # Their defaults are part of the source shape; the eventual renderer owns the
 # interpretation of cutoff and attenuation.
+@ public
 class PointLight {
     Light base
     f32 distance = 0.0
