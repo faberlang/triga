@@ -637,6 +637,7 @@ class VisibiliaRetium {
 # One traversal collects visible mesh handles, resource handles, and packed
 # transforms. Keeping this as one query avoids making callers repeat the scene
 # walk and gives the host a coherent snapshot of the visible set.
+@ public
 fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio_proiectio) → VisibiliaRetium ∪ null {
     if visio_proiectio.validum() ≡ false then return null
     # Single traversal: collect all visible mesh data at once

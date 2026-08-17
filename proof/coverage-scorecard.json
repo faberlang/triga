@@ -106,12 +106,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -162,12 +162,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -226,12 +226,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -289,12 +289,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -345,12 +345,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -416,12 +416,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -472,12 +472,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -528,12 +528,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -587,12 +587,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -646,12 +646,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -702,12 +702,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -758,12 +758,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -814,12 +814,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -874,12 +874,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -933,12 +933,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -991,12 +991,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1049,12 +1049,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1115,12 +1115,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1171,12 +1171,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1238,12 +1238,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1294,12 +1294,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1352,12 +1352,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1410,12 +1410,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1469,12 +1469,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1525,12 +1525,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1581,12 +1581,12 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
@@ -1596,7 +1596,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T04:33:05Z",
+    "run_at_utc": "2026-08-17T05:51:46Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 0,
@@ -1617,8 +1617,8 @@
       "rdx-s05-3": "not-observed"
     },
     "observed_diagnostic_codes": {
-      "PARSE050.import_privata_removed": 624,
-      "PARSE060.invalid_comment_placement": 2496
+      "SEM002.unknown_qualified_type": 4316,
+      "SEM004.namespace_missing_export": 3822
     },
     "discovery_errors": [],
     "failures": [
@@ -1627,12 +1627,12 @@
         "proba_path": "src/face.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1641,12 +1641,12 @@
         "proba_path": "src/geometry.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1655,12 +1655,12 @@
         "proba_path": "src/geometry/attribute.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1669,12 +1669,12 @@
         "proba_path": "src/geometry/batch.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1683,12 +1683,12 @@
         "proba_path": "src/geometry/bounds.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1697,12 +1697,12 @@
         "proba_path": "src/geometry/data.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1711,12 +1711,12 @@
         "proba_path": "src/geometry/layout.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1725,12 +1725,12 @@
         "proba_path": "src/graph.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1739,12 +1739,12 @@
         "proba_path": "src/graph/camera.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1753,12 +1753,12 @@
         "proba_path": "src/graph/object.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1767,12 +1767,12 @@
         "proba_path": "src/lighting.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1781,12 +1781,12 @@
         "proba_path": "src/lighting/light.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1795,12 +1795,12 @@
         "proba_path": "src/material.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1809,12 +1809,12 @@
         "proba_path": "src/material/base.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1823,12 +1823,12 @@
         "proba_path": "src/material/basic.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1837,12 +1837,12 @@
         "proba_path": "src/material/lit.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1851,12 +1851,12 @@
         "proba_path": "src/material/standard.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1865,12 +1865,12 @@
         "proba_path": "src/math.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1879,12 +1879,12 @@
         "proba_path": "src/primitives.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1893,12 +1893,12 @@
         "proba_path": "src/primitives/basic.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1907,12 +1907,12 @@
         "proba_path": "src/renderable.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1921,12 +1921,12 @@
         "proba_path": "src/renderable/mesh.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1935,12 +1935,12 @@
         "proba_path": "src/resource.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1949,12 +1949,12 @@
         "proba_path": "src/scene.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1963,12 +1963,12 @@
         "proba_path": "src/shader_contract.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1977,12 +1977,12 @@
         "proba_path": "src/triga.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "PARSE050.import_privata_removed": 24,
-          "PARSE060.invalid_comment_placement": 96
+          "SEM002.unknown_qualified_type": 166,
+          "SEM004.namespace_missing_export": 147
         },
         "failures": [
-          "error: PARSE050.import_privata_removed",
-          "error: PARSE060.invalid_comment_placement",
+          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       }
