@@ -100,17 +100,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include face.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 3,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "FAIL face quad builders/colored face append publishes exact position color and index arrays",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -380,21 +381,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include geometry/data.proba",
         "exit_status": 1,
-        "passed": 4,
-        "failed": 3,
-        "skipped": 0,
-        "status": "runner-failure",
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {},
+        "diagnostic_codes": {
+          "SEM004.namespace_missing_export": 1
+        },
         "failures": [
-          "FAIL buffer geometry contracts/indexed geometry publishes counts payloads and topology",
-          "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
-          "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
-          "test result: FAILED. 4 passed; 3 failed; 0 skipped",
-          "FaberScript unsupported: provider sym#62",
-          "FaberScript unsupported: provider sym#217",
-          "runner reported 4 passed for 7 declared cases",
-          "runner summary: 3 failed; 0 skipped"
+          "error: SEM004.namespace_missing_export",
+          "error: package analysis failed"
         ]
       }
     },
@@ -469,7 +466,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -486,19 +483,14 @@
           "graph.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -550,10 +542,16 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
+          "SEM004.unknown_method": 7,
+          "SEM004.unknown_struct_field": 2,
+          "SEM010.assert_condition_type_mismatch": 9,
+          "SEM012.callee_not_callable": 2
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.unknown_struct_field",
+          "error: SEM012.callee_not_callable",
+          "error: SEM010.assert_condition_type_mismatch",
+          "error: SEM004.unknown_method",
           "error: package analysis failed"
         ]
       }
@@ -601,17 +599,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include graph/object.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 4,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       }
     },
@@ -637,7 +635,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -654,19 +652,14 @@
           "lighting.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include lighting.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
-        ]
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -709,17 +702,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include lighting/light.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 3,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "FAIL PointLight defaults remain explicit carrier values",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -763,17 +757,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.namespace_missing_export": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -878,17 +872,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include material/basic.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM004.namespace_missing_export": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       }
     },
@@ -1054,19 +1048,18 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include math.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 12,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 128,
-          "SEM004.namespace_missing_export": 112
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL box, sphere, and plane volumes/box constructors and overlap operations preserve bounds",
+          "test result: FAILED. 12 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 12 passed for 13 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -1230,17 +1223,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include renderable.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     },
@@ -1286,17 +1279,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include renderable/mesh.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     },
@@ -1399,17 +1392,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include scene.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     },
@@ -1502,17 +1495,17 @@
         ],
         "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/triga --include triga.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     }
@@ -1521,10 +1514,10 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T06:28:24Z",
+    "run_at_utc": "2026-08-17T07:43:53Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 7,
+    "executed_module_count": 9,
     "executed_tier": "executed-proba",
     "package_path": "/Users/ianzepp/work/faberlang/triga",
     "faber_bin": "/Users/ianzepp/work/faberlang/radix/target/release/faber",
@@ -1542,48 +1535,36 @@
       "rdx-s05-3": "unresolved"
     },
     "observed_diagnostic_codes": {
-      "SEM002.unknown_qualified_type": 138,
-      "SEM004.namespace_missing_export": 114
+      "SEM004.namespace_missing_export": 1,
+      "SEM004.unknown_method": 7,
+      "SEM004.unknown_struct_field": 2,
+      "SEM010.assert_condition_type_mismatch": 9,
+      "SEM012.callee_not_callable": 2
     },
     "discovery_errors": [],
     "failures": [
       {
         "module": "src/face.fab",
         "proba_path": "src/face.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "FAIL face quad builders/colored face append publishes exact position color and index arrays",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
         "module": "src/geometry/data.fab",
         "proba_path": "src/geometry/data.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL buffer geometry contracts/indexed geometry publishes counts payloads and topology",
-          "FAIL buffer geometry contracts/bounds normals and planar UVs preserve exact geometry facts",
-          "FAIL buffer geometry contracts/colored quad accumulation preserves exact topology and derived facts",
-          "test result: FAILED. 4 passed; 3 failed; 0 skipped",
-          "FaberScript unsupported: provider sym#62",
-          "FaberScript unsupported: provider sym#217",
-          "runner reported 4 passed for 7 declared cases",
-          "runner summary: 3 failed; 0 skipped"
-        ]
-      },
-      {
-        "module": "src/graph.fab",
-        "proba_path": "src/graph.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
+          "SEM004.namespace_missing_export": 1
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.namespace_missing_export",
           "error: package analysis failed"
         ]
       },
@@ -1592,59 +1573,54 @@
         "proba_path": "src/graph/camera.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
+          "SEM004.unknown_method": 7,
+          "SEM004.unknown_struct_field": 2,
+          "SEM010.assert_condition_type_mismatch": 9,
+          "SEM012.callee_not_callable": 2
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
+          "error: SEM004.unknown_struct_field",
+          "error: SEM012.callee_not_callable",
+          "error: SEM010.assert_condition_type_mismatch",
+          "error: SEM004.unknown_method",
           "error: package analysis failed"
         ]
       },
       {
         "module": "src/graph/object.fab",
         "proba_path": "src/graph/object.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/lighting.fab",
-        "proba_path": "src/lighting.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       },
       {
         "module": "src/lighting/light.fab",
         "proba_path": "src/lighting/light.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "FAIL PointLight defaults remain explicit carrier values",
+          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 3 passed for 4 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material.fab",
         "proba_path": "src/material.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.namespace_missing_export": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
@@ -1662,13 +1638,13 @@
       {
         "module": "src/material/basic.fab",
         "proba_path": "src/material/basic.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM004.namespace_missing_export": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       },
       {
@@ -1698,15 +1674,14 @@
       {
         "module": "src/math.fab",
         "proba_path": "src/math.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 128,
-          "SEM004.namespace_missing_export": 112
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL box, sphere, and plane volumes/box constructors and overlap operations preserve bounds",
+          "test result: FAILED. 12 passed; 1 failed; 0 skipped",
+          "assertion failed",
+          "runner reported 12 passed for 13 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
@@ -1730,25 +1705,25 @@
       {
         "module": "src/renderable.fab",
         "proba_path": "src/renderable.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       },
       {
         "module": "src/renderable/mesh.fab",
         "proba_path": "src/renderable/mesh.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       },
       {
@@ -1766,25 +1741,25 @@
       {
         "module": "src/scene.fab",
         "proba_path": "src/scene.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       },
       {
         "module": "src/triga.fab",
         "proba_path": "src/triga.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 1
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 1 failed; 0 skipped"
         ]
       }
     ]
