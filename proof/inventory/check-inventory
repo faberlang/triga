@@ -105,18 +105,54 @@ def load_json(path: Path, errors: list[str], label: str) -> object | None:
         return None
 
 
-def live_modules(errors: list[str]) -> list[str]:
+def live_files(name: str, errors: list[str]) -> list[str]:
     result = subprocess.run(
-        ["find", "src", "-name", "*.fab"],
+        ["find", "src", "-name", name],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=False,
     )
     if result.returncode != 0:
-        error(errors, f"find src modules failed: {result.stderr.strip()}")
+        error(errors, f"find src {name} failed: {result.stderr.strip()}")
         return []
     return sorted(line for line in result.stdout.splitlines() if line)
+
+
+def committed_proba_paths(inventory: object) -> list[str]:
+    if not isinstance(inventory, dict):
+        return []
+    tests = inventory.get("co_located_tests")
+    if not isinstance(tests, dict):
+        return []
+    return sorted(path for path in tests if isinstance(path, str))
+
+
+def report_proba_mismatch(
+    errors: list[str], committed_probas: list[str], live_probas: list[str]
+) -> None:
+    if committed_probas == live_probas:
+        return
+    error(
+        errors,
+        "committed inventory records "
+        f"{len(committed_probas)} co-located proba file(s); "
+        f"live tree has {len(live_probas)}",
+    )
+    committed_set = set(committed_probas)
+    live_set = set(live_probas)
+    missing = [path for path in live_probas if path not in committed_set]
+    extra = [path for path in committed_probas if path not in live_set]
+    if missing:
+        error(
+            errors,
+            "live proba files absent from committed inventory: " + ", ".join(missing),
+        )
+    if extra:
+        error(
+            errors,
+            "committed inventory proba files absent from live tree: " + ", ".join(extra),
+        )
 
 
 def validate_shape(inventory: object, errors: list[str], label: str) -> None:
@@ -203,18 +239,31 @@ def main() -> int:
         return 1
 
     validate_shape(committed, errors, "committed inventory")
-    live = live_modules(errors)
+    live = live_files("*.fab", errors)
+    live_probas = live_files("*.proba", errors)
+    committed_probas = committed_proba_paths(committed)
     if len(live) != EXPECTED_MODULE_COUNT:
         error(errors, f"live module count: {len(live)} != {EXPECTED_MODULE_COUNT}")
 
-    if isinstance(committed, dict) and isinstance(committed.get("modules"), list):
-        committed_paths = [
-            record.get("path")
-            for record in committed["modules"]
-            if isinstance(record, dict) and isinstance(record.get("path"), str)
-        ]
-        if sorted(committed_paths) != live:
-            error(errors, "committed inventory module set does not equal find src output")
+    if isinstance(committed, dict):
+        totals = committed.get("totals")
+        recorded = totals.get("co_located_proba_files") if isinstance(totals, dict) else None
+        if recorded is not None and recorded != len(committed_probas):
+            error(
+                errors,
+                "committed inventory totals.co_located_proba_files "
+                f"({recorded}) disagrees with co_located_tests ({len(committed_probas)})",
+            )
+        if isinstance(committed.get("modules"), list):
+            committed_paths = [
+                record.get("path")
+                for record in committed["modules"]
+                if isinstance(record, dict) and isinstance(record.get("path"), str)
+            ]
+            if sorted(committed_paths) != live:
+                error(errors, "committed inventory module set does not equal find src output")
+
+    report_proba_mismatch(errors, committed_probas, live_probas)
 
     with tempfile.TemporaryDirectory(prefix="triga-inventory-check-") as work:
         derived_path = Path(work) / "triga-inventory.json"
@@ -231,7 +280,24 @@ def main() -> int:
             derived = load_json(derived_path, errors, "derived inventory")
             if derived is not None:
                 validate_shape(derived, errors, "derived inventory")
-                if without_provenance(committed) != without_provenance(derived):
+                module_set_matches = (
+                    isinstance(committed, dict)
+                    and isinstance(committed.get("modules"), list)
+                    and sorted(
+                        record.get("path")
+                        for record in committed["modules"]
+                        if isinstance(record, dict) and isinstance(record.get("path"), str)
+                    )
+                    == live
+                )
+                # A stale proba baseline is reported above.  Do not collapse
+                # that mismatch into a generic derivation failure, and never
+                # treat a short committed list as 26/26 progress.
+                if (
+                    without_provenance(committed) != without_provenance(derived)
+                    and committed_probas == live_probas
+                    and module_set_matches
+                ):
                     error(errors, "committed inventory differs from a fresh derivation")
                 if isinstance(derived, dict) and isinstance(derived.get("modules"), list):
                     derived_paths = [
