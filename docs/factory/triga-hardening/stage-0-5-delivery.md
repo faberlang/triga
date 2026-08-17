@@ -154,9 +154,11 @@ route.
 
 ### 2.5 Triage conclusion
 
-The refreshed package-link receipt (`358d074`,
-`proof/coverage-scorecard.json`, coverage revision 2) still records **9/26**
-module selections at `executed-proba`. The remaining 17 rows are all
+The refreshed package-link receipt at triage time (`358d074`,
+`proof/coverage-scorecard.json`, coverage revision 2) recorded **9/26**
+module selections at `executed-proba`. The committed receipt has since moved:
+`76ded8b` (2026-08-17T17:58:11Z) records **22/26**, still `complete: false`
+(known-red: proba 22/26). The remaining 17 rows in `358d074` are all
 `runner-failure`; there are 0 `analysis-error` rows. `src/graph/camera.fab`
 reaches the runner and fails all five cases; the prior named camera-provider
 route is gone from this receipt. `src/primitives/basic.fab` is also a
