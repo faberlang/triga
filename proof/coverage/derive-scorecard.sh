@@ -137,7 +137,7 @@ for record in module_records:
 
 scorecard = {
     "coverage_schema_version": 1,
-    "coverage_revision": 1,
+    "coverage_revision": 2,
     "package": "triga",
     "stage0_unit": "tgh-s0-3",
     "inventory": {

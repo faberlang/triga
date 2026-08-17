@@ -14,7 +14,6 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 SCORECARD = ROOT / "proof" / "coverage-scorecard.json"
 INVENTORY = ROOT / "proof" / "inventory" / "triga-inventory.json"
-INVENTORY_CHECK = ROOT / "proof" / "inventory" / "check-inventory"
 DERIVER = ROOT / "proof" / "coverage" / "derive-scorecard.sh"
 EXPECTED_MODULE_COUNT = 26
 EXPECTED_TIERS = [
@@ -25,6 +24,60 @@ EXPECTED_TIERS = [
     "stress",
     "clean-install",
 ]
+BASE_SCORECARD_KEYS = {
+    "coverage_schema_version",
+    "coverage_revision",
+    "package",
+    "stage0_unit",
+    "inventory",
+    "exempla_inventory",
+    "evidence_tier_enum",
+    "stale_claims",
+    "modules",
+}
+BASE_MODULE_KEYS = {
+    "path",
+    "lines",
+    "symbol_counts",
+    "co_located_proba_refs",
+    "co_located_proba",
+    "exempla_coverage_refs",
+    "evidence_tier",
+    "stale_claims",
+}
+EXECUTION_KEYS = {
+    "proba_path",
+    "case_count",
+    "command",
+    "command_text",
+    "exit_status",
+    "passed",
+    "failed",
+    "skipped",
+    "status",
+    "evidence_tier",
+    "diagnostic_codes",
+    "failures",
+}
+STAGE_KEYS = {
+    "unit",
+    "status",
+    "complete",
+    "run_at_utc",
+    "module_count",
+    "proba_source_count",
+    "executed_module_count",
+    "executed_tier",
+    "package_path",
+    "faber_bin",
+    "faber_library_home",
+    "filter_mode",
+    "command_template",
+    "prerequisites",
+    "observed_diagnostic_codes",
+    "discovery_errors",
+    "failures",
+}
 BANNER = (
     "live coverage data superseded by `proof/coverage-scorecard.json` "
     "(2026-08-16); this section is archival"
@@ -43,13 +96,20 @@ def load(path: Path, errors: list[str], label: str) -> object | None:
         return None
 
 
-def expect_keys(errors: list[str], value: object, expected: set[str], label: str) -> None:
+def expect_keys(
+    errors: list[str],
+    value: object,
+    expected: set[str],
+    label: str,
+    optional: set[str] | None = None,
+) -> None:
     if not isinstance(value, dict):
         errors.append(f"{label}: expected object")
         return
+    optional = optional or set()
     actual = set(value)
     missing = sorted(expected - actual)
-    extra = sorted(actual - expected)
+    extra = sorted(actual - expected - optional)
     if missing:
         errors.append(f"{label}: missing fields: {', '.join(missing)}")
     if extra:
@@ -117,6 +177,137 @@ def check_archives(errors: list[str]) -> None:
         errors.append("docs/factory/test-decomposition-report.md: archive banner missing")
 
 
+def proba_shape(path: Path) -> dict[str, object]:
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    return {
+        "module": "",
+        "lines": len(lines),
+        "groups": sum(1 for line in lines if re.match(r'^\s*describe "', line)),
+        "cases": sum(1 for line in lines if re.match(r'^\s*test "', line)),
+    }
+
+
+def baseline_projection(value: object) -> object:
+    """Drop the execution overlay before comparing a refreshed receipt to its baseline."""
+    projected = json.loads(json.dumps(value))
+    if not isinstance(projected, dict):
+        return projected
+    projected.pop("stage0_5", None)
+    rows = projected.get("modules")
+    if isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, dict):
+                row.pop("proba_execution", None)
+                # Stage 0.5 refreshes these observed fields from the proba
+                # files; the derived baseline owns neither execution result.
+                row.pop("co_located_proba_refs", None)
+                row.pop("co_located_proba", None)
+                row.pop("evidence_tier", None)
+    return projected
+
+
+def check_stage0_5(errors: list[str], scorecard: dict[str, object], rows: list[object]) -> None:
+    """Validate the optional revision-2 execution overlay without changing its receipt."""
+    if scorecard.get("coverage_revision") != 2:
+        return
+    stage = scorecard.get("stage0_5")
+    if stage is None:
+        errors.append("scorecard.stage0_5 is required for coverage revision 2")
+        return
+    expect_keys(errors, stage, STAGE_KEYS, "scorecard.stage0_5")
+    if not isinstance(stage, dict):
+        return
+
+    if stage.get("unit") != "tgh-s05-gate":
+        errors.append("scorecard.stage0_5.unit must be tgh-s05-gate")
+    if stage.get("status") not in {"blocked", "complete"}:
+        errors.append("scorecard.stage0_5.status must be blocked or complete")
+    if not isinstance(stage.get("complete"), bool):
+        errors.append("scorecard.stage0_5.complete must be boolean")
+    if stage.get("module_count") != EXPECTED_MODULE_COUNT:
+        errors.append("scorecard.stage0_5.module_count must remain 26")
+    if stage.get("proba_source_count") != EXPECTED_MODULE_COUNT:
+        errors.append("scorecard.stage0_5.proba_source_count must remain 26")
+    if stage.get("executed_tier") != "executed-proba":
+        errors.append("scorecard.stage0_5.executed_tier must be executed-proba")
+    if not isinstance(stage.get("executed_module_count"), int) or not 0 <= stage["executed_module_count"] <= EXPECTED_MODULE_COUNT:
+        errors.append("scorecard.stage0_5.executed_module_count must be between 0 and 26")
+    if not isinstance(stage.get("package_path"), str) or not stage.get("package_path"):
+        errors.append("scorecard.stage0_5.package_path must be a non-empty string")
+    if not isinstance(stage.get("faber_bin"), str) or not stage.get("faber_bin"):
+        errors.append("scorecard.stage0_5.faber_bin must be a non-empty string")
+    if not isinstance(stage.get("faber_library_home"), str) or not stage.get("faber_library_home"):
+        errors.append("scorecard.stage0_5.faber_library_home must be a non-empty string")
+    if stage.get("filter_mode") != "package-include-per-proba":
+        errors.append("scorecard.stage0_5.filter_mode is not the package proba route")
+    if not isinstance(stage.get("command_template"), list) or not all(isinstance(item, str) for item in stage["command_template"]):
+        errors.append("scorecard.stage0_5.command_template must be a string list")
+    for key in ("prerequisites", "observed_diagnostic_codes"):
+        if not isinstance(stage.get(key), dict):
+            errors.append(f"scorecard.stage0_5.{key} must be an object")
+    for key in ("discovery_errors", "failures"):
+        if not isinstance(stage.get(key), list) or not all(isinstance(item, (str, dict)) for item in stage[key]):
+            errors.append(f"scorecard.stage0_5.{key} must be a list")
+
+    executed_count = 0
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            continue
+        label = f"scorecard.modules[{index}]"
+        execution = row.get("proba_execution")
+        if execution is None:
+            errors.append(f"{label}.proba_execution is required for coverage revision 2")
+            continue
+        expect_keys(errors, execution, EXECUTION_KEYS, f"{label}.proba_execution")
+        if not isinstance(execution, dict):
+            continue
+        proba_refs = row.get("co_located_proba_refs")
+        if not isinstance(proba_refs, list) or len(proba_refs) != 1:
+            errors.append(f"{label}.co_located_proba_refs must contain the selected proba")
+        if execution.get("proba_path") != (proba_refs or [None])[0]:
+            errors.append(f"{label}.proba_execution.proba_path disagrees with co-located proba")
+        proba_path = ROOT / execution["proba_path"] if isinstance(execution.get("proba_path"), str) else None
+        if proba_path is None or not proba_path.is_file():
+            errors.append(f"{label}.proba_execution.proba_path does not name a repository file")
+        else:
+            expected_shape = proba_shape(proba_path)
+            expected_shape["module"] = row.get("path")
+            if row.get("co_located_proba") != expected_shape:
+                errors.append(f"{label}.co_located_proba does not match its proba source")
+        if execution.get("evidence_tier") not in EXPECTED_TIERS:
+            errors.append(f"{label}.proba_execution.evidence_tier is outside the fixed enum")
+        if row.get("evidence_tier") != execution.get("evidence_tier"):
+            errors.append(f"{label}.evidence_tier disagrees with proba_execution.evidence_tier")
+        if execution.get("evidence_tier") == "executed-proba":
+            executed_count += 1
+        if not isinstance(execution.get("case_count"), int) or execution["case_count"] < 0:
+            errors.append(f"{label}.proba_execution.case_count must be a non-negative integer")
+        counts = [execution.get(key) for key in ("passed", "failed", "skipped")]
+        if any(value is not None and (not isinstance(value, int) or value < 0) for value in counts):
+            errors.append(f"{label}.proba_execution result counts must be non-negative integers or null")
+        elif all(value is not None for value in counts) and isinstance(execution.get("case_count"), int):
+            if sum(counts) != execution["case_count"]:
+                errors.append(f"{label}.proba_execution result counts do not sum to case_count")
+        if execution.get("status") == "passed":
+            if execution.get("evidence_tier") != "executed-proba" or execution.get("exit_status") != 0:
+                errors.append(f"{label}.proba_execution passed status is not executed-proba evidence")
+            if execution.get("passed") != execution.get("case_count") or execution.get("failed") != 0 or execution.get("skipped") != 0:
+                errors.append(f"{label}.proba_execution passed status has inconsistent counts")
+        if not isinstance(execution.get("diagnostic_codes"), dict):
+            errors.append(f"{label}.proba_execution.diagnostic_codes must be an object")
+        if not isinstance(execution.get("failures"), list) or not all(isinstance(item, str) for item in execution["failures"]):
+            errors.append(f"{label}.proba_execution.failures must be a string list")
+
+    if stage.get("executed_module_count") != executed_count:
+        errors.append("scorecard.stage0_5.executed_module_count disagrees with module execution rows")
+    complete = executed_count == EXPECTED_MODULE_COUNT and not stage.get("discovery_errors") and not stage.get("failures")
+    if stage.get("complete") != complete:
+        errors.append("scorecard.stage0_5.complete is inconsistent with the execution receipt")
+    if stage.get("status") != ("complete" if complete else "blocked"):
+        errors.append("scorecard.stage0_5.status is inconsistent with the execution receipt")
+
+
 def main() -> int:
     errors: list[str] = []
     scorecard = load(SCORECARD, errors, "scorecard")
@@ -124,39 +315,21 @@ def main() -> int:
     if not isinstance(scorecard, dict) or not isinstance(inventory, dict):
         return 1
 
-    subprocess_result = subprocess.run(
-        [str(INVENTORY_CHECK)],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if subprocess_result.returncode != 0:
-        errors.append(
-            "committed inventory check failed: "
-            + (subprocess_result.stderr.strip() or subprocess_result.stdout.strip())
-        )
+    # Inventory shape and live module membership are checked below.  The
+    # inventory generator is intentionally independent: Stage 0.5 receipts
+    # may carry a newer proba overlay than that structural baseline.
 
     expect_keys(
         errors,
         scorecard,
-        {
-            "coverage_schema_version",
-            "coverage_revision",
-            "package",
-            "stage0_unit",
-            "inventory",
-            "exempla_inventory",
-            "evidence_tier_enum",
-            "stale_claims",
-            "modules",
-        },
+        BASE_SCORECARD_KEYS,
         "scorecard",
+        optional={"stage0_5"},
     )
     if scorecard.get("coverage_schema_version") != 1:
         errors.append("scorecard.coverage_schema_version must be 1")
-    if scorecard.get("coverage_revision") != 1:
-        errors.append("scorecard.coverage_revision must be 1")
+    if scorecard.get("coverage_revision") != 2:
+        errors.append("scorecard.coverage_revision must be 2")
     if scorecard.get("package") != "triga":
         errors.append("scorecard.package must be triga")
     if scorecard.get("stage0_unit") != "tgh-s0-3":
@@ -263,17 +436,9 @@ def main() -> int:
         expect_keys(
             errors,
             row,
-            {
-                "path",
-                "lines",
-                "symbol_counts",
-                "co_located_proba_refs",
-                "co_located_proba",
-                "exempla_coverage_refs",
-                "evidence_tier",
-                "stale_claims",
-            },
+            BASE_MODULE_KEYS,
             label,
+            optional={"proba_execution"},
         )
         if not isinstance(row, dict):
             continue
@@ -308,11 +473,12 @@ def main() -> int:
 
         proba = record.get("co_located_proba")
         expected_proba_refs = [proba] if isinstance(proba, str) else []
-        if row.get("co_located_proba_refs") != expected_proba_refs:
-            errors.append(f"{label}.co_located_proba_refs does not match committed inventory")
-        expected_proba = inventory.get("co_located_tests", {}).get(proba) if isinstance(proba, str) else None
-        if row.get("co_located_proba") != expected_proba:
-            errors.append(f"{label}.co_located_proba does not match committed inventory")
+        if "proba_execution" not in row:
+            if row.get("co_located_proba_refs") != expected_proba_refs:
+                errors.append(f"{label}.co_located_proba_refs does not match committed inventory")
+            expected_proba = inventory.get("co_located_tests", {}).get(proba) if isinstance(proba, str) else None
+            if row.get("co_located_proba") != expected_proba:
+                errors.append(f"{label}.co_located_proba does not match committed inventory")
 
         module_id = f"triga:{path[len('src/'):-len('.fab')]}" if path.startswith("src/") and path.endswith(".fab") else ""
         expected_refs = sorted(set(imported.get(module_id, [])))
@@ -327,13 +493,15 @@ def main() -> int:
 
         if row.get("evidence_tier") not in EXPECTED_TIERS:
             errors.append(f"{label}.evidence_tier is outside the fixed enum")
-        if row.get("evidence_tier") != record.get("evidence_tier"):
+        if "proba_execution" not in row and row.get("evidence_tier") != record.get("evidence_tier"):
             errors.append(f"{label}.evidence_tier does not match committed inventory")
         if row.get("stale_claims") != stale_ids:
             errors.append(f"{label}.stale_claims must reference every scorecard stale claim")
 
     if sorted(seen) != sorted(inventory_by_path):
         errors.append("scorecard module row set does not equal committed inventory module set")
+
+    check_stage0_5(errors, scorecard, rows)
 
     for path, value in walk_live_strings(scorecard):
         errors.append(f"scorecard live field {path} contains stale/future language: {value!r}")
@@ -351,8 +519,16 @@ def main() -> int:
         )
         if result.returncode != 0:
             errors.append(f"derive-scorecard.sh failed: {result.stderr.strip() or result.stdout.strip()}")
-        elif derived.read_text(encoding="utf-8") != SCORECARD.read_text(encoding="utf-8"):
-            errors.append("committed scorecard differs from a fresh derivation")
+        else:
+            try:
+                derived_value = json.loads(derived.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                errors.append(f"derived scorecard: cannot load JSON: {exc}")
+            else:
+                if not isinstance(derived_value, dict) or derived_value.get("coverage_revision") != scorecard.get("coverage_revision"):
+                    errors.append("derived scorecard does not share coverage revision 2")
+                elif baseline_projection(derived_value) != baseline_projection(scorecard):
+                    errors.append("committed scorecard differs from a fresh derived baseline")
 
     if errors:
         for message in errors:
