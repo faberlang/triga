@@ -1,6 +1,6 @@
 # Triga math: small, backend-agnostic carriers for geometry and transforms.
 #
-# Public import: import from "triga:math" private math
+# Public import: import from "triga:math" math
 #
 # Owns:
 # - Vector2, Vector3, Vector4, Matrix3, and Matrix4 value carriers.

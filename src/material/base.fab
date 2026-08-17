@@ -1,6 +1,6 @@
 # Material base contracts, pipeline facts, and the texture descriptor seed.
 #
-# Public import: import from "triga:material/base" private base
+# Public import: import from "triga:material/base" base
 #
 # Owns: Material, MaterialPipelineFacts, TextureDescriptor (H3 placeholder
 # seed), and the base material free helpers (materia_ex_nomine,

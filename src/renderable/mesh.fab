@@ -1,6 +1,6 @@
 # Mesh renderable — scene-graph node bound to geometry and a material.
 #
-# Public import: import from "triga:renderable/mesh" private mesh
+# Public import: import from "triga:renderable/mesh" mesh
 # Depends on: triga:graph/object, triga:geometry/data,
 #             triga:material/{standard,basic,lit}
 #
@@ -11,15 +11,15 @@
 # gap, semantics enum-only — so consumers must not case over the union; use
 # dedicated accessors / common union fields instead.
 
-import from "triga:graph/object" private object as graph_object
+import from "triga:graph/object" object as graph_object
 
-import from "triga:geometry/data" private data
+import from "triga:geometry/data" data
 
-import from "triga:material/standard" private standard
+import from "triga:material/standard" standard
 
-import from "triga:material/basic" private basic
+import from "triga:material/basic" basic
 
-import from "triga:material/lit" private lit
+import from "triga:material/lit" lit
 
 # Mesh is the primary renderable composition: graph transform plus geometry
 # plus one of the current material families. The union is intentionally a

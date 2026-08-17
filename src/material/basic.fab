@@ -1,6 +1,6 @@
 # MeshBasicMaterial and its construction/access helpers.
 #
-# Public import: import from "triga:material/basic" private basic
+# Public import: import from "triga:material/basic" basic
 #
 # Owns: MeshBasicMaterial, mesh_basic_material, mesh_basic_material_valida,
 # mesh_basic_material_color_r/g/b, mesh_basic_material_alpha,
@@ -8,9 +8,9 @@
 #
 # Imports: triga:math, triga:material/base.
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:material/base" private base
+import from "triga:material/base" base
 
 # MeshBasicMaterial is the unlit material path. Its base contract carries
 # depth, alpha, and side state; this leaf adds only the source color used by

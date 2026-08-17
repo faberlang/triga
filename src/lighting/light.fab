@@ -1,11 +1,11 @@
 # Light family shape contracts (Light, AmbientLight, DirectionalLight, PointLight).
 #
-# Public import: import from "triga:lighting/light" private lighting
+# Public import: import from "triga:lighting/light" lighting
 # Depends on: triga:math, triga:graph/object (Object3D base)
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:graph/object" private object as graph_object
+import from "triga:graph/object" object as graph_object
 
 # Light is the shared scene-graph payload for the current light families.
 # `color` and `intensity` are source-side facts; the host decides how a later

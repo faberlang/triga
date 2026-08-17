@@ -1,9 +1,9 @@
 # Object3D scene-graph node and Scene container shape contracts.
 #
-# Public import: import from "triga:graph/object" private object
+# Public import: import from "triga:graph/object" object
 # Depends on: triga:math
 
-import from "triga:math" private math
+import from "triga:math" math
 
 # Object3D is the common scene-graph payload. Triga keeps composition explicit:
 # a camera, light, or scene stores an Object3D in its `base` field instead of

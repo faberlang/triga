@@ -1,6 +1,6 @@
 # Scene-graph shape contracts (Object3D, cameras) — package map facade.
 #
-# Public import: import from "triga:graph" private graph
+# Public import: import from "triga:graph" graph
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:graph/object   Object3D, Scene
@@ -8,6 +8,6 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:graph/object" private object as graph_object
+import from "triga:graph/object" object as graph_object
 
-import from "triga:graph/camera" private camera
+import from "triga:graph/camera" camera
