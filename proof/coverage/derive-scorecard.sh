@@ -3,6 +3,8 @@
 # Derive the Stage 0 coverage scorecard from the committed live inventory.
 #
 # The inventory is the authority for the module set and all source counts.
+# Observed source revision/digest are write-time provenance: a mismatch mark
+# means the inventory snapshot is not the current HEAD census.
 # Exempla references are limited to the files documented by exempla/README.md,
 # matching the file-set rule in scripta/check-exempla-inventory.
 #
@@ -15,9 +17,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd ../.. && pwd)"
 exec python3 - "$ROOT" "$@" <<'PY'
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 root = Path(sys.argv[1])
@@ -25,6 +29,35 @@ out_arg = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("proof/coverage-score
 out = out_arg if out_arg.is_absolute() else root / out_arg
 inventory_path = root / "proof" / "inventory" / "triga-inventory.json"
 readme_path = root / "exempla" / "README.md"
+
+def git_head(root: Path) -> str | None:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    value = completed.stdout.strip()
+    if completed.returncode == 0 and re.fullmatch(r"[0-9a-f]{40}", value):
+        return value
+    return None
+
+
+def source_digest(root: Path) -> str:
+    digest = hashlib.sha256()
+    src = root / "src"
+    paths = sorted(src.rglob("*.fab"), key=lambda path: path.relative_to(root).as_posix())
+    for path in paths:
+        digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\n")
+    return "sha256:" + digest.hexdigest()
+
 
 with inventory_path.open(encoding="utf-8") as source:
     inventory = json.load(source)
@@ -135,6 +168,8 @@ for record in module_records:
         }
     )
 
+observed_revision = git_head(root)
+snapshot_revision = inventory["source_revision"]
 scorecard = {
     "coverage_schema_version": 1,
     "coverage_revision": 2,
@@ -144,8 +179,11 @@ scorecard = {
         "path": "proof/inventory/triga-inventory.json",
         "inventory_schema_version": inventory["inventory_schema_version"],
         "inventory_revision": inventory["inventory_revision"],
-        "source_revision": inventory["source_revision"],
+        "source_revision": snapshot_revision,
         "module_count": inventory["totals"]["modules"],
+        "observed_source_revision": observed_revision or snapshot_revision,
+        "observed_source_digest": source_digest(root),
+        "inventory_mismatch": bool(observed_revision) and observed_revision != snapshot_revision,
     },
     "exempla_inventory": {
         "readme": "exempla/README.md",

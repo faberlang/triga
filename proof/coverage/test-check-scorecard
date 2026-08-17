@@ -8,10 +8,31 @@ trap 'rm -rf "$WORK"' EXIT
 git -C "$ROOT" archive HEAD | tar -x -C "$WORK"
 cd "$WORK"
 
-# The worktree may contain unrelated inventory edits, so validate the committed
-# receipt from a clean archive rather than borrowing the caller's dirty tree.
-./proof/coverage/check-scorecard
+# A marked inventory mismatch is recorded provenance, not a source_revision
+# equality failure. Overlay staleness may still fail the checker.
 cp proof/coverage-scorecard.json "$WORK/scorecard-good.json"
+output=$(./proof/coverage/check-scorecard 2>&1 || true)
+printf '%s\n' "$output" | grep -Fvq \
+    "scorecard.inventory.source_revision does not match committed inventory"
+printf '%s\n' "$output" | grep -Fvq \
+    "scorecard.inventory.inventory_mismatch disagrees"
+python3 - proof/coverage-scorecard.json <<'PY'
+import json
+import re
+import sys
+
+path = sys.argv[1]
+with open(path, encoding="utf-8") as source:
+    scorecard = json.load(source)
+inventory = scorecard["inventory"]
+assert inventory["source_revision"] == "2e9daa06684269c58f177a8d1c36f0c8c2365152"
+assert re.fullmatch(r"[0-9a-f]{40}", inventory["observed_source_revision"])
+assert re.fullmatch(r"sha256:[0-9a-f]{64}", inventory["observed_source_digest"])
+assert inventory["inventory_mismatch"] is True
+assert inventory["source_revision"] != inventory["observed_source_revision"]
+assert scorecard["stage0_5"]["executed_module_count"] == 9
+assert scorecard["stage0_5"]["complete"] is False
+PY
 
 python3 - proof/coverage-scorecard.json <<'PY'
 import json
@@ -54,4 +75,48 @@ fi
 printf '%s\n' "$output" | grep -Fq \
     "error: scorecard.stage0_5.module_count must remain 26"
 
-printf '%s\n' "scorecard regression ok: committed receipt passes; revision-2 and stage0_5 shape failures are rejected"
+cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
+python3 - proof/coverage-scorecard.json <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, encoding="utf-8") as source:
+    scorecard = json.load(source)
+scorecard["inventory"].pop("observed_source_revision")
+scorecard["inventory"].pop("observed_source_digest")
+scorecard["inventory"].pop("inventory_mismatch")
+with open(path, "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+
+if output=$(./proof/coverage/check-scorecard 2>&1); then
+    printf '%s\n' "error: checker accepted a scorecard without observed source provenance" >&2
+    exit 1
+fi
+printf '%s\n' "$output" | grep -Fq \
+    "error: scorecard.inventory: missing fields: inventory_mismatch, observed_source_digest, observed_source_revision"
+
+cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
+python3 - proof/coverage-scorecard.json <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, encoding="utf-8") as source:
+    scorecard = json.load(source)
+scorecard["inventory"]["inventory_mismatch"] = False
+with open(path, "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+
+if output=$(./proof/coverage/check-scorecard 2>&1); then
+    printf '%s\n' "error: checker accepted an unmarked inventory mismatch" >&2
+    exit 1
+fi
+printf '%s\n' "$output" | grep -Fq \
+    "error: scorecard.inventory.inventory_mismatch disagrees with observed vs snapshot revision"
+
+printf '%s\n' "scorecard regression ok: observed source provenance required; unmarked mismatch rejected"

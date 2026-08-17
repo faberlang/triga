@@ -14,6 +14,7 @@ exec python3 - "$ROOT" "$@" <<'PY'
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -41,6 +42,35 @@ SUMMARY_RE = re.compile(
     r"(?P<skipped>\d+)\s+skipped",
     re.IGNORECASE | re.DOTALL,
 )
+
+
+def git_head(root: Path) -> str | None:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    value = completed.stdout.strip()
+    if completed.returncode == 0 and re.fullmatch(r"[0-9a-f]{40}", value):
+        return value
+    return None
+
+
+def source_digest(root: Path) -> str:
+    digest = hashlib.sha256()
+    src = root / "src"
+    paths = sorted(src.rglob("*.fab"), key=lambda path: path.relative_to(root).as_posix())
+    for path in paths:
+        digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\n")
+    return "sha256:" + digest.hexdigest()
 
 
 def rel(path: Path) -> str:
@@ -423,6 +453,20 @@ def main() -> int:
     if not isinstance(scorecard, dict):
         scorecard = {}
     scorecard["coverage_revision"] = max(int(scorecard.get("coverage_revision", 1)), 2)
+    inventory_block = scorecard.get("inventory")
+    if not isinstance(inventory_block, dict):
+        inventory_block = {}
+        scorecard["inventory"] = inventory_block
+    observed_revision = git_head(ROOT)
+    if observed_revision:
+        inventory_block["observed_source_revision"] = observed_revision
+    inventory_block["observed_source_digest"] = source_digest(ROOT)
+    snapshot_revision = inventory_block.get("source_revision")
+    inventory_block["inventory_mismatch"] = (
+        isinstance(snapshot_revision, str)
+        and isinstance(inventory_block.get("observed_source_revision"), str)
+        and snapshot_revision != inventory_block["observed_source_revision"]
+    )
     scorecard["modules"] = refreshed_rows
     scorecard["stage0_5"] = stage
     SCORECARD.write_text(json.dumps(scorecard, indent=2) + "\n", encoding="utf-8")
