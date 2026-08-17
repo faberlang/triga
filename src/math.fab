@@ -22,6 +22,7 @@
 # Vector2 and Vector4 keep common 2D and four-lane data explicit.
 #
 # Two-dimensional coordinates.
+@ public
 class Vector2 {
     f32 x
     f32 y
@@ -84,6 +85,7 @@ class Vector3 {
 }
 
 # Four-component data carrier for APIs that need an explicit w lane.
+@ public
 class Vector4 {
     f32 x
     f32 y
@@ -92,6 +94,7 @@ class Vector4 {
 }
 
 # A flat 3x3 element carrier. Matrix3 has no operations in this module yet.
+@ public
 class Matrix3 {
     list<f32> elements
 }
@@ -104,6 +107,7 @@ class Matrix3 {
 # Point application performs the homogeneous divide and uses 1 when w is
 # near zero. The affine inverse returns nihil when its 3x3 determinant is
 # near zero.
+@ public
 class Matrix4 {
     list<f32> elements
 
@@ -213,6 +217,7 @@ class Matrix4 {
 #          transform_payload_view_projection_value(payload, index) reads VP bytes.
 #          transform_payload_float_count(payload) validates 32 floats.
 #          transform_payload_byte_count(payload) returns 128.
+@ public
 class TransformPayload {
     list<f32> values
 
@@ -243,6 +248,7 @@ class TransformPayload {
 # Quaternion stores its vector part in x/y/z and its scalar part in w.
 # normata falls back to the identity quaternion for a near-zero value, and
 # interpolata chooses the nearer sign before normalizing the result.
+@ public
 class Quaternion {
     f32 x
     f32 y
@@ -288,6 +294,7 @@ class Color {
 
 # Euler stores its angles and an explicit rotation order. This implementation
 # accepts only XYZ; its conversion path consumes x/y/z directly as radians.
+@ public
 class Euler {
     f32 x
     f32 y
@@ -328,6 +335,7 @@ class Euler {
 # --- SPATIAL VOLUMES AND RAYS ---
 # Axis-aligned box represented by inclusive minimum and maximum corners.
 # validum is the min ≤ max invariant used by the nullable box helpers.
+@ public
 class Box3 {
     Vector3 min
     Vector3 max
@@ -443,6 +451,7 @@ class Box3 {
 
 # Details returned by Box3.superpositio_facta, keeping overlap components
 # available both as a Vector3 and as named scalar fields.
+@ public
 class Box3OverlapFacts {
     Vector3 overlap
     f32 x
@@ -452,6 +461,7 @@ class Box3OverlapFacts {
 
 # Sphere carrier with a center and radius. Point containment compares the
 # center-to-point distance directly with radius.
+@ public
 class Sphere {
     Vector3 center
     f32 radius
@@ -463,6 +473,7 @@ class Sphere {
 
 # Plane represented by normal and constant; distantia evaluates
 # normal · point + constant.
+@ public
 class Plane {
     Vector3 normal
     f32 constant
@@ -474,6 +485,7 @@ class Plane {
 
 # Ray represented by an origin and direction. punctum evaluates
 # origin + direction × distance; box intersections return a bounded hit.
+@ public
 class Ray {
     Vector3 origin
     Vector3 direction
@@ -525,6 +537,7 @@ class Ray {
 }
 
 # One axis' entry and exit values for the ray-box slab calculation.
+@ public
 class RayInterval {
     f32 minimum
     f32 maximum
@@ -534,6 +547,7 @@ class RayInterval {
 # Face codes identify the six axis-aligned directions: 1/2 = −X/+X,
 # 3/4 = −Y/+Y, and 5/6 = −Z/+Z. The helper functions below derive the
 # matching axis, opposite face, signed offsets, normal, and display color.
+@ public
 class FaceCodeFacts {
     int code
     int axis_code
@@ -548,6 +562,7 @@ class FaceCodeFacts {
 
 # A ray-box hit stores the distance, point, and axis-aligned normal used to
 # recover a face code and its complete FaceCodeFacts record.
+@ public
 class RayBox3Hit {
     f32 distance
     Vector3 point
@@ -590,6 +605,7 @@ class RayBox3Hit {
 
 # Camera helpers return this compact record so callers can inspect the
 # clamped pitch, normalized directions, and the derived ray together.
+@ public
 class CameraYawPitchFacts {
     f32 yaw_degrees
     f32 pitch_degrees
@@ -604,6 +620,7 @@ class CameraYawPitchFacts {
 # --- VALIDATION AND FACE-CODE HELPERS ---
 # Color validation is channel-wise; face-code validation accepts only codes
 # 1 through 6. Invalid codes return nihil from the derived helpers.
+@ public
 fn color_valida(ref Color value) → bool {
     if value.r ≺ 0.0 or value.r ≻ 1.0 then return false
     if value.g ≺ 0.0 or value.g ≻ 1.0 then return false
@@ -611,10 +628,12 @@ fn color_valida(ref Color value) → bool {
     return true
 }
 
+@ public
 fn face_code_valida(int code) → bool {
     return code ≥ 1 and code ≤ 6
 }
 
+@ public
 fn face_code_axis_code(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
     if code ≤ 2 then return 1
@@ -622,6 +641,7 @@ fn face_code_axis_code(int code) → int ∪ null {
     return 3
 }
 
+@ public
 fn face_code_opposite(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
     if code ≡ 1 then return 2
@@ -632,6 +652,7 @@ fn face_code_opposite(int code) → int ∪ null {
     return 5
 }
 
+@ public
 fn face_code_x_offset(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
     if code ≡ 1 then return 0 - 1
@@ -639,6 +660,7 @@ fn face_code_x_offset(int code) → int ∪ null {
     return 0
 }
 
+@ public
 fn face_code_y_offset(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
     if code ≡ 3 then return 0 - 1
@@ -646,6 +668,7 @@ fn face_code_y_offset(int code) → int ∪ null {
     return 0
 }
 
+@ public
 fn face_code_z_offset(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
     if code ≡ 5 then return 0 - 1
@@ -653,6 +676,7 @@ fn face_code_z_offset(int code) → int ∪ null {
     return 0
 }
 
+@ public
 fn face_code_normal(int code) → Vector3 ∪ null {
     if code ≡ 1 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
     if code ≡ 2 then return vector3(1.0, 0.0, 0.0)
@@ -663,6 +687,7 @@ fn face_code_normal(int code) → Vector3 ∪ null {
     return null
 }
 
+@ public
 fn face_code_color(int code) → Color ∪ null {
     if code ≡ 1 then return Color {r = 0.8, g = 0.1, b = 0.1}
     if code ≡ 2 then return Color {r = 1.0, g = 0.4, b = 0.4}
@@ -673,6 +698,7 @@ fn face_code_color(int code) → Color ∪ null {
     return null
 }
 
+@ public
 fn face_code_facts(int code) → FaceCodeFacts ∪ null {
     if face_code_valida(code) ≡ false then return null
     const int ∪ null axis_result ← face_code_axis_code(code)
@@ -715,11 +741,13 @@ fn _radix_f32(f32 value) → f32 {
 
 # Construct a quaternion without changing its components. Call normata when
 # a unit quaternion is required.
+@ public
 fn quaternion(f32 x, f32 y, f32 z, f32 w) → Quaternion {
     return Quaternion {x = x, y = y, z = z, w = w}
 }
 
 # Construct the default XYZ Euler value; the supplied angles are stored as-is.
+@ public
 fn euler(f32 x, f32 y, f32 z) → Euler {
     return Euler {x = x, y = y, z = z, order = "XYZ"}
 }
@@ -756,16 +784,19 @@ fn _cosinus_f32(f32 angle) → f32 {
     return (((1.0 - x2 / 2.0) + x4 / 24.0) - x6 / 720.0) + x8 / 40320.0
 }
 
+@ public
 fn radians_ex_gradibus(f32 degrees) → f32 {
     return degrees * 0.017453292519943295
 }
 
+@ public
 fn camera_pitch_coercita(f32 pitch_degrees) → f32 {
     if pitch_degrees ≻ 89.0 then return 89.0
     if pitch_degrees ≺ 0.0 - 89.0 then return 0.0 - 89.0
     return pitch_degrees
 }
 
+@ public
 fn camera_directio_ex_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → Vector3 {
     const f32 yaw ← radians_ex_gradibus(yaw_degrees)
     const f32 pitch ← radians_ex_gradibus(camera_pitch_coercita(pitch_degrees))
@@ -773,16 +804,19 @@ fn camera_directio_ex_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → Vector3 
     return vector3(_sinus_f32(yaw) * horizontal, _sinus_f32(pitch), -_cosinus_f32(yaw) * horizontal).normata()
 }
 
+@ public
 fn camera_prorsum_planus_ex_yaw(f32 yaw_degrees) → Vector3 {
     const f32 yaw ← radians_ex_gradibus(yaw_degrees)
     return vector3(_sinus_f32(yaw), 0.0, -_cosinus_f32(yaw)).normata()
 }
 
+@ public
 fn camera_dextra_ex_yaw(f32 yaw_degrees) → Vector3 {
     const f32 yaw ← radians_ex_gradibus(yaw_degrees)
     return vector3(_cosinus_f32(yaw), 0.0, _sinus_f32(yaw)).normata()
 }
 
+@ public
 fn camera_motus_planus_ex_yaw(f32 yaw_degrees, f32 forward_amount, f32 right_amount, f32 speed, f32 delta_seconds) → Vector3 {
     if speed ≤ 0.0 or delta_seconds ≤ 0.0 then return vector3(0.0, 0.0, 0.0)
     const Vector3 forward ← camera_prorsum_planus_ex_yaw(yaw_degrees)
@@ -792,10 +826,12 @@ fn camera_motus_planus_ex_yaw(f32 yaw_degrees, f32 forward_amount, f32 right_amo
     return direction.multiplicata(speed * delta_seconds)
 }
 
+@ public
 fn camera_ray_ex_yaw_pitch(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → Ray {
     return Ray {origin = origin, direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees)}
 }
 
+@ public
 fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees) → CameraYawPitchFacts {
     return CameraYawPitchFacts {yaw_degrees = yaw_degrees, pitch_degrees = pitch_degrees, clamped_pitch_degrees = camera_pitch_coercita(pitch_degrees), direction = camera_directio_ex_yaw_pitch(yaw_degrees, pitch_degrees), planar_forward = camera_prorsum_planus_ex_yaw(yaw_degrees), planar_right = camera_dextra_ex_yaw(yaw_degrees), ray = camera_ray_ex_yaw_pitch(origin, yaw_degrees, pitch_degrees)}
 }
@@ -809,17 +845,20 @@ fn color_interpolata(ref Color a, ref Color b, f32 ratio) → Color {
 # --- BOX CONSTRUCTORS ---
 # The min/max constructor rejects reversed bounds; the size constructors reject
 # non-positive sizes. Each returns nihil, keeping Box3.validum explicit.
+@ public
 fn box3_ex_minimo_et_maximo(ref Vector3 minimum, ref Vector3 maximum) → Box3 ∪ null {
     const Box3 bounds ← Box3 {min = minimum, max = maximum}
     if bounds.validum() ≡ false then return null
     return bounds
 }
 
+@ public
 fn box3_ex_minimo_et_mensura(ref Vector3 minimum, ref Vector3 size) → Box3 ∪ null {
     if (size.x ≤ 0.0 or size.y ≤ 0.0) or size.z ≤ 0.0 then return null
     return Box3 {min = minimum, max = minimum.addita(size)}
 }
 
+@ public
 fn box3_ex_centro_et_mensura(ref Vector3 center, ref Vector3 size) → Box3 ∪ null {
     if (size.x ≤ 0.0 or size.y ≤ 0.0) or size.z ≤ 0.0 then return null
     const Vector3 half ← size.multiplicata(0.5)
@@ -855,12 +894,14 @@ fn _ray_box3_hit_normal(ref Box3 bounds, ref Vector3 point) → Vector3 {
 # --- MATRIX AND PAYLOAD CONSTRUCTORS ---
 # The builders below all emit Matrix4 values using the column-major layout
 # documented above.
+@ public
 fn matrix4_identitas() → Matrix4 {
     return Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
 }
 
 # Pack model followed by view_projection. Both inputs must already be valid
 # 16-element Matrix4 values.
+@ public
 fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → TransformPayload ∪ null {
     if model.validum() ≡ false then return null
     if view_projection.validum() ≡ false then return null
@@ -875,15 +916,18 @@ fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → Transfo
 }
 
 # Translation and scale occupy the fourth column and diagonal respectively.
+@ public
 fn matrix4_translatio(ref Vector3 offset) → Matrix4 {
     return Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, offset.x, offset.y, offset.z, 1.0]}
 }
 
+@ public
 fn matrix4_scala(ref Vector3 scale) → Matrix4 {
     return Matrix4 {elements = [scale.x, 0.0, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, 0.0, scale.z, 0.0, 0.0, 0.0, 0.0, 1.0]}
 }
 
 # Compose position, normalized rotation, and scale into one affine matrix.
+@ public
 fn matrix4_composita(ref Vector3 position, ref Quaternion rotation, ref Vector3 scale) → Matrix4 {
     const Quaternion q ← rotation.normata()
     const f32 xx ← q.x * q.x
@@ -900,6 +944,7 @@ fn matrix4_composita(ref Vector3 position, ref Quaternion rotation, ref Vector3 
 
 # Perspective construction validates its degree-based field of view, aspect,
 # and near/far ordering before returning a matrix.
+@ public
 fn matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Matrix4 ∪ null {
     if fov_y_degrees ≤ 0.0 or fov_y_degrees ≥ 180.0 then return null
     if aspect ≤ 0.0 then return null
@@ -915,6 +960,7 @@ fn matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Mat
 
 # Build a view matrix from eye, target, and up. Coincident or collinear inputs
 # return nihil when a usable forward or side direction cannot be formed.
+@ public
 fn matrix4_conspectus(ref Vector3 eye, ref Vector3 target, ref Vector3 up) → Matrix4 ∪ null {
     const Vector3 forward ← target.subtracta(eye).normata()
     if forward.longitudo() ≤ 0.000001 then return null
