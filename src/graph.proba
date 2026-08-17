@@ -1,0 +1,14 @@
++++
+locale = "en"
++++
+# Co-located package smoke for the graph facade.
+#
+# The facade intentionally contains only imports. This case proves that the
+# public `triga:graph` path is discoverable without claiming that it re-exports
+# the leaf types from `triga:graph/object` or `triga:graph/camera`.
+
+import from "triga:graph" graph
+
+test "graph facade is discoverable" {
+    assert true
+}
