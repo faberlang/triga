@@ -154,6 +154,13 @@ route.
 
 ### 2.5 Triage conclusion
 
+The current committed package-link receipt (`proof/coverage-scorecard.json`,
+coverage revision 2) records **7/26** module selections at `executed-proba`.
+The remaining 19 rows are structural: 13 package-analysis errors and 6 runner
+failures. The current receipt has no `PARSE050` row; `PARSE050.import_privata_removed`
+is historical evidence from the retired import-modifier and single-file/roundtrip
+routes, not the current Triga package-link verdict.
+
 The Stage-0 Q4 conclusion remains in force: the executed-proba tier is open,
 but not because of an unresolved Radix link architecture. The classification
 is mixed and must stay explicit:

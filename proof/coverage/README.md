@@ -25,6 +25,12 @@ MIR, or runner failure is isolated to its module row rather than fail-closing
 the remaining rows. The direct single-`.proba` route is deliberately not used;
 it skips the package link step that resolves receiver methods before lowering.
 
+The current committed receipt (`proof/coverage-scorecard.json`, coverage
+revision 2) records **7/26** module selections at `executed-proba` through this
+package-link route. The remaining 19 rows are structural: 13 package-analysis
+errors and 6 runner failures. This is a partial package-link result, not the
+historical single-file parse-failure snapshot.
+
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
 bound one module run; its default is 180 seconds.
@@ -46,9 +52,12 @@ path, declared and observed counts, exit status, failures, diagnostics, and
 actual evidence tier. The pre-existing structural fields remain the Stage-0
 inventory frame; they are not execution proof.
 
-A red result is intentional evidence. In particular, `PARSE050`, `SEM006`, and
-MIR/provider-lowering failures must remain visible in the receipt. Do not turn a
-failed imported-module run into a skip or a count-only pass.
+A red result is intentional evidence. The current receipt has no `PARSE050`
+row: `PARSE050.import_privata_removed` is historical evidence from the retired
+import-modifier and single-file/roundtrip routes, not the current Triga
+package-link result. Keep diagnostics emitted by a rerun visible in the
+receipt; do not turn a failed imported-module run into a skip or a count-only
+pass.
 
 The Stage-0.5 tier is open unless the receipt reports `26/26` modules at
 `executed-proba` and marks the aggregate `complete: true`. The current live
