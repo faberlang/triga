@@ -36,19 +36,18 @@ passing selections are `src/geometry.fab`, `src/geometry/attribute.fab`,
 failures. This is a partial package-link result, not the historical single-file
 parse-failure snapshot.
 
-This receipt was refreshed with the release Faber built from radix tip
-`781a9a467` (`fix(runner): execute camera children provider`).
-`src/geometry/data.fab` reaches the runner and reports three failed cases plus
-the remaining named unsupported provider route
-`package:BufferAttribute::return::dele`; it is not counted as
-executed-proba. `src/primitives/basic.fab` also reaches the runner and reports
-four passed and six failed cases, replacing its prior
-`SEM004.unknown_struct_field` analysis error. `src/graph.fab` remains at
-executed-proba, while `src/graph/camera.fab` reaches the runner but reports
-zero passed and five failed cases. The camera failure text no longer contains
-`package:triga:graph/camera::camera::children`; the refreshed receipt retains
-`package:BufferAttribute::return::dele` and the other runner/MIR failures. The
-run remains open at 9/26, not 26/26.
+This receipt was refreshed at `2026-08-17T11:39:03Z` with the release Faber
+built from radix tip `60f495870` (`test(runner): assert provider diagnostics by
+issue`). `src/geometry/data.fab` reaches the runner and reports three failed
+cases plus the named unsupported provider route
+`package:BufferAttribute::float32_values`; it is not counted as
+executed-proba. The prior `package:BufferAttribute::return::dele` route is gone
+from the refreshed receipt. `float32_values` therefore appears as live runner
+evidence, while `return::dele` remains only in historical documentation.
+`src/primitives/basic.fab` also reaches the runner and reports four passed and
+six failed cases. `src/graph.fab` remains at executed-proba, while
+`src/graph/camera.fab` reaches the runner but reports zero passed and five
+failed cases. The run remains open at 9/26, not 26/26.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may

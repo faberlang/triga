@@ -2,8 +2,8 @@
   "inventory_schema_version": 1,
   "inventory_revision": 1,
   "package": "triga",
-  "source_revision": "2e9daa06684269c58f177a8d1c36f0c8c2365152",
-  "generation_timestamp": "2026-08-16T19:45:33Z",
+  "source_revision": "6137a81f576871778b015db40ee6785e4fe315ef",
+  "generation_timestamp": "2026-08-17T03:30:41Z",
   "versions": {
     "faber": "0.2.0",
     "cista": "0.2.0",
@@ -20,7 +20,7 @@
     "imports": 50,
     "null_returning_functions": 147,
     "abi_field_occurrences": 172,
-    "co_located_proba_files": 1,
+    "co_located_proba_files": 10,
     "consumer_import_refs": 61
   },
   "error_null_contract": {
@@ -42,11 +42,65 @@
     }
   },
   "co_located_tests": {
+    "src/geometry.proba": {
+      "module": "src/geometry.fab",
+      "lines": 12,
+      "groups": 1,
+      "cases": 0
+    },
+    "src/geometry/attribute.proba": {
+      "module": "src/geometry/attribute.fab",
+      "lines": 54,
+      "groups": 1,
+      "cases": 0
+    },
+    "src/geometry/batch.proba": {
+      "module": "src/geometry/batch.fab",
+      "lines": 41,
+      "groups": 1,
+      "cases": 0
+    },
+    "src/geometry/layout.proba": {
+      "module": "src/geometry/layout.fab",
+      "lines": 34,
+      "groups": 1,
+      "cases": 0
+    },
+    "src/graph.proba": {
+      "module": "src/graph.fab",
+      "lines": 14,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/graph/camera.proba": {
+      "module": "src/graph/camera.fab",
+      "lines": 92,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/graph/object.proba": {
+      "module": "src/graph/object.fab",
+      "lines": 54,
+      "groups": 0,
+      "cases": 0
+    },
     "src/math.proba": {
       "module": "src/math.fab",
-      "lines": 27,
-      "groups": 1,
-      "cases": 3
+      "lines": 369,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/resource.proba": {
+      "module": "src/resource.fab",
+      "lines": 181,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/scene.proba": {
+      "module": "src/scene.fab",
+      "lines": 139,
+      "groups": 0,
+      "cases": 0
     }
   },
   "consumer_import_map": {
@@ -259,11 +313,11 @@
       "imports": 5,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/geometry.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/geometry/attribute.fab",
@@ -276,8 +330,8 @@
       "imports": 1,
       "null_returning_functions": 3,
       "abi_field_occurrences": 5,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/geometry/attribute.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/hello-voxel-first-draw-facts.fab",
         "exempla/triga-geometry-attributes.fab",
@@ -288,7 +342,7 @@
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 7,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/geometry/batch.fab",
@@ -301,8 +355,8 @@
       "imports": 0,
       "null_returning_functions": 8,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/geometry/batch.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/hello-voxel-first-draw-facts.fab",
         "exempla/triga-geometry-attributes.fab",
@@ -312,7 +366,7 @@
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 6,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/geometry/bounds.fab",
@@ -374,11 +428,11 @@
       "imports": 0,
       "null_returning_functions": 0,
       "abi_field_occurrences": 11,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/geometry/layout.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/graph.fab",
@@ -391,11 +445,11 @@
       "imports": 2,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/graph.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/graph/camera.fab",
@@ -408,14 +462,14 @@
       "imports": 2,
       "null_returning_functions": 4,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/graph/camera.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 2,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/graph/object.fab",
@@ -428,14 +482,14 @@
       "imports": 1,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/graph/object.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 2,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/lighting.fab",
@@ -686,13 +740,13 @@
       "imports": 0,
       "null_returning_functions": 23,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/resource.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-scene-store.fab"
       ],
       "consumer_import_count": 1,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/scene.fab",
@@ -705,14 +759,14 @@
       "imports": 2,
       "null_returning_functions": 14,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/scene.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-scene-store-empty.fab",
         "exempla/triga-scene-store.fab"
       ],
       "consumer_import_count": 2,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/shader_contract.fab",
