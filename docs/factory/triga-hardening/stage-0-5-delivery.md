@@ -66,8 +66,8 @@ The module was not renamed. These live facts remain true:
 - `vector3`, `Vector3.addita`, and `Vector3.normata` exist in that module.
 - `radix check --locale en src/math.fab` exits 0 with warnings only.
 
-The current direct probe symptoms are therefore a stale proba surface plus a
-semantic cascade, not evidence that the math module disappeared:
+The original direct-probe symptoms were a stale proba surface plus a semantic
+cascade, not evidence that the math module disappeared:
 
 ```text
 faber test /Users/ianzepp/work/faberlang/triga/src/math.proba
@@ -77,13 +77,17 @@ radix check --locale en src/math.proba
   -> SEM001.unknown_identifier / SEM008.undefined_name
 ```
 
-The first coverage unit must rewrite `src/math.proba` to the current English
-surface. It must not add a compatibility alias or change the math module to
-match the stale test.
+This is historical Stage-0 triage evidence. The first coverage unit rewrote
+`src/math.proba` to the current English surface, and the later visibility series
+made the imported public math surface available. Current failures belong to the
+expanded coverage cases and their remaining MIR/provider seams. The stage must
+not add a compatibility alias or change the math module to match the stale
+probe.
 
 ### 2.3 `faber test .` package-path gap
 
-The package invocation was reproduced from the Triga root:
+The package invocation was reproduced from the Triga root before the Radix
+path repair:
 
 ```text
 cd /Users/ianzepp/work/faberlang/triga
@@ -92,64 +96,79 @@ cd /Users/ianzepp/work/faberlang/triga
   -> package analysis failed
 ```
 
-The current implementation passes the raw CLI `PathBuf` from
+The pre-repair implementation passed the raw CLI `PathBuf` from
 `radix/crates/faber/src/commands/test.rs` to
 `radix_package::analyze::analyze_package_for_tests`. The package analyzer's
-contract requires absolute inputs. `radix-package::normalize_path` is lexical;
-normalizing `.` removes the `CurDir` component and leaves an empty relative
-path, so discovery checks the wrong path and emits the observed I/O error.
+contract required absolute inputs. `radix-package::normalize_path` was lexical;
+normalizing `.` removed the `CurDir` component and left an empty relative path,
+so discovery checked the wrong path and emitted the observed I/O error.
 
-This is a Radix/Faber package-path defect. It is independent of the stale
-probe source. A second invocation confirms the shape distinction:
+This historical Radix/Faber package-path defect was separate from the stale
+probe source. A second invocation confirmed the shape distinction:
 
 ```text
 faber test src
   -> cannot read 'src/main.fab' (os error 2)
 ```
 
-A source directory without a manifest is treated as a legacy package whose
-entry is `main.fab`; it is not the Triga package form. An absolute package path
-reaches package analysis and reproduces the probe's semantic errors instead of
-`cannot read '.'`, separating the two failures.
+A source directory without a manifest was treated as a legacy package whose
+entry was `main.fab`; it was not the Triga package form. An absolute package
+path reached package analysis and reproduced the probe's semantic errors
+instead of `cannot read '.'`, separating the two historical failures.
 
-### 2.4 Converted English probe exposes a second Radix route
+Radix `9919d480c` now absolutizes the package-test input before analysis. The
+old path failure is retained as route history, not as an active Stage-0.5
+prerequisite.
 
-A temporary package containing the unchanged `src/math.fab` and only a
-converted English `math.proba` was used for diagnosis. Package analysis passed,
-but the MIR runner failed all three cases with:
+### 2.4 Converted English probe and the landed Radix route
+
+A temporary package containing the unchanged `src/math.fab` and a converted
+English `math.proba` originally exposed these MIR error shapes:
 
 ```text
 unsupported MIR lowering: method call before runtime/provider MIR lowering
 unsupported MIR lowering: projection base that does not resolve to a local value
 ```
 
-The failing shapes are the public `Vector3` method calls and field projections
-used by the existing test. This is a second Radix MIR-lowering defect, not a
-reason to weaken the Triga assertions or replace method/field coverage with
-count-only tests.
+Those errors are historical route evidence. They identified public `Vector3`
+method calls and field projections that had to remain real assertions; they did
+not justify weakening the Triga coverage to count-only tests.
 
-The link-path portion of the successor route landed in Radix as `e56d45f70`:
-local imported nominal methods now link, and the linked-package main executes
-the converted shapes with zero diagnostics. This does **not** close the
-executed-proba route: `faber test` still lowers each `.proba` independently and
-does not invoke that linker. The remaining architecture fork — proba
-link-then-run versus runner-resolved stubs — is routed to head-cto; the probe
-remains 0/3 until that ruling lands.
+The package-link portion landed in Radix as `e56d45f70`. Radix
+`018cc8b25` then selected and implemented link-then-run: `faber test` collects
+test-bearing roots, links the package scope once, and runs every discovered case
+against the shared validated MIR. Radix `736b14766` preserves the scalar
+collection-length result at the nullable expression boundary. The recorded
+official converted three-case math fixture is green: `3 passed, 0 failed`.
+That receipt is distinct from the later expanded `src/math.proba` coverage
+file, whose cases remain subject to the residuals below.
+
+Later Triga visibility repairs (`94c8da7`, `cdf8c0e`, `9d9246c`, `91b3389`,
+`ef48638`, `b8def7c`) address public math, graph, geometry/face,
+material/lighting, renderable, shader, and facade exports. The remaining
+Stage-0.5 residuals are coverage-specific: broader probes still expose MIR
+method-call, projection-base, and unresolved-path shapes, while resource and
+shader-contract probes expose provider/runtime gaps. These residuals keep the
+affected Triga module rows open; they do not reopen the Radix package-link
+route.
 
 ### 2.5 Triage conclusion
 
-The Stage-0 Q4 conclusion remains in force: the executed-proba tier is open.
-The classification is mixed and must stay explicit:
+The Stage-0 Q4 conclusion remains in force: the executed-proba tier is open,
+but not because of an unresolved Radix link architecture. The classification
+is mixed and must stay explicit:
 
 | Symptom | Owner | Classification | Stage-0.5 consequence |
 | --- | --- | --- | --- |
-| `src/math.proba` emits SEM001/SEM008 | Triga test source | stale Latin probe against the current `en` locale; not a module rename | rewrite as `en` in `tgh-s05-c01` |
-| `faber test .` emits `cannot read '.'` | Radix/Faber package route | relative package-path normalization defect | named prerequisite `rdx-s05-1` |
-| converted probe reaches runner but MIR lowering rejects method/field shapes | Radix MIR/link path | link-path portion landed; proba execution architecture remains unresolved | named prerequisite `rdx-s05-3` plus head-cto ruling |
+| stale-Latin `src/math.proba` history | Triga test source | superseded by the English coverage wave and later visibility repairs | judge the current probe result, not the historical syntax failure |
+| `faber test .` path history | Radix/Faber package route | fixed by `9919d480c` | retain the path regression as historical evidence |
+| converted probe method/field shapes | Radix package-link route | fixed by `018cc8b25`, with scalar-result repair in `736b14766`; official three-case receipt is green | keep method/field assertions and track actual Triga coverage results |
+| later Triga coverage failures | Triga visibility and MIR/provider seams | visibility repairs landed, but broader probes retain named MIR/provider residuals | keep affected rows below `executed-proba` until their cases pass |
 
-Coverage units may author their `.proba` files while the owning-repo routes are
-in flight, but no coverage unit may claim executed-proba completion until the
-named Radix prerequisites land and the gate runs the cases successfully.
+Coverage units may author their `.proba` files while their own visibility and
+MIR/provider residuals are in flight. No coverage unit may claim executed-proba
+completion until its actual cases pass through the package gate. The aggregate
+Stage-0.5 tier stays open until the gate reports 26/26 passing modules.
 
 ## 3. Proba framework contract
 
@@ -162,17 +181,20 @@ The live Radix/Faber source establishes these boundaries:
   - `ProbaCase.suite_path` records nested `probandum` paths.
   - `ProbaModifierView` supports `omitte`, `futurum`, `solum`, `tag`,
     `temporis`, `metior`, `repete`, `fragilis`, and `solum_in`.
-  - `run_proba_source` handles one source unit.
-  - `run_proba_on_analyzed` lowers and executes an analyzed unit on the MIR
-    runner.
+  - `run_proba_source` handles a direct single-file run.
+  - `run_proba_on_analyzed` remains the direct analyzed-unit API; package tests
+    use the linked validated-MIR API below.
+  - `run_proba_on_validated_with_function_ids` executes package cases against
+    linker-assigned function identities in one validated MIR image.
 - `radix/crates/radix-package/src/analyze.rs`
   - `analyze_package` excludes `.proba` sources.
   - `analyze_package_for_tests` includes `.proba` sources and accepts a
     `TestSourceFilter`.
 - `radix/crates/faber/src/commands/test.rs`
-  - a single `.fab` or `.proba` path uses the single-file runner;
-  - a package path uses `analyze_package_for_tests`, then runs every analyzed
-    unit that inventories at least one case;
+  - a single `.fab` or `.proba` path uses the direct single-file runner;
+  - a package path uses `analyze_package_for_tests`, collects every analyzed
+    test-bearing root, links the package scope once, and runs the cases against
+    the shared validated MIR;
   - package testing is MIR execution, not Cargo or a generated Rust test crate.
 - `radix/crates/faber/src/package/proba_integration_test.rs`
   - verifies `include_proba = true` discovers sibling `.proba` files;
@@ -257,9 +279,10 @@ These units are named here because the boundary rule requires an owning-repo
 route before Triga's executed-proba gate can close. They are not Triga write
 scopes and must be dispatched in `radix/`.
 
-### `rdx-s05-1` — normalize package-test path inputs
+### `rdx-s05-1` — normalize package-test path inputs (**landed**)
 
 - **repo**: `radix`
+- **status**: landed in `9919d480c`.
 - **outcome**: `faber test .`, a relative package path, and an absolute package
   path resolve the same manifest-backed package before
   `analyze_package_for_tests`; single-file `.fab` / `.proba` behavior remains
@@ -272,7 +295,7 @@ scopes and must be dispatched in `radix/`.
   `cannot read '.'`; `faber test triga` from the workspace parent and an
   absolute Triga package path enter the same package discovery path; the
   regression proves manifest reader-locale selection and does not alter the
-  `.proba` source contract.
+  `.proba` source contract. **Met by `9919d480c`.**
 - **depends_on**: none
 - **non_goals**: rewriting Triga probas, MIR lowering, or accepting a directory
   with no manifest as a package without `main.fab`.
@@ -283,57 +306,51 @@ scopes and must be dispatched in `radix/`.
 ### Historical route — `rdx-s05-2` (superseded; see `rdx-s05-3` below)
 
 > **Superseded 2026-08-17** — closed `block_ship` (task `76f5a125`): the
-> write_scope below is wrong. Imported method bodies are absent from per-unit
-> MIR (`faber test` lowers each proba unit independently); they merge only at
-> package-link time. No fix confined to `crates/radix/src/mir/lower/*` can
-> execute an imported method. Re-scoped successor: **`rdx-s05-3`** (Vivi
-> `b7934c6a`) — link-path lowering in `crates/radix-package/src/mir/link.rs`
-> (`link_library_method_targets`), same done_when proofs. Evidence memo:
-> `5aa20bf8`.
+> original write scope was wrong because imported method bodies were absent
+> from an isolated proba MIR image and became available only at package-link
+> time. No fix confined to `crates/radix/src/mir/lower/*` could execute an
+> imported method. Re-scoped successor: **`rdx-s05-3`** (Vivi `b7934c6a`) —
+> link-path lowering in `crates/radix-package/src/mir/link.rs`
+> (`link_library_method_targets`). Evidence memo: `5aa20bf8`.
 >
-> **rdx-s05-3 update 2026-08-17** — link-path portion landed
-> (`e56d45f70`: local imported nominal methods link, converted shapes
-> included; linked package main executes the failing shapes with 0
-> diagnostics). Remaining blocker is the reserved architecture fork: `faber
-> test` lowers each `.proba` independently and never invokes the linker.
-> Routed to head-cto (proba link-then-run vs runner-resolved stubs). Probes
-> stay 0/3 and 21 respectively until that ruling lands.
+> **Resolution 2026-08-17** — `e56d45f70` landed the link-path portion;
+> `018cc8b25` selected and implemented link-then-run for package probas; and
+> `736b14766` repaired the scalar collection-length result. The recorded
+> official converted three-case math fixture is `3 passed, 0 failed`. The route is closed;
+> the remaining Stage-0.5 residuals are in Triga visibility/MIR/provider seams.
 
-### `rdx-s05-3` — link-path completion and proba execution architecture
+### `rdx-s05-3` — link-path completion and proba execution architecture (**landed**)
 
 - **repo**: `radix`
-- **status**: link-path portion landed in `e56d45f70`; the remaining
-  proba-linking architecture fork is routed to head-cto.
-- **outcome**: preserve the existing Triga assertions and make the current
-  English math probe executable through the chosen package-test route. The
-  linked-package path already executes the converted method/field shapes with
-  zero diagnostics; the unresolved decision is whether `faber test` links
-  before running each proba unit or resolves the imported methods in the
-  runner.
-- **done_when**: the head-cto ruling lands, the selected route is implemented
-  by Radix, and the unchanged converted three-case math probe reaches `3
-  passed, 0 failed`; no Triga assertion is removed.
-- **depends_on**: `rdx-s05-1` and the head-cto architecture ruling.
+- **status**: landed through `e56d45f70`, `018cc8b25`, and `736b14766`.
+- **outcome**: preserve the existing Triga assertions and make the English math
+  probe executable through the package-test route. Package testing links the
+  test-bearing scope once, then runs its cases against shared validated MIR.
+- **done_when**: the selected route is implemented by Radix and the recorded
+  unchanged converted three-case math probe reaches `3 passed, 0 failed`; no
+  Triga assertion is removed. **Met by the listed commits.**
+- **depends_on**: none (landed route)
 - **non_goals**: broad runner feature expansion, Rust/Cargo execution, or
   changing Triga public method semantics.
 
 ## 6. Triga Hand unit graph
 
 All Triga units below write only the listed paths. The nine coverage families
-are independent after triage and the named Radix prerequisites. They may be
-implemented in parallel on disjoint `.proba` paths. The gate is serial after
-all coverage units because it owns the aggregate scorecard and inventory
-verdict.
+are disjoint after triage and may be implemented in parallel on their separate
+`.proba` paths. The gate is serial after all coverage units because it owns the
+aggregate scorecard and inventory verdict.
 
 ### `tgh-s05-0` — record triage and external routes
 
-- **outcome**: durable Stage-0.5 triage receipt records the 26/1 coverage gap,
-  the stale-Latin probe diagnosis, the `faber test .` path defect, the converted
-  probe's MIR-lowering defect, and the two named Radix prerequisites.
+- **outcome**: durable Stage-0.5 triage receipt records the historical 26/1
+  coverage gap, the stale-Latin and package-path diagnoses, the landed Radix
+  link-then-run route (`018cc8b25` / `736b14766`), and the later Triga
+  visibility/MIR/provider residuals.
 - **write_scope**: `triga/docs/factory/triga-hardening/stage-0-5-triage.md`
-- **done_when**: the receipt contains the commands and verdicts in §2 of this
-  spec; it states that executed-proba evidence remains open until
-  `rdx-s05-1` and `rdx-s05-3` land; it contains no Radix implementation.
+- **done_when**: the receipt contains the historical commands and current route
+  update in §2 of this spec; it states that the Radix prerequisites are landed
+  and that the aggregate executed-proba tier remains open only for actual
+  Triga coverage results; it contains no Radix implementation.
 - **depends_on**: none
 - **sanity**: compare the receipt's module/proba counts with
   `proof/inventory/triga-inventory.json` and `find src`.
@@ -353,7 +370,7 @@ verdict.
   zero normalization, matrix validity/shape edges, transform payload facts,
   quaternion/color boundaries, and representative volume/ray degenerates;
   the package gate reports every case passed.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: `radix check --locale en src/math.fab` plus the filtered package
   proba command from the gate.
 - **read_scope**: `src/math.fab`, `proof/inventory/triga-inventory.json`,
@@ -383,7 +400,7 @@ verdict.
   invalid ranges/indices, degenerate bounds, invalid face codes, and exact
   position/normal/UV/winding/index values where generators publish them. All
   cases pass through the package runner.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for the seven relative source paths.
 - **read_scope**: listed `.fab` modules, `docs/module-map.md`,
   `proof/inventory/triga-inventory.json`, and existing geometry exempla.
@@ -405,7 +422,7 @@ verdict.
   camera facts, projection/view-projection outputs, and invalid projection
   inputs are exercised. `graph.proba` is an explicit facade-discovery smoke,
   not a claim that the facade re-exports leaf types. All cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for graph paths.
 - **read_scope**: listed `.fab` modules, `src/math.fab`,
   `proof/inventory/triga-inventory.json`, and camera exempla.
@@ -426,7 +443,7 @@ verdict.
   removal facts are covered with mutation sequences. Genuine absence remains
   distinct from invalid-handle rejection in the assertions. Both modules' all
   cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for `scene` and `resource`.
 - **read_scope**: listed `.fab` modules, Stage-0 Q4/open-question records,
   `docs/factory/triga-engine/deliveries/DS-D-scene-store-query.md`, and the
@@ -451,7 +468,7 @@ verdict.
   exercised. Out-of-range opacity/alpha and unsupported variants are tested as
   explicit rejection/unsupported behavior, not silently accepted as rendered
   capability. The facade proba is a discovery smoke. All cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for material paths.
 - **read_scope**: listed `.fab` modules, `docs/api-shape-policy.md`,
   `proof/inventory/triga-inventory.json`, and Profile v0.
@@ -468,7 +485,7 @@ verdict.
   color/intensity/direction boundaries, and the facade discovery shape are
   covered. Tests state carrier evidence separately from host lighting
   execution. All cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for lighting paths.
 - **read_scope**: listed `.fab` modules, Profile v0, and the inventory.
 - **non_goals**: browser lighting, shadows, environment lights, or new light
@@ -486,7 +503,7 @@ verdict.
   exact vertex positions, normals, UVs, winding, index/topology, and count
   assertions where its API publishes them. Degenerate dimensions, invalid
   ranges, and unsupported generator inputs are covered. All cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for primitive paths.
 - **read_scope**: listed `.fab` modules, geometry facts, primitive exempla, and
   the inventory.
@@ -505,8 +522,8 @@ verdict.
   graph/geometry/material assembly, public fact access, missing/invalid
   component rejection, and composition edge cases. The proba does not claim a
   host draw. All cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`, `tgh-s05-c02`,
-  `tgh-s05-c03`, `tgh-s05-c05`
+- **depends_on**: `tgh-s05-0`, `tgh-s05-c02`, `tgh-s05-c03`,
+  `tgh-s05-c05`
 - **sanity**: filtered package proba run for renderable paths.
 - **read_scope**: listed `.fab` modules, geometry/graph/material family specs,
   and the inventory.
@@ -524,7 +541,7 @@ verdict.
   mismatch/rejection dimension, including code and resource-binding facts.
   `triga.proba` executes a facade-discovery smoke and does not invent type
   re-exports. All cases pass.
-- **depends_on**: `tgh-s05-0`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-0`
 - **sanity**: filtered package proba run for the two paths.
 - **read_scope**: listed `.fab` modules, frozen ABI fields in the inventory,
   Profile v0, and shader-contract exempla.
@@ -541,7 +558,7 @@ verdict.
 - **write_scope**: `triga/scripta/check-proba-coverage`,
   `triga/proof/coverage-scorecard.json`,
   `triga/proof/coverage/README.md` if the gate needs a contract note.
-- **depends_on**: `tgh-s05-c01` through `tgh-s05-c09`, `rdx-s05-1`, `rdx-s05-3`
+- **depends_on**: `tgh-s05-c01` through `tgh-s05-c09`
 - **done_when**:
   1. the gate discovers exactly the 26 live `.fab` modules from `src/`;
   2. it requires exactly one sibling `.proba` per module, including explicit
@@ -569,15 +586,16 @@ verdict.
 
 ## 7. Integration and validation ownership
 
-No Triga merge gate is needed for the nine independent coverage batches; their
+No Triga merge gate is needed for the nine disjoint coverage batches; their
 `.proba` paths are disjoint. `tgh-s05-c08` consumes the test contracts from
 geometry, graph, and material and therefore lands after those units. The gate
 is the sole aggregate writer for the scorecard refresh.
 
-The external Radix units are owning-repo prerequisites, not hidden changes in a
-Triga commit. A red Radix route keeps the Stage-0.5 executed tier open. A red
-Triga proba keeps its module row below `executed-proba`; the gate must report
-the failing case and stop.
+The Radix routes are landed owning-repo history, not hidden changes in a Triga
+commit. A red Triga proba keeps its module row below `executed-proba`; the gate
+must report the failing case and stop. Current residual classes are the later
+Triga visibility/export seams, MIR method/projection/path lowering, and
+provider-backed runtime cases.
 
 Lane-owned validation, named once:
 
@@ -598,10 +616,14 @@ their validation lanes and are not child Hand done-when conditions.
 
 ## 8. Open questions for Mind
 
-- The two compiler/toolchain defects are routed as `rdx-s05-1` and
-  `rdx-s05-3` under the owning-repo boundary. The `rdx-s05-3` link path has
-  landed, but the proba link-then-run versus runner-resolved-stubs fork is
-  reserved for head-cto and keeps executed-proba evidence open.
+- The two compiler/toolchain routes are landed under the owning-repo boundary:
+  `rdx-s05-1` at `9919d480c`, and `rdx-s05-3` through `e56d45f70`,
+  `018cc8b25`, and `736b14766`. The recorded official converted three-case math fixture is
+  green (`3 passed, 0 failed`); no head-cto architecture fork remains.
+- Later Triga visibility repairs (`94c8da7`, `cdf8c0e`, `9d9246c`, `91b3389`,
+  `ef48638`, `b8def7c`) are separate from the Radix route. Coverage remains
+  open for the affected MIR method/projection/path and provider/runtime
+  residuals until the actual module probes pass.
 - Setup/teardown syntax is supported by the current grammar. Default policy is
   to use fixtures only where a family needs shared state and to require their
   effects to pass through the same runner gate.
