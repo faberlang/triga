@@ -27,27 +27,44 @@ the remaining rows. The direct single-`.proba` route is deliberately not used;
 it skips the package link step that resolves receiver methods before lowering.
 
 The current receipt (`proof/coverage-scorecard.json`, coverage revision 2)
-records **9/26** module selections at `executed-proba` through this package-link
-route, using `/Users/ianzepp/work/faberlang/radix/target/release/faber`. The
-passing selections are `src/geometry.fab`, `src/geometry/attribute.fab`,
-`src/geometry/batch.fab`, `src/geometry/bounds.fab`, `src/geometry/layout.fab`,
-`src/graph.fab`, `src/lighting.fab`, `src/primitives.fab`, and
-`src/shader_contract.fab`. The remaining 17 rows contain analysis or runner
-failures. This is a partial package-link result, not the historical single-file
-parse-failure snapshot.
+records **21/26** module selections at `executed-proba` through this package-link
+route, using
+`/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber`
+built from packet radix `4d7402ba7` against triga `c1700d4` (after `dfe9eb5`
+optional-field unwraps and `50e99c0` Material.side `int<u32>`). The passing
+selections are `src/face.fab`, `src/geometry.fab`,
+`src/geometry/attribute.fab`, `src/geometry/batch.fab`,
+`src/geometry/bounds.fab`, `src/geometry/data.fab`, `src/geometry/layout.fab`,
+`src/graph.fab`, `src/graph/camera.fab`, `src/graph/object.fab`,
+`src/lighting.fab`, `src/lighting/light.fab`, `src/material.fab`,
+`src/math.fab`, `src/primitives.fab`, `src/primitives/basic.fab`,
+`src/renderable.fab`, `src/renderable/mesh.fab`, `src/scene.fab`,
+`src/shader_contract.fab`, and `src/triga.fab`. The remaining five rows reach
+the runner and fail cases. This is a partial package-link result, not 26/26.
 
-This receipt was refreshed at `2026-08-17T11:39:03Z` with the release Faber
-built from radix tip `60f495870` (`test(runner): assert provider diagnostics by
-issue`). `src/geometry/data.fab` reaches the runner and reports three failed
-cases plus the named unsupported provider route
-`package:BufferAttribute::float32_values`; it is not counted as
-executed-proba. The prior `package:BufferAttribute::return::dele` route is gone
-from the refreshed receipt. `float32_values` therefore appears as live runner
-evidence, while `return::dele` remains only in historical documentation.
-`src/primitives/basic.fab` also reaches the runner and reports four passed and
-six failed cases. `src/graph.fab` remains at executed-proba, while
-`src/graph/camera.fab` reaches the runner but reports zero passed and five
-failed cases. The run remains open at 9/26, not 26/26.
+This receipt was refreshed at `2026-08-17T17:37:09Z`. The prior 9/26 baseline
+(`2026-08-17T11:39:03Z`, radix `60f495870`) had 17 reds, many of them MIR-link
+(`named aggregate field type mismatch`, `option unwrap operand is not nullable`)
+or earlier assertion/provider failures. After `dfe9eb5` + `50e99c0`, the
+MIR-link class is gone from this receipt. Twelve previously red modules are
+now executed-proba. The five remaining reds are assertion-time
+`runner-failure` rows, a new residual class, not the known MIR-link blockers:
+
+- `src/material/base.fab` 3 passed / 1 failed:
+  `texture descriptor preserves its placeholder shape`
+- `src/material/basic.fab` 2 passed / 1 failed:
+  `basic material rejects invalid names and colors`
+- `src/material/lit.fab` 1 passed / 2 failed: Phong defaults / unsupported-base
+  facts
+- `src/material/standard.fab` 1 passed / 2 failed: standard defaults /
+  unsupported-base facts
+- `src/resource.fab` 5 passed / 1 failed:
+  `lifecycle accessors separate live current handles from retired handles`
+
+The scorecard still marks `rdx-s05-3` unresolved because a passing test name
+contains the word "unsupported"; no MIR or provider diagnostic codes were
+observed. The gate exit is 1 (`blocked`, `complete: false`). The run remains
+open at 21/26, not 26/26.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
