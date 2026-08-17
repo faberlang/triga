@@ -9,8 +9,8 @@
     "inventory_revision": 1,
     "source_revision": "2e9daa06684269c58f177a8d1c36f0c8c2365152",
     "module_count": 26,
-    "observed_source_revision": "97da931826b9548c40cb2ee1f52249b1a0e244aa",
-    "observed_source_digest": "sha256:72725c2178b007500045ee6e75d2d91287535382919e87cb936c7289d087ae80",
+    "observed_source_revision": "fdbbc09a9224066e1ab96b3c4290501c2b2d25e3",
+    "observed_source_digest": "sha256:343f9f5c9ee97327a4cae6b4f9f60fb3a04a17d194b4159bf0e6eb2f886a90d1",
     "inventory_mismatch": true
   },
   "exempla_inventory": {
@@ -820,7 +820,7 @@
         "exempla/triga-basics.fab",
         "exempla/triga-graphics-pipeline-facts.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -837,19 +837,14 @@
           "material/basic.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/basic.proba",
-        "exit_status": 1,
-        "passed": 2,
-        "failed": 1,
+        "exit_status": 0,
+        "passed": 3,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL basic material rejects invalid names and colors",
-          "test result: FAILED. 2 passed; 1 failed; 0 skipped",
-          "runner reported 2 passed for 3 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1253,14 +1248,14 @@
       ],
       "co_located_proba": {
         "module": "src/resource.fab",
-        "lines": 279,
+        "lines": 282,
         "groups": 2,
         "cases": 6
       },
       "exempla_coverage_refs": [
         "exempla/triga-scene-store.fab"
       ],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1277,20 +1272,14 @@
           "resource.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include resource.proba",
-        "exit_status": 1,
-        "passed": 5,
-        "failed": 1,
+        "exit_status": 0,
+        "passed": 6,
+        "failed": 0,
         "skipped": 0,
-        "status": "runner-failure",
-        "evidence_tier": "structural",
+        "status": "passed",
+        "evidence_tier": "executed-proba",
         "diagnostic_codes": {},
-        "failures": [
-          "FAIL resource lifecycle facts/lifecycle accessors separate live current handles from retired handles",
-          "test result: FAILED. 5 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 5 passed for 6 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
+        "failures": []
       }
     },
     {
@@ -1318,7 +1307,7 @@
         "exempla/triga-scene-store-empty.fab",
         "exempla/triga-scene-store.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1335,14 +1324,19 @@
           "scene.proba"
         ],
         "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include scene.proba",
-        "exit_status": 0,
-        "passed": 5,
-        "failed": 0,
+        "exit_status": 1,
+        "passed": 0,
+        "failed": 5,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "runner-failure",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
+        ]
       }
     },
     {
@@ -1448,10 +1442,10 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T17:37:09Z",
+    "run_at_utc": "2026-08-17T17:58:11Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 21,
+    "executed_module_count": 22,
     "executed_tier": "executed-proba",
     "package_path": "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
     "faber_bin": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
@@ -1485,18 +1479,6 @@
         ]
       },
       {
-        "module": "src/material/basic.fab",
-        "proba_path": "src/material/basic.proba",
-        "status": "runner-failure",
-        "diagnostic_codes": {},
-        "failures": [
-          "FAIL basic material rejects invalid names and colors",
-          "test result: FAILED. 2 passed; 1 failed; 0 skipped",
-          "runner reported 2 passed for 3 declared cases",
-          "runner summary: 1 failed; 0 skipped"
-        ]
-      },
-      {
         "module": "src/material/lit.fab",
         "proba_path": "src/material/lit.proba",
         "status": "runner-failure",
@@ -1525,16 +1507,15 @@
         ]
       },
       {
-        "module": "src/resource.fab",
-        "proba_path": "src/resource.proba",
+        "module": "src/scene.fab",
+        "proba_path": "src/scene.proba",
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL resource lifecycle facts/lifecycle accessors separate live current handles from retired handles",
-          "test result: FAILED. 5 passed; 1 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 5 passed for 6 declared cases",
-          "runner summary: 1 failed; 0 skipped"
+          "error: invalid MIR: option unwrap operand is not nullable",
+          "error: package MIR test link failed",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     ]
