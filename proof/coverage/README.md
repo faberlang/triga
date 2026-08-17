@@ -4,6 +4,7 @@
 Triga package. Run it from `triga/` with the workspace Faber environment:
 
 ```bash
+FABER_BIN=/Users/ianzepp/work/faberlang/radix/target/release/faber \
 FABER_LIBRARY_HOME=/Users/ianzepp/work/faberlang \
   ./scripta/check-proba-coverage
 ```
@@ -27,9 +28,11 @@ it skips the package link step that resolves receiver methods before lowering.
 
 The current committed receipt (`proof/coverage-scorecard.json`, coverage
 revision 2) records **2/26** module selections at `executed-proba` through this
-package-link route. The remaining 24 rows are structural: 13 package-analysis
-errors and 11 runner failures. This is a partial package-link result, not the
-historical single-file parse-failure snapshot.
+package-link route, using `/Users/ianzepp/work/faberlang/radix/target/release/faber`.
+The passing selections are `src/lighting.fab` and `src/shader_contract.fab`. The
+remaining 24 rows are structural package-analysis errors; no runner-failure rows
+remain in this receipt. This is a partial package-link result, not the historical
+single-file parse-failure snapshot.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
