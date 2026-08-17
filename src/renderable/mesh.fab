@@ -25,6 +25,7 @@ import from "triga:material/lit" private lit
 # plus one of the current material families. The union is intentionally a
 # source-side contract; consumers use the shared fields and dedicated facts,
 # while the host owns resource and draw submission.
+@ public
 class Mesh {
     graph_object.Object3D base
     data.BufferGeometry geometry
