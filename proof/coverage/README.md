@@ -26,9 +26,9 @@ the remaining rows. The direct single-`.proba` route is deliberately not used;
 it skips the package link step that resolves receiver methods before lowering.
 
 The current committed receipt (`proof/coverage-scorecard.json`, coverage
-revision 2) records **7/26** module selections at `executed-proba` through this
-package-link route. The remaining 19 rows are structural: 13 package-analysis
-errors and 6 runner failures. This is a partial package-link result, not the
+revision 2) records **2/26** module selections at `executed-proba` through this
+package-link route. The remaining 24 rows are structural: 13 package-analysis
+errors and 11 runner failures. This is a partial package-link result, not the
 historical single-file parse-failure snapshot.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
