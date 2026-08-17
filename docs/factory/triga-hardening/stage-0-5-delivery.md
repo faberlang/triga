@@ -274,6 +274,15 @@ scopes and must be dispatched in `radix/`.
 
 ### `rdx-s05-2` — lower the converted Triga method/projection probe
 
+> **Superseded 2026-08-17** — closed `block_ship` (task `76f5a125`): the
+> write_scope below is wrong. Imported method bodies are absent from per-unit
+> MIR (`faber test` lowers each proba unit independently); they merge only at
+> package-link time. No fix confined to `crates/radix/src/mir/lower/*` can
+> execute an imported method. Re-scoped successor: **`rdx-s05-3`** (Vivi
+> `b7934c6a`) — link-path lowering in `crates/radix-package/src/mir/link.rs`
+> (`link_library_method_targets`), same done_when proofs. Evidence memo:
+> `5aa20bf8`.
+
 - **repo**: `radix`
 - **outcome**: the MIR runner lowers and executes the minimal current-English
   Triga math probe shape: imported `Vector3` construction, receiver method
