@@ -37,14 +37,15 @@ failures. This is a partial package-link result, not the historical single-file
 parse-failure snapshot.
 
 This receipt was refreshed with the release Faber built from radix tip
-`1e1bad3b4` after the bang-call fix. `src/geometry/data.fab` reaches the
-runner and reports three failed cases plus two unsupported provider symbols;
-it is not counted as executed-proba. `src/primitives/basic.fab` also reaches
-the runner and reports four passed and six failed cases, replacing its prior
-`SEM004.unknown_struct_field` analysis error. `src/graph.fab` passes, and
-`src/graph/camera.fab` no longer stops at analysis: it reaches the runner but
-fails during MIR linking with `approximate comparison receiver is not fractus`.
-The run remains open at 9/26, not 26/26.
+`bb7d7a40d` after the sized-fractus approximate-receiver fix.
+`src/geometry/data.fab` reaches the runner and reports three failed cases plus
+two unsupported provider symbols; it is not counted as executed-proba.
+`src/primitives/basic.fab` also reaches the runner and reports four passed and
+six failed cases, replacing its prior `SEM004.unknown_struct_field` analysis
+error. `src/graph.fab` remains at executed-proba, while
+`src/graph/camera.fab` reaches the runner but reports zero passed and five
+failed cases, including unsupported provider `sym#30`; it is not counted as
+executed-proba. The run remains open at 9/26, not 26/26.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may

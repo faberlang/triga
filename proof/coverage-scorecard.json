@@ -547,8 +547,14 @@
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: approximate comparison receiver is not fractus",
-          "error: package MIR test link failed",
+          "FAIL PerspectiveCamera emits a valid projection and projection facts",
+          "FAIL PerspectiveCamera emits view-projection output and facts",
+          "FAIL OrthographicCamera preserves extents and camera defaults",
+          "FAIL PerspectiveCamera rejects invalid projection field ranges",
+          "FAIL PerspectiveCamera rejects degenerate view inputs",
+          "test result: FAILED. 0 passed; 5 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#30",
+          "assertion failed",
           "runner reported 0 passed for 5 declared cases",
           "runner summary: 5 failed; 0 skipped"
         ]
@@ -1512,7 +1518,7 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T10:25:29Z",
+    "run_at_utc": "2026-08-17T10:31:51Z",
     "module_count": 26,
     "proba_source_count": 26,
     "executed_module_count": 9,
@@ -1570,8 +1576,14 @@
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: approximate comparison receiver is not fractus",
-          "error: package MIR test link failed",
+          "FAIL PerspectiveCamera emits a valid projection and projection facts",
+          "FAIL PerspectiveCamera emits view-projection output and facts",
+          "FAIL OrthographicCamera preserves extents and camera defaults",
+          "FAIL PerspectiveCamera rejects invalid projection field ranges",
+          "FAIL PerspectiveCamera rejects degenerate view inputs",
+          "test result: FAILED. 0 passed; 5 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#30",
+          "assertion failed",
           "runner reported 0 passed for 5 declared cases",
           "runner summary: 5 failed; 0 skipped"
         ]
