@@ -37,7 +37,7 @@ union SceneNodeKind {
 class SceneNode {
     string name
     SceneNodeKind kind
-    SceneHandle parent optional
+    SceneHandle ∪ null parent = null
     list<SceneHandle> children
     bool visible
     math.Matrix4 local_matrix
@@ -127,12 +127,16 @@ class SceneStore {
         const SceneNode filius_nodus ← SceneNode {name = filius_result!.name, kind = filius_result!.kind, parent = filius_result!.parent, children = filius_result!.children, visible = filius_result!.visible, local_matrix = filius_result!.local_matrix, world_matrix = filius_result!.world_matrix, world_dirty = filius_result!.world_dirty}
         const SceneNode parens_nodus ← SceneNode {name = parens_result!.name, kind = parens_result!.kind, parent = parens_result!.parent, children = parens_result!.children, visible = parens_result!.visible, local_matrix = parens_result!.local_matrix, world_matrix = parens_result!.world_matrix, world_dirty = parens_result!.world_dirty}
         if filius_nodus.parent not is null {
-            const SceneHandle exsistens_parens ← SceneHandle {index = filius_nodus.parent!.index, generation = filius_nodus.parent!.generation}
+            const SceneHandle ∪ null existing_parent_opt ← _scene_parent_handle(filius_nodus.parent)
+            if existing_parent_opt is null then return false
+            const SceneHandle exsistens_parens ← existing_parent_opt
             if scene_handle_equals(exsistens_parens, parens) then return false
         }
         # Remove child from old parent's children list if it had one
         if filius_nodus.parent not is null {
-            const SceneHandle vetus_parens ← SceneHandle {index = filius_nodus.parent!.index, generation = filius_nodus.parent!.generation}
+            const SceneHandle ∪ null old_parent_opt ← _scene_parent_handle(filius_nodus.parent)
+            if old_parent_opt is null then return false
+            const SceneHandle vetus_parens ← old_parent_opt
             const SceneNode ∪ null vetus_parens_result ← self.cape(vetus_parens)
             if vetus_parens_result is null then return false
             const SceneNode vetus_nodus ← SceneNode {name = vetus_parens_result!.name, kind = vetus_parens_result!.kind, parent = vetus_parens_result!.parent, children = vetus_parens_result!.children, visible = vetus_parens_result!.visible, local_matrix = vetus_parens_result!.local_matrix, world_matrix = vetus_parens_result!.world_matrix, world_dirty = vetus_parens_result!.world_dirty}
@@ -161,11 +165,13 @@ class SceneStore {
         if filius_result is null then return false
         const SceneNode filius_nodus ← SceneNode {name = filius_result!.name, kind = filius_result!.kind, parent = filius_result!.parent, children = filius_result!.children, visible = filius_result!.visible, local_matrix = filius_result!.local_matrix, world_matrix = filius_result!.world_matrix, world_dirty = filius_result!.world_dirty}
         if filius_nodus.parent is null then return false
-        const SceneHandle parens_manubrium ← SceneHandle {index = filius_nodus.parent!.index, generation = filius_nodus.parent!.generation}
+        const SceneHandle ∪ null parent_opt ← _scene_parent_handle(filius_nodus.parent)
+        if parent_opt is null then return false
+        const SceneHandle parens_manubrium ← parent_opt
         const SceneNode ∪ null parens_result ← self.cape(parens_manubrium)
         if parens_result is null then return false
         const SceneNode parens_nodus ← SceneNode {name = parens_result!.name, kind = parens_result!.kind, parent = parens_result!.parent, children = parens_result!.children, visible = parens_result!.visible, local_matrix = parens_result!.local_matrix, world_matrix = parens_result!.world_matrix, world_dirty = parens_result!.world_dirty}
-        const SceneNode seiunctus_filius ← SceneNode {name = filius_nodus.name, kind = filius_nodus.kind, children = filius_nodus.children, visible = filius_nodus.visible, local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix, world_dirty = true}
+        const SceneNode seiunctus_filius ← SceneNode {name = filius_nodus.name, kind = filius_nodus.kind, parent = null, children = filius_nodus.children, visible = filius_nodus.visible, local_matrix = filius_nodus.local_matrix, world_matrix = filius_nodus.world_matrix, world_dirty = true}
         self._reple(parens_manubrium, self._sine_liberis(parens_nodus, filius))
         self._reple(filius, seiunctus_filius)
         self._nota_mundum_sordidum(filius)
@@ -246,7 +252,9 @@ class SceneStore {
             if current is null then return false
             if current!.visible ≡ false then return false
             if current!.parent is null then return true
-            const SceneHandle parens ← SceneHandle {index = current!.parent!.index, generation = current!.parent!.generation}
+            const SceneHandle ∪ null parent_opt ← _scene_parent_handle(current!.parent)
+            if parent_opt is null then return true
+            const SceneHandle parens ← parent_opt
             cursor ← SceneHandle {index = parens.index, generation = parens.generation}
             remaining ← remaining - 1
         }
@@ -472,7 +480,9 @@ class SceneStore {
             if current is null then return false
             const SceneNode current_nodus ← SceneNode {name = current!.name, kind = current!.kind, parent = current!.parent, children = current!.children, visible = current!.visible, local_matrix = current!.local_matrix, world_matrix = current!.world_matrix, world_dirty = current!.world_dirty}
             if current_nodus.parent is null then return false
-            const SceneHandle current_parens ← SceneHandle {index = current_nodus.parent!.index, generation = current_nodus.parent!.generation}
+            const SceneHandle ∪ null parent_opt ← _scene_parent_handle(current_nodus.parent)
+            if parent_opt is null then return false
+            const SceneHandle current_parens ← parent_opt
             cursor ← SceneHandle {index = current_parens.index, generation = current_parens.generation}
             remaining ← remaining - 1
         }
@@ -678,7 +688,7 @@ fn scene_store() → SceneStore {
 
 @ public
 fn scene_node(string name, SceneNodeKind kind) → SceneNode {
-    return SceneNode {name = name, kind = kind, children = vacua, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
+    return SceneNode {name = name, kind = kind, parent = null, children = vacua, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
 }
 
 @ public
@@ -702,6 +712,12 @@ fn scene_light(string name) → SceneNode {
 }
 
 # ── Free utilities on handles ─────────────────────────────────────────
+
+fn _scene_parent_handle(SceneHandle ∪ null parent) → SceneHandle ∪ null {
+    if parent is null then return null
+    const SceneHandle copy ← parent
+    return copy
+}
 
 @ public
 fn scene_handle_equals(ref SceneHandle a, ref SceneHandle b) → bool {
