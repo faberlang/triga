@@ -1,0 +1,33 @@
++++
+locale = "en"
++++
+# Co-located coverage for the compiler-facing shader-contract adapter.
+#
+# The adapter functions are intentionally compiler-owned contract declarations,
+# not re-exported library helpers. These cases therefore pin the complete
+# constant argument shape for every role without inventing a runtime matcher or
+# a WGSL admission claim. Invalid codes and conflicting facts are rejected by
+# the compiler contract collector before a proba can execute them.
+import from "triga:shader_contract" contract
+
+describe "shader contract adapter facts" {
+    test "vertex layout covers semantic location format offsets stride step and role" {
+        assert contract.vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1)
+    }
+
+    test "varying covers semantic location format interpolation and role" {
+        assert contract.varying_matches("color", 0, 4, 1, 2)
+    }
+
+    test "fragment output covers location format and color role" {
+        assert contract.fragment_output_matches(0, 4, 2)
+    }
+
+    test "pipeline covers color depth write topology and vertex count" {
+        assert contract.pipeline_matches(1, 1, 1, 1, 36)
+    }
+
+    test "resource binding covers group binding kind role access count layout semantic and role" {
+        assert contract.resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3)
+    }
+}
