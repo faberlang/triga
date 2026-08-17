@@ -1,0 +1,111 @@
+# Public Triga CI. Runs every no-Faber tier. Never checks out private Radix.
+# Faber-dependent rungs stay skipped until a published artifact exists (Q6).
+name: Public CI
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  public:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Triga
+        uses: actions/checkout@v4
+
+      - name: Require listed scripts
+        id: scripts
+        run: |
+          set -euo pipefail
+          missing=0
+          for script in \
+            scripta/check-source \
+            scripta/check-capabilities \
+            scripta/check-compile \
+            scripta/check-proba-coverage \
+            scripta/check-wgsl-shader-contract-conformance
+          do
+            if [[ ! -f "$script" ]]; then
+              echo "missing script: $script" >&2
+              missing=1
+            fi
+          done
+          if [[ $missing -ne 0 ]]; then
+            echo "kind=missing-script" >> "$GITHUB_OUTPUT"
+            echo "workflow conclusion: missing script" >&2
+            exit 1
+          fi
+          echo "kind=present" >> "$GITHUB_OUTPUT"
+
+      - name: structural — check-source
+        id: source
+        if: ${{ !cancelled() && steps.scripts.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          set +e
+          ./scripta/check-source
+          status=$?
+          set -e
+          echo "exit=${status}" >> "$GITHUB_OUTPUT"
+          if [[ $status -ne 0 ]]; then
+            echo "structural: spine lint red (expected until Stage 2)"
+            echo "kind=spine-lint-red" >> "$GITHUB_OUTPUT"
+            exit "$status"
+          fi
+          echo "structural: check-source green"
+          echo "kind=green" >> "$GITHUB_OUTPUT"
+
+      - name: check-capabilities
+        id: capabilities
+        if: ${{ !cancelled() && steps.scripts.outcome == 'success' }}
+        run: ./scripta/check-capabilities
+
+      - name: public-execution — Faber-dependent rungs
+        id: public_execution
+        if: ${{ !cancelled() && steps.scripts.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          # Do not consult sibling checkouts or clone radix/. None is a
+          # published Faber artifact (hardening Q6).
+          echo "public-execution tier open: no published Faber artifact (hardening Q6)"
+          echo "skip ./scripta/check-compile"
+          echo "skip ./scripta/check-proba-coverage"
+          echo "skip ./scripta/check-wgsl-shader-contract-conformance"
+
+      - name: Workflow conclusion
+        if: ${{ !cancelled() }}
+        env:
+          SCRIPTS_KIND: ${{ steps.scripts.outputs.kind }}
+          SCRIPTS_OUTCOME: ${{ steps.scripts.outcome }}
+          SOURCE_KIND: ${{ steps.source.outputs.kind }}
+          SOURCE_OUTCOME: ${{ steps.source.outcome }}
+          CAP_OUTCOME: ${{ steps.capabilities.outcome }}
+          PUB_OUTCOME: ${{ steps.public_execution.outcome }}
+        run: |
+          set -euo pipefail
+          if [[ "$SCRIPTS_KIND" == "missing-script" || "$SCRIPTS_OUTCOME" != "success" ]]; then
+            echo "workflow conclusion: missing script"
+            exit 1
+          fi
+          if [[ "$SOURCE_KIND" == "spine-lint-red" || "$SOURCE_OUTCOME" == "failure" ]]; then
+            echo "workflow conclusion: spine lint red (expected until Stage 2)"
+            exit 1
+          fi
+          if [[ "$SOURCE_OUTCOME" != "success" ]]; then
+            echo "workflow conclusion: missing script"
+            exit 1
+          fi
+          if [[ "$CAP_OUTCOME" != "success" ]]; then
+            echo "workflow conclusion: check-capabilities red"
+            exit 1
+          fi
+          if [[ "$PUB_OUTCOME" != "success" ]]; then
+            echo "workflow conclusion: missing script"
+            exit 1
+          fi
+          echo "workflow conclusion: no-Faber rungs green; public-execution tier open"
