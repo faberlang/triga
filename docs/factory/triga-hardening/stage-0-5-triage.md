@@ -140,14 +140,14 @@ replace method/field assertions with count-only tests.
 
 ## 5. Triage conclusion (delivery §2.5)
 
-The live honest package-link receipt (`3b676ac`,
+The live honest package-link receipt (`292e119`,
 `proof/coverage-scorecard.json`, coverage revision 2) records **9/26** module
-selections at `executed-proba`. The remaining 17 rows comprise 1
-`analysis-error` row (`src/graph/camera.fab`) and 16 `runner-failure` rows.
-`src/primitives/basic.fab` is now a `runner-failure` after `79a7f6d04`, and
-`src/geometry/data.fab` is a `runner-failure` after the release Faber update at
-`17854f61e`; neither is counted among the analysis errors. The current receipt
-has no `PARSE050` row;
+selections at `executed-proba`. The remaining 17 rows are all
+`runner-failure`; there are 0 `analysis-error` rows. `src/graph/camera.fab` is
+now a `runner-failure` after Radix `1e1bad3b4` (approximata MIR), rather than an
+analysis error. `src/primitives/basic.fab` is also a `runner-failure` after
+`79a7f6d04`, and `src/geometry/data.fab` is a `runner-failure` after the release
+Faber update at `17854f61e`. The receipt has no `PARSE050` row;
 `PARSE050.import_privata_removed` is historical evidence from the retired
 import-modifier and single-file/roundtrip routes, not the current Triga
 package-link verdict.
