@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run every co-located Triga proba through the package-aware Faber runner and
+# Run every co-located Triga proba through Faber's single-source runner and
 # refresh the Stage-0.5 section of proof/coverage-scorecard.json.
 #
 # The gate writes its receipt before returning a non-zero status.  A parse,
@@ -118,13 +118,15 @@ def run_one(
     proba_path: Path,
     faber: Path,
     library_home: Path,
-    package_path: Path,
     timeout_seconds: float,
 ) -> dict[str, Any]:
-    module_name = rel(module_path)
     proba_name = rel(proba_path)
     declared = proba_shape(proba_path)
-    command = [str(faber), "test", str(package_path), "--filter", proba_name]
+    # Passing the .proba file itself selects Faber's single-source route.  A
+    # package directory plus --filter still analyzes every package source
+    # before applying the test filter, so one unrelated package diagnostic
+    # incorrectly turns every module into the same analysis error.
+    command = [str(faber), "test", proba_name]
     base: dict[str, Any] = {
         "proba_path": proba_name,
         "case_count": declared["cases"],
@@ -324,13 +326,13 @@ def main() -> int:
         module_name = rel(module)
         proba = expected_by_module[module_name]
         if proba.is_file():
-            execution = run_one(module, proba, faber, library_home, package_path, timeout_seconds)
+            execution = run_one(module, proba, faber, library_home, timeout_seconds)
         else:
             execution = {
                 "proba_path": rel(proba),
                 "case_count": 0,
-                "command": [str(faber), "test", str(package_path), "--filter", rel(proba)],
-                "command_text": command_text([str(faber), "test", str(package_path), "--filter", rel(proba)]),
+                "command": [str(faber), "test", rel(proba)],
+                "command_text": command_text([str(faber), "test", rel(proba)]),
                 "exit_status": None,
                 "passed": None,
                 "failed": None,
@@ -360,7 +362,7 @@ def main() -> int:
     for item in executions:
         observed_codes.update(item["diagnostic_codes"])
 
-    # A package analysis red is an unresolved shared prerequisite until the
+    # Shared frontend and MIR reds remain unresolved prerequisites until the
     # owning Radix route is repaired.  This is intentionally descriptive: it
     # never converts a red module into a skipped or structural pass.
     prerequisite_status: dict[str, str] = {
@@ -397,8 +399,8 @@ def main() -> int:
         "package_path": str(package_path),
         "faber_bin": str(faber),
         "faber_library_home": str(library_home),
-        "filter_mode": "relative-proba-path",
-        "command_template": [str(faber), "test", str(package_path), "--filter", "<src-relative>.proba"],
+        "filter_mode": "single-proba-path",
+        "command_template": [str(faber), "test", "<src-relative>.proba"],
         "prerequisites": prerequisite_status,
         "observed_diagnostic_codes": dict(sorted(observed_codes.items())),
         "discovery_errors": errors,

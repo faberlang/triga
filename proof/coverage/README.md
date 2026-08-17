@@ -9,12 +9,19 @@ FABER_LIBRARY_HOME=/Users/ianzepp/work/faberlang \
 ```
 
 The gate discovers `src/**/*.fab`, requires exactly one sibling
-`src/**/*.proba` for every module, and invokes the package-aware runner with
-an absolute package path and a relative proba filter:
+`src/**/*.proba` for every module, and invokes Faber's single-source runner
+once per proba file:
 
 ```text
-<FABER_BIN> test /absolute/path/to/triga --filter src/math.proba
+<FABER_BIN> test src/math.proba
 ```
+
+Passing the package directory with `--filter src/math.proba` is deliberately
+not used here. That package-wide route analyzes every package source before
+applying the test filter, so one unrelated package diagnostic makes all 26
+module rows report the same analysis failure. The single-source route keeps
+module results independent while still using `FABER_LIBRARY_HOME` for the
+workspace runtime and provider configuration.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/debug/faber`. `PROBA_TIMEOUT_SECONDS` may
@@ -25,8 +32,8 @@ bound one module run; its default is 180 seconds.
 A module is `executed-proba` only when all declared `test` cases are reported
 as passed, with zero failed and zero skipped cases, and the runner exits zero.
 A parsed source, structural check, case count, or facade file by itself cannot
-promote a row. Missing probes, orphan probes, package analysis errors, MIR
-lowering errors, runner failures, and count-only output keep the row below the
+promote a row. Missing probes, orphan probes, single-source analysis errors,
+MIR lowering errors, runner failures, and count-only output keep the row below the
 executed tier and make the gate exit non-zero.
 
 The gate writes its receipt before returning. The scorecard's `stage0_5` object

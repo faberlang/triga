@@ -94,25 +94,18 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/face.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/face.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/face.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering"
         ]
       }
     },
@@ -138,7 +131,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -150,26 +143,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/geometry.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/geometry.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/geometry.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -214,25 +198,20 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/geometry/attribute.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/geometry/attribute.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/geometry/attribute.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value"
         ]
       }
     },
@@ -277,25 +256,22 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/geometry/batch.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/geometry/batch.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/geometry/batch.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "test result: FAILED. 0 passed; 3 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#10",
+          "FaberScript unsupported: provider sym#22",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       }
     },
@@ -333,25 +309,19 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/geometry/bounds.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/geometry/bounds.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/geometry/bounds.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value"
         ]
       }
     },
@@ -404,25 +374,20 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/geometry/data.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/geometry/data.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/geometry/data.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value"
         ]
       }
     },
@@ -460,25 +425,22 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/geometry/layout.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/geometry/layout.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/geometry/layout.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 2,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL vertex layout contracts/vertex step constructor produces a usable layout",
+          "test result: FAILED. 0 passed; 2 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#12",
+          "runner reported 0 passed for 2 declared cases",
+          "runner summary: 2 failed; 0 skipped"
         ]
       }
     },
@@ -504,7 +466,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -516,26 +478,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/graph.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/graph.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/graph.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -575,11 +528,9 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/graph/camera.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/graph/camera.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/graph/camera.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
@@ -587,13 +538,16 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
+          "SEM004.unknown_method": 7,
+          "SEM004.unknown_struct_field": 2,
+          "SEM010.assert_condition_type_mismatch": 9,
+          "SEM012.callee_not_callable": 2
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: SEM004.unknown_struct_field",
+          "error: SEM012.callee_not_callable",
+          "error: SEM010.assert_condition_type_mismatch",
+          "error: SEM004.unknown_method"
         ]
       }
     },
@@ -634,25 +588,18 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/graph/object.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/graph/object.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/graph/object.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering"
         ]
       }
     },
@@ -678,7 +625,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -690,26 +637,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/lighting.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/lighting.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/lighting.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -746,25 +684,22 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/lighting/light.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/lighting/light.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/lighting/light.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 4,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL PointLight defaults remain explicit carrier values",
+          "test result: FAILED. 0 passed; 4 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#18",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       }
     },
@@ -790,7 +725,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -802,26 +737,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/material.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/material.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/material.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -862,25 +788,18 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/material/base.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/material/base.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/material/base.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch"
         ]
       }
     },
@@ -921,25 +840,19 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/material/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/material/basic.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/material/basic.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: field projection base is not a struct or record",
+          "error: invalid MIR: named aggregate field type mismatch"
         ]
       }
     },
@@ -979,25 +892,19 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/material/lit.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/material/lit.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/material/lit.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: invalid MIR: field projection base is not a struct or record"
         ]
       }
     },
@@ -1037,25 +944,19 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/material/standard.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/material/standard.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/material/standard.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: invalid MIR: field projection base is not a struct or record"
         ]
       }
     },
@@ -1103,25 +1004,20 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/math.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/math.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/math.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: unsupported MIR lowering: path that does not resolve to a local value"
         ]
       }
     },
@@ -1147,7 +1043,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1159,26 +1055,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/primitives.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/primitives.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/primitives.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -1226,11 +1113,9 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/primitives/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/primitives/basic.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/primitives/basic.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
@@ -1238,13 +1123,22 @@
         "status": "analysis-error",
         "evidence_tier": "structural",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
+          "SEM004.unknown_field": 2,
+          "SEM004.unknown_struct_field": 22,
+          "SEM010.common_type_mismatch": 4,
+          "SEM010.expression_type_mismatch": 4,
+          "SEM010.initializer_annotation_mismatch": 4,
+          "SEM011.indexing_requires_array_or_map": 20,
+          "SEM014.cannot_infer_expression_type": 4
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: SEM004.unknown_field",
+          "error: SEM004.unknown_struct_field",
+          "error: SEM011.indexing_requires_array_or_map",
+          "error: SEM010.common_type_mismatch",
+          "error: SEM010.expression_type_mismatch",
+          "error: SEM010.initializer_annotation_mismatch",
+          "error: SEM014.cannot_infer_expression_type"
         ]
       }
     },
@@ -1270,7 +1164,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1282,26 +1176,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/renderable.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/renderable.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/renderable.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     },
     {
@@ -1340,25 +1225,18 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/renderable/mesh.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/renderable/mesh.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/renderable/mesh.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering"
         ]
       }
     },
@@ -1398,25 +1276,22 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/resource.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/resource.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/resource.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 6,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FaberScript unsupported: provider sym#26",
+          "FaberScript unsupported: provider sym#34",
+          "FaberScript unsupported: provider sym#68",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 6 failed; 0 skipped"
         ]
       }
     },
@@ -1457,25 +1332,20 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/scene.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/scene.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/scene.proba",
         "exit_status": 1,
         "passed": null,
         "failed": null,
         "skipped": null,
         "status": "analysis-error",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value"
         ]
       }
     },
@@ -1513,25 +1383,22 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/shader_contract.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/shader_contract.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/shader_contract.proba",
         "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "status": "runner-failure",
         "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FaberScript unsupported: provider sym#22",
+          "FaberScript unsupported: provider sym#24",
+          "FaberScript unsupported: provider sym#26",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     },
@@ -1557,7 +1424,7 @@
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "structural",
+      "evidence_tier": "executed-proba",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1569,26 +1436,17 @@
         "command": [
           "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/triga",
-          "--filter",
           "src/triga.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --filter src/triga.proba",
-        "exit_status": 1,
-        "passed": null,
-        "failed": null,
-        "skipped": null,
-        "status": "analysis-error",
-        "evidence_tier": "structural",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test src/triga.proba",
+        "exit_status": 0,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "status": "passed",
+        "evidence_tier": "executed-proba",
+        "diagnostic_codes": {},
+        "failures": []
       }
     }
   ],
@@ -1596,29 +1454,35 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T05:51:46Z",
+    "run_at_utc": "2026-08-17T06:18:44Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 0,
+    "executed_module_count": 7,
     "executed_tier": "executed-proba",
     "package_path": "/Users/ianzepp/work/faberlang/triga",
     "faber_bin": "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
     "faber_library_home": "/Users/ianzepp/work/faberlang",
-    "filter_mode": "relative-proba-path",
+    "filter_mode": "single-proba-path",
     "command_template": [
       "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
       "test",
-      "/Users/ianzepp/work/faberlang/triga",
-      "--filter",
       "<src-relative>.proba"
     ],
     "prerequisites": {
       "rdx-s05-1": "not-observed",
-      "rdx-s05-3": "not-observed"
+      "rdx-s05-3": "unresolved"
     },
     "observed_diagnostic_codes": {
-      "SEM002.unknown_qualified_type": 4316,
-      "SEM004.namespace_missing_export": 3822
+      "SEM004.unknown_field": 2,
+      "SEM004.unknown_method": 7,
+      "SEM004.unknown_struct_field": 24,
+      "SEM010.assert_condition_type_mismatch": 9,
+      "SEM010.common_type_mismatch": 4,
+      "SEM010.expression_type_mismatch": 4,
+      "SEM010.initializer_annotation_mismatch": 4,
+      "SEM011.indexing_requires_array_or_map": 20,
+      "SEM012.callee_not_callable": 2,
+      "SEM014.cannot_infer_expression_type": 4
     },
     "discovery_errors": [],
     "failures": [
@@ -1626,112 +1490,67 @@
         "module": "src/face.fab",
         "proba_path": "src/face.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/geometry.fab",
-        "proba_path": "src/geometry.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering"
         ]
       },
       {
         "module": "src/geometry/attribute.fab",
         "proba_path": "src/geometry/attribute.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value"
         ]
       },
       {
         "module": "src/geometry/batch.fab",
         "proba_path": "src/geometry/batch.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "test result: FAILED. 0 passed; 3 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#10",
+          "FaberScript unsupported: provider sym#22",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 3 failed; 0 skipped"
         ]
       },
       {
         "module": "src/geometry/bounds.fab",
         "proba_path": "src/geometry/bounds.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value"
         ]
       },
       {
         "module": "src/geometry/data.fab",
         "proba_path": "src/geometry/data.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value"
         ]
       },
       {
         "module": "src/geometry/layout.fab",
         "proba_path": "src/geometry/layout.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/graph.fab",
-        "proba_path": "src/graph.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL vertex layout contracts/vertex step constructor produces a usable layout",
+          "test result: FAILED. 0 passed; 2 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#12",
+          "runner reported 0 passed for 2 declared cases",
+          "runner summary: 2 failed; 0 skipped"
         ]
       },
       {
@@ -1739,153 +1558,88 @@
         "proba_path": "src/graph/camera.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
+          "SEM004.unknown_method": 7,
+          "SEM004.unknown_struct_field": 2,
+          "SEM010.assert_condition_type_mismatch": 9,
+          "SEM012.callee_not_callable": 2
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: SEM004.unknown_struct_field",
+          "error: SEM012.callee_not_callable",
+          "error: SEM010.assert_condition_type_mismatch",
+          "error: SEM004.unknown_method"
         ]
       },
       {
         "module": "src/graph/object.fab",
         "proba_path": "src/graph/object.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/lighting.fab",
-        "proba_path": "src/lighting.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering"
         ]
       },
       {
         "module": "src/lighting/light.fab",
         "proba_path": "src/lighting/light.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/material.fab",
-        "proba_path": "src/material.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FAIL PointLight defaults remain explicit carrier values",
+          "test result: FAILED. 0 passed; 4 failed; 0 skipped",
+          "FaberScript unsupported: provider sym#18",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 4 failed; 0 skipped"
         ]
       },
       {
         "module": "src/material/base.fab",
         "proba_path": "src/material/base.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch"
         ]
       },
       {
         "module": "src/material/basic.fab",
         "proba_path": "src/material/basic.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: field projection base is not a struct or record",
+          "error: invalid MIR: named aggregate field type mismatch"
         ]
       },
       {
         "module": "src/material/lit.fab",
         "proba_path": "src/material/lit.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: invalid MIR: field projection base is not a struct or record"
         ]
       },
       {
         "module": "src/material/standard.fab",
         "proba_path": "src/material/standard.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: invalid MIR: named aggregate field type mismatch",
+          "error: invalid MIR: field projection base is not a struct or record"
         ]
       },
       {
         "module": "src/math.fab",
         "proba_path": "src/math.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/primitives.fab",
-        "proba_path": "src/primitives.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: unsupported MIR lowering: path that does not resolve to a local value"
         ]
       },
       {
@@ -1893,97 +1647,68 @@
         "proba_path": "src/primitives/basic.proba",
         "status": "analysis-error",
         "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
+          "SEM004.unknown_field": 2,
+          "SEM004.unknown_struct_field": 22,
+          "SEM010.common_type_mismatch": 4,
+          "SEM010.expression_type_mismatch": 4,
+          "SEM010.initializer_annotation_mismatch": 4,
+          "SEM011.indexing_requires_array_or_map": 20,
+          "SEM014.cannot_infer_expression_type": 4
         },
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/renderable.fab",
-        "proba_path": "src/renderable.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: SEM004.unknown_field",
+          "error: SEM004.unknown_struct_field",
+          "error: SEM011.indexing_requires_array_or_map",
+          "error: SEM010.common_type_mismatch",
+          "error: SEM010.expression_type_mismatch",
+          "error: SEM010.initializer_annotation_mismatch",
+          "error: SEM014.cannot_infer_expression_type"
         ]
       },
       {
         "module": "src/renderable/mesh.fab",
         "proba_path": "src/renderable/mesh.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering"
         ]
       },
       {
         "module": "src/resource.fab",
         "proba_path": "src/resource.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FaberScript unsupported: provider sym#26",
+          "FaberScript unsupported: provider sym#34",
+          "FaberScript unsupported: provider sym#68",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 6 failed; 0 skipped"
         ]
       },
       {
         "module": "src/scene.fab",
         "proba_path": "src/scene.proba",
         "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value"
         ]
       },
       {
         "module": "src/shader_contract.fab",
         "proba_path": "src/shader_contract.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
+        "status": "runner-failure",
+        "diagnostic_codes": {},
         "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
-        ]
-      },
-      {
-        "module": "src/triga.fab",
-        "proba_path": "src/triga.proba",
-        "status": "analysis-error",
-        "diagnostic_codes": {
-          "SEM002.unknown_qualified_type": 166,
-          "SEM004.namespace_missing_export": 147
-        },
-        "failures": [
-          "error: SEM002.unknown_qualified_type",
-          "error: SEM004.namespace_missing_export",
-          "error: package analysis failed"
+          "FaberScript unsupported: provider sym#22",
+          "FaberScript unsupported: provider sym#24",
+          "FaberScript unsupported: provider sym#26",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 5 failed; 0 skipped"
         ]
       }
     ]
