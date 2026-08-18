@@ -14,13 +14,16 @@
 # emitted-contract behavior against the current sibling Faber binary
 # (FABER_BIN or $FABER_LIBRARY_HOME/radix/target/{release,debug}/faber).
 # A live-Radix needle miss is an honest red — assertions are not deleted.
+# After resolving FABER_BIN, a staleness guard fails if that binary is older
+# than the sibling radix source (git crates/ commit time, or file mtime when
+# the tree is dirty / not a git checkout). No silent rebuild.
 #
 # Usage:
 #   ./scripta/check-wgsl-shader-contract-conformance
 #   FABER_BIN=... FABER_LIBRARY_HOME=... ./scripta/check-wgsl-shader-contract-conformance
 #
-# Exit non-zero on any compile failure, unexpected WGSL, naga rejection, or
-# absent naga (the suite hard-requires naga — see below).
+# Exit non-zero on a stale faber binary, any compile failure, unexpected WGSL,
+# naga rejection, or absent naga (the suite hard-requires naga — see below).
 
 set -euo pipefail
 
@@ -45,6 +48,72 @@ if [[ ! -x "$FABER_BIN" ]]; then
   echo "check-wgsl-shader-contract-conformance: FABER_BIN is not executable: $FABER_BIN" >&2
   exit 1
 fi
+
+# Epoch-seconds mtime. python3, not stat(1): GNU stat's -f is filesystem
+# mode and BSD/GNU format flags are not interchangeable.
+stat_mtime() {
+  python3 -c 'import os, sys; print(int(os.stat(sys.argv[1]).st_mtime))' "$1"
+}
+
+# True if any sibling radix compiler source is newer than FABER_BIN.
+radix_source_newer_than_bin() {
+  local radix="$1" bin="$2" found extra
+  found="$(find "$radix/crates" \( -name '*.rs' -o -name 'Cargo.toml' -o -name 'Cargo.lock' \) \
+    -type f -newer "$bin" -print -quit 2>/dev/null || true)"
+  if [[ -z "$found" ]]; then
+    for extra in "$radix/Cargo.toml" "$radix/Cargo.lock"; do
+      if [[ -f "$extra" && "$extra" -nt "$bin" ]]; then
+        found="$extra"
+        break
+      fi
+    done
+  fi
+  [[ -n "$found" ]]
+}
+
+# Fail if FABER_BIN is older than sibling radix source. Skip when no
+# $FABER_LIBRARY_HOME/radix/crates tree exists (published artifact, no
+# sibling checkout). Does not cargo-build.
+assert_faber_bin_fresh() {
+  local radix="$FABER_LIBRARY_HOME/radix"
+  local bin_mtime source_ts="" dirty=0 rev=""
+  [[ -d "$radix/crates" ]] || return 0
+
+  bin_mtime="$(stat_mtime "$FABER_BIN")" || {
+    echo "check-wgsl-shader-contract-conformance: cannot stat FABER_BIN: $FABER_BIN" >&2
+    exit 1
+  }
+
+  if git -C "$radix" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    rev="$(git -C "$radix" rev-parse --short HEAD 2>/dev/null || true)"
+    source_ts="$(git -C "$radix" log -1 --format=%ct -- crates Cargo.toml Cargo.lock 2>/dev/null || true)"
+    git -C "$radix" diff --quiet -- crates Cargo.toml Cargo.lock || dirty=1
+    git -C "$radix" diff --cached --quiet -- crates Cargo.toml Cargo.lock || dirty=1
+    if [[ -n "$(git -C "$radix" ls-files --others --exclude-standard -- crates 2>/dev/null || true)" ]]; then
+      dirty=1
+    fi
+  else
+    dirty=1
+  fi
+
+  if [[ "$source_ts" =~ ^[0-9]+$ && "$bin_mtime" =~ ^[0-9]+$ && "$source_ts" -gt "$bin_mtime" ]]; then
+    echo "check-wgsl-shader-contract-conformance: stale faber binary" >&2
+    echo "  FABER_BIN=$FABER_BIN (mtime $bin_mtime)" >&2
+    echo "  sibling radix${rev:+ $rev} crates/ commit $source_ts is newer" >&2
+    echo "  rebuild sibling radix/target/{release,debug}/faber or set FABER_BIN to a current binary" >&2
+    exit 1
+  fi
+  if [[ "$dirty" -eq 1 ]] && radix_source_newer_than_bin "$radix" "$FABER_BIN"; then
+    echo "check-wgsl-shader-contract-conformance: stale faber binary" >&2
+    echo "  FABER_BIN=$FABER_BIN (mtime $bin_mtime)" >&2
+    echo "  sibling radix${rev:+ $rev} source at $radix is newer than the binary" >&2
+    echo "  rebuild sibling radix/target/{release,debug}/faber or set FABER_BIN to a current binary" >&2
+    exit 1
+  fi
+  echo "check-wgsl-shader-contract-conformance: faber binary fresh vs radix source${rev:+ $rev}"
+}
+
+assert_faber_bin_fresh
 
 export FABER_LIBRARY_HOME
 
