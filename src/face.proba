@@ -42,12 +42,12 @@ describe "face quad builders" {
         assert face.face_code_unit_quad(7, 0.0, 0.0, 0.0, 1.0) is null
         assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, 0.0) is null
         assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, -1.0) is null
-        assert face.face_code_colored_quad_mesh_append(vacua, vacua, vacua, 9, 0.0, 0.0, 0.0, 1.0) is null
-        assert face.face_code_colored_quad_mesh_append([0.0], vacua, vacua, 1, 0.0, 0.0, 0.0, 1.0) is null
+        assert face.face_code_colored_quad_mesh_append(empty, empty, empty, 9, 0.0, 0.0, 0.0, 1.0) is null
+        assert face.face_code_colored_quad_mesh_append([0.0], empty, empty, 1, 0.0, 0.0, 0.0, 1.0) is null
     }
 
     test "colored face append publishes exact position color and index arrays" {
-        const data.ColoredQuadMesh mesh ← face.face_code_colored_quad_mesh_append(vacua, vacua, vacua, 6, 1.0, 2.0, 3.0, 2.0) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
+        const data.ColoredQuadMesh mesh ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
         assert mesh.positions.length() ≡ 12
         assert mesh.colors.length() ≡ 12
         assert mesh.indices.length() ≡ 6

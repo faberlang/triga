@@ -23,7 +23,7 @@ describe "resource handle identity" {
         const resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 9, generation = 1}
         const resource.ResourceTransition stable ← resource.resource_transition_unchanged(stable_handle)
         const resource.ResourceTransition replaced ← resource.resource_transition_replaced(replaced_handle)
-        var list<resource.ResourceTransition> transitions ← vacua
+        var list<resource.ResourceTransition> transitions ← empty
         transitions.append(stable)
         transitions.append(replaced)
 
@@ -81,7 +81,7 @@ describe "resource handle identity" {
         const resource.ResourceTransition wrong_slot ← resource.ResourceTransition {previous = original, current = resource.ResourceHandle {index = 4, generation = 6}, changed = true}
         const resource.ResourceTransition skipped_generation ← resource.ResourceTransition {previous = original, current = resource.ResourceHandle {index = 3, generation = 7}, changed = true}
         const resource.ResourceTransition changed_without_generation ← resource.ResourceTransition {previous = original, current = resource.ResourceHandle {index = 3, generation = 5}, changed = true}
-        var list<resource.ResourceTransition> invalid ← vacua
+        var list<resource.ResourceTransition> invalid ← empty
         invalid.append(wrong_slot)
 
         assert resource.resource_transition_valid(wrong_slot) ≡ false
@@ -104,7 +104,7 @@ describe "resource lifecycle facts" {
         const resource.ResourceLifecycleTransition stable ← resource.resource_lifecycle_unchanged(stable_handle)
         const resource.ResourceLifecycleTransition replaced ← resource.resource_lifecycle_replaced(replaced_handle)
         const resource.ResourceLifecycleTransition removed ← resource.resource_lifecycle_removed(removed_handle)
-        var list<resource.ResourceLifecycleTransition> transitions ← vacua
+        var list<resource.ResourceLifecycleTransition> transitions ← empty
         transitions.append(created)
         transitions.append(stable)
         transitions.append(replaced)
@@ -207,7 +207,7 @@ describe "resource lifecycle facts" {
         const resource.ResourceHandle created_handle ← resource.ResourceHandle {index = 10, generation = 0}
         const resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 11, generation = 2}
         const resource.ResourceHandle removed_handle ← resource.ResourceHandle {index = 12, generation = 5}
-        var list<resource.ResourceLifecycleTransition> transitions ← vacua
+        var list<resource.ResourceLifecycleTransition> transitions ← empty
         transitions.append(resource.resource_lifecycle_created(created_handle))
         transitions.append(resource.resource_lifecycle_replaced(replaced_handle))
         transitions.append(resource.resource_lifecycle_removed(removed_handle))
@@ -265,10 +265,10 @@ describe "resource lifecycle facts" {
         const resource.ResourceLifecycleTransition duplicate_b ← resource.resource_lifecycle_unchanged(original)
         const resource.ResourceLifecycleTransition invalid_none ← resource.ResourceLifecycleTransition {logical_index = 14, changed = false, removed = false}
         const resource.ResourceLifecycleTransition invalid_removed ← resource.ResourceLifecycleTransition {logical_index = 15, current = original, changed = true, removed = true}
-        var list<resource.ResourceLifecycleTransition> duplicate_batch ← vacua
+        var list<resource.ResourceLifecycleTransition> duplicate_batch ← empty
         duplicate_batch.append(duplicate_a)
         duplicate_batch.append(duplicate_b)
-        var list<resource.ResourceLifecycleTransition> invalid_batch ← vacua
+        var list<resource.ResourceLifecycleTransition> invalid_batch ← empty
         invalid_batch.append(invalid_none)
         invalid_batch.append(invalid_removed)
 

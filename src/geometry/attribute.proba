@@ -10,7 +10,7 @@ import from "triga:geometry/layout" layout
 describe "buffer attribute contracts" {
     test "float32 attribute exposes scalar facts and exact values" {
         const attribute.BufferAttribute value ← attribute.float32_attribute("position", 0, 3, 2, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-        const list<f32> empty_values ← vacua
+        const list<f32> empty_values ← empty
         const list<f32> values ← value.float32_values() coalesce empty_values
         assert value.valida()
         assert value.name ≡ "position"
@@ -47,7 +47,7 @@ describe "buffer attribute contracts" {
     test "wrong scalar lengths remain invalid" {
         const attribute.BufferAttribute valid ← attribute.float32_attribute("normal", 1, 3, 1, [0.0, 0.0, 1.0])
         const attribute.BufferAttribute invalid ← attribute.float32_attribute("normal", 1, 3, 1, [0.0, 0.0])
-        const list<f32> empty_values ← vacua
+        const list<f32> empty_values ← empty
         const list<f32> short_values ← invalid.float32_values() coalesce empty_values
         assert valid.valida()
         assert not invalid.valida()
@@ -61,7 +61,7 @@ describe "buffer attribute contracts" {
         const attribute.BufferAttribute wide ← attribute.float32_attribute("position", 0, 5, 1, [0.0, 0.0, 0.0, 0.0, 0.0])
         const attribute.BufferAttribute zero_elements ← attribute.float32_attribute("position", 0, 3, 0, [])
         const attribute.BufferAttribute short_payload ← attribute.float32_attribute("position", 0, 3, 2, [0.0, 0.0, 0.0])
-        const list<f32> empty_values ← vacua
+        const list<f32> empty_values ← empty
         const list<f32> short_values ← short_payload.float32_values() coalesce empty_values
         assert not empty_name.valida()
         assert not zero_width.valida()
