@@ -169,27 +169,22 @@ proof/         capability / capstone ledgers
 
 ## Checks
 
+The canonical local spine is `./scripta/check`. It discovers every live leaf
+and proba by running the existing rungs in order. A red rung is evidence, not
+a skip. Public CI is `.github/workflows/ci.yml` (no-Faber rungs only). Do not
+re-list the rungs here; `AGENTS.md` names the same spine.
+
 ```bash
-./scripta/check-capabilities
-./scripta/check-capabilities-stale-coupling
-./scripta/check-source
-./scripta/check-compile
-./scripta/check-transforms
-./scripta/check-exempla-inventory
-./scripta/check-hello-voxel-contract
-./scripta/check-hello-voxel-runtime-deps
+./scripta/check
 ```
 
 The capability report is an honest campaign baseline: unsupported proofs score
 zero, while browser availability and artifact freshness are reported
-separately. `check-capabilities-stale-coupling` is the local regression check
-for stale ledger/capstone revision detection. See
-`docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
+separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 
-The Hello Voxel contract check is a Triga-owned pre-browser gate. It validates
-source facts, exempla, compile viability, capability honesty, and current
-renderer-dependency classification. Live browser execution lives under sibling
-`hosts/webgpu-browser` (`./scripta/webgpu-browser-proof` from that repo).
+The Hello Voxel contract check is a Triga-owned pre-browser gate, not part of
+the spine. Live browser execution lives under sibling `hosts/webgpu-browser`
+(`./scripta/webgpu-browser-proof` from that repo).
 
 ## Next Steps
 
