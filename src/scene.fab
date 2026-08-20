@@ -143,7 +143,7 @@ class SceneStore {
             self._reple(vetus_parens, self._sine_liberis(vetus_nodus, filius))
         }
         # Add child to parent's children list
-        var list<SceneHandle> liberi ← vacua
+        var list<SceneHandle> liberi ← empty
         var int i ← 0
         while i ≺ parens_nodus.children.length() {
             const SceneHandle exsistens ← parens_nodus.children[i]
@@ -193,7 +193,7 @@ class SceneStore {
     }
 
     fn inveni(string nomen) → SceneHandle ∪ null {
-        const SceneTraversal ∪ null result ← self._traverse_preorder(SceneHandle {index = 0, generation = 0}, vacua, self.slots.length())
+        const SceneTraversal ∪ null result ← self._traverse_preorder(SceneHandle {index = 0, generation = 0}, empty, self.slots.length())
         if result is null then return null
         const SceneTraversal peragratio ← SceneTraversal {handles = result!.handles, remaining = result!.remaining}
         var int i ← 0
@@ -459,7 +459,7 @@ class SceneStore {
     }
 
     fn _sine_liberis(SceneNode parens, ref SceneHandle filius) → SceneNode {
-        var list<SceneHandle> liberi ← vacua
+        var list<SceneHandle> liberi ← empty
         var int i ← 0
         while i ≺ parens.children.length() {
             const SceneHandle exsistens ← parens.children[i]
@@ -517,19 +517,19 @@ class SceneStore {
     }
 
     fn traverse(ref SceneHandle radix) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null peragratio ← self._traverse_preorder(radix, vacua, self.slots.length())
+        const SceneTraversal ∪ null peragratio ← self._traverse_preorder(radix, empty, self.slots.length())
         if peragratio is null then return null
         return peragratio!.handles
     }
 
     fn traverse_visibilia(ref SceneHandle radix) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_preorder(radix, vacua, self.slots.length(), true)
+        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_preorder(radix, empty, self.slots.length(), true)
         if peragratio is null then return null
         return peragratio!.handles
     }
 
     fn traverse_visibilia_rete(ref SceneHandle radix) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_rete_preorder(radix, vacua, self.slots.length(), true)
+        const SceneTraversal ∪ null peragratio ← self._traverse_visibile_rete_preorder(radix, empty, self.slots.length(), true)
         if peragratio is null then return null
         return peragratio!.handles
     }
@@ -606,10 +606,10 @@ class SceneMeshResourceTraversal {
 # explicit draw packets used by the next stage.
 @ public
 class VisibiliaRetium {
-    list<SceneHandle> manubria = vacua
-    list<resource.ResourceHandle> geometria_opes = vacua
-    list<resource.ResourceHandle> materia_opes = vacua
-    list<math.TransformPayload> onera = vacua
+    list<SceneHandle> manubria = empty
+    list<resource.ResourceHandle> geometria_opes = empty
+    list<resource.ResourceHandle> materia_opes = empty
+    list<math.TransformPayload> onera = empty
 
     fn numerus() → int {
         return self.manubria.length()
@@ -632,7 +632,7 @@ class VisibiliaRetium {
     }
 
     fn ductus() → list<SceneMeshDrawPacket> {
-        var list<SceneMeshDrawPacket> fasciculi ← vacua
+        var list<SceneMeshDrawPacket> fasciculi ← empty
         var int i ← 0
         while i ≺ self.manubria.length() {
             fasciculi.append(SceneMeshDrawPacket {node = SceneHandle {index = self.manubria[i].index, generation = self.manubria[i].generation}, geometry = resource.ResourceHandle {index = self.geometria_opes[i].index, generation = self.geometria_opes[i].generation}, material = resource.ResourceHandle {index = self.materia_opes[i].index, generation = self.materia_opes[i].generation}, transform = self.onera[i]})
@@ -651,9 +651,9 @@ class VisibiliaRetium {
 fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio_proiectio) → VisibiliaRetium ∪ null {
     if visio_proiectio.validum() ≡ false then return null
     # Single traversal: collect all visible mesh data at once
-    const SceneTraversal ∪ null handles_result ← store._traverse_visibile_rete_preorder(radix, vacua, store.slots.length(), true)
+    const SceneTraversal ∪ null handles_result ← store._traverse_visibile_rete_preorder(radix, empty, store.slots.length(), true)
     if handles_result is null then return null
-    var VisibiliaRetium retia ← VisibiliaRetium {manubria = vacua, geometria_opes = vacua, materia_opes = vacua, onera = vacua}
+    var VisibiliaRetium retia ← VisibiliaRetium {manubria = empty, geometria_opes = empty, materia_opes = empty, onera = empty}
     for from handles_result!.handles const manubrium {
         const SceneNode ∪ null nodus_result ← store.cape(manubrium)
         if nodus_result is null then return null
@@ -664,7 +664,7 @@ fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio
                 retia.materia_opes.append(resource.ResourceHandle {index = material.index, generation = material.generation})
                 const math.TransformPayload ∪ null onus ← math.transform_payload(nodus_result!.world_matrix, visio_proiectio)
                 if onus is null then return null
-                retia.onera.append(onus coalesce math.TransformPayload {values = vacua})
+                retia.onera.append(onus coalesce math.TransformPayload {values = empty})
             }
             case SceneGroup {
             }
@@ -683,12 +683,12 @@ fn visibilia(ref SceneStore store, ref SceneHandle radix, ref math.Matrix4 visio
 # identity local/world matrices, and a dirty world cache.
 @ public
 fn scene_store() → SceneStore {
-    return SceneStore {slots = vacua}
+    return SceneStore {slots = empty}
 }
 
 @ public
 fn scene_node(string name, SceneNodeKind kind) → SceneNode {
-    return SceneNode {name = name, kind = kind, children = vacua, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
+    return SceneNode {name = name, kind = kind, children = empty, visible = true, local_matrix = math.matrix4_identitas(), world_matrix = math.matrix4_identitas(), world_dirty = true}
 }
 
 @ public

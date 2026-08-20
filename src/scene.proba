@@ -31,7 +31,7 @@ describe "scene store lifecycle" {
         assert store.adiunge(middle, root)
         assert store.adiunge(leaf, middle)
 
-        const list<scene.SceneHandle> empty_handles ← vacua
+        const list<scene.SceneHandle> empty_handles ← empty
         const scene.SceneNode ∪ null root_value ← store.cape(root)
         assert root_value not is null
         assert root_value!.name ≡ "root"
@@ -99,7 +99,7 @@ describe "scene store lifecycle" {
         assert store.adiunge(mesh, root)
         assert store.efficax_visibile(mesh)
 
-        const list<scene.SceneHandle> empty_handles ← vacua
+        const list<scene.SceneHandle> empty_handles ← empty
         const list<scene.SceneHandle> ∪ null visible ← store.traverse_visibilia(root)
         const list<scene.SceneHandle> visible_value ← visible coalesce empty_handles
         const list<scene.SceneHandle> ∪ null visible_meshes ← store.traverse_visibilia_rete(root)

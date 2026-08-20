@@ -324,7 +324,7 @@ class BufferGeometry {
     fn group_draw_commands(int instance_count) → list<batch.GeometryDrawCommand> ∪ null {
         if self.valida() ≡ false then return null
         if instance_count ≡ 0 then return null
-        var list<batch.GeometryDrawCommand> commands ← vacua
+        var list<batch.GeometryDrawCommand> commands ← empty
         var int i ← 0
         while i ≺ self.groups.length() {
             const batch.GeometryDrawCommand ∪ null command ← self.group_draw_command(i, instance_count)
@@ -504,7 +504,7 @@ class BufferGeometry {
             }
         }
         const list<f32> positions ← self._position_values()
-        var list<f32> normals ← vacua
+        var list<f32> normals ← empty
         var int i ← 0
         while i ≺ positions.length() {
             normals.append(0.0)
@@ -577,7 +577,7 @@ class BufferGeometry {
         const f32 zero ← 0.0
         if width ≡ zero or height ≡ zero then return null
         const list<f32> positions ← self._position_values()
-        var list<f32> uvs ← vacua
+        var list<f32> uvs ← empty
         var int i ← 0
         while i ≺ positions.length() {
             uvs.append((positions[i] - bounds_result!.min_x) / width)
@@ -590,7 +590,7 @@ class BufferGeometry {
     # --- Vertex layout introspection ------------------------------------
     @ private { }
     fn _position_values() → list<f32> {
-        var list<f32> positions ← vacua
+        var list<f32> positions ← empty
         var int i ← 0
         while i ≺ self.attributes.length() {
             const attribute.BufferAttribute attr ← self.attributes[i]
@@ -671,7 +671,7 @@ class BufferGeometry {
 
     fn vertex_layouts() → list<layout.VertexAttributeLayout> ∪ null {
         if self.valida() ≡ false then return null
-        var list<layout.VertexAttributeLayout> layouts ← vacua
+        var list<layout.VertexAttributeLayout> layouts ← empty
         var int i ← 0
         while i ≺ self.attributes.length() {
             const attribute.BufferAttribute attr ← self.attributes[i]
@@ -692,7 +692,7 @@ class BufferGeometry {
         if instance_count ≡ 0 then return null
         const list<batch.GeometryDrawCommand> ∪ null commands_result ← self.group_draw_commands(instance_count)
         if commands_result is null then return null
-        const list<batch.GeometryDrawCommand> empty_commands ← vacua
+        const list<batch.GeometryDrawCommand> empty_commands ← empty
         const list<batch.GeometryDrawCommand> commands ← commands_result coalesce empty_commands
         const int ∪ null grouped_elements_result ← self.group_element_total()
         if grouped_elements_result is null then return null
@@ -729,7 +729,7 @@ fn indexed_triangle_geometry(int vertex_count, ref list<attribute.BufferAttribut
 
 @ public
 fn triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
-    return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = false, indices = vacua, draw_range = draw_range, groups = groups}
+    return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = false, indices = empty, draw_range = draw_range, groups = groups}
 }
 
 @ public
@@ -756,19 +756,19 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>
     if positions.length() ≠ colors.length() then return null
     if positions.length() % 3 ≠ 0 then return null
     if indices.length() % 3 ≠ 0 then return null
-    var list<f32> next_positions ← vacua
+    var list<f32> next_positions ← empty
     var int i ← 0
     while i ≺ positions.length() {
         next_positions.append(positions[i])
         i ← i + 1
     }
-    var list<f32> next_colors ← vacua
+    var list<f32> next_colors ← empty
     i ← 0
     while i ≺ colors.length() {
         next_colors.append(colors[i])
         i ← i + 1
     }
-    var list<int<u32>> next_indices ← vacua
+    var list<int<u32>> next_indices ← empty
     i ← 0
     while i ≺ indices.length() {
         next_indices.append(indices[i])

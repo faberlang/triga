@@ -129,7 +129,7 @@ class Matrix4 {
     fn multiplicata(ref Matrix4 alter) → Matrix4 {
         const list<f32> ae ← self.elements
         const list<f32> be ← alter.elements
-        var list<f32> result ← vacua
+        var list<f32> result ← empty
         var int column ← 0
         while column ≺ 4 {
             var int row ← 0
@@ -906,7 +906,7 @@ fn matrix4_identitas() → Matrix4 {
 fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → TransformPayload ∪ null {
     if model.validum() ≡ false then return null
     if view_projection.validum() ≡ false then return null
-    var list<f32> values ← vacua
+    var list<f32> values ← empty
     for from model.elements const value {
         values.append(value)
     }

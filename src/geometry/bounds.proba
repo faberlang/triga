@@ -15,7 +15,7 @@ fn line_positions() → attribute.BufferAttribute {
 describe "geometry bounds" {
     test "bounding box and sphere publish exact enclosing records" {
         const attribute.BufferAttribute position ← line_positions()
-        const data.BufferGeometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, vacua)
+        const data.BufferGeometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
         const data.BufferGeometry value ← data.BufferGeometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
         const bounds.BoundingBox ∪ null box ← value.bounding_box()
         const bounds.BoundingSphere ∪ null sphere ← value.bounding_sphere()
@@ -52,7 +52,7 @@ describe "geometry bounds" {
 
     test "empty and degenerate buffers do not publish bounds" {
         const attribute.BufferAttribute empty_position ← attribute.float32_attribute("position", 0, 3, 1, [])
-        const data.BufferGeometry empty_geometry ← data.triangle_geometry(1, [empty_position], batch.DrawRange {start = 0, count = 0}, vacua)
+        const data.BufferGeometry empty_geometry ← data.triangle_geometry(1, [empty_position], batch.DrawRange {start = 0, count = 0}, empty)
         const bounds.BoundingBox ∪ null empty_box ← empty_geometry.bounding_box()
         const bounds.BoundingSphere ∪ null empty_sphere ← empty_geometry.bounding_sphere()
         assert not empty_geometry.valida()
@@ -60,7 +60,7 @@ describe "geometry bounds" {
         assert empty_sphere is null
 
         const attribute.BufferAttribute point_position ← attribute.float32_attribute("position", 0, 3, 3, [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
-        const data.BufferGeometry degenerate ← data.triangle_geometry(3, [point_position], batch.DrawRange {start = 0, count = 3}, vacua)
+        const data.BufferGeometry degenerate ← data.triangle_geometry(3, [point_position], batch.DrawRange {start = 0, count = 3}, empty)
         const bounds.BoundingBox ∪ null degenerate_box ← degenerate.bounding_box()
         const bounds.BoundingSphere ∪ null degenerate_sphere ← degenerate.bounding_sphere()
         assert degenerate.valida()

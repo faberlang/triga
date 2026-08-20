@@ -10,11 +10,11 @@ import from "triga:graph/object" graph_object
 import from "triga:math" math
 
 fn light_node(string nomen) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, name = nomen}
+    return graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, name = nomen}
 }
 
 fn light_node_at(string nomen, f32 x, f32 y, f32 z) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(x, y, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, name = nomen}
+    return graph_object.Object3D {position = math.vector3(x, y, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, name = nomen}
 }
 
 test "Light preserves color and default intensity as carrier facts" {

@@ -66,9 +66,9 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     # cos/sin of the 3 intermediate ring latitudes (-45°/0°/+45°).
     const list<f32> lat_cos ← [0.70710678, 1.0, 0.70710678]
     const list<f32> lat_sin ← [0.0 - 0.70710678, 0.0, 0.70710678]
-    var list<f32> positions ← vacua
-    var list<f32> normals ← vacua
-    var list<f32> uvs ← vacua
+    var list<f32> positions ← empty
+    var list<f32> normals ← empty
+    var list<f32> uvs ← empty
     var int ring ← 0
     while ring ≺ 3 {
         const f32 y ← radius * lat_sin[ring]
@@ -104,7 +104,7 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     normals.append(0.0)
     uvs.append(0.5)
     uvs.append(1.0)
-    var list<int<u32>> indices ← vacua
+    var list<int<u32>> indices ← empty
     # South cap: (south, ring0[j], ring0[j+1]) — outward winding (verified).
     var int j ← 0
     while j ≺ 8 {
@@ -153,9 +153,9 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     const list<f32> ring_z ← [0.0, diagonal, radius, diagonal, 0.0, 0.0 - diagonal, 0.0 - radius, 0.0 - diagonal, 0.0]
     const list<f32> ring_n ← [1.0, 0.70710678, 0.0, 0.0 - 0.70710678, 0.0 - 1.0, 0.0 - 0.70710678, 0.0, 0.70710678, 1.0]
     const list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
-    var list<f32> positions ← vacua
-    var list<f32> normals ← vacua
-    var list<f32> uvs ← vacua
+    var list<f32> positions ← empty
+    var list<f32> normals ← empty
+    var list<f32> uvs ← empty
     var int i ← 0
     while i ≺ 9 {
         positions.append(ring_x[i])
@@ -228,9 +228,9 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     const list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
     const f32 side_slope ← radius / height
     const f32 side_scale ← _primitives_radix_f32(1.0 + side_slope * side_slope)
-    var list<f32> positions ← vacua
-    var list<f32> normals ← vacua
-    var list<f32> uvs ← vacua
+    var list<f32> positions ← empty
+    var list<f32> normals ← empty
+    var list<f32> uvs ← empty
     var int i ← 0
     while i ≺ 9 {
         positions.append(ring_x[i])
@@ -284,9 +284,9 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null 
     const list<f32> ring_sin ← [0.0, diagonal, 1.0, diagonal, 0.0, 0.0 - diagonal, 0.0 - 1.0, 0.0 - diagonal, 0.0]
     const list<f32> tube_cos ← [1.0, 0.0, 0.0 - 1.0, 0.0, 1.0]
     const list<f32> tube_sin ← [0.0, 1.0, 0.0, 0.0 - 1.0, 0.0]
-    var list<f32> positions ← vacua
-    var list<f32> normals ← vacua
-    var list<f32> uvs ← vacua
+    var list<f32> positions ← empty
+    var list<f32> normals ← empty
+    var list<f32> uvs ← empty
     var int ring ← 0
     while ring ≺ 9 {
         var int tube ← 0
@@ -304,7 +304,7 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null 
         }
         ring ← ring + 1
     }
-    var list<int<u32>> indices ← vacua
+    var list<int<u32>> indices ← empty
     ring ← 0
     while ring ≺ 8 {
         var int tube ← 0

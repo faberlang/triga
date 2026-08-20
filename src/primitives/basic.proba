@@ -44,7 +44,7 @@ fn primitive_geometry_matches(data.BufferGeometry ∪ null geometry, int vertex_
     if actual.attributes[0].name ≠ "position" or actual.attributes[0].shader_location ≠ 0 or actual.attributes[0].component_width ≠ 3 or actual.attributes[0].element_count ≠ vertex_count then return false
     if actual.attributes[1].name ≠ "normal" or actual.attributes[1].shader_location ≠ 1 or actual.attributes[1].component_width ≠ 3 or actual.attributes[1].element_count ≠ vertex_count then return false
     if actual.attributes[2].name ≠ "uv" or actual.attributes[2].shader_location ≠ 2 or actual.attributes[2].component_width ≠ 2 or actual.attributes[2].element_count ≠ vertex_count then return false
-    const list<f32> empty_values ← vacua
+    const list<f32> empty_values ← empty
     const list<f32> actual_positions ← actual.attributes[0].float32_values() coalesce empty_values
     const list<f32> actual_normals ← actual.attributes[1].float32_values() coalesce empty_values
     const list<f32> actual_uvs ← actual.attributes[2].float32_values() coalesce empty_values
@@ -69,7 +69,7 @@ fn wire_geometry_matches(data.BufferGeometry ∪ null geometry, list<f32> positi
     if (actual.group_count() coalesce 0) ≠ 1 then return false
     if actual.attributes.length() ≠ 1 then return false
     if actual.attributes[0].name ≠ "position" or actual.attributes[0].shader_location ≠ 0 or actual.attributes[0].component_width ≠ 3 or actual.attributes[0].element_count ≠ 8 then return false
-    const list<f32> empty_values ← vacua
+    const list<f32> empty_values ← empty
     const list<f32> actual_positions ← actual.attributes[0].float32_values() coalesce empty_values
     if exact_f32_values(actual_positions, positions) ≡ false then return false
     if exact_u32_values(actual.indices, indices) ≡ false then return false
