@@ -63,18 +63,17 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     const f32 diagonal ← radius * 0.70710678
     const list<f32> ring_x ← [radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0, diagonal, radius]
     const list<f32> ring_z ← [0.0, diagonal, radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0]
-    const list<f32> ring_n ← [1.0, 0.70710678, 0.0, 0.0 - 0.70710678, 0.0 - 1.0, 0.0 - 0.70710678, 0.0, 0.70710678, 1.0]
+    const list<f32> ring_n ← [1.0, 0.70710678, 0.0, -0.70710678, -1.0, -0.70710678, 0.0, 0.70710678, 1.0]
     # cos/sin of the 3 intermediate ring latitudes (-45°/0°/+45°).
     const list<f32> lat_cos ← [0.70710678, 1.0, 0.70710678]
-    const list<f32> lat_sin ← [0.0 - 0.70710678, 0.0, 0.70710678]
+    const list<f32> lat_sin ← [-0.70710678, 0.0, 0.70710678]
     var list<f32> positions ← empty
     var list<f32> normals ← empty
     var list<f32> uvs ← empty
     for range 0‥3 const ring {
         const f32 y ← radius * lat_sin[ring]
         const f32 radial_scale ← lat_cos[ring]
-        var int j ← 0
-        while j ≺ 9 {
+        for range 0‥9 const j {
             positions.append(radial_scale * ring_x[j])
             positions.append(y)
             positions.append(radial_scale * ring_z[j])
@@ -83,7 +82,6 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
             normals.append(radial_scale * (ring_z[j] / radius))
             uvs.append((j ↦ f32) / 8.0)
             uvs.append((ring ↦ f32) * 0.25 + 0.25)
-            j ← j + 1
         }
     }
     # South pole (27) and north pole (28).
@@ -91,7 +89,7 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     positions.append(-radius)
     positions.append(0.0)
     normals.append(0.0)
-    normals.append(0.0 - 1.0)
+    normals.append(-1.0)
     normals.append(0.0)
     uvs.append(0.5)
     uvs.append(0.0)
@@ -105,17 +103,14 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     uvs.append(1.0)
     var list<u32> indices ← empty
     # South cap: (south, ring0[j], ring0[j+1]) — outward winding (verified).
-    var int j ← 0
-    while j ≺ 8 {
+    for range 0‥8 const j {
         indices.append(27 ↦ int<u32>)
         indices.append(j ↦ int<u32>)
         indices.append((j + 1) ↦ int<u32>)
-        j ← j + 1
     }
     # Middle bands: quad (a, c, d) + (a, d, b) — outward winding (verified).
     for range 0‥2 const band {
-        j ← 0
-        while j ≺ 8 {
+        for range 0‥8 const j {
             const int a ← band * 9 + j
             const int b ← band * 9 + j + 1
             const int c ← (band + 1) * 9 + j
@@ -126,16 +121,13 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
             indices.append(a ↦ int<u32>)
             indices.append(d ↦ int<u32>)
             indices.append(b ↦ int<u32>)
-            j ← j + 1
         }
     }
     # North cap: (north, ring2[j+1], ring2[j]) — outward winding (verified).
-    j ← 0
-    while j ≺ 8 {
+    for range 0‥8 const j {
         indices.append(28 ↦ int<u32>)
         indices.append((19 + j) ↦ int<u32>)
         indices.append((18 + j) ↦ int<u32>)
-        j ← j + 1
     }
     return assemble_geometry(29, positions, normals, uvs, indices)
 }
@@ -148,7 +140,7 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     const f32 diagonal ← radius * 0.70710678
     const list<f32> ring_x ← [radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0, diagonal, radius]
     const list<f32> ring_z ← [0.0, diagonal, radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0]
-    const list<f32> ring_n ← [1.0, 0.70710678, 0.0, 0.0 - 0.70710678, 0.0 - 1.0, 0.0 - 0.70710678, 0.0, 0.70710678, 1.0]
+    const list<f32> ring_n ← [1.0, 0.70710678, 0.0, -0.70710678, -1.0, -0.70710678, 0.0, 0.70710678, 1.0]
     const list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
     var list<f32> positions ← empty
     var list<f32> normals ← empty
@@ -176,7 +168,7 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
         positions.append(-half_height)
         positions.append(ring_z[i])
         normals.append(0.0)
-        normals.append(0.0 - 1.0)
+        normals.append(-1.0)
         normals.append(0.0)
         uvs.append((ring_x[i] / radius + 1.0) * 0.5)
         uvs.append((ring_z[i] / radius + 1.0) * 0.5)
@@ -193,7 +185,7 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     positions.append(-half_height)
     positions.append(0.0)
     normals.append(0.0)
-    normals.append(0.0 - 1.0)
+    normals.append(-1.0)
     normals.append(0.0)
     uvs.append(0.5)
     uvs.append(0.5)
@@ -217,7 +209,7 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     const f32 diagonal ← radius * 0.70710678
     const list<f32> ring_x ← [radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0, diagonal, radius]
     const list<f32> ring_z ← [0.0, diagonal, radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0]
-    const list<f32> ring_n ← [1.0, 0.70710678, 0.0, 0.0 - 0.70710678, 0.0 - 1.0, 0.0 - 0.70710678, 0.0, 0.70710678, 1.0]
+    const list<f32> ring_n ← [1.0, 0.70710678, 0.0, -0.70710678, -1.0, -0.70710678, 0.0, 0.70710678, 1.0]
     const list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
     const f32 side_slope ← radius / height
     const f32 side_scale ← math.radix_f32(1.0 + side_slope * side_slope)
@@ -247,7 +239,7 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
         positions.append(-half_height)
         positions.append(ring_z[i])
         normals.append(0.0)
-        normals.append(0.0 - 1.0)
+        normals.append(-1.0)
         normals.append(0.0)
         uvs.append((ring_x[i] / radius + 1.0) * 0.5)
         uvs.append((ring_z[i] / radius + 1.0) * 0.5)
@@ -256,7 +248,7 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     positions.append(-half_height)
     positions.append(0.0)
     normals.append(0.0)
-    normals.append(0.0 - 1.0)
+    normals.append(-1.0)
     normals.append(0.0)
     uvs.append(0.5)
     uvs.append(0.5)
@@ -269,10 +261,10 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
 fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null {
     if (radius ≤ 0.0 or tube_radius ≤ 0.0) or tube_radius ≥ radius then return null
     const f32 diagonal ← 0.70710678
-    const list<f32> ring_cos ← [1.0, diagonal, 0.0, -diagonal, 0.0 - 1.0, -diagonal, 0.0, diagonal, 1.0]
-    const list<f32> ring_sin ← [0.0, diagonal, 1.0, diagonal, 0.0, -diagonal, 0.0 - 1.0, -diagonal, 0.0]
-    const list<f32> tube_cos ← [1.0, 0.0, 0.0 - 1.0, 0.0, 1.0]
-    const list<f32> tube_sin ← [0.0, 1.0, 0.0, 0.0 - 1.0, 0.0]
+    const list<f32> ring_cos ← [1.0, diagonal, 0.0, -diagonal, -1.0, -diagonal, 0.0, diagonal, 1.0]
+    const list<f32> ring_sin ← [0.0, diagonal, 1.0, diagonal, 0.0, -diagonal, -1.0, -diagonal, 0.0]
+    const list<f32> tube_cos ← [1.0, 0.0, -1.0, 0.0, 1.0]
+    const list<f32> tube_sin ← [0.0, 1.0, 0.0, -1.0, 0.0]
     var list<f32> positions ← empty
     var list<f32> normals ← empty
     var list<f32> uvs ← empty
@@ -312,7 +304,7 @@ fn box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nu
     const f32 x ← width * 0.5
     const f32 y ← height * 0.5
     const f32 z ← depth * 0.5
-    return assemble_geometry(24, [-x, -y, z, x, -y, z, x, y, z, -x, y, z, x, -y, -z, -x, -y, -z, -x, y, -z, x, y, -z, -x, -y, -z, -x, -y, z, -x, y, z, -x, y, -z, x, -y, z, x, -y, -z, x, y, -z, x, y, z, -x, y, z, x, y, z, x, y, -z, -x, y, -z, -x, -y, -z, x, -y, -z, x, -y, z, -x, -y, z], [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0, 0.0, 0.0 - 1.0, 0.0], [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0], [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23])
+    return assemble_geometry(24, [-x, -y, z, x, -y, z, x, y, z, -x, y, z, x, -y, -z, -x, -y, -z, -x, y, -z, x, y, -z, -x, -y, -z, -x, -y, z, -x, y, z, -x, y, -z, x, -y, z, x, -y, -z, x, y, -z, x, y, z, -x, y, z, x, y, z, x, y, -z, -x, y, -z, -x, -y, -z, x, -y, -z, x, -y, z, -x, -y, z], [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0], [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0], [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23])
 }
 
 # A line-list box useful for debug views and early host bring-up.
@@ -333,6 +325,6 @@ fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry �
 fn box_wire_draw_batch_facts(f32 width, f32 height, f32 depth, int instance_count) → batch.LineGeometryDrawBatchFacts ∪ null {
     const data.BufferGeometry ∪ null geometry_result ← box_wire_geometry(width, height, depth)
     if geometry_result is null then return null
-    const data.BufferGeometry geom ← data.BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+    const data.BufferGeometry geom ← geometry_result
     return geom.line_draw_batch_facts(instance_count)
 }
