@@ -107,7 +107,7 @@ class BufferGeometry {
 
     # --- Validation -----------------------------------------------------
     # Validation-sensitive projections below call `valida()` first. Invalid
-    # geometry returns `nihil` rather than leaking partial facts to a later
+    # geometry returns `null` rather than leaking partial facts to a later
     # stage; structural queries such as `element_count()` remain direct.
 
     fn valida() → bool {

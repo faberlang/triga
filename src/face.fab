@@ -21,7 +21,7 @@ class FaceQuad {
 }
 
 # Build one oriented quad. Invalid face codes and non-positive sizes return
-# `nihil` so callers can keep malformed voxel input out of geometry buffers.
+# `null` so callers can keep malformed voxel input out of geometry buffers.
 @ public
 fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ null {
     if math.face_code_valida(code) ≡ false then return null

@@ -8,7 +8,7 @@ import from "triga:math" math
 import from "triga:graph/object" object as graph_object
 
 # PerspectiveCamera is a value-level camera contract. The projection methods
-# return `nihil` when the matrix inputs cannot form a valid payload, so camera
+# return `null` when the matrix inputs cannot form a valid payload, so camera
 # setup stays in ordinary Faber control flow.
 @ public
 class PerspectiveCamera {

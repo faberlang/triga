@@ -12,7 +12,7 @@
 # - Coordinate fields use explicit x/y/z names, with w where needed.
 # - Matrix4.elements is a flat column-major list; translation is at indices
 #   12–14.
-# - Functions whose signatures include nihil use it for invalid, singular, or
+# - Functions whose signatures include null use it for invalid, singular, or
 #   unsupported input rather than inventing a replacement value.
 #
 # See docs/module-map.md.
@@ -105,7 +105,7 @@ class Matrix3 {
 # and [12..15], with translation at indices 12–14.
 #
 # Point application performs the homogeneous divide and uses 1 when w is
-# near zero. The affine inverse returns nihil when its 3x3 determinant is
+# near zero. The affine inverse returns null when its 3x3 determinant is
 # near zero.
 @ public
 class Matrix4 {
@@ -632,7 +632,7 @@ class CameraYawPitchFacts {
 
 # --- VALIDATION AND FACE-CODE HELPERS ---
 # Face-code validation accepts only codes 1 through 6. Invalid codes return
-# nihil from the derived helpers.
+# null from the derived helpers.
 @ public
 fn face_code_valida(int code) → bool {
     return code ≥ 1 and code ≤ 6
@@ -925,7 +925,7 @@ fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees
 
 # --- BOX CONSTRUCTORS ---
 # The min/max constructor rejects reversed bounds; the size constructors reject
-# non-positive sizes. Each returns nihil, keeping Box3.validum explicit.
+# non-positive sizes. Each returns null, keeping Box3.validum explicit.
 @ public
 fn box3_ex_minimo_et_maximo(ref Vector3 minimum, ref Vector3 maximum) → Box3 ∪ null {
     const Box3 bounds ← Box3 {min = minimum, max = maximum}
@@ -1039,7 +1039,7 @@ fn matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Mat
 }
 
 # Build a view matrix from eye, target, and up. Coincident or collinear inputs
-# return nihil when a usable forward or side direction cannot be formed.
+# return null when a usable forward or side direction cannot be formed.
 @ public
 fn matrix4_conspectus(ref Vector3 eye, ref Vector3 target, ref Vector3 up) → Matrix4 ∪ null {
     const Vector3 forward ← target.subtracta(eye).normata()

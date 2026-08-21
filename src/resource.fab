@@ -235,7 +235,7 @@ fn transition_unchanged_handles(ref list<ResourceTransition> transitions) → li
 #
 # Lifecycle facts distinguish replacement, creation, and removal while still
 # preserving the same logical index. Batch accessors intentionally return
-# `nihil` for duplicate or generation-inconsistent input.
+# `null` for duplicate or generation-inconsistent input.
 
 fn lifecycle_handle(ResourceHandle ∪ null handle) → ResourceHandle ∪ null {
     if handle is null then return null

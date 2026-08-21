@@ -23,7 +23,7 @@ import from "triga:geometry/batch" batch
 # position, normal, and UV attributes, a triangle-list index buffer, and one
 # draw group. `box_wire_geometry` is the deliberate line-list exception and
 # carries only the data needed for that debug shape. Dimensions are validated
-# at the boundary, so a non-positive input produces `nihil` instead of an
+# at the boundary, so a non-positive input produces `null` instead of an
 # invalid mesh.
 
 fn assemble_geometry(int vertex_count, list<f32> positions, list<f32> normals, list<f32> uvs, list<u32> indices) → data.BufferGeometry {
@@ -51,12 +51,10 @@ fn circle_geometry(f32 radius) → data.BufferGeometry ∪ null {
 
 # A genuine sphere approximation: latitude/longitude tessellation with 8
 # longitude sectors and 4 latitude bands (3 intermediate rings at lat
-# -45°/0°/+45° plus the two poles; 29 vertices, 48 triangles — the recorded
-# deterministic grid of this leaf, same fixed 8-sector style as
-# circle/cylinder). Smooth radial normals (the correct sphere shading — the
-# old "faceted" header was corrected to match) and a proper per-vertex
-# spherical UV mapping: u = sector/8 (the seam quad spans u ∈ [7/8, 1]),
-# v = (lat/90 + 1)/2.
+# -45°/0°/+45° plus the two poles; 29 vertices, 48 triangles — the fixed
+# deterministic grid of this leaf, same 8-sector style as circle/cylinder).
+# Smooth radial normals with per-vertex spherical UV mapping:
+# u = sector/8 (the seam quad spans u ∈ [7/8, 1]), v = (lat/90 + 1)/2.
 @ public
 fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
     if radius ≤ 0.0 then return null
