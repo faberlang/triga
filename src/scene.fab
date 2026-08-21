@@ -27,7 +27,7 @@ union SceneNodeKind {
         resource.ResourceHandle material
     },
     SceneCamera,
-    SceneLight,
+    SceneLight
 }
 
 # SceneNode stores local and cached world transforms together with hierarchy
