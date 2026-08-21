@@ -5,11 +5,6 @@ category = "library"
 canonical = true
 summary = "Minimal @vertex and @fragment function stubs for the source graphics pipeline."
 +++
-# exempla/triga-vertex-fragment-stub.fab
-#
-# Minimal @vertex / @fragment stub fixture for the source graphics pipeline.
-# Demonstrates the annotation contract that radix lowers to shader stages.
-
 
 @ vertex { }
 fn hello_voxel_vertex() → void {
