@@ -11,7 +11,7 @@ reference, named after its slug:
 | Corpus entry | three.js reference | What it pressures |
 | --- | --- | --- |
 | `webgl-geometries/` | `webgl_geometries` | Every `triga:primitives` generator (plane, box, circle, sphere, cylinder, cone, torus), per-mesh colors, BufferGeometry → interleaved host payload |
-| `webgl-geometry-terrain/` | `webgl_geometry_terrain` | Procedural mesh generation at scale (48² heightfield, 4.6k triangles), value noise, central-difference normals, elevation color ramp via `triga:math.color_interpolata` |
+| `webgl-geometry-terrain/` | `webgl_geometry_terrain` | Procedural mesh generation at scale (48² heightfield, 4.6k triangles), value noise, central-difference normals, elevation color ramp via `math.Color.interpolata` |
 | `webgl-animation-orbit/` | `webgl_animation_multiple` + `webgl_geometry_terrain` | Delta-driven frame updates, automatic camera travel, rotating model transforms, and live transform readback |
 | `webgl-animation-water/` | `webgl_gpgpu_water` | Shader-driven wave displacement over a Triga-generated grid, automatic phase motion, and live transform readback |
 | `webgl-animation-terrain/` | `webgl_geometry_terrain` + `webgpu_tsl_procedural_terrain` | Animated heightmap terrain with fBM, ridged noise, terrace shaping, slope-aware detail, lighting, and valley fog |
