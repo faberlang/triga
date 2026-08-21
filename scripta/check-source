@@ -46,7 +46,7 @@ GENUS_ALT="${GENUS_PREFIXES//$'\n'/|}"
 # exact constructor / helper names, not prefixed methods (e.g. scene_mesh( is
 # exempt, scene_mesh_geometry( is not). Recorded in docs/api-shape-policy.md § 5.
 # Do not add exemptions that hide resource_*/material_*/mesh_basic_material_*.
-EXEMPT='(vector[234]\(|box3_ex_|matrix[34]_(identitas|translatio|scala|composita|perspectiva|conspectus)|plane_geometry|sphere_geometry|colored_quad_mesh_append|scene_(store|node|group|mesh|camera|light)\(|scene_handle_equals\(|camera_(pitch_coercita|directio_ex|prorsum|dextra|motus|ray_ex|yaw_pitch)|geometry_vertex_layout_matches\()'
+EXEMPT='(vector[234]\(|box3_ex_|matrix[34]_(identitas|translatio|scala|composita|perspectiva|conspectus)|plane_geometry|sphere_geometry|colored_quad_mesh_append|scene_(store|node|group|mesh|camera|light)\(|scene_handle_equals\(|camera_(pitch_coercita|directio_ex|prorsum|dextra|motus|ray_ex|yaw_pitch)|geometry_vertex_layout_matches\(|face_code_[a-z_]+\(|transform_payload\(|visible_face_[a-z_]+\(|indexed_triangle_geometry\(|line_geometry\(|colored_indexed_geometry\(|vertex_format_from_component_width\(|vertex_step_mode_vertex_step\(|vertex_layout_matches\(|resource_binding_matches\()'
 
 while IFS= read -r -d '' file; do
   if grep -nE '^[[:space:]]*//' "$file"; then

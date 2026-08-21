@@ -11,19 +11,19 @@ locale = "en"
 # return values or a WGSL admission claim.
 import from "triga:shader_contract" contract
 
-fn vertex_format_code_published(int code) → bool {
+fn known_vertex_format(int code) → bool {
     return (code ≡ 2 or code ≡ 3) or code ≡ 4
 }
 
-fn color_target_format_code_published(int code) → bool {
+fn known_color_target_format(int code) → bool {
     return code ≡ 1 or code ≡ 2
 }
 
-fn primitive_topology_code_published(int code) → bool {
+fn known_primitive_topology(int code) → bool {
     return (code ≡ 1 or code ≡ 2) or code ≡ 3
 }
 
-fn depth_compare_code_published(int code) → bool {
+fn known_depth_compare(int code) → bool {
     if code ≡ 0 then return true
     if code ≡ 1 then return true
     if code ≡ 2 then return true
@@ -34,31 +34,31 @@ fn depth_compare_code_published(int code) → bool {
     return code ≡ 7
 }
 
-fn step_mode_code_published(int code) → bool {
+fn known_step_mode(int code) → bool {
     return code ≡ 1 or code ≡ 2
 }
 
-fn interpolation_code_published(int code) → bool {
+fn known_interpolation(int code) → bool {
     return (code ≡ 1 or code ≡ 2) or code ≡ 3
 }
 
-fn stage_io_role_code_published(int code) → bool {
+fn known_stage_io_role(int code) → bool {
     return ((code ≡ 1 or code ≡ 2) or code ≡ 3) or code ≡ 4
 }
 
-fn resource_kind_code_published(int code) → bool {
+fn known_resource_kind(int code) → bool {
     return code ≡ 1 or code ≡ 2
 }
 
-fn resource_role_code_published(int code) → bool {
+fn known_resource_role(int code) → bool {
     return code ≡ 1 or code ≡ 2
 }
 
-fn resource_access_code_published(int code) → bool {
+fn known_resource_access(int code) → bool {
     return (code ≡ 1 or code ≡ 2) or code ≡ 3
 }
 
-fn scalar_layout_code_published(int code) → bool {
+fn known_scalar_layout(int code) → bool {
     return ((code ≡ 1 or code ≡ 2) or code ≡ 3) or code ≡ 4
 }
 
@@ -111,72 +111,72 @@ describe "shader contract adapter facts" {
 
 describe "shader contract published code tables" {
     test "vertex format codes accept float32x2 through float32x4 and reject unpublished values" {
-        assert vertex_format_code_published(2)
-        assert vertex_format_code_published(3)
-        assert vertex_format_code_published(4)
-        assert not vertex_format_code_published(0)
-        assert not vertex_format_code_published(1)
-        assert not vertex_format_code_published(5)
+        assert known_vertex_format(2)
+        assert known_vertex_format(3)
+        assert known_vertex_format(4)
+        assert not known_vertex_format(0)
+        assert not known_vertex_format(1)
+        assert not known_vertex_format(5)
     }
 
     test "color target codes accept bgra8unorm variants and reject unpublished values" {
-        assert color_target_format_code_published(1)
-        assert color_target_format_code_published(2)
-        assert not color_target_format_code_published(0)
-        assert not color_target_format_code_published(3)
+        assert known_color_target_format(1)
+        assert known_color_target_format(2)
+        assert not known_color_target_format(0)
+        assert not known_color_target_format(3)
     }
 
     test "topology codes accept list primitives and reject unpublished values" {
-        assert primitive_topology_code_published(1)
-        assert primitive_topology_code_published(2)
-        assert primitive_topology_code_published(3)
-        assert not primitive_topology_code_published(0)
-        assert not primitive_topology_code_published(4)
+        assert known_primitive_topology(1)
+        assert known_primitive_topology(2)
+        assert known_primitive_topology(3)
+        assert not known_primitive_topology(0)
+        assert not known_primitive_topology(4)
     }
 
     test "depth compare codes accept the none sentinel through always and reject unpublished values" {
-        assert depth_compare_code_published(0)
-        assert depth_compare_code_published(1)
-        assert depth_compare_code_published(7)
-        assert not depth_compare_code_published(8)
-        assert not depth_compare_code_published(-1)
+        assert known_depth_compare(0)
+        assert known_depth_compare(1)
+        assert known_depth_compare(7)
+        assert not known_depth_compare(8)
+        assert not known_depth_compare(-1)
     }
 
     test "step interpolation stage-io and resource codes reject unpublished values" {
-        assert step_mode_code_published(1)
-        assert step_mode_code_published(2)
-        assert not step_mode_code_published(0)
-        assert not step_mode_code_published(3)
-        assert interpolation_code_published(1)
-        assert interpolation_code_published(2)
-        assert interpolation_code_published(3)
-        assert not interpolation_code_published(0)
-        assert not interpolation_code_published(4)
-        assert stage_io_role_code_published(1)
-        assert stage_io_role_code_published(2)
-        assert stage_io_role_code_published(3)
-        assert stage_io_role_code_published(4)
-        assert not stage_io_role_code_published(0)
-        assert not stage_io_role_code_published(5)
-        assert resource_kind_code_published(1)
-        assert resource_kind_code_published(2)
-        assert not resource_kind_code_published(0)
-        assert not resource_kind_code_published(3)
-        assert resource_role_code_published(1)
-        assert resource_role_code_published(2)
-        assert not resource_role_code_published(0)
-        assert not resource_role_code_published(3)
-        assert resource_access_code_published(1)
-        assert resource_access_code_published(2)
-        assert resource_access_code_published(3)
-        assert not resource_access_code_published(0)
-        assert not resource_access_code_published(4)
-        assert scalar_layout_code_published(1)
-        assert scalar_layout_code_published(2)
-        assert scalar_layout_code_published(3)
-        assert scalar_layout_code_published(4)
-        assert not scalar_layout_code_published(0)
-        assert not scalar_layout_code_published(5)
+        assert known_step_mode(1)
+        assert known_step_mode(2)
+        assert not known_step_mode(0)
+        assert not known_step_mode(3)
+        assert known_interpolation(1)
+        assert known_interpolation(2)
+        assert known_interpolation(3)
+        assert not known_interpolation(0)
+        assert not known_interpolation(4)
+        assert known_stage_io_role(1)
+        assert known_stage_io_role(2)
+        assert known_stage_io_role(3)
+        assert known_stage_io_role(4)
+        assert not known_stage_io_role(0)
+        assert not known_stage_io_role(5)
+        assert known_resource_kind(1)
+        assert known_resource_kind(2)
+        assert not known_resource_kind(0)
+        assert not known_resource_kind(3)
+        assert known_resource_role(1)
+        assert known_resource_role(2)
+        assert not known_resource_role(0)
+        assert not known_resource_role(3)
+        assert known_resource_access(1)
+        assert known_resource_access(2)
+        assert known_resource_access(3)
+        assert not known_resource_access(0)
+        assert not known_resource_access(4)
+        assert known_scalar_layout(1)
+        assert known_scalar_layout(2)
+        assert known_scalar_layout(3)
+        assert known_scalar_layout(4)
+        assert not known_scalar_layout(0)
+        assert not known_scalar_layout(5)
     }
 }
 

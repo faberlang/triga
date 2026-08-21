@@ -187,12 +187,12 @@ describe "color, angle, and camera contracts" {
     test "color validation and interpolation keep channel boundaries" {
         const math.Color black ← math.Color {r = 0.0, g = 0.0, b = 0.0}
         const math.Color white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
-        const math.Color midpoint ← math.color_interpolata(black, white, 0.5)
+        const math.Color midpoint ← black.interpolata(white, 0.5)
         const math.Color invalid ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
-        assert math.color_valida(black)
-        assert math.color_valida(white)
-        assert math.color_valida(invalid) ≡ false
+        assert black.valida()
+        assert white.valida()
+        assert invalid.valida() ≡ false
         assert midpoint.r ≡ (0.5 ∷ f32)
         assert midpoint.g ≡ (0.5 ∷ f32)
         assert midpoint.b ≡ (0.5 ∷ f32)

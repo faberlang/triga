@@ -8,13 +8,13 @@ import from "triga:geometry/attribute" attribute
 import from "triga:geometry/batch" batch
 import from "triga:geometry/bounds" bounds
 
-fn line_positions() → attribute.BufferAttribute {
+fn segment_positions() → attribute.BufferAttribute {
     return attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0])
 }
 
 describe "geometry bounds" {
     test "bounding box and sphere publish exact enclosing records" {
-        const attribute.BufferAttribute position ← line_positions()
+        const attribute.BufferAttribute position ← segment_positions()
         const data.BufferGeometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
         const data.BufferGeometry value ← data.BufferGeometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
         const bounds.BoundingBox ∪ null box ← value.bounding_box()

@@ -7,13 +7,13 @@ import from "triga:resource" resource
 describe "resource handle identity" {
     test "generation is part of identity and replacement advances it" {
         const resource.ResourceHandle original ← resource.ResourceHandle {index = 7, generation = 2}
-        const resource.ResourceHandle replacement ← resource.resource_handle_next(original)
+        const resource.ResourceHandle replacement ← original.next()
         const resource.ResourceHandle same ← resource.ResourceHandle {index = 7, generation = 2}
         const resource.ResourceHandle other_slot ← resource.ResourceHandle {index = 8, generation = 2}
 
-        assert resource.resource_handle_equals(original, same)
-        assert resource.resource_handle_equals(original, replacement) ≡ false
-        assert resource.resource_handle_equals(original, other_slot) ≡ false
+        assert original.equals(same)
+        assert original.equals(replacement) ≡ false
+        assert original.equals(other_slot) ≡ false
         assert replacement.index ≡ original.index
         assert replacement.generation ≡ original.generation + 1
     }
@@ -21,21 +21,21 @@ describe "resource handle identity" {
     test "replacement transitions preserve identity and expose changed facts" {
         const resource.ResourceHandle stable_handle ← resource.ResourceHandle {index = 2, generation = 4}
         const resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 9, generation = 1}
-        const resource.ResourceTransition stable ← resource.resource_transition_unchanged(stable_handle)
-        const resource.ResourceTransition replaced ← resource.resource_transition_replaced(replaced_handle)
+        const resource.ResourceTransition stable ← stable_handle.transition_unchanged()
+        const resource.ResourceTransition replaced ← replaced_handle.transition_replaced()
         var list<resource.ResourceTransition> transitions ← empty
         transitions.append(stable)
         transitions.append(replaced)
 
-        assert resource.resource_transition_valid(stable)
-        assert resource.resource_transition_valid(replaced)
+        assert stable.valida()
+        assert replaced.valida()
         assert stable.changed ≡ false
         assert replaced.changed
         assert replaced.previous.generation ≡ 1
         assert replaced.current.generation ≡ 2
-        assert resource.resource_transitions_valid(transitions)
-        const int ∪ null changed_count ← resource.resource_transition_changed_count(transitions)
-        const int ∪ null unchanged_count ← resource.resource_transition_unchanged_count(transitions)
+        assert resource.transitions_valida(transitions)
+        const int ∪ null changed_count ← resource.transition_changed_count(transitions)
+        const int ∪ null unchanged_count ← resource.transition_unchanged_count(transitions)
         if changed_count is null {
             assert false
         }
@@ -49,9 +49,9 @@ describe "resource handle identity" {
             assert unchanged_count ≡ 1
         }
 
-        const list<int> ∪ null changed_indices ← resource.resource_transition_changed_indices(transitions)
-        const list<int> ∪ null unchanged_indices ← resource.resource_transition_unchanged_indices(transitions)
-        const list<resource.ResourceHandle> ∪ null current_handles ← resource.resource_transition_current_handles(transitions)
+        const list<int> ∪ null changed_indices ← resource.transition_changed_indices(transitions)
+        const list<int> ∪ null unchanged_indices ← resource.transition_unchanged_indices(transitions)
+        const list<resource.ResourceHandle> ∪ null current_handles ← resource.transition_current_handles(transitions)
         if changed_indices is null {
             assert false
         }
@@ -84,13 +84,13 @@ describe "resource handle identity" {
         var list<resource.ResourceTransition> invalid ← empty
         invalid.append(wrong_slot)
 
-        assert resource.resource_transition_valid(wrong_slot) ≡ false
-        assert resource.resource_transition_valid(skipped_generation) ≡ false
-        assert resource.resource_transition_valid(changed_without_generation) ≡ false
-        assert resource.resource_transitions_valid(invalid) ≡ false
+        assert wrong_slot.valida() ≡ false
+        assert skipped_generation.valida() ≡ false
+        assert changed_without_generation.valida() ≡ false
+        assert resource.transitions_valida(invalid) ≡ false
         # Invalid input returns absence from the accessor, not a valid zero count.
-        assert resource.resource_transition_changed_count(invalid) is null
-        assert resource.resource_transition_current_handles(invalid) is null
+        assert resource.transition_changed_count(invalid) is null
+        assert resource.transition_current_handles(invalid) is null
     }
 }
 
@@ -100,26 +100,26 @@ describe "resource lifecycle facts" {
         const resource.ResourceHandle stable_handle ← resource.ResourceHandle {index = 2, generation = 3}
         const resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 4, generation = 8}
         const resource.ResourceHandle removed_handle ← resource.ResourceHandle {index = 6, generation = 2}
-        const resource.ResourceLifecycleTransition created ← resource.resource_lifecycle_created(created_handle)
-        const resource.ResourceLifecycleTransition stable ← resource.resource_lifecycle_unchanged(stable_handle)
-        const resource.ResourceLifecycleTransition replaced ← resource.resource_lifecycle_replaced(replaced_handle)
-        const resource.ResourceLifecycleTransition removed ← resource.resource_lifecycle_removed(removed_handle)
+        const resource.ResourceLifecycleTransition created ← created_handle.lifecycle_created()
+        const resource.ResourceLifecycleTransition stable ← stable_handle.lifecycle_unchanged()
+        const resource.ResourceLifecycleTransition replaced ← replaced_handle.lifecycle_replaced()
+        const resource.ResourceLifecycleTransition removed ← removed_handle.lifecycle_removed()
         var list<resource.ResourceLifecycleTransition> transitions ← empty
         transitions.append(created)
         transitions.append(stable)
         transitions.append(replaced)
         transitions.append(removed)
 
-        assert resource.resource_lifecycle_valid(created)
-        assert resource.resource_lifecycle_valid(stable)
-        assert resource.resource_lifecycle_valid(replaced)
-        assert resource.resource_lifecycle_valid(removed)
-        assert resource.resource_lifecycles_valid(transitions)
-        const int ∪ null changed_count ← resource.resource_lifecycle_changed_count(transitions)
-        const int ∪ null unchanged_count ← resource.resource_lifecycle_unchanged_count(transitions)
-        const int ∪ null created_count ← resource.resource_lifecycle_created_count(transitions)
-        const int ∪ null removed_count ← resource.resource_lifecycle_removed_count(transitions)
-        const int ∪ null live_count ← resource.resource_lifecycle_live_count(transitions)
+        assert created.valida()
+        assert stable.valida()
+        assert replaced.valida()
+        assert removed.valida()
+        assert resource.lifecycles_valida(transitions)
+        const int ∪ null changed_count ← resource.lifecycle_changed_count(transitions)
+        const int ∪ null unchanged_count ← resource.lifecycle_unchanged_count(transitions)
+        const int ∪ null created_count ← resource.lifecycle_created_count(transitions)
+        const int ∪ null removed_count ← resource.lifecycle_removed_count(transitions)
+        const int ∪ null live_count ← resource.lifecycle_live_count(transitions)
         if changed_count is null {
             assert false
         }
@@ -151,7 +151,7 @@ describe "resource lifecycle facts" {
             assert live_count ≡ 3
         }
 
-        const resource.ResourceLifecycleBatchFacts ∪ null facts ← resource.resource_lifecycle_batch_facts(transitions)
+        const resource.ResourceLifecycleBatchFacts ∪ null facts ← resource.lifecycle_batch_facts(transitions)
         if facts is null {
             assert false
         }
@@ -164,11 +164,11 @@ describe "resource lifecycle facts" {
             assert facts.live_count ≡ 3
         }
 
-        const list<int> ∪ null changed_indices ← resource.resource_lifecycle_changed_indices(transitions)
-        const list<int> ∪ null unchanged_indices ← resource.resource_lifecycle_unchanged_indices(transitions)
-        const list<int> ∪ null removed_indices ← resource.resource_lifecycle_removed_indices(transitions)
-        const list<int> ∪ null live_indices ← resource.resource_lifecycle_live_indices(transitions)
-        const list<int> ∪ null retired_indices ← resource.resource_lifecycle_retired_indices(transitions)
+        const list<int> ∪ null changed_indices ← resource.lifecycle_changed_indices(transitions)
+        const list<int> ∪ null unchanged_indices ← resource.lifecycle_unchanged_indices(transitions)
+        const list<int> ∪ null removed_indices ← resource.lifecycle_removed_indices(transitions)
+        const list<int> ∪ null live_indices ← resource.lifecycle_live_indices(transitions)
+        const list<int> ∪ null retired_indices ← resource.lifecycle_retired_indices(transitions)
         if changed_indices is null {
             assert false
         }
@@ -208,15 +208,15 @@ describe "resource lifecycle facts" {
         const resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 11, generation = 2}
         const resource.ResourceHandle removed_handle ← resource.ResourceHandle {index = 12, generation = 5}
         var list<resource.ResourceLifecycleTransition> transitions ← empty
-        transitions.append(resource.resource_lifecycle_created(created_handle))
-        transitions.append(resource.resource_lifecycle_replaced(replaced_handle))
-        transitions.append(resource.resource_lifecycle_removed(removed_handle))
+        transitions.append(created_handle.lifecycle_created())
+        transitions.append(replaced_handle.lifecycle_replaced())
+        transitions.append(removed_handle.lifecycle_removed())
 
-        const list<resource.ResourceHandle> ∪ null changed_handles ← resource.resource_lifecycle_changed_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null unchanged_handles ← resource.resource_lifecycle_unchanged_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null removed_handles ← resource.resource_lifecycle_removed_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null retired_handles ← resource.resource_lifecycle_retired_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null current_handles ← resource.resource_lifecycle_current_handles(transitions)
+        const list<resource.ResourceHandle> ∪ null changed_handles ← resource.lifecycle_changed_handles(transitions)
+        const list<resource.ResourceHandle> ∪ null unchanged_handles ← resource.lifecycle_unchanged_handles(transitions)
+        const list<resource.ResourceHandle> ∪ null removed_handles ← resource.lifecycle_removed_handles(transitions)
+        const list<resource.ResourceHandle> ∪ null retired_handles ← resource.lifecycle_retired_handles(transitions)
+        const list<resource.ResourceHandle> ∪ null current_handles ← resource.lifecycle_current_handles(transitions)
         if changed_handles is null {
             assert false
         }
@@ -261,8 +261,8 @@ describe "resource lifecycle facts" {
 
     test "invalid lifecycle batches reject duplicates and inconsistent generations" {
         const resource.ResourceHandle original ← resource.ResourceHandle {index = 13, generation = 4}
-        const resource.ResourceLifecycleTransition duplicate_a ← resource.resource_lifecycle_created(original)
-        const resource.ResourceLifecycleTransition duplicate_b ← resource.resource_lifecycle_unchanged(original)
+        const resource.ResourceLifecycleTransition duplicate_a ← original.lifecycle_created()
+        const resource.ResourceLifecycleTransition duplicate_b ← original.lifecycle_unchanged()
         const resource.ResourceLifecycleTransition invalid_none ← resource.ResourceLifecycleTransition {logical_index = 14, changed = false, removed = false}
         const resource.ResourceLifecycleTransition invalid_removed ← resource.ResourceLifecycleTransition {logical_index = 15, current = original, changed = true, removed = true}
         var list<resource.ResourceLifecycleTransition> duplicate_batch ← empty
@@ -272,11 +272,11 @@ describe "resource lifecycle facts" {
         invalid_batch.append(invalid_none)
         invalid_batch.append(invalid_removed)
 
-        assert resource.resource_lifecycle_valid(invalid_none) ≡ false
-        assert resource.resource_lifecycle_valid(invalid_removed) ≡ false
-        assert resource.resource_lifecycles_valid(duplicate_batch) ≡ false
-        assert resource.resource_lifecycles_valid(invalid_batch) ≡ false
-        assert resource.resource_lifecycle_batch_facts(duplicate_batch) is null
-        assert resource.resource_lifecycle_live_indices(invalid_batch) is null
+        assert invalid_none.valida() ≡ false
+        assert invalid_removed.valida() ≡ false
+        assert resource.lifecycles_valida(duplicate_batch) ≡ false
+        assert resource.lifecycles_valida(invalid_batch) ≡ false
+        assert resource.lifecycle_batch_facts(duplicate_batch) is null
+        assert resource.lifecycle_live_indices(invalid_batch) is null
     }
 }

@@ -9,16 +9,16 @@ import from "triga:lighting/light" light
 import from "triga:graph/object" graph_object
 import from "triga:math" math
 
-fn light_node(string nomen) → graph_object.Object3D {
+fn spawn_light(string nomen) → graph_object.Object3D {
     return graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, name = nomen}
 }
 
-fn light_node_at(string nomen, f32 x, f32 y, f32 z) → graph_object.Object3D {
+fn spawn_light_at(string nomen, f32 x, f32 y, f32 z) → graph_object.Object3D {
     return graph_object.Object3D {position = math.vector3(x, y, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, name = nomen}
 }
 
 test "Light preserves color and default intensity as carrier facts" {
-    const light.Light source ← light.Light {base = light_node("shared"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
+    const light.Light source ← light.Light {base = spawn_light("shared"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
 
     assert source.base.name ≡ "shared"
     assert source.color.r ≡ (0.0 ∷ f32)
@@ -28,7 +28,7 @@ test "Light preserves color and default intensity as carrier facts" {
 }
 
 test "AmbientLight carries color and zero-intensity boundaries" {
-    const light.Light source ← light.Light {base = light_node("ambient"), color = math.Color {r = 0.0, g = 0.5, b = 1.0}, intensity = 0.0}
+    const light.Light source ← light.Light {base = spawn_light("ambient"), color = math.Color {r = 0.0, g = 0.5, b = 1.0}, intensity = 0.0}
     const light.AmbientLight ambient ← light.AmbientLight {base = source}
 
     assert ambient.base.base.name ≡ "ambient"
@@ -40,7 +40,7 @@ test "AmbientLight carries color and zero-intensity boundaries" {
 
 test "DirectionalLight carries target position and full-intensity boundary" {
     const math.Vector3 target ← math.vector3(-2.0, 0.0, 5.0)
-    const light.Light source ← light.Light {base = light_node("directional"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
+    const light.Light source ← light.Light {base = spawn_light("directional"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
     const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
     assert directional.base.base.name ≡ "directional"
@@ -55,7 +55,7 @@ test "DirectionalLight carries target position and full-intensity boundary" {
 
 test "DirectionalLight records position and target as direction carriers" {
     const math.Vector3 target ← math.vector3(0.0, 0.0, 0.0)
-    const light.Light source ← light.Light {base = light_node_at("from-above", 0.0, 4.0, 0.0), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
+    const light.Light source ← light.Light {base = spawn_light_at("from-above", 0.0, 4.0, 0.0), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
     const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
     assert directional.base.base.name ≡ "from-above"
@@ -69,7 +69,7 @@ test "DirectionalLight records position and target as direction carriers" {
 
 test "DirectionalLight keeps a coincident target as a degenerate direction carrier" {
     const math.Vector3 origin ← math.vector3(1.0, 2.0, 3.0)
-    const light.Light source ← light.Light {base = light_node_at("coincident", 1.0, 2.0, 3.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 0.0}
+    const light.Light source ← light.Light {base = spawn_light_at("coincident", 1.0, 2.0, 3.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 0.0}
     const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = origin}
 
     assert directional.base.base.position.x ≡ (1.0 ∷ f32)
@@ -82,7 +82,7 @@ test "DirectionalLight keeps a coincident target as a degenerate direction carri
 }
 
 test "PointLight preserves distance and decay carrier fields" {
-    const light.Light source ← light.Light {base = light_node("point"), color = math.Color {r = 0.25, g = 0.5, b = 0.75}, intensity = 2.0}
+    const light.Light source ← light.Light {base = spawn_light("point"), color = math.Color {r = 0.25, g = 0.5, b = 0.75}, intensity = 2.0}
     const light.PointLight point ← light.PointLight {base = source, distance = 25.0, decay = 0.0}
 
     assert point.base.base.name ≡ "point"
@@ -95,7 +95,7 @@ test "PointLight preserves distance and decay carrier fields" {
 }
 
 test "PointLight defaults remain explicit carrier values" {
-    const light.Light source ← light.Light {base = light_node("point-defaults"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
+    const light.Light source ← light.Light {base = spawn_light("point-defaults"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
     const light.PointLight point ← light.PointLight {base = source, distance = 0.0, decay = 2.0}
 
     assert point.base.base.name ≡ "point-defaults"

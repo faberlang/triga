@@ -42,9 +42,9 @@ describe "Mesh valid composition" {
         const graph_object.Object3D node ← objectum("triangle-node")
         const data.BufferGeometry geometry ← triangle_geometryum()
         const math.Color color ← math.Color {r = 0.2, g = 0.4, b = 0.8}
-        const basic.MeshBasicMaterial ∪ null constructed ← basic.mesh_basic_material("basic", color)
+        const basic.MeshBasicMaterial ∪ null constructed ← basic.basic_material("basic", color)
         const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = base.materia_ex_nomine("basic"), color = color}
-        const base.MaterialPipelineFacts ∪ null material_facts ← basic.mesh_basic_material_pipeline_facts(material)
+        const base.MaterialPipelineFacts ∪ null material_facts ← material.pipeline_facts()
         const mesh.Mesh value ← mesh.Mesh {base = node, geometry = geometry, material = material}
 
         assert constructed not is null
@@ -63,11 +63,11 @@ describe "Mesh valid composition" {
         assert (value.geometry.triangle_count() coalesce 0) ≡ 1
         assert (value.geometry.group_count() coalesce 0) ≡ 1
         assert value.material not is null
-        assert basic.mesh_basic_material_valida(material)
-        assert (basic.mesh_basic_material_color_r(material) coalesce -1.0) ≡ (0.2 ∷ f32)
-        assert (basic.mesh_basic_material_color_g(material) coalesce -1.0) ≡ (0.4 ∷ f32)
-        assert (basic.mesh_basic_material_color_b(material) coalesce -1.0) ≡ (0.8 ∷ f32)
-        assert (basic.mesh_basic_material_alpha(material) coalesce -1.0) ≡ (1.0 ∷ f32)
+        assert material.valida()
+        assert (material.color_r() coalesce -1.0) ≡ (0.2 ∷ f32)
+        assert (material.color_g() coalesce -1.0) ≡ (0.4 ∷ f32)
+        assert (material.color_b() coalesce -1.0) ≡ (0.8 ∷ f32)
+        assert (material.alpha() coalesce -1.0) ≡ (1.0 ∷ f32)
         assert material_facts not is null
         if material_facts not is null {
             assert material_facts!.side_code ≡ 0
@@ -115,7 +115,7 @@ describe "Mesh public facts and missing components" {
     test "Mesh exposes component facts while invalid geometry and material fail closed" {
         const data.BufferGeometry invalid_geometry ← invalid_geometryum()
         const math.Color invalid_color ← math.Color {r = 1.1, g = 0.5, b = 0.5}
-        const basic.MeshBasicMaterial ∪ null rejected_material ← basic.mesh_basic_material("invalid-color", invalid_color)
+        const basic.MeshBasicMaterial ∪ null rejected_material ← basic.basic_material("invalid-color", invalid_color)
         const basic.MeshBasicMaterial invalid_material ← basic.MeshBasicMaterial {base = base.Material {name = "invalid-material", side = 0 ∷ int<u32>, opacity = 1.2}, color = math.Color {r = 0.5, g = 0.5, b = 0.5}}
         const mesh.Mesh value ← mesh.Mesh {base = objectum("invalid-components"), geometry = invalid_geometry, material = invalid_material}
 
@@ -124,8 +124,8 @@ describe "Mesh public facts and missing components" {
         assert invalid_geometry.validated_vertex_count() is null
         assert invalid_geometry.index_count() is null
         assert invalid_geometry.triangle_count() is null
-        assert basic.mesh_basic_material_valida(invalid_material) ≡ false
-        assert basic.mesh_basic_material_pipeline_facts(invalid_material) is null
+        assert invalid_material.valida() ≡ false
+        assert invalid_material.pipeline_facts() is null
         assert value.base.name ≡ "invalid-components"
         assert value.geometry.valida() ≡ false
         assert value.material not is null

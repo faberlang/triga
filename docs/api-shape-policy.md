@@ -148,7 +148,28 @@ Genuine absence (e.g., non-overlap) stays nullable.
     `camera_yaw_pitch`
   - compiler-contract adapter: `geometry_vertex_layout_matches` — its
     standalone signature is the canonical `@ shader_contract "vertex_layout"`
-    bridge and is not a receiver operation.
+    bridge and is not a receiver operation. Same status for the other
+    `shader_contract.fab` role adapters `vertex_layout_matches` and
+    `resource_binding_matches` (Stage 2 recording).
+  - Stage 2 additions (2026-08-21): face-code table helpers `face_code_*`
+    (int-code tables and the `FaceCodeFacts`/`FaceQuad` constructors — no
+    genus receiver exists), `transform_payload` (two-matrix constructor),
+    `visible_face_*` (scalar byte-count helpers on an int face count),
+    BufferGeometry constructors `indexed_triangle_geometry` / `line_geometry`
+    / `colored_indexed_geometry` (§1 primitive-generator exception), and the
+    declaring-leaf enum constructors `vertex_format_from_component_width` /
+    `vertex_step_mode_vertex_step` (variants are only constructible in the
+    declaring leaf).
+
+  Stage 2 receiver-method migration (2026-08-21) moved the instance
+  operations home: `Material.*` (valida, double_sided, est_double_sided,
+  side_code, depth_*, pipeline_facts), `MeshBasicMaterial.*` (valida,
+  color_r/g/b, alpha, pipeline_facts — constructor renamed
+  `basic_material`), `Color.valida`/`Color.interpolata`,
+  `ResourceHandle.{equals,next,transition_*,lifecycle_*}`,
+  `ResourceTransition.valida`, `ResourceLifecycleTransition.valida`. The
+  batch list queries (no single receiver) stayed free under `transition_*` /
+  `lifecycle_*` names.
 
   Live `resource_*`, `material_*`, and `mesh_basic_material_*` free-function
   families are lint failures until Stage 2 migrates them to receiver methods.

@@ -13,7 +13,7 @@ test "standard material preserves PBR carrier fields and pipeline facts" {
     const math.Color color ← math.Color {r = 0.2, g = 0.3, b = 0.4}
     const math.Color emissive ← math.Color {r = 0.05, g = 0.1, b = 0.15}
     const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = policy, color = color, roughness = 0.35, metalness = 0.8, emissive = emissive, emissive_intensity = 1.5}
-    const base.MaterialPipelineFacts ∪ null facts_result ← base.material_pipeline_facts(material.base)
+    const base.MaterialPipelineFacts ∪ null facts_result ← material.base.pipeline_facts()
 
     assert material.base.name ≡ "standard"
     assert material.color.r ≡ (0.2 ∷ f32)
@@ -42,16 +42,16 @@ test "standard defaults remain explicit carrier values" {
     assert material.roughness ≡ (1.0 ∷ f32)
     assert material.metalness ≡ (0.0 ∷ f32)
     assert material.emissive_intensity ≡ (0.0 ∷ f32)
-    assert base.material_valida(material.base)
-    assert base.material_pipeline_facts(material.base) not is null
+    assert material.base.valida()
+    assert material.base.pipeline_facts() not is null
 }
 
 test "standard carrier exposes invalid base facts as unsupported" {
     const base.Material invalid_base ← base.Material {name = "invalid-standard", side = 0 ∷ int<u32>, alpha_test = -0.1}
     const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
-    assert base.material_valida(material.base) ≡ false
-    assert base.material_pipeline_facts(material.base) is null
+    assert material.base.valida() ≡ false
+    assert material.base.pipeline_facts() is null
     assert material.roughness ≡ (1.0 ∷ f32)
     assert material.metalness ≡ (0.0 ∷ f32)
     assert material.emissive_intensity ≡ (0.0 ∷ f32)

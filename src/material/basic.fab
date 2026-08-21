@@ -2,9 +2,8 @@
 #
 # Public import: import from "triga:material/basic" basic
 #
-# Owns: MeshBasicMaterial, mesh_basic_material, mesh_basic_material_valida,
-# mesh_basic_material_color_r/g/b, mesh_basic_material_alpha,
-# mesh_basic_material_pipeline_facts.
+# Owns: MeshBasicMaterial (+ receiver methods) and the basic_material
+# constructor.
 #
 # Imports: triga:math, triga:material/base.
 
@@ -14,57 +13,52 @@ import from "triga:material/base" base
 
 # MeshBasicMaterial is the unlit material path. Its base contract carries
 # depth, alpha, and side state; this leaf adds only the source color used by
-# the basic pipeline facts.
+# the basic pipeline facts. Operations on a material value are receiver
+# methods (api-shape-policy §1); basic_material is the free constructor.
 @ public
 class MeshBasicMaterial {
     base.Material base
     math.Color color
+
+    fn valida() → bool {
+        return self.base.valida() and self.color.valida()
+    }
+
+    fn color_r() → f32 ∪ null {
+        if self.valida() ≡ false then return null
+        return self.color.r
+    }
+
+    fn color_g() → f32 ∪ null {
+        if self.valida() ≡ false then return null
+        return self.color.g
+    }
+
+    fn color_b() → f32 ∪ null {
+        if self.valida() ≡ false then return null
+        return self.color.b
+    }
+
+    fn alpha() → f32 ∪ null {
+        if self.valida() ≡ false then return null
+        return self.base.opacity
+    }
+
+    fn pipeline_facts() → base.MaterialPipelineFacts ∪ null {
+        if self.valida() ≡ false then return null
+        return self.base.pipeline_facts()
+    }
 }
 
 @ public
-fn mesh_basic_material(string name, ref math.Color color) → MeshBasicMaterial ∪ null {
+fn basic_material(string name, ref math.Color color) → MeshBasicMaterial ∪ null {
     const base.Material base_material ← base.materia_ex_nomine(name)
-    if base.material_valida(base_material) ≡ false then return null
+    if base_material.valida() ≡ false then return null
     # The ∪ null contract extends to the color: every accessor already
-    # fails closed on an invalid color (mesh_basic_material_valida), so the
-    # constructor must not return a material whose accessors all return
-    # null (the correctness-fix slice — the accessors were the authority,
-    # the constructor now matches the contract).
-    if math.color_valida(color) ≡ false then return null
+    # fails closed on an invalid color (valida), so the constructor must not
+    # return a material whose accessors all return null (the correctness-fix
+    # slice — the accessors were the authority, the constructor now matches
+    # the contract).
+    if color.valida() ≡ false then return null
     return MeshBasicMaterial {base = base_material, color = color}
-}
-
-@ public
-fn mesh_basic_material_valida(ref MeshBasicMaterial value) → bool {
-    return base.material_valida(value.base) and math.color_valida(value.color)
-}
-
-@ public
-fn mesh_basic_material_color_r(ref MeshBasicMaterial value) → f32 ∪ null {
-    if mesh_basic_material_valida(value) ≡ false then return null
-    return value.color.r
-}
-
-@ public
-fn mesh_basic_material_color_g(ref MeshBasicMaterial value) → f32 ∪ null {
-    if mesh_basic_material_valida(value) ≡ false then return null
-    return value.color.g
-}
-
-@ public
-fn mesh_basic_material_color_b(ref MeshBasicMaterial value) → f32 ∪ null {
-    if mesh_basic_material_valida(value) ≡ false then return null
-    return value.color.b
-}
-
-@ public
-fn mesh_basic_material_alpha(ref MeshBasicMaterial value) → f32 ∪ null {
-    if mesh_basic_material_valida(value) ≡ false then return null
-    return value.base.opacity
-}
-
-@ public
-fn mesh_basic_material_pipeline_facts(ref MeshBasicMaterial value) → base.MaterialPipelineFacts ∪ null {
-    if mesh_basic_material_valida(value) ≡ false then return null
-    return base.material_pipeline_facts(value.base)
 }
