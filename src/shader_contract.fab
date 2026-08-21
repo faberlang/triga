@@ -112,12 +112,6 @@ fn resource_binding_matches(int group, int binding, int kind_code, int role_code
 # functions above.
 # ---------------------------------------------------------------------------
 
-# Goal-01 first-pipeline defaults (locked by
-# docs/factory/hello-voxel/goals/01-source-graphics-pipeline.md):
-#   color target bgra8unorm (1), depth24plus compare less (1) + writes enabled
-#   (1), triangle-list topology (1), 36 vertices, and a group-0 binding-0
-#   read-only transform storage buffer (32 f32).
-
 const int goal_color_target_format_code ← 1
 
 const int goal_depth_compare_code ← 1
