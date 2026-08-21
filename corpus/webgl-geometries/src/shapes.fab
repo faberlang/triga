@@ -18,7 +18,7 @@ class CorpusMesh {
     int vertex_count
     int index_count
     list<f32> vertex_payload
-    list<int<u32>> index_payload
+    list<u32> index_payload
 }
 
 @ private { }

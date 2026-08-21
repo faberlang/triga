@@ -7,7 +7,7 @@ class TerrainMesh {
     int vertex_count
     int index_count
     list<f32> vertex_payload
-    list<int<u32>> index_payload
+    list<u32> index_payload
 }
 
 const int GRID_SEGMENTS ← 32
@@ -28,7 +28,7 @@ fn floats_textus(de list<f32> values) → string {
     return output
 }
 
-fn indices_textus(de list<int<u32>> values) → string {
+fn indices_textus(de list<u32> values) → string {
     var string output ← ""
     var int i ← 0
     while i < values.length() {
@@ -70,7 +70,7 @@ fn terrain_mesh() → TerrainMesh {
         row ← row + 1
     }
 
-    var list<int<u32>> indices ← vacua
+    var list<u32> indices ← vacua
     var int index_row ← 0
     while index_row < GRID_SEGMENTS {
         var int index_column ← 0

@@ -14,7 +14,7 @@ class TerrainMesh {
     int vertex_count
     int index_count
     list<f32> vertex_payload
-    list<int<u32>> index_payload
+    list<u32> index_payload
 }
 
 const int GRID_SEGMENTS ← 48
@@ -150,7 +150,7 @@ fn _terrain_mesh() → TerrainMesh {
         }
         gz ← gz + 1
     }
-    var list<int<u32>> indices ← vacua
+    var list<u32> indices ← vacua
     var int cz ← 0
     while cz ≺ GRID_SEGMENTS {
         var int cx ← 0
