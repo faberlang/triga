@@ -78,25 +78,25 @@ fi
 echo "check-compile: parsed $leaf_count live leaves"
 
 echo "check-compile: checking geometry attribute exemplar"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/triga-geometry-attributes.fab"
+  "$FABER_BIN" check "$ROOT/exempla/triga-geometry-attributes.fab"
 
 echo "check-compile: checking Stage 4 source-owned facts exemplar"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/triga-stage4-source-facts.fab"
+  "$FABER_BIN" check "$ROOT/exempla/triga-stage4-source-facts.fab"
 
 echo "check-compile: checking Hello Voxel first-draw facts exemplar"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/hello-voxel-first-draw-facts.fab"
+  "$FABER_BIN" check "$ROOT/exempla/hello-voxel-first-draw-facts.fab"
 
 echo "check-compile: checking Hello Voxel shaders exemplar"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/triga-hello-voxel-shaders.fab"
+  "$FABER_BIN" check "$ROOT/exempla/triga-hello-voxel-shaders.fab"
 
 echo "check-compile: checking Hello Voxel pipeline exemplar"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/triga-hello-voxel-pipeline.fab"
+  "$FABER_BIN" check "$ROOT/exempla/triga-hello-voxel-pipeline.fab"
 
 echo "check-compile: checking vertex-fragment stub"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/triga-vertex-fragment-stub.fab"
+  "$FABER_BIN" check "$ROOT/exempla/triga-vertex-fragment-stub.fab"
 
 echo "check-compile: checking scene-store exemplar"
-"$RADIX_BIN" check --locale en "$ROOT/exempla/triga-scene-store.fab"
+  "$FABER_BIN" check "$ROOT/exempla/triga-scene-store.fab"
 
 echo "check-compile: checking scene-store exemplar through Faber provider path"
 (cd "$ROOT" && "$FABER_BIN" check "$ROOT/exempla/triga-scene-store.fab")

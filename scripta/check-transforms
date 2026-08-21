@@ -50,6 +50,6 @@ echo "check-transforms: parsing src/math.fab"
 "$RADIX_BIN" check --locale en "$ROOT/src/math.fab"
 
 echo "check-transforms: package check exempla/triga-transforms.fab"
-(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check exempla/triga-transforms.fab)
+(cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- check "$ROOT/exempla/triga-transforms.fab")
 
 echo "check-transforms: ok"
