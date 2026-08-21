@@ -1,8 +1,9 @@
 # Triga module map
 
 **Status:** living map for the public `triga:*` surface  
-**Date:** 2026-08-02 (S1 splits landed: graph, lighting, geometry, material,
-primitives, and renderable; scene remains parked)
+**Date:** 2026-08-21 (S1 splits landed 2026-08-02: graph, lighting, geometry,
+material, primitives, renderable; Stage-2 receiver-method migration landed
+2026-08-21)
 
 Triga is a multi-file Faber source library under `src/`. Each `.fab` file is a
 provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
@@ -45,17 +46,15 @@ not `triga:scene/resource`).
 | `triga:geometry/batch` | `src/geometry/batch.fab` | `DrawRange`, `GeometryDrawCommand`, `GeometryGroup`, draw-batch facts |
 | `triga:primitives` | `src/primitives.fab` | Facade for deterministic generators in `primitives/basic`; procedural/terrain/voxel remain deferred |
 | `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` — **DS-D parked** on language gaps G2/G3 |
-| `triga:resource` | `src/resource.fab` | `ResourceHandle` + lifecycle free functions |
+| `triga:resource` | `src/resource.fab` | `ResourceHandle` (+ transition/lifecycle receiver methods, batch queries) |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
 
 ## Proba (test sources)
 
-Co-located `name.proba` next to `name.fab`. Discovered only by `faber test`
-(`include_proba`); never imported as a product module.
-
-| File | Covers |
-| --- | --- |
-| `src/math.proba` | Vector3 method suite (`addita`, `normata`) |
+Co-located `name.proba` next to `name.fab` — every live leaf carries one.
+Discovered only by `faber test` (`include_proba`); never imported as a product
+module. Live per-module execution status lives in
+`proof/coverage-scorecard.json`.
 
 ## Dependency direction
 
@@ -93,9 +92,9 @@ import from "triga:resource" resource
 ```
 
 ```fab
-fixum math.Vector3 p ← math.vector3(1.0, 2.0, 3.0)
-fixum resource.ResourceHandle h ← resource.ResourceHandle { index = 0, generation = 1 }
-varia scene.SceneStore store ← scene.scene_store()
+const _ p ← math.vector3(1.0, 2.0, 3.0)
+const _ h ← resource.ResourceHandle { index = 0, generation = 1 }
+var _ store ← scene.scene_store()
 ```
 
 ## Size (after S1 splits)
