@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Procedural heightfield terrain for the triga corpus — recreation reference:
 # three.js `webgl_geometry_terrain`. One generated grid mesh with per-vertex
 # normals and elevation-ramp colors, plus a flat water plane in the valleys.
@@ -9,8 +6,9 @@ locale = "en"
 # three octaves). Normals come from central differences of the same height
 # function, so lighting follows the land.
 
-import from "triga:math" private math
+import from "triga:math" math
 
+@ public
 class TerrainMesh {
     string name
     int vertex_count
@@ -108,9 +106,9 @@ fn _elevation_color(f32 height) → math.Color {
     const math.Color grass ← math.Color {r = 0.29, g = 0.49, b = 0.25}
     const math.Color rock ← math.Color {r = 0.45, g = 0.42, b = 0.4}
     const math.Color snow ← math.Color {r = 0.9, g = 0.92, b = 0.95}
-    if t ≺ 0.35 then return math.color_interpolata(sand, grass, t / 0.35)
-    if t ≺ 0.7 then return math.color_interpolata(grass, rock, (t - 0.35) / 0.35)
-    return math.color_interpolata(rock, snow, (t - 0.7) / 0.3)
+    if t ≺ 0.35 then return sand.interpolata(grass, t / 0.35)
+    if t ≺ 0.7 then return grass.interpolata(rock, (t - 0.35) / 0.35)
+    return rock.interpolata(snow, (t - 0.7) / 0.3)
 }
 
 # --- Mesh generation --------------------------------------------------------
@@ -198,6 +196,7 @@ fn _water_mesh() → TerrainMesh {
     return TerrainMesh {name = "water", vertex_count = 4, index_count = 6, vertex_payload = payload, index_payload = [0, 2, 1, 0, 3, 2]}
 }
 
+@ public
 fn terrain_meshes() → list<TerrainMesh> {
     var list<TerrainMesh> meshes ← vacua
     meshes.append(_terrain_mesh())

@@ -1,12 +1,12 @@
 +++
 locale = "la"
 +++
-importa ex "tela:web" privata web
-importa ex "tela:dom" privata dom
-importa ex "./camera_controls" privata camera_controls
-importa ex "./scene" privata scene
-importa ex "./terrain" privata terrain
-importa ex "triga:math" privata math
+importa ex "tela:web" web
+importa ex "tela:dom" dom
+importa ex "./camera_controls" camera_controls
+importa ex "./scene" scene
+importa ex "./terrain" terrain
+importa ex "triga:math" math
 
 functio floats_textus(de lista<f32> values) → textus {
     varia textus output ← ""

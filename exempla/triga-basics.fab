@@ -6,11 +6,11 @@ canonical = true
 summary = "Triga math and material basics."
 +++
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:material/base" private base
+import from "triga:material/base" base
 
-import from "triga:material/basic" private basic
+import from "triga:material/basic" basic
 
 main {
     const math.Vector3 origin ← math.Vector3 {x = 0.0, y = 0.0, z = 0.0}
@@ -25,15 +25,15 @@ main {
     const math.Color invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
-    const base.MaterialPipelineFacts ∪ null base_pipeline_result ← base.material_pipeline_facts(base_material)
+    const base.MaterialPipelineFacts ∪ null base_pipeline_result ← base_material.pipeline_facts()
     print base_pipeline_result
 
     # Double-sided material
-    const base.Material double_sided ← base.material_double_sided(base_material)
+    const base.Material double_sided ← base_material.double_sided()
 
     # MeshBasicMaterial
     const math.Color unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
-    const basic.MeshBasicMaterial ∪ null unlit ← basic.mesh_basic_material("hello-voxel-unlit", unlit_color)
+    const basic.MeshBasicMaterial ∪ null unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
     const basic.MeshBasicMaterial unlit_value ← basic.MeshBasicMaterial {base = unlit!.base, color = unlit!.color}
     print unlit_value.color.g
 

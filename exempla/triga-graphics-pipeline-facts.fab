@@ -6,11 +6,11 @@ canonical = true
 summary = "Triga-side facts for the locked graphics pipeline contract: shader stages, color target, depth, topology, and vertex inputs."
 +++
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:material/base" private base
+import from "triga:material/base" base
 
-import from "triga:material/basic" private basic
+import from "triga:material/basic" basic
 
 main {
     # Shader stage codes
@@ -47,9 +47,9 @@ main {
 
     # Goal 01 material
     const math.Color goal_color ← math.Color {r = 1.0, g = 0.2, b = 0.2}
-    const basic.MeshBasicMaterial ∪ null goal_material_result ← basic.mesh_basic_material("goal-material", goal_color)
+    const basic.MeshBasicMaterial ∪ null goal_material_result ← basic.basic_material("goal-material", goal_color)
     const basic.MeshBasicMaterial goal_material ← basic.MeshBasicMaterial {base = goal_material_result!.base, color = goal_material_result!.color}
-    const base.MaterialPipelineFacts ∪ null goal_pipeline_result ← basic.mesh_basic_material_pipeline_facts(goal_material)
+    const base.MaterialPipelineFacts ∪ null goal_pipeline_result ← goal_material.pipeline_facts()
     const base.MaterialPipelineFacts goal_pipeline ← base.MaterialPipelineFacts {side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test}
     print goal_pipeline.depth_test_enabled
     print goal_pipeline.transparent

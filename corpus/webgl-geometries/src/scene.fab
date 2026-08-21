@@ -1,12 +1,11 @@
-+++
-locale = "en"
-+++
-import from "./shapes" private shapes
+import from "./shapes" shapes
 
+@ public
 class CorpusGeometryManifest {
     list<shapes.CorpusMesh> objects
 }
 
-fn corpus_scene_geometry() → CorpusGeometryManifest {
+@ public
+class_corpus_placeholder) → CorpusGeometryManifest {
     return CorpusGeometryManifest {objects = shapes.geometry_showcase_meshes()}
 }

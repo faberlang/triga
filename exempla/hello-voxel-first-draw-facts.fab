@@ -5,11 +5,11 @@ category = "library"
 canonical = true
 summary = "Hello Voxel first indexed-draw source facts from position and color data."
 +++
-import from "triga:geometry/data" private data
+import from "triga:geometry/data" data
 
-import from "triga:geometry/attribute" private attribute
+import from "triga:geometry/attribute" attribute
 
-import from "triga:geometry/batch" private batch
+import from "triga:geometry/batch" batch
 
 main {
     const list<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0]

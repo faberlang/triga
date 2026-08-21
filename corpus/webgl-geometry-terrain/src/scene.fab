@@ -1,12 +1,11 @@
-+++
-locale = "en"
-+++
-import from "./terrain" private terrain
+import from "./terrain" terrain
 
+@ public
 class CorpusGeometryManifest {
     list<terrain.TerrainMesh> objects
 }
 
-fn corpus_scene_geometry() → CorpusGeometryManifest {
+@ public
+class_corpus_placeholder) → CorpusGeometryManifest {
     return CorpusGeometryManifest {objects = terrain.terrain_meshes()}
 }

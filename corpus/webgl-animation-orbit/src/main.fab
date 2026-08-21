@@ -1,12 +1,9 @@
-+++
-locale = "en"
-+++
-import from "tela:web" private web
-import from "tela:dom" private dom
-import from "triga:geometry/data" private data
-import from "triga:geometry/attribute" private attribute
-import from "triga:math" private math
-import from "triga:primitives/basic" private basic
+import from "tela:web" web
+import from "tela:dom" dom
+import from "triga:geometry/data" data
+import from "triga:geometry/attribute" attribute
+import from "triga:math" math
+import from "triga:primitives/basic" basic
 
 class AnimatedMesh {
     string name

@@ -6,11 +6,10 @@ canonical = true
 summary = "Degenerate-input and edge-case examples for triga math."
 +++
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:graph/object" private object as graph_object
-
-import from "triga:graph/camera" private camera
+import from "triga:graph/object" object as graph_object
+import from "triga:graph/camera" camera
 
 main {
     # Vector3 projecta with zero-length axis
@@ -39,6 +38,6 @@ main {
     const math.Ray ray ← math.Ray {origin = math.vector3(-3.0 ∷ f32, 0.0, 0.0), direction = math.vector3(1.0, 0.0, 0.0)}
 
     # PerspectiveCamera construction from an Object3D base
-    const graph_object.Object3D cam_base ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 5.0), rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = true, name = "cam"}
+    const graph_object.Object3D cam_base ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 5.0), rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, visible = true, name = "cam"}
     const camera.PerspectiveCamera test_camera ← camera.PerspectiveCamera {base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0}
 }

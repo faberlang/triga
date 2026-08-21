@@ -1,12 +1,9 @@
-+++
-locale = "en"
-+++
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:graph/object" private object as graph_object
+import from "triga:graph/object" object as graph_object
+import from "triga:graph/camera" camera
 
-import from "triga:graph/camera" private camera
-
+@ public
 class CameraInput {
     bool yaw_left = false
     bool yaw_right = false
@@ -20,6 +17,7 @@ class CameraInput {
     bool pan_back = false
 }
 
+@ public
 class OrbitCamera {
     math.Vector3 target
     f32 yaw_degrees
@@ -28,6 +26,7 @@ class OrbitCamera {
     CameraInput input
 }
 
+@ public
 fn spawn_camera() → OrbitCamera {
     return OrbitCamera {target = math.vector3(0.0, 0.0, 0.0), yaw_degrees = -35.0 ∷ f32, pitch_degrees = -32.0 ∷ f32, distance = 110.0, input = CameraInput {}}
 }
@@ -51,6 +50,7 @@ fn _input_axis(bool negative, bool positive) → f32 {
     return 0.0
 }
 
+@ public
 fn set_key_by_code(ref CameraInput input, string code, bool pressed) → CameraInput {
     var CameraInput next ← CameraInput {yaw_left = input.yaw_left, yaw_right = input.yaw_right, pitch_up = input.pitch_up, pitch_down = input.pitch_down, dolly_in = input.dolly_in, dolly_out = input.dolly_out, pan_left = input.pan_left, pan_right = input.pan_right, pan_forward = input.pan_forward, pan_back = input.pan_back}
     if code ≡ "ArrowLeft" {
@@ -86,6 +86,7 @@ fn set_key_by_code(ref CameraInput input, string code, bool pressed) → CameraI
     return next
 }
 
+@ public
 fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
     const f32 safe_delta ← _clamp_delta(delta_seconds)
     const f32 yaw_axis ← _input_axis(camera.input.yaw_left, camera.input.yaw_right)
@@ -107,6 +108,7 @@ fn view_projection(ref OrbitCamera cam, f32 aspect) → math.Matrix4 ∪ null {
     return perspective.visus_projectio(eye, cam.target, math.vector3(0.0, 1.0, 0.0))
 }
 
+@ public
 fn transform_payload(ref OrbitCamera cam, f32 aspect) → math.TransformPayload ∪ null {
     const math.Matrix4 ∪ null view_projection_result ← view_projection(cam, aspect)
     if view_projection_result is null then return null

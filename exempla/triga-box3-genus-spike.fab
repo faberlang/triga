@@ -13,7 +13,7 @@ syntax = "importa ex \"triga:triga\" privata triga"
 #   2. Mutation through ego works in a file-top-level user genus (Imperativus).
 #   3. File-top-level genus placement supports method declarations.
 
-import from "triga:math" private math
+import from "triga:math" math
 
 main {
     # Perfectum predicate — receiver method called across triga:* import.

@@ -5,11 +5,11 @@ category = "library"
 canonical = true
 summary = "Stable heterogeneous Triga scene store: insertion, visibility, and traversal."
 +++
-import from "triga:scene" private scene
+import from "triga:scene" scene
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:resource" private resource
+import from "triga:resource" resource
 
 main {
     # Resource handles
@@ -17,8 +17,8 @@ main {
     const resource.ResourceHandle mat_handle ← resource.ResourceHandle {index = 3, generation = 1}
 
     # Resource transitions
-    const resource.ResourceTransition stable ← resource.resource_transition_unchanged(geom_handle)
-    const resource.ResourceTransition replaced ← resource.resource_transition_replaced(mat_handle)
+    const resource.ResourceTransition stable ← geom_handle.transition_unchanged()
+    const resource.ResourceTransition replaced ← mat_handle.transition_replaced()
 
     # Scene construction and insertion (Imperativus — requires varia)
     var scene.SceneStore store ← scene.scene_store()

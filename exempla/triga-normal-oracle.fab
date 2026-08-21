@@ -30,13 +30,13 @@ summary = "Surface-normal oracle for closed caps and sphere poles (winding invar
 # so this probe executes through the radix TS-emit lane (the same lane the
 # 9f34e71 cap smoke used).
 
-import from "triga:math" private math
+import from "triga:math" math
 
-import from "triga:geometry/data" private data
+import from "triga:geometry/data" data
 
-import from "triga:geometry/attribute" private attribute
+import from "triga:geometry/attribute" attribute
 
-import from "triga:primitives/basic" private basic
+import from "triga:primitives/basic" basic
 
 # --- oracle helpers ------------------------------------------------------
 
@@ -86,7 +86,7 @@ fn _attribute_values(data.BufferGeometry geometry, string name) → list<f32> {
         }
         i ← i + 1
     }
-    return vacua
+    return empty
 }
 
 # Dot-product invariant over a fan using the DECLARED cap normal: for the

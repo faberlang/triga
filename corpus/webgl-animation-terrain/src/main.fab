@@ -1,9 +1,6 @@
-+++
-locale = "en"
-+++
-import from "tela:web" private web
-import from "tela:dom" private dom
-import from "triga:math" private math
+import from "tela:web" web
+import from "tela:dom" dom
+import from "triga:math" math
 
 class TerrainMesh {
     string name

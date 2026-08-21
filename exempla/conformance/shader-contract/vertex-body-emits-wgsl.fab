@@ -16,9 +16,9 @@ summary = "U5 conformance (moved from radix U4): authored @vertex body emits WGS
 #   * authored body: out.position = vec4<f32>(input.position.x, input.position.y, input.position.z, ...)
 #   * no transform fallback (`view_proj * model` absent)
 
-import from "triga:geometry/data" private data
+import from "triga:geometry/data" data
 
-import from "triga:primitives/basic" private basic
+import from "triga:primitives/basic" basic
 
 # Contract-role adapter declaration (mirrors src/shader_contract.fab). The
 # radix driver registers `@ shader_contract "vertex_layout"` by resolved
@@ -35,7 +35,7 @@ fn hello_voxel_vertex() → void {
 
 main {
     const data.BufferGeometry ∪ null plane ← basic.plane_geometry(2.0, 2.0)
-    assert plane not is null secus "conformance requires valid plane geometry"
-    assert vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1) secus "position input layout (stage-io role: position)"
-    assert vertex_layout_matches(0, 1, "color", 1, 3, 12, 12, 1, 2) secus "color input layout (stage-io role: color)"
+    assert plane not is null panic "conformance requires valid plane geometry"
+    assert vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1) panic "position input layout (stage-io role: position)"
+    assert vertex_layout_matches(0, 1, "color", 1, 3, 12, 12, 1, 2) panic "color input layout (stage-io role: color)"
 }

@@ -7,7 +7,7 @@ summary = "Empty SceneStore construction and a fresh root handle."
 syntax = "importa ex \"triga:scene\" privata scene"
 +++
 
-import from "triga:scene" private scene
+import from "triga:scene" scene
 
 main {
     const scene.SceneStore empty ← scene.scene_store()
