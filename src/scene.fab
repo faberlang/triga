@@ -530,13 +530,6 @@ class SceneTraversal {
     int remaining
 }
 
-# SceneCount is the count-only traversal projection.
-@ public
-class SceneCount {
-    int count
-    int remaining
-}
-
 # SceneMeshResources associates a visible mesh node with the two logical
 # resources needed to draw it.
 @ public
