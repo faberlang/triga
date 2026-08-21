@@ -13,5 +13,5 @@ source = "src"
 kind = "lib"
 targets = ["rust", "ts"]
 
-[reader]
+[locale]
 locale = "en"

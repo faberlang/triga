@@ -29,21 +29,40 @@ fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪
     const f32 x1 ← x + size
     const f32 y1 ← y + size
     const f32 z1 ← z + size
-    if code ≡ 1 then return FaceQuad {a = math.vector3(x, y, z), b = math.vector3(x, y, z1), c = math.vector3(x, y1, z1), d = math.vector3(x, y1, z)}
-    if code ≡ 2 then return FaceQuad {a = math.vector3(x1, y, z1), b = math.vector3(x1, y, z), c = math.vector3(x1, y1, z), d = math.vector3(x1, y1, z1)}
-    if code ≡ 3 then return FaceQuad {a = math.vector3(x, y, z), b = math.vector3(x1, y, z), c = math.vector3(x1, y, z1), d = math.vector3(x, y, z1)}
-    if code ≡ 4 then return FaceQuad {a = math.vector3(x, y1, z1), b = math.vector3(x1, y1, z1), c = math.vector3(x1, y1, z), d = math.vector3(x, y1, z)}
-    if code ≡ 5 then return FaceQuad {a = math.vector3(x1, y, z), b = math.vector3(x, y, z), c = math.vector3(x, y1, z), d = math.vector3(x1, y1, z)}
-    return FaceQuad {a = math.vector3(x, y, z1), b = math.vector3(x1, y, z1), c = math.vector3(x1, y1, z1), d = math.vector3(x, y1, z1)}
+    switch code {
+        case 1 {
+            return FaceQuad {a = math.vector3(x, y, z), b = math.vector3(x, y, z1), c = math.vector3(x, y1, z1), d = math.vector3(x, y1, z)}
+        }
+        case 2 {
+            return FaceQuad {a = math.vector3(x1, y, z1), b = math.vector3(x1, y, z), c = math.vector3(x1, y1, z), d = math.vector3(x1, y1, z1)}
+        }
+        case 3 {
+            return FaceQuad {a = math.vector3(x, y, z), b = math.vector3(x1, y, z), c = math.vector3(x1, y, z1), d = math.vector3(x, y, z1)}
+        }
+        case 4 {
+            return FaceQuad {a = math.vector3(x, y1, z1), b = math.vector3(x1, y1, z1), c = math.vector3(x1, y1, z), d = math.vector3(x, y1, z)}
+        }
+        case 5 {
+            return FaceQuad {a = math.vector3(x1, y, z), b = math.vector3(x, y, z), c = math.vector3(x, y1, z), d = math.vector3(x1, y1, z)}
+        }
+        case 6 {
+            return FaceQuad {a = math.vector3(x, y, z1), b = math.vector3(x1, y, z1), c = math.vector3(x1, y1, z1), d = math.vector3(x, y1, z1)}
+        }
+        default {
+            return null
+        }
+    }
 }
 
 # Append the same face directly into position/color/index arrays, preserving
 # the accumulation shape used by the voxel exempla.
 @ public
-fn face_code_colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>> indices, int code, f32 x, f32 y, f32 z, f32 size) → data.ColoredQuadMesh ∪ null {
+fn face_code_colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, int code, f32 x, f32 y, f32 z, f32 size) → data.ColoredQuadMesh ∪ null {
     const FaceQuad ∪ null quad_result ← face_code_unit_quad(code, x, y, z, size)
     if quad_result is null then return null
+    const FaceQuad quad ← quad_result
     const math.Color ∪ null color_result ← math.face_code_color(code)
     if color_result is null then return null
-    return data.colored_quad_mesh_append(positions, colors, indices, quad_result!.a.x, quad_result!.a.y, quad_result!.a.z, quad_result!.b.x, quad_result!.b.y, quad_result!.b.z, quad_result!.c.x, quad_result!.c.y, quad_result!.c.z, quad_result!.d.x, quad_result!.d.y, quad_result!.d.z, color_result!.r, color_result!.g, color_result!.b)
+    const math.Color color ← color_result
+    return data.colored_quad_mesh_append(positions, colors, indices, quad.a, quad.b, quad.c, quad.d, color)
 }

@@ -38,7 +38,7 @@ fi
 export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
 
-# The triga package reads English (faber.toml `[reader] locale = "en"`);
+# The triga package reads English (faber.toml `[locale] locale = "en"`);
 # the radix CLI defaults to Latin, so the en reader locale must be passed
 # explicitly for each single-file check (--locale, formerly --locale-pack).
 

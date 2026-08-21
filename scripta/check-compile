@@ -54,7 +54,7 @@ if [[ ! -x "$RADIX_BIN" ]]; then
   exit 1
 fi
 
-# The triga package now reads English (faber.toml `[reader] locale = "en"`);
+# The triga package now reads English (faber.toml `[locale] locale = "en"`);
 # the radix CLI defaults to Latin, so the en reader locale must be passed
 # explicitly for each single-file check (--locale, formerly --locale-pack).
 

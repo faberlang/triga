@@ -3,6 +3,8 @@ locale = "en"
 +++
 # Co-located package tests for BufferGeometry, ColoredQuadMesh, topology,
 # bounds, normals, UVs, layouts, draw commands, and malformed buffers.
+import from "triga:math" math
+
 import from "triga:geometry/data" data
 import from "triga:geometry/attribute" attribute
 import from "triga:geometry/batch" batch
@@ -188,7 +190,9 @@ describe "buffer geometry contracts" {
     }
 
     test "colored quad accumulation preserves exact topology and derived facts" {
-        const data.ColoredQuadMesh mesh ← data.colored_quad_mesh_append(empty, empty, empty, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 2.0, 0.0, 0.2, 0.4, 0.6) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
+        const data.ColoredQuadMesh ∪ null mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, math.vector3(0.0, 0.0, 0.0), math.vector3(2.0, 0.0, 0.0), math.vector3(2.0, 2.0, 0.0), math.vector3(0.0, 2.0, 0.0), math.Color {r = 0.2, g = 0.4, b = 0.6})
+        assert mesh_result not is null
+        const data.ColoredQuadMesh mesh ← mesh_result
         const batch.VisibleFaceMeshFacts ∪ null mesh_facts ← mesh.facts()
         const data.BufferGeometry ∪ null projected ← data.colored_indexed_geometry(4, mesh.positions, mesh.colors, mesh.indices)
         const data.BufferGeometry geometry ← projected coalesce quad_geometry()

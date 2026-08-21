@@ -5,6 +5,8 @@ category = "library"
 canonical = true
 summary = "Triga attribute construction, indexed/non-indexed geometry with draw ranges and groups, ColoredQuadMesh accumulation, and primitive generators."
 +++
+import from "triga:math" math
+
 import from "triga:geometry/data" data
 
 import from "triga:geometry/attribute" attribute
@@ -19,8 +21,11 @@ main {
     const data.BufferGeometry triangle ← data.indexed_triangle_geometry(3, [positions], [0, 1, 2], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
 
     # ColoredQuadMesh accumulation
-    const data.ColoredQuadMesh ∪ null first_quad ← data.colored_quad_mesh_append(empty, empty, empty, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.2, 0.4, 0.6)
-    const data.ColoredQuadMesh ∪ null two_quads ← data.colored_quad_mesh_append(first_quad!.positions, first_quad!.colors, first_quad!.indices, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 3.0, 1.0, 0.0, 2.0, 1.0, 0.0, 0.7, 0.8, 0.9)
+    const data.ColoredQuadMesh ∪ null first_quad_result ← data.colored_quad_mesh_append(empty, empty, empty, math.vector3(0.0, 0.0, 0.0), math.vector3(1.0, 0.0, 0.0), math.vector3(1.0, 1.0, 0.0), math.vector3(0.0, 1.0, 0.0), math.Color {r = 0.2, g = 0.4, b = 0.6})
+    assert first_quad_result not is null
+    const data.ColoredQuadMesh first_quad ← first_quad_result
+    const data.ColoredQuadMesh ∪ null two_quads ← data.colored_quad_mesh_append(first_quad.positions, first_quad.colors, first_quad.indices, math.vector3(2.0, 0.0, 0.0), math.vector3(3.0, 0.0, 0.0), math.vector3(3.0, 1.0, 0.0), math.vector3(2.0, 1.0, 0.0), math.Color {r = 0.7, g = 0.8, b = 0.9})
+    assert two_quads not is null
 
     # Split groups
     const attribute.BufferAttribute split_positions ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0])
@@ -31,5 +36,5 @@ main {
 
     # Wire box (line geometry)
     const data.BufferGeometry ∪ null box_wire_result ← basic.box_wire_geometry(2.0, 4.0, 6.0)
-    const data.BufferGeometry box_wire ← data.BufferGeometry {topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups}
+    const _ box_wire ← data.BufferGeometry {topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups}
 }

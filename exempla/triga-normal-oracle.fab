@@ -22,7 +22,7 @@ summary = "Surface-normal oracle for closed caps and sphere poles (winding invar
 #      triangles at the cap boundary (the regression the 9f34e71 pair-order
 #      reversal fixed).
 #
-# Prints verum/falsum per check; the sibling .expected records the observed
+# Prints true/false per check; the sibling .expected records the observed
 # output (the exempla runtime-probe oracle convention — see the Box3 probe
 # triga-box3-genus-spike). The faber generated-Rust lane is blocked for
 # triga imports by the acknowledged emitter defect (CTO-5 registry row 7,
@@ -42,7 +42,7 @@ import from "triga:primitives/basic" basic
 
 # True when |value| is within triga's numeric tolerance of zero.
 fn _near_zero(f32 value) → bool {
-    return value.absolutum() ≤ 0.000001
+    return value.abs() ≤ 0.000001
 }
 
 # The interleaved scalar at a vertex (position/normal attributes are
@@ -75,7 +75,7 @@ fn _declared_normal(list<f32> normals, int vertex_index) → math.Vector3 {
 # The named float32 attribute payload (position/normal are Float32 streams).
 fn _attribute_values(data.BufferGeometry geometry, string name) → list<f32> {
     var int i ← 0
-    while i ≺ geometry.attributes.longitudo() {
+    while i ≺ geometry.attributes.length() {
         const attribute.BufferAttribute attr ← geometry.attributes[i]
         if attr.name ≡ name {
             const list<f32> ∪ null values ← attr.float32_values()
@@ -154,7 +154,7 @@ main {
     # triangles (72..95).
     const data.BufferGeometry ∪ null cylinder_opt ← basic.cylinder_geometry(1.0, 2.0)
     if cylinder_opt is null {
-        print falsum
+        print false
     } else {
         const list<f32> cylinder_positions ← _attribute_values(cylinder_opt, "position")
         const list<f32> cylinder_normals ← _attribute_values(cylinder_opt, "normal")
@@ -174,7 +174,7 @@ main {
     # (120..143).
     const data.BufferGeometry ∪ null sphere_opt ← basic.sphere_geometry(1.0)
     if sphere_opt is null {
-        print falsum
+        print false
     } else {
         const list<f32> sphere_positions ← _attribute_values(sphere_opt, "position")
         const list<f32> sphere_normals ← _attribute_values(sphere_opt, "normal")

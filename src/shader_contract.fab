@@ -112,45 +112,45 @@ fn resource_binding_matches(int group, int binding, int kind_code, int role_code
 # functions above.
 # ---------------------------------------------------------------------------
 
-const int goal_color_target_format_code ← 1
+const int GOAL_color_target_format_code ← 1
 
-const int goal_depth_compare_code ← 1
+const int GOAL_depth_compare_code ← 1
 
-const int goal_depth_write_enabled_code ← 1
+const int GOAL_depth_write_enabled_code ← 1
 
-const int goal_primitive_topology_code ← 1
+const int GOAL_primitive_topology_code ← 1
 
-const int goal_vertex_count ← 36
+const int GOAL_vertex_count ← 36
 # Position input layout: location 0, float32x3, offset 0, stride 12, vertex
 # step mode.
 
-const int goal_position_format_code ← 3
+const int GOAL_position_format_code ← 3
 
-const int goal_position_offset_bytes ← 0
+const int GOAL_position_offset_bytes ← 0
 
-const int goal_position_stride_bytes ← 12
+const int GOAL_position_stride_bytes ← 12
 
-const int goal_step_mode_vertex ← 1
+const int GOAL_step_mode_vertex ← 1
 
 # Transform resource: group 0 binding 0, storage buffer, input role, read
 # access, 32 f32 elements, f32 scalar layout.
 
-const int goal_transform_group ← 0
+const int GOAL_transform_group ← 0
 
-const int goal_transform_binding ← 0
+const int GOAL_transform_binding ← 0
 
-const int goal_transform_kind_code ← 1
+const int GOAL_transform_kind_code ← 1
 
-const int goal_transform_role_code ← 1
+const int GOAL_transform_role_code ← 1
 
-const int goal_transform_access_code ← 1
+const int GOAL_transform_access_code ← 1
 
-const int goal_transform_element_count ← 32
+const int GOAL_transform_element_count ← 32
 
-const int goal_transform_layout_code ← 1
+const int GOAL_transform_layout_code ← 1
 
 # Fragment color output: location 0, float32x4.
 
-const int goal_fragment_output_location ← 0
+const int GOAL_fragment_output_location ← 0
 
-const int goal_fragment_output_format_code ← 4
+const int GOAL_fragment_output_format_code ← 4

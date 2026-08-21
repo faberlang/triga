@@ -57,11 +57,11 @@ class Vector3 {
     }
 
     fn longitudo() → f32 {
-        return _radix_f32((self.x * self.x + self.y * self.y) + self.z * self.z)
+        return radix_f32((self.x * self.x + self.y * self.y) + self.z * self.z)
     }
 
     fn normata() → Vector3 {
-        const f32 length ← _radix_f32((self.x * self.x + self.y * self.y) + self.z * self.z)
+        const f32 length ← radix_f32((self.x * self.x + self.y * self.y) + self.z * self.z)
         if length ≤ 0.000001 then return vector3(0.0, 0.0, 0.0)
         return vector3(self.x / length, self.y / length, self.z / length)
     }
@@ -70,7 +70,7 @@ class Vector3 {
         const f32 x ← self.x - alter.x
         const f32 y ← self.y - alter.y
         const f32 z ← self.z - alter.z
-        return _radix_f32((x * x + y * y) + z * z)
+        return radix_f32((x * x + y * y) + z * z)
     }
 
     fn interpolata(ref Vector3 alter, f32 ratio) → Vector3 {
@@ -130,14 +130,10 @@ class Matrix4 {
         const list<f32> ae ← self.elements
         const list<f32> be ← alter.elements
         var list<f32> result ← empty
-        var int column ← 0
-        while column ≺ 4 {
-            var int row ← 0
-            while row ≺ 4 {
+        for range 0‥4 const column {
+            for range 0‥4 const row {
                 result.append(((ae[0 * 4 + row] * be[column * 4 + 0] + ae[1 * 4 + row] * be[column * 4 + 1]) + ae[2 * 4 + row] * be[column * 4 + 2]) + ae[3 * 4 + row] * be[column * 4 + 3])
-                row ← row + 1
             }
-            column ← column + 1
         }
         return Matrix4 {elements = result}
     }
@@ -261,7 +257,7 @@ class Quaternion {
     }
 
     fn normata() → Quaternion {
-        const f32 length ← _radix_f32(((self.x * self.x + self.y * self.y) + self.z * self.z) + self.w * self.w)
+        const f32 length ← radix_f32(((self.x * self.x + self.y * self.y) + self.z * self.z) + self.w * self.w)
         if length ≤ 0.000001 then return quaternion(0.0, 0.0, 0.0, 1.0)
         return quaternion(self.x / length, self.y / length, self.z / length, self.w / length)
     }
@@ -319,12 +315,12 @@ class Euler {
         const f32 hx ← self.x * 0.5
         const f32 hy ← self.y * 0.5
         const f32 hz ← self.z * 0.5
-        const f32 sx ← _sinus_f32(hx)
-        const f32 cx ← _cosinus_f32(hx)
-        const f32 sy ← _sinus_f32(hy)
-        const f32 cy ← _cosinus_f32(hy)
-        const f32 sz ← _sinus_f32(hz)
-        const f32 cz ← _cosinus_f32(hz)
+        const f32 sx ← sinus_f32(hx)
+        const f32 cx ← cosinus_f32(hx)
+        const f32 sy ← sinus_f32(hy)
+        const f32 cy ← cosinus_f32(hy)
+        const f32 sz ← sinus_f32(hz)
+        const f32 cz ← cosinus_f32(hz)
         return quaternion((sx * cy) * cz + (cx * sy) * sz, (cx * sy) * cz - (sx * cy) * sz, (cx * cy) * sz + (sx * sy) * cz, (cx * cy) * cz - (sx * sy) * sz).normata()
     }
 
@@ -333,8 +329,8 @@ class Euler {
         if qa is null then return null
         const Quaternion ∪ null qb ← alter.ad_quaternionem()
         if qb is null then return null
-        const Quaternion av ← Quaternion {x = qa!.x, y = qa!.y, z = qa!.z, w = qa!.w}
-        const Quaternion bv ← Quaternion {x = qb!.x, y = qb!.y, z = qb!.z, w = qb!.w}
+        const Quaternion av ← qa
+        const Quaternion bv ← qb
         return av.multiplicata(bv).normata()
     }
 
@@ -423,7 +419,7 @@ class Box3 {
     fn superpositio_facta(ref Box3 alia) → Box3OverlapFacts ∪ null {
         const Vector3 ∪ null overlap_result ← self.superpositio(alia)
         if overlap_result is null then return null
-        const Vector3 overlap ← Vector3 {x = overlap_result!.x, y = overlap_result!.y, z = overlap_result!.z}
+        const Vector3 overlap ← overlap_result
         return Box3OverlapFacts {overlap = overlap, x = overlap.x, y = overlap.y, z = overlap.z}
     }
 
@@ -510,11 +506,11 @@ class Ray {
     fn intersecat_capsam(ref Box3 capsam, f32 distantia_maxima) → f32 ∪ null {
         if capsam.validum() ≡ false then return null
         if distantia_maxima ≺ 0.0 then return null
-        const RayInterval ∪ null x_interval ← _ray_axis_interval(self.origin.x, self.direction.x, capsam.min.x, capsam.max.x)
+        const RayInterval ∪ null x_interval ← axis_interval(self.origin.x, self.direction.x, capsam.min.x, capsam.max.x)
         if x_interval is null then return null
-        const RayInterval ∪ null y_interval ← _ray_axis_interval(self.origin.y, self.direction.y, capsam.min.y, capsam.max.y)
+        const RayInterval ∪ null y_interval ← axis_interval(self.origin.y, self.direction.y, capsam.min.y, capsam.max.y)
         if y_interval is null then return null
-        const RayInterval ∪ null z_interval ← _ray_axis_interval(self.origin.z, self.direction.z, capsam.min.z, capsam.max.z)
+        const RayInterval ∪ null z_interval ← axis_interval(self.origin.z, self.direction.z, capsam.min.z, capsam.max.z)
         if z_interval is null then return null
         var f32 entry ← x_interval!.minimum
         if y_interval!.minimum ≻ entry {
@@ -543,9 +539,9 @@ class Ray {
     fn box3_hit(ref Box3 capsam, f32 distantia_maxima) → RayBox3Hit ∪ null {
         const f32 ∪ null distance_result ← self.intersecat_capsam(capsam, distantia_maxima)
         if distance_result is null then return null
-        const f32 distantia ← distance_result coalesce 0.0
+        const f32 distantia ← distance_result
         const Vector3 punctum ← self.punctum(distantia)
-        return RayBox3Hit {distance = distantia, point = punctum, normal = _ray_box3_hit_normal(capsam, punctum)}
+        return RayBox3Hit {distance = distantia, point = punctum, normal = hit_normal(capsam, punctum)}
     }
 }
 
@@ -594,25 +590,29 @@ class RayBox3Hit {
     fn hit_face_offset_x() → int ∪ null {
         const int ∪ null code_result ← self.hit_face_code()
         if code_result is null then return null
-        return face_code_x_offset(code_result coalesce 0)
+        const int code ← code_result
+        return face_code_x_offset(code)
     }
 
     fn hit_face_offset_y() → int ∪ null {
         const int ∪ null code_result ← self.hit_face_code()
         if code_result is null then return null
-        return face_code_y_offset(code_result coalesce 0)
+        const int code ← code_result
+        return face_code_y_offset(code)
     }
 
     fn hit_face_offset_z() → int ∪ null {
         const int ∪ null code_result ← self.hit_face_code()
         if code_result is null then return null
-        return face_code_z_offset(code_result coalesce 0)
+        const int code ← code_result
+        return face_code_z_offset(code)
     }
 
     fn hit_face_facts() → FaceCodeFacts ∪ null {
         const int ∪ null code_result ← self.hit_face_code()
         if code_result is null then return null
-        return face_code_facts(code_result coalesce 0)
+        const int code ← code_result
+        return face_code_facts(code)
     }
 }
 
@@ -649,58 +649,134 @@ fn face_code_axis_code(int code) → int ∪ null {
 @ public
 fn face_code_opposite(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
-    if code ≡ 1 then return 2
-    if code ≡ 2 then return 1
-    if code ≡ 3 then return 4
-    if code ≡ 4 then return 3
-    if code ≡ 5 then return 6
-    return 5
+    switch code {
+        case 1 {
+            return 2
+        }
+        case 2 {
+            return 1
+        }
+        case 3 {
+            return 4
+        }
+        case 4 {
+            return 3
+        }
+        case 5 {
+            return 6
+        }
+        case 6 {
+            return 5
+        }
+        default {
+            return null
+        }
+    }
 }
 
 @ public
 fn face_code_x_offset(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
-    if code ≡ 1 then return 0 - 1
-    if code ≡ 2 then return 1
-    return 0
+    const int negative ← -1
+    switch code {
+        case 1 {
+            return negative
+        }
+        case 2 {
+            return 1
+        }
+        default {
+            return 0
+        }
+    }
 }
 
 @ public
 fn face_code_y_offset(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
-    if code ≡ 3 then return 0 - 1
-    if code ≡ 4 then return 1
-    return 0
+    const int negative ← -1
+    switch code {
+        case 3 {
+            return negative
+        }
+        case 4 {
+            return 1
+        }
+        default {
+            return 0
+        }
+    }
 }
 
 @ public
 fn face_code_z_offset(int code) → int ∪ null {
     if face_code_valida(code) ≡ false then return null
-    if code ≡ 5 then return 0 - 1
-    if code ≡ 6 then return 1
-    return 0
+    const int negative ← -1
+    switch code {
+        case 5 {
+            return negative
+        }
+        case 6 {
+            return 1
+        }
+        default {
+            return 0
+        }
+    }
 }
 
 @ public
 fn face_code_normal(int code) → Vector3 ∪ null {
-    if code ≡ 1 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
-    if code ≡ 2 then return vector3(1.0, 0.0, 0.0)
-    if code ≡ 3 then return vector3(0.0, -1.0 ∷ f32, 0.0)
-    if code ≡ 4 then return vector3(0.0, 1.0, 0.0)
-    if code ≡ 5 then return vector3(0.0, 0.0, -1.0 ∷ f32)
-    if code ≡ 6 then return vector3(0.0, 0.0, 1.0)
-    return null
+    switch code {
+        case 1 {
+            return vector3(-1.0, 0.0, 0.0)
+        }
+        case 2 {
+            return vector3(1.0, 0.0, 0.0)
+        }
+        case 3 {
+            return vector3(0.0, -1.0, 0.0)
+        }
+        case 4 {
+            return vector3(0.0, 1.0, 0.0)
+        }
+        case 5 {
+            return vector3(0.0, 0.0, -1.0)
+        }
+        case 6 {
+            return vector3(0.0, 0.0, 1.0)
+        }
+        default {
+            return null
+        }
+    }
 }
 
 @ public
 fn face_code_color(int code) → Color ∪ null {
-    if code ≡ 1 then return Color {r = 0.8, g = 0.1, b = 0.1}
-    if code ≡ 2 then return Color {r = 1.0, g = 0.4, b = 0.4}
-    if code ≡ 3 then return Color {r = 0.1, g = 0.7, b = 0.1}
-    if code ≡ 4 then return Color {r = 0.4, g = 1.0, b = 0.4}
-    if code ≡ 5 then return Color {r = 0.1, g = 0.1, b = 0.8}
-    if code ≡ 6 then return Color {r = 0.4, g = 0.4, b = 1.0}
-    return null
+    switch code {
+        case 1 {
+            return Color {r = 0.8, g = 0.1, b = 0.1}
+        }
+        case 2 {
+            return Color {r = 1.0, g = 0.4, b = 0.4}
+        }
+        case 3 {
+            return Color {r = 0.1, g = 0.7, b = 0.1}
+        }
+        case 4 {
+            return Color {r = 0.4, g = 1.0, b = 0.4}
+        }
+        case 5 {
+            return Color {r = 0.1, g = 0.1, b = 0.8}
+        }
+        case 6 {
+            return Color {r = 0.4, g = 0.4, b = 1.0}
+        }
+        default {
+            return null
+        }
+    }
 }
 
 @ public
@@ -720,7 +796,14 @@ fn face_code_facts(int code) → FaceCodeFacts ∪ null {
     if normal_result is null then return null
     const Color ∪ null color_result ← face_code_color(code)
     if color_result is null then return null
-    return FaceCodeFacts {code = code, axis_code = axis_result coalesce 0, opposite_code = opposite_result coalesce 0, x_offset = x_offset_result coalesce 0, y_offset = y_offset_result coalesce 0, z_offset = z_offset_result coalesce 0, normal = Vector3 {x = normal_result!.x, y = normal_result!.y, z = normal_result!.z}, color = Color {r = color_result!.r, g = color_result!.g, b = color_result!.b}}
+    const int axis_code ← axis_result
+    const int opposite_code ← opposite_result
+    const int x_offset ← x_offset_result
+    const int y_offset ← y_offset_result
+    const int z_offset ← z_offset_result
+    const Vector3 normal ← normal_result
+    const Color color ← color_result
+    return FaceCodeFacts {code = code, axis_code = axis_code, opposite_code = opposite_code, x_offset = x_offset, y_offset = y_offset, z_offset = z_offset, normal = normal, color = color}
 }
 
 
@@ -733,13 +816,12 @@ fn vector3(f32 x, f32 y, f32 z) → Vector3 {
     return Vector3 {x = x, y = y, z = z}
 }
 
-fn _radix_f32(f32 value) → f32 {
+@ public
+fn radix_f32(f32 value) → f32 {
     if value ≤ 0.0 then return 0.0
     var f32 estimate ← value
-    var int iteration ← 0
-    while iteration ≺ 12 {
+    for range 0‥12 const iteration {
         estimate ← (estimate + value / estimate) * 0.5
-        iteration ← iteration + 1
     }
     return estimate
 }
@@ -760,7 +842,7 @@ fn euler(f32 x, f32 y, f32 z) → Euler {
 # --- ANGLE AND CAMERA HELPERS ---
 # Camera-facing helpers accept degrees at their public boundary. The local
 # trigonometric approximations consume radians after explicit conversion.
-fn _angulus_reductus(f32 angle) → f32 {
+fn angulus_reductus(f32 angle) → f32 {
     var f32 reduced ← angle
     while reduced ≻ 3.14159265 {
         reduced ← reduced - 6.2831853
@@ -771,8 +853,8 @@ fn _angulus_reductus(f32 angle) → f32 {
     return reduced
 }
 
-fn _sinus_f32(f32 angle) → f32 {
-    const f32 x ← _angulus_reductus(angle)
+fn sinus_f32(f32 angle) → f32 {
+    const f32 x ← angulus_reductus(angle)
     const f32 x2 ← x * x
     const f32 x4 ← x2 * x2
     const f32 x6 ← x4 * x2
@@ -780,8 +862,8 @@ fn _sinus_f32(f32 angle) → f32 {
     return x * ((((1.0 - x2 / 6.0) + x4 / 120.0) - x6 / 5040.0) + x8 / 362880.0)
 }
 
-fn _cosinus_f32(f32 angle) → f32 {
-    const f32 x ← _angulus_reductus(angle)
+fn cosinus_f32(f32 angle) → f32 {
+    const f32 x ← angulus_reductus(angle)
     const f32 x2 ← x * x
     const f32 x4 ← x2 * x2
     const f32 x6 ← x4 * x2
@@ -797,7 +879,7 @@ fn radians_ex_gradibus(f32 degrees) → f32 {
 @ public
 fn camera_pitch_coercita(f32 pitch_degrees) → f32 {
     if pitch_degrees ≻ 89.0 then return 89.0
-    if pitch_degrees ≺ 0.0 - 89.0 then return 0.0 - 89.0
+    if pitch_degrees ≺ -89.0 then return -89.0
     return pitch_degrees
 }
 
@@ -805,20 +887,20 @@ fn camera_pitch_coercita(f32 pitch_degrees) → f32 {
 fn camera_directio_ex_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → Vector3 {
     const f32 yaw ← radians_ex_gradibus(yaw_degrees)
     const f32 pitch ← radians_ex_gradibus(camera_pitch_coercita(pitch_degrees))
-    const f32 horizontal ← _cosinus_f32(pitch)
-    return vector3(_sinus_f32(yaw) * horizontal, _sinus_f32(pitch), -_cosinus_f32(yaw) * horizontal).normata()
+    const f32 horizontal ← cosinus_f32(pitch)
+    return vector3(sinus_f32(yaw) * horizontal, sinus_f32(pitch), -cosinus_f32(yaw) * horizontal).normata()
 }
 
 @ public
 fn camera_prorsum_planus_ex_yaw(f32 yaw_degrees) → Vector3 {
     const f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    return vector3(_sinus_f32(yaw), 0.0, -_cosinus_f32(yaw)).normata()
+    return vector3(sinus_f32(yaw), 0.0, -cosinus_f32(yaw)).normata()
 }
 
 @ public
 fn camera_dextra_ex_yaw(f32 yaw_degrees) → Vector3 {
     const f32 yaw ← radians_ex_gradibus(yaw_degrees)
-    return vector3(_cosinus_f32(yaw), 0.0, _sinus_f32(yaw)).normata()
+    return vector3(cosinus_f32(yaw), 0.0, sinus_f32(yaw)).normata()
 }
 
 @ public
@@ -864,11 +946,10 @@ fn box3_ex_centro_et_mensura(ref Vector3 center, ref Vector3 size) → Box3 ∪ 
     return Box3 {min = center.subtracta(half), max = center.addita(half)}
 }
 
-@ private { }
-fn _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ null {
+fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ null {
     if direction.abs() ≤ 0.000001 {
         if origin ≺ minimum or origin ≻ maximum then return null
-        return RayInterval {minimum = -1000000000.0 ∷ f32, maximum = 1000000000.0}
+        return RayInterval {minimum = -1000000000.0, maximum = 1000000000.0}
     }
     var f32 first ← (minimum - origin) / direction
     var f32 second ← (maximum - origin) / direction
@@ -880,12 +961,12 @@ fn _ray_axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → R
     return RayInterval {minimum = first, maximum = second}
 }
 
-fn _ray_box3_hit_normal(ref Box3 bounds, ref Vector3 point) → Vector3 {
-    if (point.x - bounds.min.x).abs() ≤ 0.0001 then return vector3(-1.0 ∷ f32, 0.0, 0.0)
+fn hit_normal(ref Box3 bounds, ref Vector3 point) → Vector3 {
+    if (point.x - bounds.min.x).abs() ≤ 0.0001 then return vector3(-1.0, 0.0, 0.0)
     if (point.x - bounds.max.x).abs() ≤ 0.0001 then return vector3(1.0, 0.0, 0.0)
-    if (point.y - bounds.min.y).abs() ≤ 0.0001 then return vector3(0.0, -1.0 ∷ f32, 0.0)
+    if (point.y - bounds.min.y).abs() ≤ 0.0001 then return vector3(0.0, -1.0, 0.0)
     if (point.y - bounds.max.y).abs() ≤ 0.0001 then return vector3(0.0, 1.0, 0.0)
-    if (point.z - bounds.min.z).abs() ≤ 0.0001 then return vector3(0.0, 0.0, -1.0 ∷ f32)
+    if (point.z - bounds.min.z).abs() ≤ 0.0001 then return vector3(0.0, 0.0, -1.0)
     if (point.z - bounds.max.z).abs() ≤ 0.0001 then return vector3(0.0, 0.0, 1.0)
     return vector3(0.0, 0.0, 0.0)
 }
@@ -928,7 +1009,7 @@ fn matrix4_scala(ref Vector3 scale) → Matrix4 {
 # Compose position, normalized rotation, and scale into one affine matrix.
 @ public
 fn matrix4_composita(ref Vector3 position, ref Quaternion rotation, ref Vector3 scale) → Matrix4 {
-    const Quaternion q ← rotation.normata()
+    const _ q ← rotation.normata()
     const f32 xx ← q.x * q.x
     const f32 yy ← q.y * q.y
     const f32 zz ← q.z * q.z
@@ -949,8 +1030,8 @@ fn matrix4_perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Mat
     if aspect ≤ 0.0 then return null
     if near ≤ 0.0 or far ≤ near then return null
     const f32 half_angle ← radians_ex_gradibus(fov_y_degrees) * 0.5
-    const f32 sine ← _sinus_f32(half_angle)
-    const f32 cosine ← _cosinus_f32(half_angle)
+    const f32 sine ← sinus_f32(half_angle)
+    const f32 cosine ← cosinus_f32(half_angle)
     if sine.abs() ≤ 0.000001 then return null
     const f32 focal ← cosine / sine
     const f32 depth ← far / (near - far)

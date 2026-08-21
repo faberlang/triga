@@ -13,16 +13,16 @@ import from "triga:material/base" base
 import from "triga:material/basic" basic
 
 main {
-    const math.Vector3 origin ← math.Vector3 {x = 0.0, y = 0.0, z = 0.0}
-    const math.Vector3 offset ← math.Vector3 {x = 1.5, y = 2.5, z = 3.0}
+    const _ origin ← math.Vector3 {x = 0.0, y = 0.0, z = 0.0}
+    const _ offset ← math.Vector3 {x = 1.5, y = 2.5, z = 3.0}
     print origin.x
     print offset.z
-    const math.Matrix4 matrix ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
+    const _ matrix ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
 
     # Material construction and validation
     const base.Material base_material ← base.materia_ex_nomine("hello-voxel")
-    const math.Color valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
-    const math.Color invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
+    const _ valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
+    const _ invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
     const base.MaterialPipelineFacts ∪ null base_pipeline_result ← base_material.pipeline_facts()
@@ -32,9 +32,9 @@ main {
     const base.Material double_sided ← base_material.double_sided()
 
     # MeshBasicMaterial
-    const math.Color unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
+    const _ unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
     const basic.MeshBasicMaterial ∪ null unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
-    const basic.MeshBasicMaterial unlit_value ← basic.MeshBasicMaterial {base = unlit!.base, color = unlit!.color}
+    const _ unlit_value ← basic.MeshBasicMaterial {base = unlit!.base, color = unlit!.color}
     print unlit_value.color.g
 
     # Invalid material handling

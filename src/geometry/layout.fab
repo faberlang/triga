@@ -16,6 +16,16 @@
 # The compact set of scalar formats understood by a vertex input. The suffix
 # is the component width, so the enum carries the same 1-to-4 shape used by
 # BufferAttribute validation and stride calculation.
+#
+# TEMPORARY SHAPE (operator ruling 2026-08-21): the hardcoded-width variant
+# spellings (Float32x4, Uint32, …) mirror the closed host vocabulary
+# (WebGPU GPUVertexFormat, which inherited the three.js spelling). They are
+# accepted only because component width is a runtime value Faber generics
+# cannot parameterize today — the spellings are not canonical Faber style.
+# When the bounded-buffers value-parameterized family ships
+# (radix/docs/design/fixed-capacity-collections.md), convert this union to
+# proper generics. The integer format codes are frozen ABI and outlive the
+# spelling change.
 @ public
 union VertexFormat {
     Float32,
@@ -58,15 +68,35 @@ class VertexAttributeLayout {
 @ public
 fn vertex_format_from_component_width(int component_width, bool is_float32) → VertexFormat {
     if is_float32 {
-        if component_width ≡ 1 then return Float32()
-        if component_width ≡ 2 then return Float32x2()
-        if component_width ≡ 3 then return Float32x3()
-        return Float32x4()
+        switch component_width {
+            case 1 {
+                return Float32()
+            }
+            case 2 {
+                return Float32x2()
+            }
+            case 3 {
+                return Float32x3()
+            }
+            default {
+                return Float32x4()
+            }
+        }
     }
-    if component_width ≡ 1 then return Uint32()
-    if component_width ≡ 2 then return Uint32x2()
-    if component_width ≡ 3 then return Uint32x3()
-    return Uint32x4()
+    switch component_width {
+        case 1 {
+            return Uint32()
+        }
+        case 2 {
+            return Uint32x2()
+        }
+        case 3 {
+            return Uint32x3()
+        }
+        default {
+            return Uint32x4()
+        }
+    }
 }
 
 # The current attribute projection is per-vertex. An instance-step value is
@@ -83,8 +113,7 @@ fn vertex_step_mode_vertex_step() → VertexStepMode {
 # Uint32 through Uint32x4 to 5..8; step modes map VertexStep and InstanceStep
 # to 1 and 2.
 
-@ private { }
-fn _vertex_format_code(ref VertexFormat format) → int {
+fn format_code(ref VertexFormat format) → int {
     match format {
         case Float32 {
             return 1
@@ -116,12 +145,11 @@ fn _vertex_format_code(ref VertexFormat format) → int {
 # Public: data.fab's vertex_layout_format_code() / vertex_layout_matches()
 # compute layout codes across the leaf boundary (data -> layout).
 @ public
-fn _vertex_layout_format_code(ref VertexAttributeLayout layout) → int {
-    return _vertex_format_code(layout.vertex_format)
+fn layout_format_code(ref VertexAttributeLayout layout) → int {
+    return format_code(layout.vertex_format)
 }
 
-@ private { }
-fn _vertex_step_mode_code(ref VertexStepMode mode) → int {
+fn step_mode_code(ref VertexStepMode mode) → int {
     match mode {
         case VertexStep {
             return 1
@@ -135,6 +163,6 @@ fn _vertex_step_mode_code(ref VertexStepMode mode) → int {
 # Public: data.fab's vertex_layout_step_mode_code() / vertex_layout_matches()
 # compute layout codes across the leaf boundary (data -> layout).
 @ public
-fn _vertex_layout_step_mode_code(ref VertexAttributeLayout layout) → int {
-    return _vertex_step_mode_code(layout.step_mode)
+fn layout_step_mode_code(ref VertexAttributeLayout layout) → int {
+    return step_mode_code(layout.step_mode)
 }

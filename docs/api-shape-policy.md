@@ -107,6 +107,13 @@ a lockstep radix change is planned:
 `primitive_topology_code`, `color_target_format_code`, and any field ending in
 `_code` on a fact genus.
 
+The `VertexFormat` variant spellings themselves (`Float32x4`, `Uint32`, …) are
+**temporary, not canonical** (operator ruling 2026-08-21): they mirror the
+closed host vocabulary because component width is a runtime value Faber
+generics cannot parameterize today. When the bounded-buffers
+value-parameterized family ships, convert the union to proper generics; the
+integer codes above are frozen ABI and outlive the spelling change.
+
 ## 4. Layer Patterns
 
 ### Projection Families → Query Genus

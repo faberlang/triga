@@ -11,10 +11,12 @@
 # PrimitiveTopology lives here (not in geometry/layout): BufferGeometry's
 # topology discerne sites and the free constructors' variant construction
 # must stay same-module under the current file-interface rules, and
-# _primitive_topology_code stays co-located with the enum it matches.
+# topology_code stays co-located with the enum it matches.
 #
-# Imports: triga:geometry/attribute, triga:geometry/layout,
+# Imports: triga:math, triga:geometry/attribute, triga:geometry/layout,
 # triga:geometry/bounds, triga:geometry/batch.
+
+import from "triga:math" math
 
 import from "triga:geometry/attribute" attribute
 
@@ -40,7 +42,7 @@ union PrimitiveTopology {
 class ColoredQuadMesh {
     list<f32> positions
     list<f32> colors
-    list<int<u32>> indices
+    list<u32> indices
 
     fn face_count() → int ∪ null {
         if self.positions.length() ≠ self.colors.length() then return null
@@ -63,27 +65,28 @@ class ColoredQuadMesh {
     fn facts() → batch.VisibleFaceMeshFacts ∪ null {
         const int ∪ null face_count_result ← self.face_count()
         if face_count_result is null then return null
-        return batch.visible_face_mesh_facts(face_count_result coalesce 0)
+        const int face_count ← face_count_result
+        return batch.visible_face_mesh_facts(face_count)
     }
 
     fn draw_batch_facts(int instance_count) → batch.IndexedGeometryDrawBatchFacts ∪ null {
         const BufferGeometry ∪ null geometry_result ← self.geometry()
         if geometry_result is null then return null
-        const BufferGeometry geom ← BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+        const BufferGeometry geom ← geometry_result
         return geom.indexed_draw_batch_facts(instance_count)
     }
 
     fn bounding_box() → bounds.BoundingBox ∪ null {
         const BufferGeometry ∪ null geometry_result ← self.geometry()
         if geometry_result is null then return null
-        const BufferGeometry geom ← BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+        const BufferGeometry geom ← geometry_result
         return geom.bounding_box()
     }
 
     fn bounding_sphere() → bounds.BoundingSphere ∪ null {
         const BufferGeometry ∪ null geometry_result ← self.geometry()
         if geometry_result is null then return null
-        const BufferGeometry geom ← BufferGeometry {topology = geometry_result!.topology, vertex_count = geometry_result!.vertex_count, attributes = geometry_result!.attributes, indexed = geometry_result!.indexed, indices = geometry_result!.indices, draw_range = geometry_result!.draw_range, groups = geometry_result!.groups}
+        const BufferGeometry geom ← geometry_result
         return geom.bounding_sphere()
     }
 }
@@ -98,7 +101,7 @@ class BufferGeometry {
     int vertex_count
     list<attribute.BufferAttribute> attributes
     bool indexed
-    list<int<u32>> indices
+    list<u32> indices
     batch.DrawRange draw_range
     list<batch.GeometryGroup> groups
 
@@ -109,21 +112,19 @@ class BufferGeometry {
 
     fn valida() → bool {
         if self.vertex_count ≡ 0 then return false
-        if self._attributes_valid() ≡ false then return false
-        if self._indices_valid() ≡ false then return false
+        if self.attributes_valid() ≡ false then return false
+        if self.indices_valid() ≡ false then return false
         const int element_count ← self.element_count()
         if self.draw_range.count ≡ 0 then return false
         if self.draw_range.start + self.draw_range.count ≻ element_count then return false
-        if _primitive_range_valid(self.topology, self.draw_range.start, self.draw_range.count) ≡ false then return false
-        if self._topology_valid() ≡ false then return false
-        return self._groups_valid()
+        if topology_range_valid(self.topology, self.draw_range.start, self.draw_range.count) ≡ false then return false
+        if self.topology_valid() ≡ false then return false
+        return self.groups_valid()
     }
 
-    @ private { }
-    fn _attributes_valid() → bool {
+    fn attributes_valid() → bool {
         var bool has_position ← false
-        var int i ← 0
-        while i ≺ self.attributes.length() {
+        for range 0‥self.attributes.length() const i {
             const attribute.BufferAttribute attr ← self.attributes[i]
             if attr.valida() ≡ false then return false
             if attr.element_count ≠ self.vertex_count then return false
@@ -132,58 +133,48 @@ class BufferGeometry {
                 if attr.component_width ≠ 3 then return false
                 if attr.float32_values() is null then return false
             }
-            var int j ← 0
-            while j ≺ i {
+            for range 0‥i const j {
                 const attribute.BufferAttribute previous ← self.attributes[j]
                 if previous.name ≡ attr.name then return false
                 if previous.shader_location ≡ attr.shader_location then return false
-                j ← j + 1
             }
-            i ← i + 1
         }
         return has_position
     }
 
-    @ private { }
-    fn _indices_valid() → bool {
+    fn indices_valid() → bool {
         if self.indexed ≡ false then return self.indices.length() ≡ 0
         if self.indices.length() ≡ 0 then return false
-        var int i ← 0
-        while i ≺ self.indices.length() {
+        for range 0‥self.indices.length() const i {
             const int index ← self.indices[i] ↦ int
             if index ≥ self.vertex_count then return false
-            i ← i + 1
         }
         return true
     }
 
-    @ private { }
-    fn _groups_valid() → bool {
+    fn groups_valid() → bool {
         const int element_count ← self.element_count()
         var int previous_end ← 0
-        var int i ← 0
-        while i ≺ self.groups.length() {
+        for range 0‥self.groups.length() const i {
             const batch.GeometryGroup group ← self.groups[i]
             if group.count ≡ 0 then return false
-            if _primitive_range_valid(self.topology, group.start, group.count) ≡ false then return false
+            if topology_range_valid(self.topology, group.start, group.count) ≡ false then return false
             if group.start ≺ previous_end then return false
             const int group_end ← group.start + group.count
             if group_end ≻ element_count then return false
             previous_end ← group_end
-            i ← i + 1
         }
         return true
     }
 
-    @ private { }
-    fn _topology_valid() → bool {
+    fn topology_valid() → bool {
         const int element_count ← self.element_count()
         match self.topology {
             case TriangleList {
-                return _element_count_divisible(element_count, 3)
+                return element_count_divisible(element_count, 3)
             }
             case LineList {
-                return _element_count_divisible(element_count, 2)
+                return element_count_divisible(element_count, 2)
             }
             case PointList {
                 return element_count ≻ 0
@@ -238,11 +229,9 @@ class BufferGeometry {
 
     fn attribute_scalar_count(string name) → int ∪ null {
         if self.valida() ≡ false then return null
-        var int i ← 0
-        while i ≺ self.attributes.length() {
+        for range 0‥self.attributes.length() const i {
             const attribute.BufferAttribute attribute ← self.attributes[i]
             if attribute.name ≡ name then return attribute.scalar_count()
-            i ← i + 1
         }
         return null
     }
@@ -266,10 +255,10 @@ class BufferGeometry {
     fn payload_byte_count() → int ∪ null {
         const int ∪ null vertex_bytes_result ← self.vertex_payload_byte_count()
         if vertex_bytes_result is null then return null
-        const int vertex_bytes ← vertex_bytes_result coalesce 0
+        const int vertex_bytes ← vertex_bytes_result
         const int ∪ null index_bytes_result ← self.index_payload_byte_count()
         if index_bytes_result is null then return vertex_bytes
-        const int index_bytes ← index_bytes_result coalesce 0
+        const int index_bytes ← index_bytes_result
         return vertex_bytes + index_bytes
     }
 
@@ -325,13 +314,11 @@ class BufferGeometry {
         if self.valida() ≡ false then return null
         if instance_count ≡ 0 then return null
         var list<batch.GeometryDrawCommand> commands ← empty
-        var int i ← 0
-        while i ≺ self.groups.length() {
+        for range 0‥self.groups.length() const i {
             const batch.GeometryDrawCommand ∪ null command ← self.group_draw_command(i, instance_count)
             if command is null then return null
-            const batch.GeometryDrawCommand value ← batch.GeometryDrawCommand {indexed = command!.indexed, element_count = command!.element_count, first_element = command!.first_element, base_vertex = command!.base_vertex, instance_count = command!.instance_count, material_index = command!.material_index}
+            const batch.GeometryDrawCommand value ← command
             commands.append(value)
-            i ← i + 1
         }
         return commands
     }
@@ -339,10 +326,8 @@ class BufferGeometry {
     fn group_element_total() → int ∪ null {
         if self.valida() ≡ false then return null
         var int total ← 0
-        var int i ← 0
-        while i ≺ self.groups.length() {
+        for range 0‥self.groups.length() const i {
             total ← total + self.groups[i].count
-            i ← i + 1
         }
         return total
     }
@@ -351,7 +336,7 @@ class BufferGeometry {
 
     fn bounding_box() → bounds.BoundingBox ∪ null {
         if self.valida() ≡ false then return null
-        const list<f32> positions ← self._position_values()
+        const list<f32> positions ← self.position_values()
         var f32 min_x ← positions[0]
         var f32 min_y ← positions[1]
         var f32 min_z ← positions[2]
@@ -390,7 +375,7 @@ class BufferGeometry {
         if self.valida() ≡ false then return null
         if group_index ≥ self.groups.length() then return null
         const batch.GeometryGroup group ← self.groups[group_index]
-        const list<f32> positions ← self._position_values()
+        const list<f32> positions ← self.position_values()
         var int vertex_index ← group.start
         if self.indexed {
             vertex_index ← self.indices[group.start] ↦ int
@@ -439,11 +424,11 @@ class BufferGeometry {
     fn bounding_sphere() → bounds.BoundingSphere ∪ null {
         const bounds.BoundingBox ∪ null bounds_result ← self.bounding_box()
         if bounds_result is null then return null
-        const bounds.BoundingBox bnd ← bounds.BoundingBox {min_x = bounds_result!.min_x, min_y = bounds_result!.min_y, min_z = bounds_result!.min_z, max_x = bounds_result!.max_x, max_y = bounds_result!.max_y, max_z = bounds_result!.max_z}
+        const bounds.BoundingBox bnd ← bounds_result
         const f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
         const f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
         const f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
-        const list<f32> positions ← self._position_values()
+        const list<f32> positions ← self.position_values()
         var f32 radius_squared ← 0.0
         var int i ← 0
         while i ≺ positions.length() {
@@ -456,18 +441,18 @@ class BufferGeometry {
             }
             i ← i + 3
         }
-        return bounds.BoundingSphere {center_x = center_x, center_y = center_y, center_z = center_z, radius = _geometry_radix_f32(radius_squared)}
+        return bounds.BoundingSphere {center_x = center_x, center_y = center_y, center_z = center_z, radius = math.radix_f32(radius_squared)}
     }
 
     fn group_bounding_sphere(int group_index) → bounds.BoundingSphere ∪ null {
         const bounds.BoundingBox ∪ null bounds_result ← self.group_bounding_box(group_index)
         if bounds_result is null then return null
-        const bounds.BoundingBox bnd ← bounds.BoundingBox {min_x = bounds_result!.min_x, min_y = bounds_result!.min_y, min_z = bounds_result!.min_z, max_x = bounds_result!.max_x, max_y = bounds_result!.max_y, max_z = bounds_result!.max_z}
+        const bounds.BoundingBox bnd ← bounds_result
         const f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
         const f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
         const f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
         const batch.GeometryGroup group ← self.groups[group_index]
-        const list<f32> positions ← self._position_values()
+        const list<f32> positions ← self.position_values()
         var f32 radius_squared ← 0.0
         var int i ← group.start
         const int end ← group.start + group.count
@@ -486,7 +471,7 @@ class BufferGeometry {
             }
             i ← i + 1
         }
-        return bounds.BoundingSphere {center_x = center_x, center_y = center_y, center_z = center_z, radius = _geometry_radix_f32(radius_squared)}
+        return bounds.BoundingSphere {center_x = center_x, center_y = center_y, center_z = center_z, radius = math.radix_f32(radius_squared)}
     }
 
     # --- Normals and UVs -------------------------------------------------
@@ -503,7 +488,7 @@ class BufferGeometry {
                 return null
             }
         }
-        const list<f32> positions ← self._position_values()
+        const list<f32> positions ← self.position_values()
         var list<f32> normals ← empty
         var int i ← 0
         while i ≺ positions.length() {
@@ -560,7 +545,7 @@ class BufferGeometry {
             const f32 scaled_x ← normals[i] / normal_max
             const f32 scaled_y ← normals[i + 1] / normal_max
             const f32 scaled_z ← normals[i + 2] / normal_max
-            const f32 normal_scale ← normal_max * _geometry_radix_f32((scaled_x * scaled_x + scaled_y * scaled_y) + scaled_z * scaled_z)
+            const f32 normal_scale ← normal_max * math.radix_f32((scaled_x * scaled_x + scaled_y * scaled_y) + scaled_z * scaled_z)
             normals[i] ← normals[i] / normal_scale
             normals[i + 1] ← normals[i + 1] / normal_scale
             normals[i + 2] ← normals[i + 2] / normal_scale
@@ -572,24 +557,24 @@ class BufferGeometry {
     fn planar_uvs() → attribute.BufferAttribute ∪ null {
         const bounds.BoundingBox ∪ null bounds_result ← self.bounding_box()
         if bounds_result is null then return null
-        const f32 width ← bounds_result!.max_x - bounds_result!.min_x
-        const f32 height ← bounds_result!.max_y - bounds_result!.min_y
+        const bounds.BoundingBox bnd ← bounds_result
+        const f32 width ← bnd.max_x - bnd.min_x
+        const f32 height ← bnd.max_y - bnd.min_y
         const f32 zero ← 0.0
         if width ≡ zero or height ≡ zero then return null
-        const list<f32> positions ← self._position_values()
+        const list<f32> positions ← self.position_values()
         var list<f32> uvs ← empty
         var int i ← 0
         while i ≺ positions.length() {
-            uvs.append((positions[i] - bounds_result!.min_x) / width)
-            uvs.append((positions[i + 1] - bounds_result!.min_y) / height)
+            uvs.append((positions[i] - bnd.min_x) / width)
+            uvs.append((positions[i + 1] - bnd.min_y) / height)
             i ← i + 3
         }
         return attribute.float32_attribute("uv", 2, 2, self.vertex_count, uvs)
     }
 
     # --- Vertex layout introspection ------------------------------------
-    @ private { }
-    fn _position_values() → list<f32> {
+    fn position_values() → list<f32> {
         var list<f32> positions ← empty
         var int i ← 0
         while i ≺ self.attributes.length() {
@@ -605,8 +590,7 @@ class BufferGeometry {
         return positions
     }
 
-    @ private { }
-    fn _vertex_layout_at(int index) → layout.VertexAttributeLayout ∪ null {
+    fn vertex_layout_at(int index) → layout.VertexAttributeLayout ∪ null {
         if self.valida() ≡ false then return null
         if index ≥ self.attributes.length() then return null
         const attribute.BufferAttribute attr ← self.attributes[index]
@@ -615,7 +599,7 @@ class BufferGeometry {
 
     fn topology_code() → int ∪ null {
         if self.valida() ≡ false then return null
-        return _primitive_topology_code(self.topology)
+        return topology_code(self.topology)
     }
 
     fn vertex_layout_count() → int ∪ null {
@@ -625,48 +609,52 @@ class BufferGeometry {
     }
 
     fn vertex_layout_location(int index) → int ∪ null {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return null
-        return layout_result!.shader_location
+        const layout.VertexAttributeLayout lay ← layout_result
+        return lay.shader_location
     }
 
     fn vertex_layout_source_name(int index) → string ∪ null {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return null
-        return layout_result!.source_name
+        const layout.VertexAttributeLayout lay ← layout_result
+        return lay.source_name
     }
 
     fn vertex_layout_format_code(int index) → int ∪ null {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return null
-        const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
-        return layout._vertex_layout_format_code(lay)
+        const layout.VertexAttributeLayout lay ← layout_result
+        return layout.layout_format_code(lay)
     }
 
     fn vertex_layout_offset_bytes(int index) → int ∪ null {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return null
-        return layout_result!.offset_bytes
+        const layout.VertexAttributeLayout lay ← layout_result
+        return lay.offset_bytes
     }
 
     fn vertex_layout_stride_bytes(int index) → int ∪ null {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return null
-        return layout_result!.stride_bytes
+        const layout.VertexAttributeLayout lay ← layout_result
+        return lay.stride_bytes
     }
 
     fn vertex_layout_step_mode_code(int index) → int ∪ null {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return null
-        const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
-        return layout._vertex_layout_step_mode_code(lay)
+        const layout.VertexAttributeLayout lay ← layout_result
+        return layout.layout_step_mode_code(lay)
     }
 
     fn vertex_layout_matches(int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code) → bool {
-        const layout.VertexAttributeLayout ∪ null layout_result ← self._vertex_layout_at(index)
+        const layout.VertexAttributeLayout ∪ null layout_result ← self.vertex_layout_at(index)
         if layout_result is null then return false
-        const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
-        return ((((lay.source_name ≡ source_name and lay.shader_location ≡ shader_location) and layout._vertex_layout_format_code(lay) ≡ format_code) and lay.offset_bytes ≡ offset_bytes) and lay.stride_bytes ≡ stride_bytes) and layout._vertex_layout_step_mode_code(lay) ≡ step_mode_code
+        const layout.VertexAttributeLayout lay ← layout_result
+        return ((((lay.source_name ≡ source_name and lay.shader_location ≡ shader_location) and layout.layout_format_code(lay) ≡ format_code) and lay.offset_bytes ≡ offset_bytes) and lay.stride_bytes ≡ stride_bytes) and layout.layout_step_mode_code(lay) ≡ step_mode_code
     }
 
     fn vertex_layouts() → list<layout.VertexAttributeLayout> ∪ null {
@@ -677,7 +665,7 @@ class BufferGeometry {
             const attribute.BufferAttribute attr ← self.attributes[i]
             const layout.VertexAttributeLayout ∪ null layout_result ← attr.vertex_layout()
             if layout_result is null then return null
-            const layout.VertexAttributeLayout lay ← layout.VertexAttributeLayout {source_name = layout_result!.source_name, shader_location = layout_result!.shader_location, vertex_format = layout_result!.vertex_format, offset_bytes = layout_result!.offset_bytes, stride_bytes = layout_result!.stride_bytes, step_mode = layout_result!.step_mode}
+            const layout.VertexAttributeLayout lay ← layout_result
             layouts.append(lay)
             i ← i + 1
         }
@@ -692,8 +680,7 @@ class BufferGeometry {
         if instance_count ≡ 0 then return null
         const list<batch.GeometryDrawCommand> ∪ null commands_result ← self.group_draw_commands(instance_count)
         if commands_result is null then return null
-        const list<batch.GeometryDrawCommand> empty_commands ← empty
-        const list<batch.GeometryDrawCommand> commands ← commands_result coalesce empty_commands
+        const list<batch.GeometryDrawCommand> commands ← commands_result
         const int ∪ null grouped_elements_result ← self.group_element_total()
         if grouped_elements_result is null then return null
         const int ∪ null vertex_bytes_result ← self.vertex_payload_byte_count()
@@ -702,7 +689,7 @@ class BufferGeometry {
         if index_bytes_result is null then return null
         const int ∪ null total_bytes_result ← self.payload_byte_count()
         if total_bytes_result is null then return null
-        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.length(), grouped_element_total = grouped_elements_result coalesce 0, vertex_payload_byte_count = vertex_bytes_result coalesce 0, index_payload_byte_count = index_bytes_result coalesce 0, total_payload_byte_count = total_bytes_result coalesce 0}
+        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.length(), grouped_element_total = grouped_elements_result, vertex_payload_byte_count = vertex_bytes_result, index_payload_byte_count = index_bytes_result, total_payload_byte_count = total_bytes_result}
     }
 
     fn line_draw_batch_facts(int instance_count) → batch.LineGeometryDrawBatchFacts ∪ null {
@@ -713,7 +700,9 @@ class BufferGeometry {
         if line_count_result is null then return null
         const batch.IndexedGeometryDrawBatchFacts ∪ null batch_result ← self.indexed_draw_batch_facts(instance_count)
         if batch_result is null then return null
-        return batch.LineGeometryDrawBatchFacts {draw_count = batch_result!.draw_count, line_count = line_count_result coalesce 0, grouped_element_total = batch_result!.grouped_element_total, vertex_payload_byte_count = batch_result!.vertex_payload_byte_count, index_payload_byte_count = batch_result!.index_payload_byte_count, total_payload_byte_count = batch_result!.total_payload_byte_count}
+        const int line_count_value ← line_count_result
+        const batch.IndexedGeometryDrawBatchFacts batch_facts ← batch_result
+        return batch.LineGeometryDrawBatchFacts {draw_count = batch_facts.draw_count, line_count = line_count_value, grouped_element_total = batch_facts.grouped_element_total, vertex_payload_byte_count = batch_facts.vertex_payload_byte_count, index_payload_byte_count = batch_facts.index_payload_byte_count, total_payload_byte_count = batch_facts.total_payload_byte_count}
     }
 }
 
@@ -723,7 +712,7 @@ class BufferGeometry {
 # sharing the same attribute, range, and group validation path.
 
 @ public
-fn indexed_triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<int<u32>> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
+fn indexed_triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<u32> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
     return BufferGeometry {topology = TriangleList(), vertex_count = vertex_count, attributes = attributes, indexed = true, indices = indices, draw_range = draw_range, groups = groups}
 }
 
@@ -733,12 +722,12 @@ fn triangle_geometry(int vertex_count, ref list<attribute.BufferAttribute> attri
 }
 
 @ public
-fn line_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<int<u32>> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
+fn line_geometry(int vertex_count, ref list<attribute.BufferAttribute> attributes, list<u32> indices, batch.DrawRange draw_range, list<batch.GeometryGroup> groups) → BufferGeometry {
     return BufferGeometry {topology = LineList(), vertex_count = vertex_count, attributes = attributes, indexed = true, indices = indices, draw_range = draw_range, groups = groups}
 }
 
 @ public
-fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> colors, list<int<u32>> indices) → BufferGeometry ∪ null {
+fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> colors, list<u32> indices) → BufferGeometry ∪ null {
     const attribute.BufferAttribute position_attribute ← attribute.float32_attribute("position", 0, 3, vertex_count, positions)
     const attribute.BufferAttribute color_attribute ← attribute.float32_attribute("color", 1, 3, vertex_count, colors)
     const BufferGeometry geometry ← indexed_triangle_geometry(vertex_count, [position_attribute, color_attribute], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
@@ -752,47 +741,39 @@ fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> col
 # they are useful when a caller wants to build a mesh one face at a time.
 
 @ public
-fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>> indices, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 cx, f32 cy, f32 cz, f32 dx, f32 dy, f32 dz, f32 r, f32 g, f32 b) → ColoredQuadMesh ∪ null {
+fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, ref math.Vector3 a, ref math.Vector3 b, ref math.Vector3 c, ref math.Vector3 d, ref math.Color color) → ColoredQuadMesh ∪ null {
     if positions.length() ≠ colors.length() then return null
     if positions.length() % 3 ≠ 0 then return null
     if indices.length() % 3 ≠ 0 then return null
     var list<f32> next_positions ← empty
-    var int i ← 0
-    while i ≺ positions.length() {
-        next_positions.append(positions[i])
-        i ← i + 1
+    for from positions const value {
+        next_positions.append(value)
     }
     var list<f32> next_colors ← empty
-    i ← 0
-    while i ≺ colors.length() {
-        next_colors.append(colors[i])
-        i ← i + 1
+    for from colors const value {
+        next_colors.append(value)
     }
-    var list<int<u32>> next_indices ← empty
-    i ← 0
-    while i ≺ indices.length() {
-        next_indices.append(indices[i])
-        i ← i + 1
+    var list<u32> next_indices ← empty
+    for from indices const value {
+        next_indices.append(value)
     }
     const int vertex_base ← positions.length() / 3
-    next_positions.append(ax)
-    next_positions.append(ay)
-    next_positions.append(az)
-    next_positions.append(bx)
-    next_positions.append(by)
-    next_positions.append(bz)
-    next_positions.append(cx)
-    next_positions.append(cy)
-    next_positions.append(cz)
-    next_positions.append(dx)
-    next_positions.append(dy)
-    next_positions.append(dz)
-    i ← 0
-    while i ≺ 4 {
-        next_colors.append(r)
-        next_colors.append(g)
-        next_colors.append(b)
-        i ← i + 1
+    next_positions.append(a.x)
+    next_positions.append(a.y)
+    next_positions.append(a.z)
+    next_positions.append(b.x)
+    next_positions.append(b.y)
+    next_positions.append(b.z)
+    next_positions.append(c.x)
+    next_positions.append(c.y)
+    next_positions.append(c.z)
+    next_positions.append(d.x)
+    next_positions.append(d.y)
+    next_positions.append(d.z)
+    for range 0‥4 const corner {
+        next_colors.append(color.r)
+        next_colors.append(color.g)
+        next_colors.append(color.b)
     }
     next_indices.append(vertex_base ↦ int<u32>)
     next_indices.append(vertex_base + 1 ↦ int<u32>)
@@ -805,8 +786,7 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<int<u32>
 
 # --- Private scalar and code helpers (free, no genus receiver) ---
 
-@ private { }
-fn _primitive_topology_code(ref PrimitiveTopology topology) → int {
+fn topology_code(ref PrimitiveTopology topology) → int {
     match topology {
         case TriangleList {
             return 1
@@ -820,41 +800,17 @@ fn _primitive_topology_code(ref PrimitiveTopology topology) → int {
     }
 }
 
-@ private { }
-fn _geometry_radix_f32(f32 value) → f32 {
-    if value ≤ 0.0 then return 0.0
-    var f32 scaled ← value
-    var f32 scale ← 1.0
-    while scaled ≻ 4.0 {
-        scaled ← scaled * 0.25
-        scale ← scale * 2.0
-    }
-    while scaled ≺ 0.25 {
-        scaled ← scaled * 4.0
-        scale ← scale * 0.5
-    }
-    var f32 estimate ← 1.0
-    var int iteration ← 0
-    while iteration ≺ 8 {
-        estimate ← (estimate + scaled / estimate) * 0.5
-        iteration ← iteration + 1
-    }
-    return estimate * scale
-}
-
-@ private { }
-fn _element_count_divisible(int element_count, int divisor) → bool {
+fn element_count_divisible(int element_count, int divisor) → bool {
     return element_count % divisor ≡ 0
 }
 
-@ private { }
-fn _primitive_range_valid(ref PrimitiveTopology topology, int start, int count) → bool {
+fn topology_range_valid(ref PrimitiveTopology topology, int start, int count) → bool {
     match topology {
         case TriangleList {
-            return _element_count_divisible(start, 3) and _element_count_divisible(count, 3)
+            return element_count_divisible(start, 3) and element_count_divisible(count, 3)
         }
         case LineList {
-            return _element_count_divisible(start, 2) and _element_count_divisible(count, 2)
+            return element_count_divisible(start, 2) and element_count_divisible(count, 2)
         }
         case PointList {
             return count ≻ 0

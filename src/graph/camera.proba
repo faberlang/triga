@@ -12,7 +12,7 @@ import from "triga:graph/camera" camera
 import from "triga:graph/object" graph_object
 import from "triga:math" math
 
-const f32 TOLERATIO ← (0.01 ∷ f32)
+const f32 TOLERATIO ← 0.01
 
 fn base_camera(string nomen, f32 z) → graph_object.Object3D {
     return graph_object.Object3D {position = math.vector3(0.0, 0.0, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, visible = true, name = nomen}

@@ -38,7 +38,7 @@ fn fragment_output_matches(int location, int format_code, int stage_io_role_code
 @ fragment { }
 fn hello_voxel_fragment() → void {
     const vector<f32, 3> light_direction ← [0.0, 0.0, 1.0] ↦ vector<f32, 3>
-    const f32 diffuse ← (normal · light_direction).maximus(0.0)
+    const f32 diffuse ← (normal · light_direction).max(0.0)
     const f32 lighting ← 0.2 + 0.8 * diffuse
     const vector<f32, 3> lighting_vec ← [lighting, lighting, lighting] ↦ vector<f32, 3>
     const vector<f32, 3> lit_color ← color ⊙ lighting_vec

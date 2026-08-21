@@ -17,10 +17,10 @@ import from "triga:math" math
 
 main {
     # Perfectum predicate — receiver method called across triga:* import.
-    const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
+    const _ bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
 
     # intersecat: receiver method taking another Box3.
-    const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
+    const _ overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
 
     # inflata: Perfectum — returns a new Box3, receiver unchanged.
     const math.Box3 expanded ← bounds.inflata(1.0)
@@ -45,10 +45,10 @@ main {
     #   4. bug_discriminator vs bug_low — z OVERLAPS ([0,1]) while the
     #      pre-fix second disjunct (self.min.y 3 > alia.max.z 1) would
     #      false-positive -> true. Discriminates the fix.
-    const math.Box3 sep_corrected ← math.Box3 {min = math.vector3(0.0, 0.0, 3.0), max = math.vector3(2.0, 2.0, 5.0)}
-    const math.Box3 small ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
-    const math.Box3 bug_low ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 4.0, 1.0)}
-    const math.Box3 bug_discriminator ← math.Box3 {min = math.vector3(0.0, 3.0, 0.0), max = math.vector3(2.0, 5.0, 4.0)}
+    const _ sep_corrected ← math.Box3 {min = math.vector3(0.0, 0.0, 3.0), max = math.vector3(2.0, 2.0, 5.0)}
+    const _ small ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
+    const _ bug_low ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 4.0, 1.0)}
+    const _ bug_discriminator ← math.Box3 {min = math.vector3(0.0, 3.0, 0.0), max = math.vector3(2.0, 5.0, 4.0)}
 
     print sep_corrected.intersecat(small)
     print bounds.intersecat(sep_corrected)

@@ -25,9 +25,9 @@ main {
     # Geometry: colored indexed cube
     const list<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0]
     const list<f32> colors ← [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
-    const list<int<u32>> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 6, 2, 0, 3, 7, 0, 7, 4]
+    const list<u32> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 6, 2, 0, 3, 7, 0, 7, 4]
     const data.BufferGeometry ∪ null cube_result ← data.colored_indexed_geometry(8, positions, colors, indices)
-    const data.BufferGeometry cube ← data.BufferGeometry {topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups}
+    const _ cube ← data.BufferGeometry {topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups}
 
     # Varying facts
     const int varying_color_loc ← 0
@@ -48,10 +48,10 @@ main {
     print resource_transform_byte_width
 
     # Transform payload
-    const math.Matrix4 model ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
-    const math.Matrix4 view_proj ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
+    const _ model ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
+    const _ view_proj ← math.Matrix4 {elements = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
     const math.TransformPayload ∪ null transform_result ← math.transform_payload(model, view_proj)
-    const math.TransformPayload transform ← math.TransformPayload {values = transform_result!.values}
+    const _ transform ← math.TransformPayload {values = transform_result!.values}
 
     # Pipeline facts (canonical codes: color target bgra8unorm = 1, depth compare less = 1, topology triangle-list = 1)
     const int goal_target_format ← 1
@@ -65,7 +65,7 @@ main {
 
     # Draw command
     const batch.GeometryDrawCommand ∪ null draw_result ← cube.draw_command(1)
-    const batch.GeometryDrawCommand draw ← batch.GeometryDrawCommand {indexed = draw_result!.indexed, element_count = draw_result!.element_count, first_element = draw_result!.first_element, base_vertex = draw_result!.base_vertex, instance_count = draw_result!.instance_count, material_index = draw_result!.material_index}
+    const _ draw ← batch.GeometryDrawCommand {indexed = draw_result!.indexed, element_count = draw_result!.element_count, first_element = draw_result!.first_element, base_vertex = draw_result!.base_vertex, instance_count = draw_result!.instance_count, material_index = draw_result!.material_index}
     print draw.indexed
     print draw.instance_count
 }

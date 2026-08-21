@@ -132,23 +132,19 @@ class ResourceHandleTraversal {
 # before facts, counts, or handle projections are derived.
 
 fn transition_index_seen(ref list<ResourceTransition> transitions, int limit, int resource_index) → bool {
-    var int i ← 0
-    while i ≺ limit {
+    for range 0‥limit const i {
         const ResourceTransition transition ← transitions[i]
         if transition.current.index ≡ resource_index then return true
-        i ← i + 1
     }
     return false
 }
 
 @ public
 fn transitions_valida(ref list<ResourceTransition> transitions) → bool {
-    var int i ← 0
-    while i ≺ transitions.length() {
+    for range 0‥transitions.length() const i {
         const ResourceTransition transition ← transitions[i]
         if transition.valida() ≡ false then return false
         if transition_index_seen(transitions, i, transition.current.index) then return false
-        i ← i + 1
     }
     return true
 }
@@ -248,23 +244,19 @@ fn lifecycle_handle(ResourceHandle ∪ null handle) → ResourceHandle ∪ null 
 }
 
 fn lifecycle_index_seen(ref list<ResourceLifecycleTransition> transitions, int limit, int logical_index) → bool {
-    var int i ← 0
-    while i ≺ limit {
+    for range 0‥limit const i {
         const ResourceLifecycleTransition transition ← transitions[i]
         if transition.logical_index ≡ logical_index then return true
-        i ← i + 1
     }
     return false
 }
 
 @ public
 fn lifecycles_valida(ref list<ResourceLifecycleTransition> transitions) → bool {
-    var int i ← 0
-    while i ≺ transitions.length() {
+    for range 0‥transitions.length() const i {
         const ResourceLifecycleTransition transition ← transitions[i]
         if transition.valida() ≡ false then return false
         if lifecycle_index_seen(transitions, i, transition.logical_index) then return false
-        i ← i + 1
     }
     return true
 }

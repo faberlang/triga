@@ -9,7 +9,9 @@ import from "triga:math" math
 
 describe "face quad builders" {
     test "negative X face publishes exact corners" {
-        const face.FaceQuad quad ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0) coalesce face.FaceQuad {a = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}, b = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}, c = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}, d = math.Vector3 {x = 0.0, y = 0.0, z = 0.0}}
+        const face.FaceQuad ∪ null quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
+        assert quad_result not is null
+        const face.FaceQuad quad ← quad_result
         assert quad.a.x ≡ (10.0 ∷ f32)
         assert quad.a.y ≡ (20.0 ∷ f32)
         assert quad.a.z ≡ (30.0 ∷ f32)
@@ -19,11 +21,21 @@ describe "face quad builders" {
     }
 
     test "all face codes preserve their orientation and winding" {
-        const face.FaceQuad positive_x ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
-        const face.FaceQuad negative_y ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
-        const face.FaceQuad positive_y ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
-        const face.FaceQuad negative_z ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
-        const face.FaceQuad positive_z ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0) coalesce face.FaceQuad {a = math.vector3(0.0, 0.0, 0.0), b = math.vector3(0.0, 0.0, 0.0), c = math.vector3(0.0, 0.0, 0.0), d = math.vector3(0.0, 0.0, 0.0)}
+        const face.FaceQuad ∪ null positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
+        assert positive_x_result not is null
+        const face.FaceQuad positive_x ← positive_x_result
+        const face.FaceQuad ∪ null negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
+        assert negative_y_result not is null
+        const face.FaceQuad negative_y ← negative_y_result
+        const face.FaceQuad ∪ null positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
+        assert positive_y_result not is null
+        const face.FaceQuad positive_y ← positive_y_result
+        const face.FaceQuad ∪ null negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
+        assert negative_z_result not is null
+        const face.FaceQuad negative_z ← negative_z_result
+        const face.FaceQuad ∪ null positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
+        assert positive_z_result not is null
+        const face.FaceQuad positive_z ← positive_z_result
         assert positive_x.a.x ≡ (5.0 ∷ f32)
         assert positive_x.a.z ≡ (7.0 ∷ f32)
         assert positive_x.d.z ≡ (7.0 ∷ f32)
@@ -47,7 +59,9 @@ describe "face quad builders" {
     }
 
     test "colored face append publishes exact position color and index arrays" {
-        const data.ColoredQuadMesh mesh ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0) coalesce data.ColoredQuadMesh {positions = [], colors = [], indices = []}
+        const data.ColoredQuadMesh ∪ null mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
+        assert mesh_result not is null
+        const data.ColoredQuadMesh mesh ← mesh_result
         assert mesh.positions.length() ≡ 12
         assert mesh.colors.length() ≡ 12
         assert mesh.indices.length() ≡ 6

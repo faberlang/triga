@@ -13,8 +13,8 @@ import from "triga:resource" resource
 
 main {
     # Resource handles
-    const resource.ResourceHandle geom_handle ← resource.ResourceHandle {index = 7, generation = 2}
-    const resource.ResourceHandle mat_handle ← resource.ResourceHandle {index = 3, generation = 1}
+    const _ geom_handle ← resource.ResourceHandle {index = 7, generation = 2}
+    const _ mat_handle ← resource.ResourceHandle {index = 3, generation = 1}
 
     # Resource transitions
     const resource.ResourceTransition stable ← geom_handle.transition_unchanged()
