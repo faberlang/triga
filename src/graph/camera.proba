@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for graph/camera.fab.
 #
 # These cases pin the camera data facts, projection matrices, compact facts,

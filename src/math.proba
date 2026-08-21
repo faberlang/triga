@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package coverage for the public math carrier and constructor surface.
 # The package test path discovers this source beside ./math.fab.
 import from "./math" math

@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for material/base.fab.
 # These cases cover construction, validation, side/depth/alpha policy, compact
 # pipeline facts, and the temporary texture descriptor carrier. Out-of-range

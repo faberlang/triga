@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package test for the primitive facade. The facade is a package
 # map only; generator contracts remain owned by the basic leaf import.
 import from "triga:primitives" primitives

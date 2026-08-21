@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for resource identity and lifecycle transitions.
 import from "triga:resource" resource
 

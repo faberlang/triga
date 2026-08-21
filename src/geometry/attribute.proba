@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for BufferAttribute validation and scalar payload
 # projections. Layout projection stays on this leaf so the public
 # vertex_layout fact is named without crossing into geometry/data.

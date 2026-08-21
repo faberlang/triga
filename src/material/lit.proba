@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for material/lit.fab.
 # MeshPhongMaterial is a carrier; base pipeline facts remain the validated
 # projection authority and no lighting evaluation is claimed here.

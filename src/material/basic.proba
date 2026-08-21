@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for material/basic.fab.
 # The basic leaf owns construction, color accessors, alpha, and projection of
 # the validated base pipeline facts. Invalid names, colors, and base policy

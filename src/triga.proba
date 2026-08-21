@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package smoke for the top-level triga facade.
 #
 # The facade is an import map only. Leaf types remain owned by their leaf

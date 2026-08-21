@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package test for the geometry facade.  The facade is a package
 # map only; leaf types remain owned by their leaf imports.
 import from "triga:geometry" geometry

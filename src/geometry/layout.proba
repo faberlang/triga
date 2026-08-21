@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for vertex formats, step modes, and layout records.
 import from "triga:geometry/layout" layout
 

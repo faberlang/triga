@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for lighting/light.fab.
 # These cases prove source-side carrier facts only. They do not claim that a
 # host renderer consumes, evaluates, or otherwise executes a light.

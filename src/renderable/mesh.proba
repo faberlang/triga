@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for renderable/mesh.fab.
 #
 # Mesh is a source-side composition carrier: Object3D + BufferGeometry + an

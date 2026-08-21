@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located coverage for the compiler-facing shader-contract adapter.
 #
 # Adapter functions are compiler-owned contract declarations. Matching cases

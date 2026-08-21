@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for oriented FaceQuad construction and colored
 # mesh accumulation.
 import from "triga:face" face

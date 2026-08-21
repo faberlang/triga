@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package smoke for the graph facade.
 #
 # The facade intentionally contains only imports. This case proves that the

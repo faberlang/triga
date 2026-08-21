@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for graph/object.fab.
 #
 # Object3D is a composed value shape. The graph contract keeps hierarchy in

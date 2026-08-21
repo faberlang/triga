@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for BufferGeometry, ColoredQuadMesh, topology,
 # bounds, normals, UVs, layouts, draw commands, and malformed buffers.
 import from "triga:math" math

@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for the geometry BoundingBox and BoundingSphere
 # result records, including invalid and degenerate position payloads.
 import from "triga:geometry/data" data

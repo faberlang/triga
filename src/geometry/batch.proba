@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for visible-face payload and draw-batch facts.
 import from "triga:geometry/batch" batch
 

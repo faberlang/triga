@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package smoke for the map-only material facade.
 # Leaf contracts remain owned by triga:material/base, /basic, /lit, and
 # /standard; this case proves only that the public facade path is discoverable.

@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for material/standard.fab.
 # MeshStandardMaterial is a PBR-shaped source carrier; these cases verify its
 # fields and the validated base pipeline projection without claiming host PBR.

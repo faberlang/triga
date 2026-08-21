@@ -1,6 +1,3 @@
-+++
-locale = "en"
-+++
 # Co-located package tests for SceneStore identity, hierarchy, and traversal.
 import from "triga:scene" scene
 import from "triga:resource" resource
