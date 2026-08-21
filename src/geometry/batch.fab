@@ -85,7 +85,7 @@ class VisibleFaceMeshFacts {
 
 # --- Scalar payload and mesh-shape helpers ---
 
-# Non-positive face counts are rejected with `nihil`; accepted counts are
+# Non-positive face counts are rejected with `null`; accepted counts are
 # expanded into the fixed visible-face topology and byte counts above.
 
 @ public
