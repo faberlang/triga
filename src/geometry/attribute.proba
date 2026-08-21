@@ -53,6 +53,7 @@ describe "buffer attribute contracts" {
         assert not invalid.valida()
         assert invalid.float32_values() not is null
         assert short_values.length() ≡ 2
+        assert invalid.vertex_layout() is null
     }
 
     test "empty and malformed metadata are rejected" {

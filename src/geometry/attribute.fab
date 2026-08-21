@@ -4,8 +4,8 @@
 #
 # Owns: BufferAttribute (+ all methods), AttributeData, AttributeUsage, and
 # the free constructor float32_attribute. AttributeData lives here so the
-# variant discerne sites (scalar_count / scalar_bytes / float32_values /
-# _vertex_format) and float32_values() stay co-located with the enum
+# variant match sites (scalar_count / scalar_bytes / float32_values /
+# _vertex_format) stay co-located with the enum
 # (corpus README: variants are not in scope cross-module).
 #
 # Imports: triga:geometry/layout (VertexAttributeLayout, VertexFormat,
@@ -67,14 +67,6 @@ class BufferAttribute {
         }
     }
 
-    # Vertex format is exported through vertex_layout; standalone enum
-    # results are not file-interface carriers.
-    @ private { }
-    fn vertex_format() → layout.VertexFormat ∪ null {
-        if self.valida() ≡ false then return null
-        return self._vertex_format()
-    }
-
     # --- Validation and CPU-side queries ---
 
     # Validation intentionally stays close to the payload: it checks the
@@ -110,8 +102,8 @@ class BufferAttribute {
     }
 
     # Projection: float32 payload for consumers that interleave attributes into
-    # host vertex buffers. `nihil` marks a uint32 payload; the variant match is
-    # kept here because consumers cannot `discerne` AttributeData across this
+    # host vertex buffers. `null` marks a uint32 payload; the variant match is
+    # kept here because consumers cannot match on AttributeData across this
     # file boundary.
     fn float32_values() → list<f32> ∪ null {
         match self.data {
