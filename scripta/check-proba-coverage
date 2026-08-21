@@ -35,10 +35,13 @@ EXPECTED_TIER = "executed-proba"
 CASE_RE = re.compile(r'^\s*test\s+"')
 GROUP_RE = re.compile(r'^\s*describe\s+"')
 DIAGNOSTIC_RE = re.compile(r'\b[A-Z][A-Z0-9]+(?:\.[a-z][a-z0-9_]*)?\b')
+# U1 format_summary emits `passed; failed; blocked; skipped`. The blocked
+# field is optional so a pre-U1 `passed; failed; skipped` line still parses.
 SUMMARY_RE = re.compile(
     r"test result:\s*(?P<outcome>[A-Za-z_-]+).*?"
     r"(?P<passed>\d+)\s+passed[,;]\s*"
     r"(?P<failed>\d+)\s+failed[,;]\s*"
+    r"(?:(?P<blocked>\d+)\s+blocked[,;]\s*)?"
     r"(?P<skipped>\d+)\s+skipped",
     re.IGNORECASE | re.DOTALL,
 )
@@ -126,10 +129,12 @@ def parse_summary(output: str) -> dict[str, Any] | None:
     match = SUMMARY_RE.search(output)
     if not match:
         return None
+    blocked = match.group("blocked")
     return {
         "outcome": match.group("outcome").lower(),
         "passed": int(match.group("passed")),
         "failed": int(match.group("failed")),
+        "blocked": int(blocked) if blocked is not None else 0,
         "skipped": int(match.group("skipped")),
     }
 
@@ -169,6 +174,7 @@ def run_one(
         "exit_status": None,
         "passed": None,
         "failed": None,
+        "blocked": None,
         "skipped": None,
         "status": None,
         "evidence_tier": "structural",
@@ -239,12 +245,14 @@ def run_one(
 
     base["passed"] = summary["passed"]
     base["failed"] = summary["failed"]
+    base["blocked"] = summary["blocked"]
     base["skipped"] = summary["skipped"]
     all_cases_passed = (
         completed.returncode == 0
         and summary["outcome"] in {"pass", "passed", "ok", "success", "successful"}
         and summary["passed"] == declared["cases"]
         and summary["failed"] == 0
+        and summary["blocked"] == 0
         and summary["skipped"] == 0
     )
     if all_cases_passed:
@@ -252,14 +260,19 @@ def run_one(
         base["evidence_tier"] = EXPECTED_TIER
         return base
 
-    base["status"] = "runner-failure" if completed.returncode != 0 else "failed-cases"
+    if summary["outcome"] == "blocked" or summary["blocked"]:
+        base["status"] = "blocked"
+    elif completed.returncode != 0:
+        base["status"] = "runner-failure"
+    else:
+        base["status"] = "failed-cases"
     if summary["passed"] != declared["cases"]:
         base["failures"].append(
             f"runner reported {summary['passed']} passed for {declared['cases']} declared cases"
         )
-    if summary["failed"] or summary["skipped"]:
+    if summary["failed"] or summary["blocked"] or summary["skipped"]:
         base["failures"].append(
-            f"runner summary: {summary['failed']} failed; {summary['skipped']} skipped"
+            f"runner summary: {summary['failed']} failed; {summary['blocked']} blocked; {summary['skipped']} skipped"
         )
     base["failures"] = unique_lines(base["failures"])
     return base
@@ -379,6 +392,7 @@ def main() -> int:
                 "exit_status": None,
                 "passed": None,
                 "failed": None,
+                "blocked": None,
                 "skipped": None,
                 "status": "missing-proba",
                 "evidence_tier": "structural",
