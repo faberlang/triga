@@ -24,18 +24,18 @@ import from "triga:geometry/attribute" attribute
 import from "triga:geometry/batch" batch
 
 incipit {
-    fixum attribute.BufferAttribute position ← attribute.float32_attribute(
+    const _ position ← attribute.float32_attribute(
         "position", 0, 3, 3,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
     )
-    fixum data.BufferGeometry triangle ← data.indexed_triangle_geometry(
+    const _ triangle ← data.indexed_triangle_geometry(
         3,
         [position],
         [0, 1, 2],
         batch.DrawRange { start = 0, count = 3 },
         [batch.GeometryGroup { start = 0, count = 3, material_index = 0 }]
     )
-    nota triangle.vertex_count
+    print triangle.vertex_count
 }
 ```
 
@@ -84,7 +84,7 @@ is to keep the typed contract honest and modular.
 | **Materials** | `Material` family | `triga:material/{base,basic,lit,standard}` | THREE.Material family |
 | **Renderable** | `Mesh` | `triga:renderable/mesh` | THREE.Mesh composition |
 | **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | stable identity graph |
-| **Resources** | `ResourceHandle`, lifecycle free functions | `triga:resource` | host resource identity |
+| **Resources** | `ResourceHandle` (transition/lifecycle receiver methods + batch queries) | `triga:resource` | host resource identity |
 
 Full module ownership: [`docs/module-map.md`](docs/module-map.md) (Norma-style multi-module package).
 
@@ -123,7 +123,7 @@ faberlang/
 ## Design
 
 - **Structure-of-arrays layout**: vertex attributes and matrix storage use flat
-  `lista<f32>`, not interleaved arrays. This maps directly to WGSL storage
+  `list<f32>`, not interleaved arrays. This maps directly to WGSL storage
   buffers and GPU buffer uploads.
 - **Composition over inheritance**: `PerspectiveCamera.base` contains an
   `Object3D` rather than using type inheritance. `MeshStandardMaterial.base`
