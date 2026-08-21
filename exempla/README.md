@@ -46,6 +46,7 @@ exempla/
   triga-hello-voxel-pipeline.fab # Full Goal 01 pipeline facts
   triga-box3-genus-spike.fab    # Box3 genus / method surface spike
   triga-normal-oracle.fab       # Surface-normal winding oracle: cylinder caps + sphere poles
+  conformance/                  # Shader-contract conformance fixtures (WGSL/Naga lanes)
   threejs-host-demo/            # Browser fixture: Triga scene data via three.js
 ```
 
@@ -76,7 +77,7 @@ Most examples use the same three-step rhythm:
 import the leaf → construct a typed value → inspect or validate a fact
 ```
 
-`nihil` results are part of the API rather than hidden exceptions. Constructors
+`null` results are part of the API rather than hidden exceptions. Constructors
 and queries return them when input cannot satisfy the contract; the examples
 keep the result visible so failure behavior is easy to study.
 
