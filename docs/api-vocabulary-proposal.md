@@ -1,6 +1,7 @@
 # Triga API Shape And Vocabulary Proposal
 
-**Status:** proposal — shape direction endorsed, vocabulary still open  
+**Status:** superseded by [`api-shape-policy.md`](api-shape-policy.md)
+(accepted 2026-07-27); retained for revision history  
 **Date:** 2026-07-27  
 **Revisions:**
 
