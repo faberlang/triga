@@ -37,8 +37,8 @@ describe "buffer attribute contracts" {
         assert lay.shader_location ≡ 0
         assert lay.offset_bytes ≡ 0
         assert lay.stride_bytes ≡ 12
-        assert layout._vertex_layout_format_code(lay) ≡ 3
-        assert layout._vertex_layout_step_mode_code(lay) ≡ 1
+        assert layout.layout_format_code(lay) ≡ 3
+        assert layout.layout_step_mode_code(lay) ≡ 1
     }
 
     test "wrong scalar lengths remain invalid" {
