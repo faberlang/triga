@@ -24,15 +24,10 @@ class CorpusMesh {
 }
 
 @ private { }
-fn _float_values(ref attribute.BufferAttribute attr) → list<f32> ∪ null {
-    return attr.float32_values()
-}
-
-@ private { }
 fn _mesh_ex_geometry(string name, ref data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → CorpusMesh ∪ null {
     if geom.attributes.length() ≺ 2 then return null
-    const list<f32> ∪ null pos_opt ← _float_values(geom.attributes[0])
-    const list<f32> ∪ null nrm_opt ← _float_values(geom.attributes[1])
+    const list<f32> ∪ null pos_opt ← geom.attributes[0].float32_values()
+    const list<f32> ∪ null nrm_opt ← geom.attributes[1].float32_values()
     if pos_opt is null or nrm_opt is null then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
