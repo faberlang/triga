@@ -286,11 +286,11 @@ class SceneStore {
     # the skeleton (e.g., seen-set disposal, remaining-counter, child iteration
     # order), apply the fix to ALL FIVE.
     #
-    #   (1) _traverse_preorder                    — unfiltered; all visited handles
-    #   (2) _traverse_visibile_preorder           — visible nodes only
-    #   (3) _traverse_visibile_rete_preorder      — visible mesh-node handles only
-    #   (4) _traverse_visibile_rete_opes_preorder — visible mesh resource pairs
-    #   (5) _visibile_rete_opes_manubria_preorder — visible mesh geometry or
+    #   (1) traverse_preorder                    — unfiltered; all visited handles
+    #   (2) traverse_visibile_preorder           — visible nodes only
+    #   (3) traverse_visibile_rete_preorder      — visible mesh-node handles only
+    #   (4) traverse_visibile_rete_opes_preorder — visible mesh resource pairs
+    #   (5) visibile_rete_opes_manubria_preorder — visible mesh geometry or
     #       material handles (selected by `geometria_manubria`)
     #
     # WHEN FABER GAINS CLOSURES/VISITORS: collapse these into a single
