@@ -30,7 +30,7 @@ import from "triga:geometry/batch" batch
 union PrimitiveTopology {
     TriangleList,
     LineList,
-    PointList,
+    PointList
 }
 
 # ColoredQuadMesh is the accumulation-friendly shape used by voxel and face

@@ -25,7 +25,7 @@ union VertexFormat {
     Uint32,
     Uint32x2,
     Uint32x3,
-    Uint32x4,
+    Uint32x4
 }
 
 # Whether a vertex input advances once per vertex or once per instance. The
@@ -33,7 +33,7 @@ union VertexFormat {
 @ public
 union VertexStepMode {
     VertexStep,
-    InstanceStep,
+    InstanceStep
 }
 
 # A host-facing description of one vertex stream. Offsets and strides are byte

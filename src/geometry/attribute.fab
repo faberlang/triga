@@ -20,7 +20,7 @@ import from "triga:geometry/layout" layout
 union AttributeUsage {
     StaticAttribute,
     DynamicAttribute,
-    StreamAttribute,
+    StreamAttribute
 }
 
 # The scalar payload kept by a BufferAttribute. Both representations use
@@ -33,7 +33,7 @@ union AttributeData {
     },
     Uint32Attribute {
         list<int<u32>> values
-    },
+    }
 }
 
 # One named CPU-side vertex stream and the facts needed to describe it to a
