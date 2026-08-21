@@ -3,28 +3,15 @@
 # Public import: import from "triga:material/base" base
 #
 # Owns: Material, MaterialPipelineFacts, TextureDescriptor (H3 placeholder
-# seed), and the base material free helpers (materia_ex_nomine,
-# material_valida, material_double_sided, material_est_double_sided,
-# material_side_code, material_depth_enabled, material_depth_test_enabled,
-# material_depth_write_enabled, material_pipeline_facts).
-#
-# MaterialPipelineFacts.side_code is frozen ABI (api-shape-policy §3) and
-# survives the split verbatim. TextureDescriptor relocates to
-# material/texture.fab when the texture pipeline (samplers, mipmaps, render
-# targets) is designed (report §1.3) — base.fab is its temporary home.
+# seed). MaterialPipelineFacts.side_code is frozen ABI (api-shape-policy §3).
+# TextureDescriptor relocates to material/texture.fab when the texture
+# pipeline (samplers, mipmaps, render targets) is designed (report §1.3).
 #
 # Zero imports.
 
-# =========================================================================
-# MATERIAL
-#
-# Mirror THREE.Material
-#
-# Material is deliberately a small value contract. The fields describe
-# pipeline-relevant state; texture storage and host allocation belong to later
-# material leaves and the sibling renderer.
-# =========================================================================
-
+# Material is deliberately a small value contract (THREE.Material). The
+# fields describe pipeline-relevant state; texture storage and host
+# allocation belong to later material leaves and the sibling renderer.
 @ public
 class Material {
     string name
@@ -50,16 +37,8 @@ class MaterialPipelineFacts {
     f32 alpha_test
 }
 
-# =========================================================================
-# TEXTURE (minimal placeholder)
-#
-# Mirror THREE.Texture, THREE.DataTexture
-#
-# Placeholder definition for the shape contract. Will be expanded
-# when texture pipeline (samplers, mipmaps, render targets) is designed.
-# Relocates to material/texture.fab at H3; see header comment.
-# =========================================================================
-
+# TextureDescriptor is a THREE.Texture / THREE.DataTexture shape seed.
+# Relocates to material/texture.fab at H3; see header.
 @ public
 class TextureDescriptor {
     int<u32> width
@@ -69,8 +48,6 @@ class TextureDescriptor {
     list<f32> data optional
     bool generate_mipmaps = true
 }
-
-# --- Base material free helpers ---
 
 @ public
 fn materia_ex_nomine(string name) → Material {
