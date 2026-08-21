@@ -1,10 +1,3 @@
-+++
-term = "hello-voxel-first-draw-facts"
-kind = "concept"
-category = "library"
-canonical = true
-summary = "Hello Voxel first indexed-draw source facts from position and color data."
-+++
 import from "triga:geometry/data" data
 
 import from "triga:geometry/attribute" attribute
