@@ -18,7 +18,7 @@ fn floats_textus(de list<f32> values) → string {
     var int i ← 0
     while i < values.length() {
         if i ≡ 0 {
-            output ← values[i] ↦ string
+            output ↤ values[i]
         }
         else {
             output ← "§ §"(output, values[i] ↦ string)
@@ -33,7 +33,7 @@ fn indices_textus(de list<u32> values) → string {
     var int i ← 0
     while i < values.length() {
         if i ≡ 0 {
-            output ← values[i] ↦ string
+            output ↤ values[i]
         }
         else {
             output ← "§ §"(output, values[i] ↦ string)

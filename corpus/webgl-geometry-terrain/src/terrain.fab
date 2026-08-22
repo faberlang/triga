@@ -42,8 +42,8 @@ fn _smoothstep(f32 t) → f32 {
 
 @ private { }
 fn _value_noise(f32 x, f32 y) → f32 {
-    const int ix ← x ↦ int
-    const int iy ← y ↦ int
+    const int ix ↤ x
+    const int iy ↤ y
     const f32 sx ← _smoothstep(x - (ix ↦ f32))
     const f32 sy ← _smoothstep(y - (iy ↦ f32))
     const f32 v00 ← _lattice_hash(ix, iy)
