@@ -2,8 +2,8 @@
   "inventory_schema_version": 1,
   "inventory_revision": 1,
   "package": "triga",
-  "source_revision": "6137a81f576871778b015db40ee6785e4fe315ef",
-  "generation_timestamp": "2026-08-17T03:30:41Z",
+  "source_revision": "cec9e551eebdd6d4dfdb95245a648c83189b15ca",
+  "generation_timestamp": "2026-08-23T19:58:33Z",
   "versions": {
     "faber": "0.2.0",
     "cista": "0.2.0",
@@ -11,94 +11,190 @@
   },
   "totals": {
     "modules": 26,
-    "lines": 4510,
-    "classes": 66,
+    "lines": 4685,
+    "classes": 65,
     "unions": 6,
-    "functions_total": 282,
-    "functions_underscore_private": 36,
-    "functions_public": 246,
-    "imports": 50,
-    "null_returning_functions": 147,
-    "abi_field_occurrences": 172,
-    "co_located_proba_files": 10,
-    "consumer_import_refs": 61
+    "functions_total": 281,
+    "functions_underscore_private": 0,
+    "functions_public": 281,
+    "imports": 52,
+    "null_returning_functions": 148,
+    "abi_field_occurrences": 151,
+    "co_located_proba_files": 26,
+    "consumer_import_refs": 62
   },
   "error_null_contract": {
     "typed_error_channel": "none",
     "failable_return_arrow_occurrences": 0,
     "iace_call_sites": 0,
-    "null_returning_functions": 147,
+    "null_returning_functions": 148,
     "reserved_for_absence": "nihil / ∪ null mark genuine absence and recoverable failure indistinguishably",
     "notes": "No typed error channel; failures collapse to bool or ∪ null. Executed-proba tier open in-repo: faber test runner is not green (routed to tgh-s0-4 / faber package-test surface)."
   },
   "abi_fields": {
     "patterns": ["_code", "offset_bytes", "stride_bytes", "source_name"],
     "occurrences": {
-      "_code": 109,
-      "offset_bytes": 20,
-      "stride_bytes": 22,
-      "source_name": 21,
-      "total": 172
+      "_code": 112,
+      "offset_bytes": 12,
+      "stride_bytes": 14,
+      "source_name": 13,
+      "total": 151
     }
   },
   "co_located_tests": {
+    "src/face.proba": {
+      "module": "src/face.fab",
+      "lines": 83,
+      "groups": 0,
+      "cases": 0
+    },
     "src/geometry.proba": {
       "module": "src/geometry.fab",
-      "lines": 12,
-      "groups": 1,
+      "lines": 9,
+      "groups": 0,
       "cases": 0
     },
     "src/geometry/attribute.proba": {
       "module": "src/geometry/attribute.fab",
-      "lines": 54,
-      "groups": 1,
+      "lines": 72,
+      "groups": 0,
       "cases": 0
     },
     "src/geometry/batch.proba": {
       "module": "src/geometry/batch.fab",
-      "lines": 41,
-      "groups": 1,
+      "lines": 61,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/geometry/bounds.proba": {
+      "module": "src/geometry/bounds.fab",
+      "lines": 70,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/geometry/data.proba": {
+      "module": "src/geometry/data.fab",
+      "lines": 247,
+      "groups": 0,
       "cases": 0
     },
     "src/geometry/layout.proba": {
       "module": "src/geometry/layout.fab",
-      "lines": 34,
-      "groups": 1,
+      "lines": 61,
+      "groups": 0,
       "cases": 0
     },
     "src/graph.proba": {
       "module": "src/graph.fab",
-      "lines": 14,
+      "lines": 11,
       "groups": 0,
       "cases": 0
     },
     "src/graph/camera.proba": {
       "module": "src/graph/camera.fab",
-      "lines": 92,
+      "lines": 101,
       "groups": 0,
       "cases": 0
     },
     "src/graph/object.proba": {
       "module": "src/graph/object.fab",
-      "lines": 54,
+      "lines": 52,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/lighting.proba": {
+      "module": "src/lighting.fab",
+      "lines": 8,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/lighting/light.proba": {
+      "module": "src/lighting/light.fab",
+      "lines": 102,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/material.proba": {
+      "module": "src/material.fab",
+      "lines": 8,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/material/base.proba": {
+      "module": "src/material/base.fab",
+      "lines": 98,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/material/basic.proba": {
+      "module": "src/material/basic.fab",
+      "lines": 71,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/material/lit.proba": {
+      "module": "src/material/lit.fab",
+      "lines": 49,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/material/standard.proba": {
+      "module": "src/material/standard.fab",
+      "lines": 55,
       "groups": 0,
       "cases": 0
     },
     "src/math.proba": {
       "module": "src/math.fab",
-      "lines": 369,
+      "lines": 381,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/primitives.proba": {
+      "module": "src/primitives.fab",
+      "lines": 9,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/primitives/basic.proba": {
+      "module": "src/primitives/basic.fab",
+      "lines": 439,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/renderable.proba": {
+      "module": "src/renderable.fab",
+      "lines": 11,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/renderable/mesh.proba": {
+      "module": "src/renderable/mesh.fab",
+      "lines": 164,
       "groups": 0,
       "cases": 0
     },
     "src/resource.proba": {
       "module": "src/resource.fab",
-      "lines": 181,
+      "lines": 279,
       "groups": 0,
       "cases": 0
     },
     "src/scene.proba": {
       "module": "src/scene.fab",
-      "lines": 139,
+      "lines": 144,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/shader_contract.proba": {
+      "module": "src/shader_contract.fab",
+      "lines": 239,
+      "groups": 0,
+      "cases": 0
+    },
+    "src/triga.proba": {
+      "module": "src/triga.fab",
+      "lines": 9,
       "groups": 0,
       "cases": 0
     }
@@ -220,10 +316,11 @@
       ]
     },
     "triga:math": {
-      "import_count": 9,
+      "import_count": 10,
       "consumers": [
         "exempla/triga-basics.fab",
         "exempla/triga-box3-genus-spike.fab",
+        "exempla/triga-geometry-attributes.fab",
         "exempla/triga-graphics-pipeline-facts.fab",
         "exempla/triga-hello-voxel-pipeline.fab",
         "exempla/triga-math-edge-cases.fab",
@@ -287,7 +384,7 @@
   "modules": [
     {
       "path": "src/face.fab",
-      "lines": 46,
+      "lines": 68,
       "classes": 1,
       "unions": 0,
       "functions_total": 2,
@@ -296,11 +393,11 @@
       "imports": 2,
       "null_returning_functions": 2,
       "abi_field_occurrences": 5,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/face.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/geometry.fab",
@@ -321,14 +418,14 @@
     },
     {
       "path": "src/geometry/attribute.fab",
-      "lines": 141,
+      "lines": 136,
       "classes": 1,
       "unions": 2,
-      "functions_total": 9,
-      "functions_underscore_private": 1,
+      "functions_total": 8,
+      "functions_underscore_private": 0,
       "functions_public": 8,
       "imports": 1,
-      "null_returning_functions": 3,
+      "null_returning_functions": 2,
       "abi_field_occurrences": 5,
       "co_located_proba": "src/geometry/attribute.proba",
       "co_located_proba_refs": 1,
@@ -346,7 +443,7 @@
     },
     {
       "path": "src/geometry/batch.fab",
-      "lines": 150,
+      "lines": 171,
       "classes": 6,
       "unions": 0,
       "functions_total": 8,
@@ -370,7 +467,7 @@
     },
     {
       "path": "src/geometry/bounds.fab",
-      "lines": 32,
+      "lines": 34,
       "classes": 2,
       "unions": 0,
       "functions_total": 0,
@@ -379,25 +476,25 @@
       "imports": 0,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/geometry/bounds.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/geometry/data.fab",
-      "lines": 868,
+      "lines": 833,
       "classes": 2,
       "unions": 1,
-      "functions_total": 57,
-      "functions_underscore_private": 10,
-      "functions_public": 47,
-      "imports": 4,
+      "functions_total": 56,
+      "functions_underscore_private": 0,
+      "functions_public": 56,
+      "imports": 5,
       "null_returning_functions": 41,
-      "abi_field_occurrences": 71,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "abi_field_occurrences": 47,
+      "co_located_proba": "src/geometry/data.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/conformance/shader-contract/fragment-entry-naga.fab",
         "exempla/conformance/shader-contract/source-fragment-body-color-widening.fab",
@@ -415,16 +512,16 @@
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 14,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/geometry/layout.fab",
-      "lines": 133,
+      "lines": 168,
       "classes": 1,
       "unions": 2,
       "functions_total": 6,
-      "functions_underscore_private": 4,
-      "functions_public": 2,
+      "functions_underscore_private": 0,
+      "functions_public": 6,
       "imports": 0,
       "null_returning_functions": 0,
       "abi_field_occurrences": 11,
@@ -453,7 +550,7 @@
     },
     {
       "path": "src/graph/camera.fab",
-      "lines": 87,
+      "lines": 91,
       "classes": 4,
       "unions": 0,
       "functions_total": 4,
@@ -473,7 +570,7 @@
     },
     {
       "path": "src/graph/object.fab",
-      "lines": 29,
+      "lines": 31,
       "classes": 2,
       "unions": 0,
       "functions_total": 0,
@@ -502,15 +599,15 @@
       "imports": 1,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/lighting.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/lighting/light.fab",
-      "lines": 40,
+      "lines": 44,
       "classes": 4,
       "unions": 0,
       "functions_total": 0,
@@ -519,11 +616,11 @@
       "imports": 2,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/lighting/light.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/material.fab",
@@ -536,15 +633,15 @@
       "imports": 4,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/material.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/material/base.fab",
-      "lines": 112,
+      "lines": 95,
       "classes": 3,
       "unions": 0,
       "functions_total": 9,
@@ -552,20 +649,20 @@
       "functions_public": 9,
       "imports": 0,
       "null_returning_functions": 2,
-      "abi_field_occurrences": 6,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "abi_field_occurrences": 5,
+      "co_located_proba": "src/material/base.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-basics.fab",
         "exempla/triga-graphics-pipeline-facts.fab",
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 3,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/material/basic.fab",
-      "lines": 62,
+      "lines": 64,
       "classes": 1,
       "unions": 0,
       "functions_total": 7,
@@ -574,18 +671,18 @@
       "imports": 2,
       "null_returning_functions": 6,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/material/basic.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-basics.fab",
         "exempla/triga-graphics-pipeline-facts.fab"
       ],
       "consumer_import_count": 2,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/material/lit.fab",
-      "lines": 21,
+      "lines": 22,
       "classes": 1,
       "unions": 0,
       "functions_total": 0,
@@ -594,17 +691,17 @@
       "imports": 2,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/material/lit.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 1,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/material/standard.fab",
-      "lines": 23,
+      "lines": 24,
       "classes": 1,
       "unions": 0,
       "functions_total": 0,
@@ -613,30 +710,31 @@
       "imports": 2,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/material/standard.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 1,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/math.fab",
-      "lines": 925,
+      "lines": 1051,
       "classes": 18,
       "unions": 0,
       "functions_total": 86,
-      "functions_underscore_private": 6,
-      "functions_public": 80,
+      "functions_underscore_private": 0,
+      "functions_public": 86,
       "imports": 0,
       "null_returning_functions": 35,
-      "abi_field_occurrences": 37,
+      "abi_field_occurrences": 41,
       "co_located_proba": "src/math.proba",
       "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-basics.fab",
         "exempla/triga-box3-genus-spike.fab",
+        "exempla/triga-geometry-attributes.fab",
         "exempla/triga-graphics-pipeline-facts.fab",
         "exempla/triga-hello-voxel-pipeline.fab",
         "exempla/triga-math-edge-cases.fab",
@@ -645,7 +743,7 @@
         "exempla/triga-transforms.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "consumer_import_count": 9,
+      "consumer_import_count": 10,
       "evidence_tier": "executed-proba"
     },
     {
@@ -659,25 +757,25 @@
       "imports": 1,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/primitives.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/primitives/basic.fab",
-      "lines": 375,
+      "lines": 328,
       "classes": 0,
       "unions": 0,
-      "functions_total": 11,
-      "functions_underscore_private": 2,
-      "functions_public": 9,
-      "imports": 3,
+      "functions_total": 10,
+      "functions_underscore_private": 0,
+      "functions_public": 10,
+      "imports": 4,
       "null_returning_functions": 9,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/primitives/basic.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/conformance/shader-contract/fragment-entry-naga.fab",
         "exempla/conformance/shader-contract/source-fragment-body-color-widening.fab",
@@ -691,7 +789,7 @@
         "exempla/triga-stage4-source-facts.fab"
       ],
       "consumer_import_count": 10,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/renderable.fab",
@@ -704,15 +802,15 @@
       "imports": 1,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/renderable.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/renderable/mesh.fab",
-      "lines": 32,
+      "lines": 33,
       "classes": 1,
       "unions": 0,
       "functions_total": 0,
@@ -721,24 +819,24 @@
       "imports": 5,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/renderable/mesh.proba",
+      "co_located_proba_refs": 1,
       "consumers": [
         "exempla/triga-types-untested.fab"
       ],
       "consumer_import_count": 1,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/resource.fab",
-      "lines": 448,
+      "lines": 490,
       "classes": 5,
       "unions": 0,
-      "functions_total": 37,
-      "functions_underscore_private": 2,
-      "functions_public": 35,
+      "functions_total": 38,
+      "functions_underscore_private": 0,
+      "functions_public": 38,
       "imports": 0,
-      "null_returning_functions": 23,
+      "null_returning_functions": 24,
       "abi_field_occurrences": 0,
       "co_located_proba": "src/resource.proba",
       "co_located_proba_refs": 1,
@@ -750,14 +848,14 @@
     },
     {
       "path": "src/scene.fab",
-      "lines": 687,
-      "classes": 13,
+      "lines": 704,
+      "classes": 12,
       "unions": 1,
-      "functions_total": 41,
-      "functions_underscore_private": 11,
-      "functions_public": 30,
+      "functions_total": 42,
+      "functions_underscore_private": 0,
+      "functions_public": 42,
       "imports": 2,
-      "null_returning_functions": 14,
+      "null_returning_functions": 15,
       "abi_field_occurrences": 0,
       "co_located_proba": "src/scene.proba",
       "co_located_proba_refs": 1,
@@ -770,7 +868,7 @@
     },
     {
       "path": "src/shader_contract.fab",
-      "lines": 157,
+      "lines": 156,
       "classes": 0,
       "unions": 0,
       "functions_total": 5,
@@ -779,11 +877,11 @@
       "imports": 0,
       "null_returning_functions": 0,
       "abi_field_occurrences": 37,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/shader_contract.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     },
     {
       "path": "src/triga.fab",
@@ -796,11 +894,11 @@
       "imports": 8,
       "null_returning_functions": 0,
       "abi_field_occurrences": 0,
-      "co_located_proba": null,
-      "co_located_proba_refs": 0,
+      "co_located_proba": "src/triga.proba",
+      "co_located_proba_refs": 1,
       "consumers": [],
       "consumer_import_count": 0,
-      "evidence_tier": "structural"
+      "evidence_tier": "executed-proba"
     }
   ],
   "generation": {

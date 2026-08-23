@@ -26,58 +26,35 @@ MIR, or runner failure is isolated to its module row rather than fail-closing
 the remaining rows. The direct single-`.proba` route is deliberately not used;
 it skips the package link step that resolves receiver methods before lowering.
 
-The current receipt (`proof/coverage-scorecard.json`, coverage revision 2)
-records **22/26** module selections at `executed-proba` through this package-link
-route, using
-`/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber`
-built from packet radix `a03cb7053` against triga `fdbbc09` plus the two
-triga-side residual fixes below. The passing selections are `src/face.fab`,
-`src/geometry.fab`, `src/geometry/attribute.fab`, `src/geometry/batch.fab`,
-`src/geometry/bounds.fab`, `src/geometry/data.fab`, `src/geometry/layout.fab`,
-`src/graph.fab`, `src/graph/camera.fab`, `src/graph/object.fab`,
-`src/lighting.fab`, `src/lighting/light.fab`, `src/material.fab`,
-`src/material/basic.fab`, `src/math.fab`, `src/primitives.fab`,
-`src/primitives/basic.fab`, `src/renderable.fab`, `src/renderable/mesh.fab`,
-`src/resource.fab`, `src/shader_contract.fab`, and `src/triga.fab`. This is a
-partial package-link result, not 26/26.
+The current receipt (`proof/coverage-scorecard.json`, coverage revision 3)
+records **4/26** module selections at `executed-proba` through this package-link
+route, using the workspace release binary
+`/Users/ianzepp/work/faberlang/radix/target/release/faber` (faber 1.8.0) with
+`FABER_LIBRARY_HOME=/Users/ianzepp/work/faberlang`. The passing selections are
+`src/geometry/attribute.fab`, `src/geometry/batch.fab`,
+`src/geometry/layout.fab`, and `src/shader_contract.fab`. This is a partial
+package-link result, not 26/26.
 
-This receipt was refreshed at `2026-08-17T17:58:11Z`. Of the five 21/26
-assertion residuals, two were triga defects and are now executed-proba:
+This receipt was refreshed at `2026-08-23T19:58:59Z`. Twenty modules are
+`blocked` on the same radix-side MIR gap: `unsupported MIR lowering: itera
+collection before iterator MIR lowering`. The current triga source uses
+`itera` collections (`src/math.fab`, `src/scene.fab`); the current radix does
+not lower an `itera` collection before iterator MIR lowering, so every probe
+that imports those modules blocks before any case runs. That is a radix
+frontend/MIR gap, not a triga paper, and it keeps the receipt at 4/26.
 
-- `src/material/basic.fab` — the invalid-color carrier used a partial
-  `Material` literal; `material_valida` then compared an omitted `alpha_test`
-  (`Nil ≺ 0.0` → `comparison type mismatch`). The case now builds the base
-  through `materia_ex_nomine`.
-- `src/resource.fab` — `retired_handles` expected created+replaced indices
-  `[10, 11]`; the product retires previous identities of changed rows
-  (replaced+removed → `[11, 12]`). The first lifecycle case already locked
-  that length-2 meaning.
+Two further reds are not the itera block:
 
-The other three 21/26 residuals remain assertion-time reds. They omit class
-field defaults (`generate_mipmaps = true`, `shininess = 30.0`,
-`roughness`/`metalness`/`emissive_intensity`, and `Material.opacity`) on
-imported struct literals. MIR Construction fill applies `field.init` only
-from `context.structs` (local HIR); imported file-interface structs live
-only in `struct_field_types` and are not filled (`radix` `aggregate.rs`
-`materialize_struct_fields`). That is a radix-side gap, not a triga paper:
+- `src/material/base.fab` 3 passed / 1 failed — the revision-2 assertion
+  residual persists: `texture descriptor preserves its placeholder shape`
+  (imported struct literals omit class field defaults; radix
+  `materialize_struct_fields` fills only local-HIR structs)
+- `src/primitives/basic.fab` fails package analysis (`error: package analysis
+  failed`) before any case runs
 
-- `src/material/base.fab` 3 passed / 1 failed:
-  `texture descriptor preserves its placeholder shape` (`expected bivalens
-  operand` — omitted `generate_mipmaps` reads as `Nil`)
-- `src/material/lit.fab` 1 passed / 2 failed: Phong omitted `shininess`
-  default (`assertion failed`)
-- `src/material/standard.fab` 1 passed / 2 failed: omitted standard
-  defaults / omitted `opacity` then `Nil ≺ 0.0` (`comparison type mismatch`)
-
-A fourth red is new on this tree, not one of the five assertion residuals:
-`src/scene.fab` fails to link (`option unwrap operand is not nullable`) after
-lint-1 `869a873` re-spelled `SceneNode.parent` to `optional` and dropped
-`parent = null`. That MIR class is back for scene only.
-
-The scorecard still marks `rdx-s05-3` unresolved because a passing test name
-contains the word "unsupported"; no MIR or provider diagnostic codes were
-observed. The gate exit is 1 (`blocked`, `complete: false`). The run remains
-open at 22/26, not 26/26.
+`rdx-s05-3` remains `unresolved` on the MIR-unsupported evidence. No
+`PARSE050` row is present. The gate exit is 1 (`blocked`, `complete: false`);
+the run stays open at 4/26, not 26/26.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may

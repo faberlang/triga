@@ -53,6 +53,7 @@ EXECUTION_KEYS = {
     "exit_status",
     "passed",
     "failed",
+    "blocked",
     "skipped",
     "status",
     "evidence_tier",
@@ -227,12 +228,12 @@ def baseline_projection(value: object) -> object:
 
 
 def check_stage0_5(errors: list[str], scorecard: dict[str, object], rows: list[object]) -> None:
-    """Validate the optional revision-2 execution overlay without changing its receipt."""
-    if scorecard.get("coverage_revision") != 2:
+    """Validate the optional revision-3 execution overlay without changing its receipt."""
+    if scorecard.get("coverage_revision") != 3:
         return
     stage = scorecard.get("stage0_5")
     if stage is None:
-        errors.append("scorecard.stage0_5 is required for coverage revision 2")
+        errors.append("scorecard.stage0_5 is required for coverage revision 3")
         return
     expect_keys(errors, stage, STAGE_KEYS, "scorecard.stage0_5")
     if not isinstance(stage, dict):
@@ -276,7 +277,7 @@ def check_stage0_5(errors: list[str], scorecard: dict[str, object], rows: list[o
         label = f"scorecard.modules[{index}]"
         execution = row.get("proba_execution")
         if execution is None:
-            errors.append(f"{label}.proba_execution is required for coverage revision 2")
+            errors.append(f"{label}.proba_execution is required for coverage revision 3")
             continue
         expect_keys(errors, execution, EXECUTION_KEYS, f"{label}.proba_execution")
         if not isinstance(execution, dict):
@@ -302,7 +303,7 @@ def check_stage0_5(errors: list[str], scorecard: dict[str, object], rows: list[o
             executed_count += 1
         if not isinstance(execution.get("case_count"), int) or execution["case_count"] < 0:
             errors.append(f"{label}.proba_execution.case_count must be a non-negative integer")
-        counts = [execution.get(key) for key in ("passed", "failed", "skipped")]
+        counts = [execution.get(key) for key in ("passed", "failed", "blocked", "skipped")]
         if any(value is not None and (not isinstance(value, int) or value < 0) for value in counts):
             errors.append(f"{label}.proba_execution result counts must be non-negative integers or null")
         elif all(value is not None for value in counts) and isinstance(execution.get("case_count"), int):
@@ -311,7 +312,7 @@ def check_stage0_5(errors: list[str], scorecard: dict[str, object], rows: list[o
         if execution.get("status") == "passed":
             if execution.get("evidence_tier") != "executed-proba" or execution.get("exit_status") != 0:
                 errors.append(f"{label}.proba_execution passed status is not executed-proba evidence")
-            if execution.get("passed") != execution.get("case_count") or execution.get("failed") != 0 or execution.get("skipped") != 0:
+            if execution.get("passed") != execution.get("case_count") or execution.get("failed") != 0 or execution.get("blocked") != 0 or execution.get("skipped") != 0:
                 errors.append(f"{label}.proba_execution passed status has inconsistent counts")
         if not isinstance(execution.get("diagnostic_codes"), dict):
             errors.append(f"{label}.proba_execution.diagnostic_codes must be an object")
@@ -347,8 +348,8 @@ def main() -> int:
     )
     if scorecard.get("coverage_schema_version") != 1:
         errors.append("scorecard.coverage_schema_version must be 1")
-    if scorecard.get("coverage_revision") != 2:
-        errors.append("scorecard.coverage_revision must be 2")
+    if scorecard.get("coverage_revision") != 3:
+        errors.append("scorecard.coverage_revision must be 3")
     if scorecard.get("package") != "triga":
         errors.append("scorecard.package must be triga")
     if scorecard.get("stage0_unit") != "tgh-s0-3":
@@ -571,7 +572,7 @@ def main() -> int:
                 errors.append(f"derived scorecard: cannot load JSON: {exc}")
             else:
                 if not isinstance(derived_value, dict) or derived_value.get("coverage_revision") != scorecard.get("coverage_revision"):
-                    errors.append("derived scorecard does not share coverage revision 2")
+                    errors.append("derived scorecard does not share coverage revision 3")
                 elif baseline_projection(derived_value) != baseline_projection(scorecard):
                     errors.append("committed scorecard differs from a fresh derived baseline")
 

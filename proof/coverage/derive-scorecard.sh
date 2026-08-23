@@ -172,7 +172,7 @@ observed_revision = git_head(root)
 snapshot_revision = inventory["source_revision"]
 scorecard = {
     "coverage_schema_version": 1,
-    "coverage_revision": 2,
+    "coverage_revision": 3,
     "package": "triga",
     "stage0_unit": "tgh-s0-3",
     "inventory": {

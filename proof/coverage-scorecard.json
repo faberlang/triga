@@ -1,17 +1,17 @@
 {
   "coverage_schema_version": 1,
-  "coverage_revision": 2,
+  "coverage_revision": 3,
   "package": "triga",
   "stage0_unit": "tgh-s0-3",
   "inventory": {
     "path": "proof/inventory/triga-inventory.json",
     "inventory_schema_version": 1,
     "inventory_revision": 1,
-    "source_revision": "2e9daa06684269c58f177a8d1c36f0c8c2365152",
+    "source_revision": "cec9e551eebdd6d4dfdb95245a648c83189b15ca",
     "module_count": 26,
-    "observed_source_revision": "fdbbc09a9224066e1ab96b3c4290501c2b2d25e3",
-    "observed_source_digest": "sha256:343f9f5c9ee97327a4cae6b4f9f60fb3a04a17d194b4159bf0e6eb2f886a90d1",
-    "inventory_mismatch": true
+    "observed_source_revision": "cec9e551eebdd6d4dfdb95245a648c83189b15ca",
+    "observed_source_digest": "sha256:3ad468f44c030fb7efb9e620f803d93442f0f10c7d73775523e2f7d2f70de90f",
+    "inventory_mismatch": false
   },
   "exempla_inventory": {
     "readme": "exempla/README.md",
@@ -65,7 +65,7 @@
   "modules": [
     {
       "path": "src/face.fab",
-      "lines": 46,
+      "lines": 68,
       "symbol_counts": {
         "classes": 1,
         "unions": 0,
@@ -80,12 +80,12 @@
       ],
       "co_located_proba": {
         "module": "src/face.fab",
-        "lines": 72,
+        "lines": 83,
         "groups": 1,
         "cases": 4
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -95,21 +95,27 @@
         "proba_path": "src/face.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "face.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include face.proba",
-        "exit_status": 0,
-        "passed": 4,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include face.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 4,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/face.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -129,12 +135,12 @@
       ],
       "co_located_proba": {
         "module": "src/geometry.fab",
-        "lines": 12,
+        "lines": 9,
         "groups": 1,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -144,33 +150,39 @@
         "proba_path": "src/geometry.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "geometry.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include geometry.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/geometry.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/geometry/attribute.fab",
-      "lines": 141,
+      "lines": 136,
       "symbol_counts": {
         "classes": 1,
         "unions": 2,
-        "functions_total": 9,
-        "functions_underscore_private": 1,
+        "functions_total": 8,
+        "functions_underscore_private": 0,
         "functions_public": 8,
-        "total": 12,
+        "total": 11,
         "public": 11
       },
       "co_located_proba_refs": [
@@ -178,7 +190,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/attribute.fab",
-        "lines": 74,
+        "lines": 72,
         "groups": 1,
         "cases": 3
       },
@@ -201,16 +213,17 @@
         "proba_path": "src/geometry/attribute.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "geometry/attribute.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/attribute.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include geometry/attribute.proba",
         "exit_status": 0,
         "passed": 3,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -220,7 +233,7 @@
     },
     {
       "path": "src/geometry/batch.fab",
-      "lines": 150,
+      "lines": 171,
       "symbol_counts": {
         "classes": 6,
         "unions": 0,
@@ -235,7 +248,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/batch.fab",
-        "lines": 64,
+        "lines": 61,
         "groups": 1,
         "cases": 4
       },
@@ -257,16 +270,17 @@
         "proba_path": "src/geometry/batch.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "geometry/batch.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/batch.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include geometry/batch.proba",
         "exit_status": 0,
         "passed": 4,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -276,7 +290,7 @@
     },
     {
       "path": "src/geometry/bounds.fab",
-      "lines": 32,
+      "lines": 34,
       "symbol_counts": {
         "classes": 2,
         "unions": 0,
@@ -291,12 +305,12 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/bounds.fab",
-        "lines": 73,
+        "lines": 70,
         "groups": 1,
         "cases": 3
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -306,41 +320,47 @@
         "proba_path": "src/geometry/bounds.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "geometry/bounds.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/bounds.proba",
-        "exit_status": 0,
-        "passed": 3,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include geometry/bounds.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/geometry/bounds.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/geometry/data.fab",
-      "lines": 868,
+      "lines": 833,
       "symbol_counts": {
         "classes": 2,
         "unions": 1,
-        "functions_total": 57,
-        "functions_underscore_private": 10,
-        "functions_public": 47,
-        "total": 60,
-        "public": 50
+        "functions_total": 56,
+        "functions_underscore_private": 0,
+        "functions_public": 56,
+        "total": 59,
+        "public": 59
       },
       "co_located_proba_refs": [
         "src/geometry/data.proba"
       ],
       "co_located_proba": {
         "module": "src/geometry/data.fab",
-        "lines": 246,
+        "lines": 247,
         "groups": 1,
         "cases": 7
       },
@@ -360,7 +380,7 @@
         "exempla/triga-stage4-source-facts.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -370,41 +390,47 @@
         "proba_path": "src/geometry/data.proba",
         "case_count": 7,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "geometry/data.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/data.proba",
-        "exit_status": 0,
-        "passed": 7,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include geometry/data.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 7,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/geometry/data.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/geometry/layout.fab",
-      "lines": 133,
+      "lines": 168,
       "symbol_counts": {
         "classes": 1,
         "unions": 2,
         "functions_total": 6,
-        "functions_underscore_private": 4,
-        "functions_public": 2,
+        "functions_underscore_private": 0,
+        "functions_public": 6,
         "total": 9,
-        "public": 5
+        "public": 9
       },
       "co_located_proba_refs": [
         "src/geometry/layout.proba"
       ],
       "co_located_proba": {
         "module": "src/geometry/layout.fab",
-        "lines": 64,
+        "lines": 61,
         "groups": 1,
         "cases": 2
       },
@@ -419,16 +445,17 @@
         "proba_path": "src/geometry/layout.proba",
         "case_count": 2,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "geometry/layout.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/layout.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include geometry/layout.proba",
         "exit_status": 0,
         "passed": 2,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -453,12 +480,12 @@
       ],
       "co_located_proba": {
         "module": "src/graph.fab",
-        "lines": 14,
+        "lines": 11,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -468,26 +495,32 @@
         "proba_path": "src/graph.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "graph.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include graph.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/graph.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/graph/camera.fab",
-      "lines": 87,
+      "lines": 91,
       "symbol_counts": {
         "classes": 4,
         "unions": 0,
@@ -502,7 +535,7 @@
       ],
       "co_located_proba": {
         "module": "src/graph/camera.fab",
-        "lines": 104,
+        "lines": 101,
         "groups": 0,
         "cases": 5
       },
@@ -510,7 +543,7 @@
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -520,26 +553,32 @@
         "proba_path": "src/graph/camera.proba",
         "case_count": 5,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "graph/camera.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph/camera.proba",
-        "exit_status": 0,
-        "passed": 5,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include graph/camera.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 5,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/graph/camera.proba",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/graph/object.fab",
-      "lines": 29,
+      "lines": 31,
       "symbol_counts": {
         "classes": 2,
         "unions": 0,
@@ -554,7 +593,7 @@
       ],
       "co_located_proba": {
         "module": "src/graph/object.fab",
-        "lines": 55,
+        "lines": 52,
         "groups": 0,
         "cases": 4
       },
@@ -562,7 +601,7 @@
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -572,21 +611,27 @@
         "proba_path": "src/graph/object.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "graph/object.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph/object.proba",
-        "exit_status": 0,
-        "passed": 4,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include graph/object.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 4,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/graph/object.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -606,12 +651,12 @@
       ],
       "co_located_proba": {
         "module": "src/lighting.fab",
-        "lines": 11,
+        "lines": 8,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -621,26 +666,32 @@
         "proba_path": "src/lighting.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "lighting.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include lighting.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include lighting.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/lighting.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/lighting/light.fab",
-      "lines": 40,
+      "lines": 44,
       "symbol_counts": {
         "classes": 4,
         "unions": 0,
@@ -655,12 +706,12 @@
       ],
       "co_located_proba": {
         "module": "src/lighting/light.fab",
-        "lines": 105,
+        "lines": 102,
         "groups": 0,
         "cases": 7
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -670,21 +721,27 @@
         "proba_path": "src/lighting/light.proba",
         "case_count": 7,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "lighting/light.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include lighting/light.proba",
-        "exit_status": 0,
-        "passed": 7,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include lighting/light.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 7,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/lighting/light.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -704,12 +761,12 @@
       ],
       "co_located_proba": {
         "module": "src/material.fab",
-        "lines": 11,
+        "lines": 8,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -719,26 +776,32 @@
         "proba_path": "src/material.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "material.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include material.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/material/base.fab",
-      "lines": 112,
+      "lines": 95,
       "symbol_counts": {
         "classes": 3,
         "unions": 0,
@@ -753,7 +816,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/base.fab",
-        "lines": 101,
+        "lines": 98,
         "groups": 0,
         "cases": 4
       },
@@ -772,32 +835,33 @@
         "proba_path": "src/material/base.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "material/base.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/base.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include material/base.proba",
         "exit_status": 1,
         "passed": 3,
         "failed": 1,
+        "blocked": 0,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "ok   opacity alpha and unsupported side values fail closed",
-          "FAIL texture descriptor preserves its placeholder shape",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "ok   /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/base.proba::opacity alpha and unsupported side values fail closed (0 ms)",
+          "FAIL /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/base.proba::texture descriptor preserves its placeholder shape (0 ms)",
+          "test result: FAILED. 3 passed; 1 failed; 0 blocked; 0 skipped",
           "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
+          "runner summary: 1 failed; 0 blocked; 0 skipped"
         ]
       }
     },
     {
       "path": "src/material/basic.fab",
-      "lines": 62,
+      "lines": 64,
       "symbol_counts": {
         "classes": 1,
         "unions": 0,
@@ -812,7 +876,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/basic.fab",
-        "lines": 74,
+        "lines": 71,
         "groups": 0,
         "cases": 3
       },
@@ -820,7 +884,7 @@
         "exempla/triga-basics.fab",
         "exempla/triga-graphics-pipeline-facts.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -830,26 +894,32 @@
         "proba_path": "src/material/basic.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "material/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/basic.proba",
-        "exit_status": 0,
-        "passed": 3,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include material/basic.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/basic.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/material/lit.fab",
-      "lines": 21,
+      "lines": 22,
       "symbol_counts": {
         "classes": 1,
         "unions": 0,
@@ -864,7 +934,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/lit.fab",
-        "lines": 52,
+        "lines": 49,
         "groups": 0,
         "cases": 3
       },
@@ -881,33 +951,32 @@
         "proba_path": "src/material/lit.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "material/lit.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/lit.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include material/lit.proba",
         "exit_status": 1,
-        "passed": 1,
-        "failed": 2,
+        "passed": 0,
+        "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "runner-failure",
+        "status": "blocked",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL Phong defaults remain explicit carrier values",
-          "FAIL Phong carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/lit.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       }
     },
     {
       "path": "src/material/standard.fab",
-      "lines": 23,
+      "lines": 24,
       "symbol_counts": {
         "classes": 1,
         "unions": 0,
@@ -922,7 +991,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/standard.fab",
-        "lines": 58,
+        "lines": 55,
         "groups": 0,
         "cases": 3
       },
@@ -939,54 +1008,54 @@
         "proba_path": "src/material/standard.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "material/standard.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/standard.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include material/standard.proba",
         "exit_status": 1,
-        "passed": 1,
-        "failed": 2,
+        "passed": 0,
+        "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "runner-failure",
+        "status": "blocked",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL standard defaults remain explicit carrier values",
-          "FAIL standard carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/standard.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       }
     },
     {
       "path": "src/math.fab",
-      "lines": 925,
+      "lines": 1051,
       "symbol_counts": {
         "classes": 18,
         "unions": 0,
         "functions_total": 86,
-        "functions_underscore_private": 6,
-        "functions_public": 80,
+        "functions_underscore_private": 0,
+        "functions_public": 86,
         "total": 104,
-        "public": 98
+        "public": 104
       },
       "co_located_proba_refs": [
         "src/math.proba"
       ],
       "co_located_proba": {
         "module": "src/math.fab",
-        "lines": 384,
+        "lines": 381,
         "groups": 6,
         "cases": 17
       },
       "exempla_coverage_refs": [
         "exempla/triga-basics.fab",
         "exempla/triga-box3-genus-spike.fab",
+        "exempla/triga-geometry-attributes.fab",
         "exempla/triga-graphics-pipeline-facts.fab",
         "exempla/triga-hello-voxel-pipeline.fab",
         "exempla/triga-math-edge-cases.fab",
@@ -995,7 +1064,7 @@
         "exempla/triga-transforms.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1005,21 +1074,27 @@
         "proba_path": "src/math.proba",
         "case_count": 17,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "math.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include math.proba",
-        "exit_status": 0,
-        "passed": 17,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include math.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 17,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/math.proba",
+          "runner reported 0 passed for 17 declared cases",
+          "runner summary: 0 failed; 17 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1039,12 +1114,12 @@
       ],
       "co_located_proba": {
         "module": "src/primitives.fab",
-        "lines": 12,
+        "lines": 9,
         "groups": 1,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1054,41 +1129,47 @@
         "proba_path": "src/primitives.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "primitives.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include primitives.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include primitives.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/primitives.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/primitives/basic.fab",
-      "lines": 375,
+      "lines": 328,
       "symbol_counts": {
         "classes": 0,
         "unions": 0,
-        "functions_total": 11,
-        "functions_underscore_private": 2,
-        "functions_public": 9,
-        "total": 11,
-        "public": 9
+        "functions_total": 10,
+        "functions_underscore_private": 0,
+        "functions_public": 10,
+        "total": 10,
+        "public": 10
       },
       "co_located_proba_refs": [
         "src/primitives/basic.proba"
       ],
       "co_located_proba": {
         "module": "src/primitives/basic.fab",
-        "lines": 442,
+        "lines": 439,
         "groups": 1,
         "cases": 10
       },
@@ -1104,7 +1185,7 @@
         "exempla/triga-normal-oracle.fab",
         "exempla/triga-stage4-source-facts.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1114,21 +1195,24 @@
         "proba_path": "src/primitives/basic.proba",
         "case_count": 10,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "primitives/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include primitives/basic.proba",
-        "exit_status": 0,
-        "passed": 10,
-        "failed": 0,
-        "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include primitives/basic.proba",
+        "exit_status": 1,
+        "passed": null,
+        "failed": null,
+        "blocked": null,
+        "skipped": null,
+        "status": "analysis-error",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: package analysis failed"
+        ]
       }
     },
     {
@@ -1148,12 +1232,12 @@
       ],
       "co_located_proba": {
         "module": "src/renderable.fab",
-        "lines": 14,
+        "lines": 11,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1163,26 +1247,32 @@
         "proba_path": "src/renderable.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "renderable.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include renderable.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include renderable.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/renderable.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/renderable/mesh.fab",
-      "lines": 32,
+      "lines": 33,
       "symbol_counts": {
         "classes": 1,
         "unions": 0,
@@ -1197,14 +1287,14 @@
       ],
       "co_located_proba": {
         "module": "src/renderable/mesh.fab",
-        "lines": 167,
+        "lines": 164,
         "groups": 3,
         "cases": 6
       },
       "exempla_coverage_refs": [
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1214,48 +1304,54 @@
         "proba_path": "src/renderable/mesh.proba",
         "case_count": 6,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "renderable/mesh.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include renderable/mesh.proba",
-        "exit_status": 0,
-        "passed": 6,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include renderable/mesh.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 6,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/renderable/mesh.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/resource.fab",
-      "lines": 448,
+      "lines": 490,
       "symbol_counts": {
         "classes": 5,
         "unions": 0,
-        "functions_total": 37,
-        "functions_underscore_private": 2,
-        "functions_public": 35,
-        "total": 42,
-        "public": 40
+        "functions_total": 38,
+        "functions_underscore_private": 0,
+        "functions_public": 38,
+        "total": 43,
+        "public": 43
       },
       "co_located_proba_refs": [
         "src/resource.proba"
       ],
       "co_located_proba": {
         "module": "src/resource.fab",
-        "lines": 282,
+        "lines": 279,
         "groups": 2,
         "cases": 6
       },
       "exempla_coverage_refs": [
         "exempla/triga-scene-store.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1265,41 +1361,47 @@
         "proba_path": "src/resource.proba",
         "case_count": 6,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "resource.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include resource.proba",
-        "exit_status": 0,
-        "passed": 6,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include resource.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 6,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/resource.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
+        ]
       }
     },
     {
       "path": "src/scene.fab",
-      "lines": 687,
+      "lines": 704,
       "symbol_counts": {
-        "classes": 13,
+        "classes": 12,
         "unions": 1,
-        "functions_total": 41,
-        "functions_underscore_private": 11,
-        "functions_public": 30,
+        "functions_total": 42,
+        "functions_underscore_private": 0,
+        "functions_public": 42,
         "total": 55,
-        "public": 44
+        "public": 55
       },
       "co_located_proba_refs": [
         "src/scene.proba"
       ],
       "co_located_proba": {
         "module": "src/scene.fab",
-        "lines": 147,
+        "lines": 144,
         "groups": 1,
         "cases": 5
       },
@@ -1317,31 +1419,32 @@
         "proba_path": "src/scene.proba",
         "case_count": 5,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "scene.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include scene.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include scene.proba",
         "exit_status": 1,
         "passed": 0,
-        "failed": 5,
+        "failed": 0,
+        "blocked": 5,
         "skipped": 0,
-        "status": "runner-failure",
+        "status": "blocked",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/scene.proba",
           "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
         ]
       }
     },
     {
       "path": "src/shader_contract.fab",
-      "lines": 157,
+      "lines": 156,
       "symbol_counts": {
         "classes": 0,
         "unions": 0,
@@ -1356,7 +1459,7 @@
       ],
       "co_located_proba": {
         "module": "src/shader_contract.fab",
-        "lines": 242,
+        "lines": 239,
         "groups": 3,
         "cases": 15
       },
@@ -1371,16 +1474,17 @@
         "proba_path": "src/shader_contract.proba",
         "case_count": 15,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "shader_contract.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include shader_contract.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include shader_contract.proba",
         "exit_status": 0,
         "passed": 15,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -1405,12 +1509,12 @@
       ],
       "co_located_proba": {
         "module": "src/triga.fab",
-        "lines": 12,
+        "lines": 9,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1420,21 +1524,27 @@
         "proba_path": "src/triga.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/release/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
           "--include",
           "triga.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include triga.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/release/faber test /Users/ianzepp/work/faberlang/worktrees/scorecard/triga --include triga.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/triga.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     }
   ],
@@ -1442,19 +1552,19 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T17:58:11Z",
+    "run_at_utc": "2026-08-23T19:58:59Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 22,
+    "executed_module_count": 4,
     "executed_tier": "executed-proba",
-    "package_path": "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
-    "faber_bin": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+    "package_path": "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
+    "faber_bin": "/Users/ianzepp/work/faberlang/radix/target/release/faber",
     "faber_library_home": "/Users/ianzepp/work/faberlang",
     "filter_mode": "package-include-per-proba",
     "command_template": [
-      "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+      "/Users/ianzepp/work/faberlang/radix/target/release/faber",
       "test",
-      "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+      "/Users/ianzepp/work/faberlang/worktrees/scorecard/triga",
       "--include",
       "<source-relative>.proba"
     ],
@@ -1466,56 +1576,265 @@
     "discovery_errors": [],
     "failures": [
       {
+        "module": "src/face.fab",
+        "proba_path": "src/face.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/face.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/geometry.fab",
+        "proba_path": "src/geometry.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/geometry.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/geometry/bounds.fab",
+        "proba_path": "src/geometry/bounds.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/geometry/bounds.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/geometry/data.fab",
+        "proba_path": "src/geometry/data.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/geometry/data.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/graph.fab",
+        "proba_path": "src/graph.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/graph.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/graph/camera.fab",
+        "proba_path": "src/graph/camera.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/graph/camera.proba",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/graph/object.fab",
+        "proba_path": "src/graph/object.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/graph/object.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/lighting.fab",
+        "proba_path": "src/lighting.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/lighting.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/lighting/light.fab",
+        "proba_path": "src/lighting/light.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/lighting/light.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/material.fab",
+        "proba_path": "src/material.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
         "module": "src/material/base.fab",
         "proba_path": "src/material/base.proba",
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "ok   opacity alpha and unsupported side values fail closed",
-          "FAIL texture descriptor preserves its placeholder shape",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "ok   /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/base.proba::opacity alpha and unsupported side values fail closed (0 ms)",
+          "FAIL /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/base.proba::texture descriptor preserves its placeholder shape (0 ms)",
+          "test result: FAILED. 3 passed; 1 failed; 0 blocked; 0 skipped",
           "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
+          "runner summary: 1 failed; 0 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/material/basic.fab",
+        "proba_path": "src/material/basic.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/basic.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       },
       {
         "module": "src/material/lit.fab",
         "proba_path": "src/material/lit.proba",
-        "status": "runner-failure",
+        "status": "blocked",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL Phong defaults remain explicit carrier values",
-          "FAIL Phong carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/lit.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       },
       {
         "module": "src/material/standard.fab",
         "proba_path": "src/material/standard.proba",
-        "status": "runner-failure",
+        "status": "blocked",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL standard defaults remain explicit carrier values",
-          "FAIL standard carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/material/standard.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/math.fab",
+        "proba_path": "src/math.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/math.proba",
+          "runner reported 0 passed for 17 declared cases",
+          "runner summary: 0 failed; 17 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/primitives.fab",
+        "proba_path": "src/primitives.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/primitives.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/primitives/basic.fab",
+        "proba_path": "src/primitives/basic.proba",
+        "status": "analysis-error",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: package analysis failed"
+        ]
+      },
+      {
+        "module": "src/renderable.fab",
+        "proba_path": "src/renderable.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/renderable.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/renderable/mesh.fab",
+        "proba_path": "src/renderable/mesh.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/renderable/mesh.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/resource.fab",
+        "proba_path": "src/resource.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/resource.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
         ]
       },
       {
         "module": "src/scene.fab",
         "proba_path": "src/scene.proba",
-        "status": "runner-failure",
+        "status": "blocked",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/scene.proba",
           "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/triga.fab",
+        "proba_path": "src/triga.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: itera collection before iterator MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/worktrees/scorecard/triga/src/triga.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
         ]
       }
     ]
