@@ -1,6 +1,7 @@
 # Campaign: Parametric Math Types Clean Break
 
 **Status**: active — Stage 0 lowered; implementation not started
+**Amended**: 2026-08-22 — language-base refresh (zombie-docs pass): spelling corrections plus the amendment section below; the shipped language moved under this campaign after 2026-08-13
 
 **Mode**: run
 
@@ -95,7 +96,7 @@ Stage 0 must select one of these representations:
 
 | Candidate | Shape | Default posture |
 | --- | --- | --- |
-| Transparent aliases | `type Vector<size N> = vector<f32, N>` and `type Matrix<size R, size C> = matrix<f32, [R, C]>` | Preferred when aliases preserve type checking, emission, and usable operations |
+| Transparent aliases | `type Vector<magnitudo N> = vector<f32, N>` and `type Matrix<magnitudo R, magnitudo C> = matrix<f32, [R, C]>` | Preferred when aliases preserve type checking, emission, and usable operations |
 | Generic nominal wrappers | `Vector<N>` and `Matrix<R, C>` wrap compiler-owned register values | Allowed only when Triga needs receiver methods or domain behavior that aliases/direct types cannot provide |
 | Direct native types | Consumers use `vector<f32, N>` and `matrix<f32, [R, C]>`; Triga supplies dimension-neutral free operations | Allowed when the aliases would be pure spelling with no semantic value |
 
@@ -132,7 +133,54 @@ Audit `2881778a` fixes these five details without changing the public contract:
    failures such as invalid perspective, look-at, or affine-inverse inputs.
 
 The exact model, scopes, commands, inventories, and serial unit graph are in
-[`delivery-stage0.md`](delivery-stage0.md).
+[`delivery-stage0.md`](delivery-stage0.md) — read its §0 re-baseline before
+dispatching anything against it.
+
+## Language-base amendment (2026-08-22)
+
+This campaign was authored 2026-08-13 against the compiler as it then was.
+Verified against live `radix` main and `faber/docs/EBNF.md` on 2026-08-22,
+four things changed that Stage 0 must account for. Settled decisions above
+are untouched; this amendment adds facts and widens the decision boundary.
+
+**Shipped since authoring:**
+
+- **Shape generics closed** 2026-08-18 (`radix/docs/archived/shape-generics/`:
+  Phases 1–4 done). `magnitudo` size parameters are live grammar
+  (`generic_param ::= IDENTIFIER | 'magnitudo' IDENTIFIER`, EBNF; 
+  `GenericParamKind::{Typus, Magnitudo}` in `radix-syntax`), and generic
+  functions with type + `magnitudo` parameters are corpus-green
+  (`radix/corpus/generic/generic.fab`).
+- **Generic type aliases bind their own parameters.** The D0 defect (alias body
+  could not see its own params, SEM008) is fixed; the minimized repro and fix
+  record live at `tela/spike/defects/d0-generic-alias-params.fab`, and applied
+  alias use is proven through HIR/Rust emit
+  (`radix-hir-rust/src/module_test.rs`, `generic_type_alias_emits_params_and_applied_use`).
+- **Labeled tuples (`iuncta`) landed** 2026-08-21 (`radix iuncta-labeled-elements`,
+  IL-1..6): `iuncta<gx: f32, T>`, member access by label (`i.gx`), literal
+  bracket indexing, labels erased from type identity, destructuring and `itera`
+  binder label propagation; TS emission green 2026-08-22.
+- **`ratio` landed** (EBNF `[074]`): a label-only product type — every element
+  labeled, no positional or bracket access, no structural equivalence with
+  other ratios or a genus.
+
+**Consequences for the decision boundary:**
+
+1. The alias candidate's spelling is `magnitudo N`, not `size N` (corrected in
+   the table above; the campaign text predated the keyword).
+2. The wrapper-justification clause ("never by a desire to retain `.x`, `.y`,
+   `.z`") predates label access on tuples. A labeled `iuncta` carrier under
+   dimension-neutral free operations is now a real middle option between
+   aliases and wrappers — labels give `.x`-style access without a genus.
+   `ratio` is the same idea with stricter isolation (no positional access).
+   Stage 0's representation decision must be evaluated against these carriers
+   too; selecting them is still Stage 0's call, not this amendment's.
+3. The genuinely unproven compiler residue (verified absent on live main
+   2026-08-22): alias-declared `magnitudo` parameters with `figura`
+   application (`type Vector<magnitudo N> = vector<f32, N>` — the D0 fix and
+   corpus cover type params only), kind/order preservation through the
+   package-interface producers, and TS emission of applied generic aliases.
+   These stay Stage 0 prerequisite work; see `delivery-stage0.md` §0.
 
 ## Development Posture
 

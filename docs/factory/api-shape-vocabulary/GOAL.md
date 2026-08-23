@@ -26,7 +26,8 @@ broken by this work and tracked as a separate follow-up goal.
   Faber's language identity plus an implied parity guarantee Triga does not
   honor.
 - Receiver methods on `genus` are grammar-valid
-  (`radix/EBNF.md:136-139`), have stdlib precedent (`norma/src/ordinata.fab`),
+  (`faber/docs/EBNF.md` `[034] genus_member`, path corrected 2026-08-22 from
+  the retired `radix/EBNF.md`), have stdlib precedent (`norma/src/ordinata.fab`),
   and are already emitted by the TS backend. The shape is available; it is
   unused.
 
@@ -60,7 +61,7 @@ broken by this work and tracked as a separate follow-up goal.
 - **Norma modifications.** § 1b may decide to *import* `norma:vector`, but no
   edit to `norma/` is in scope.
 - **Frozen fact-genus fields (§ 1d).** Field names and numeric codes consumed by
-  `radix/crates/radix-mir/src/abi.rs` (`format_code`, `step_mode_code`,
+  `radix/crates/radix-mir/src/shader_contract.rs` (`format_code`, `step_mode_code`,
   `offset_bytes`, `stride_bytes`, `source_name`, topology/format/depth codes)
   stay frozen. Renaming them is an ABI change requiring lockstep radix work and
   is explicitly excluded.
@@ -73,18 +74,20 @@ broken by this work and tracked as a separate follow-up goal.
 
 - `triga/docs/api-vocabulary-proposal.md`: source proposal; both axes, per-layer
   sketches, surface budget, frozen-seam analysis, decision questions.
-- `radix/EBNF.md:136-139`: `genusMember := annotation* (fieldDecl | methodDecl)`;
+- `faber/docs/EBNF.md` `[034] genus_member ::= annotation* (field_decl | functio_method_decl)`;
   `methodDecl` is grammar-valid on a user `genus`.
 - `triga/src/triga.fab:1-3`: documented three.js-mirror intent this goal
   overturns; `:20-22` confirms file-top-level genus placement (residual unknown
   #3 is real).
 - `norma/src/ordinata.fab:26-33`: user-space genus with receiver methods,
   reasoned against morphologia — precedent that mutation through `ego` works.
-- `radix/crates/radix-codegen-ts/src/decl.rs:98-102`: TS backend emits genus
-  methods as class members today.
-- `radix/crates/radix-hir/src/nodes.rs:578`: `HirReceiver` has `None | Ref |
+- `radix/crates/radix-hir-ts/src/decl.rs` (`generate_class`, line ~135; path
+  corrected 2026-08-22 from the retired `radix-codegen-ts` crate): TS backend
+  emits genus methods as class members today.
+- `radix/crates/radix-hir/src/nodes.rs:550`: `HirReceiver` has `None | Ref |
   MutRef | Owned` — static constructors and instance methods both supported.
-- `radix/crates/radix-mir/src/abi.rs:2392-2408`: radix couples to Triga only via
+- `radix/crates/radix-mir/src/shader_contract.rs` (moved 2026-08-22 citation
+  from the retired `abi.rs:2392-2408`): radix couples to Triga only via
   fact-struct field names and numeric codes, never by function name. Confirms
   the frozen-seam split.
 - `radix/docs/stdlib/morphologia.md`: authority for public API shape; its
@@ -117,7 +120,8 @@ Before editing, inspect:
 - `radix/docs/stdlib/morphologia.md`: inflection/carrier-noun rules to honor.
 - `norma/src/vector.fab` and `norma/src/ordinata.fab`: precedent for § 1b and
   receiver-method shape.
-- `radix/crates/radix-mir/src/abi.rs`: the frozen seam — confirm no rename
+- `radix/crates/radix-mir/src/shader_contract.rs`: the frozen seam (renamed
+  from `abi.rs` in the crate split) — confirm no rename
   crosses it.
 
 ## Constraints And Invariants
@@ -213,7 +217,8 @@ Decision: included.
 - The three unconditional stem fixes are in (`productum`, `transversum`,
   `normata`).
 - No fact-genus field name or numeric code consumed by
-  `radix/crates/radix-mir/src/abi.rs` was renamed.
+  `radix/crates/radix-mir/src/shader_contract.rs` (the seam formerly at
+  `abi.rs`) was renamed.
 - No `de` annotation was stripped.
 - No compatibility alias or old-name shim exists.
 - All `triga/exempla/` that name public symbols compile against the new surface.

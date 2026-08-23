@@ -3,7 +3,7 @@
 **Status**: parked successor (2026-07-10) — ready for routing only
 **Mode**: draft/maintain — provisional campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
-**Participating repos**: `triga`, `radix`, `faber`, `faber-runtime`, `examples`; host/runtime ownership to be reconciled at activation
+**Participating repos**: `triga`, `radix`, `faber`, `examples` (generated carriers under `faber/runtime/`; the standalone `faber-runtime` repo was retired); host/runtime ownership to be reconciled at activation
 **Predecessor**: [Triga Three.js 80](../triga-threejs-80/CAMPAIGN.md)
 **Selected next stage**: none — wait for the predecessor's Stage 12 audit
 **Release posture**: foundation-first; no public release is implied

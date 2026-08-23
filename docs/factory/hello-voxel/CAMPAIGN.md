@@ -3,7 +3,7 @@
 **Status**: in factory
 **Selected next stage**: Goal 04 - Indexed Cube Crossover
 **Primary owner**: `triga`
-**Target repos**: `triga`, `radix`, `hosts`, `faber`, `faber-web`, `examples`
+**Target repos**: `triga`, `radix`, `hosts`, `faber`, `tela`, `examples`
 **Process**: `campaign` -> `delivery` -> `factory`
 **Re-grounded**: 2026-07-21 — fleet memory audit; Goals 00–03 complete on tip
   (Goal 01 radix `50d300b98`…`98db3a504`; Goal 02 hosts HV-02A/B/C
@@ -152,12 +152,15 @@ The campaign is grounded in:
 - `triga/src/triga.fab`, `geometry.fab`, and `scene.fab`;
 - `triga/exempla/threejs-host-demo/`, which currently delegates the visible
   render path to three.js;
-- `radix/hosts/webgpu-browser/`, which directly executes emitted compute WGSL
+- `hosts/webgpu-browser/` (sibling repo; moved out of `radix/` in the host
+  monorepo split), which directly executes emitted compute WGSL
   but uses three.js only for presentation;
-- `faber-web/src/` and `faber-web/runtime/dom.ts`, which own the imported
-  `web:web` and `web:dom` source/runtime contracts;
+- `tela/src/` (`tela:web`, `tela:dom`), which own the imported browser
+  source/runtime contracts since the faber-web retirement (2026-08-18;
+  archived in `archivum/faber-web/`, converted English-first into tela);
 - Radix graphics MIR ABI and WGSL entry-contract code under
-  `radix/crates/radix/src/mir/`;
+  `radix/crates/radix-mir/` (MIR moved out of the primary `radix` crate in
+  the crate split);
 - `triga/docs/factory/triga-threejs-80/goals/04-graphics-mir-shader-stages.md`;
   and
 - `triga/docs/factory/triga-threejs-80/goals/05-direct-webgpu-first-scene.md`.
@@ -177,7 +180,7 @@ reflection consumer admits compute kernels only.
 | Triga material policy | Opaque material, side, depth-test, depth-write, RGB, alpha, alpha-test, and pipeline facts are locked | Preserve and consume |
 | Graphics shader lowering | Partial MIR/WGSL contract seams | Lower Goal 01 after baseline lock |
 | Browser WebGPU host | Direct compute path exists; visible graphics use three.js | Extend through Goal 02 |
-| Browser application runtime | `faber-web` contracts and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold plus generated lifecycle mount automation; frame, resize, keyboard, pointer, focus, and pointer-lock subscription contracts exist in `web:dom`; generated browser entries now expose controller mount/failure/dispose lifecycle records; `examples/browser-app` now proves source-authored frame, resize, keyboard, pointer, focus, pointer-lock, and typed denied-failure delivery plus generated disposal cancellation through that helper | Preserve and consume in Goal 04 |
+| Browser application runtime | `tela` contracts (browser seam moved from retired `faber-web` 2026-08-18) and Faber `browser-app` packaging exist; `examples/hello-voxel` now has a package-admission scaffold plus generated lifecycle mount automation; frame, resize, keyboard, pointer, focus, and pointer-lock subscription contracts exist in `tela:dom`; generated browser entries now expose controller mount/failure/dispose lifecycle records; `examples/browser-app` now proves source-authored frame, resize, keyboard, pointer, focus, pointer-lock, and typed denied-failure delivery plus generated disposal cancellation through that helper | Preserve and consume in Goal 04 |
 | Voxel domain | Not implemented | Begin only after indexed-cube crossover |
 | Direct graphics proof | Not implemented | Goal 04 |
 | Runtime clean break | Not achieved | Goal 08 |
@@ -235,7 +238,8 @@ work remains pending because Radix has active foreign implementation work.
 The `examples/hello-voxel` browser package scaffold now exists and proves only
 controller/package admission. It does not claim frame events, graphics, or
 WebGPU execution.
-HV-03A is complete for the current planned `faber-web` scope: `web:dom` now
+HV-03A is complete for the current planned `tela` (then `faber-web`) scope:
+`tela:dom` now
 owns typed frame, resize, keyboard, pointer, focus, and pointer-lock
 subscription contracts plus runtime tests. HV-03B now has a Faber packaging
 slice: generated browser ESM exports `mountControllers`, records successful
@@ -246,7 +250,7 @@ lifecycle helper. HV-03C now has a Hello Voxel scaffold automation slice:
 generated ESM through a Node DOM harness, mounts the generated controller
 lifecycle, and verifies the Faber controller changes `.hv-status` to
 `package-ready`. HV-03D now has an executable frame slice: Faber product
-ambient declarations include the `web:dom` frame, resize, keyboard, pointer,
+ambient declarations include the `tela:dom` frame, resize, keyboard, pointer,
 focus, and pointer-lock contracts; `examples/browser-app` defines a
 `frame_controller` that returns its `dom.on_frame` subscription; the Node DOM
 harness proves generated ESM receives scheduled frame callbacks, updates

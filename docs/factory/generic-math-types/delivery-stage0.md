@@ -1,6 +1,6 @@
 # Generic Math Types — Stage 0 Delivery Spec
 
-**Status**: delivery-corrected — implementation not started; READY for factory dispatch after the serial committed-base gates below
+**Status**: delivery-corrected — implementation not started; READY verdict superseded pending the §0 language-base re-baseline (2026-08-22): the spec's Radix pins, AST model, and census paths predate the crate split and the shape-generics/iuncta landings; re-derive S0-R0 against live main before dispatch
 
 **Campaign**: [`CAMPAIGN.md`](CAMPAIGN.md)
 
@@ -15,6 +15,53 @@
 **Planning correction packet**: `worktrees/planner-2/triga` on `factory/planner-2-generic-math-stage0`
 
 **Implementation readiness**: `READY` — this is a delivery verdict, not a GO or ship approval
+
+## 0. Language-base re-baseline (2026-08-22)
+
+This spec was authored against Triga `05c6ccf` and Radix `f4e6bec7d`, corrected
+against Radix `2a986d40` (2026-08-13/14). Live Radix main has moved past all
+three pins. A zombie-docs pass on 2026-08-22 verified the drift below against
+live code; every dispatching Hand re-reads this section first. The unit graph
+in §5 keeps its shape, but its Radix-facing content must be re-derived, not
+reused as written.
+
+**What the spec says that no longer matches live main:**
+
+- **The S0-R0 AST model was never implemented as specified.** `GenericArgExpr`
+  and `AppliedArg` do not exist in live `radix`. The shipped design is:
+  `TypeParam { kind: GenericParamKind::{Typus, Magnitudo} }` for declaration
+  parameters (`radix-syntax/src/ast.rs`), applied arguments as
+  `TypeExprKind::Named(Ident, Vec<TypeExpr>)` / `Qualified`, and shapes as
+  dedicated `Tensor` / `Sparsa` / `Vector` / `Matrix` type nodes carrying
+  `FiguraExpr`. S0-R0's outcome must be restated against these names — or the
+  gap it was protecting against may already be closed for the alias case (see
+  the campaign's Language-base amendment).
+- **The census paths are stale.** The spec's `rg` commands target
+  `crates/radix/src` and `crates/radix-parser`; the crate split moved
+  `file_interface.rs` to `radix-program` / `radix-semantic` / `radix-module`.
+  Re-run every census against live paths before trusting its counts.
+- **Correction lock 1's producer path is gone.**
+  `radix/crates/faber/src/package/file_interface.rs` does not exist. The
+  package-producer seam is actively moving under
+  `radix/docs/factory/package-compile-ownership/` (goal active 2026-08-22);
+  S0-R1 must locate the then-current producer before writing its proof.
+
+**What landed after authoring that reduces the prerequisite surface:**
+
+- Shape generics closed 2026-08-18 (`docs/archived/shape-generics/`, Phases
+  1–4); the spec's note "Shape Generics Phase 4 is a related but distinct
+  line" described an open goal — it is now closed.
+- Generic type aliases bind their own type parameters (D0 defect fixed;
+  `tela/spike/defects/d0-generic-alias-params.fab` records the repro and fix;
+  applied alias use green through HIR/Rust emit in `radix-hir-rust` tests).
+- Labeled tuples (`iuncta`) and `ratio` landed — new carrier options for the
+  Stage 0 representation decision (see the campaign's amendment §).
+
+**Still genuinely unproven** (verified absent 2026-08-22): alias-declared
+`magnitudo` parameters with `figura` application, declaration parameter
+kind/order preservation through the loose-file and package producers, TS
+emission of applied generic aliases, and the S0-R1 proof itself
+(`package_interface_preserves_generic_size` does not exist under any name).
 
 ## 1. Interpreted Unit
 
@@ -41,7 +88,9 @@ It does not migrate `src/math.fab`, public consumers, examples, generated
 outputs, or current API documentation. Those remain campaign Stages 1–4.
 
 Two serial compiler prerequisites are grounded in committed code. Faber can
-declare `type Vector<size N> = vector<f32, N>`, but named applications currently
+declare `type Vector<magnitudo N> = vector<f32, N>` (spelling corrected
+2026-08-22; capability itself to re-verify per §0 — alias-declared `magnitudo`
+parameters have no corpus coverage on live main), but named applications currently
 store only type expressions/IDs, and both the loose-file and Faber product
 package-interface producers erase declaration parameter kind/order for imported
 aliases and nominals. Stage 0 therefore splits the bounded kinded applied-argument

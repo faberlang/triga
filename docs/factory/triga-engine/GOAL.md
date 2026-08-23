@@ -5,7 +5,8 @@
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 
 **Participating repos**: `triga`, `radix`, `hosts`, `faber`,
-`faber-runtime`, `examples`; `cista` only for an explicit distribution
+`examples` (generated carriers under `faber/runtime/`; the standalone
+`faber-runtime` repo was retired); `cista` only for an explicit distribution
 checkpoint
 
 **Lowers to**: architecture checkpoint → `delivery` → `factory`
@@ -99,7 +100,7 @@ The current ownership boundary is:
 | WGSL and reflection | Radix graphics/MIR lowering | Radix, with stable reflection contracts |
 | Browser device and GPU execution | `hosts/webgpu-browser` | Shared engine runtime plus backend adapter |
 | Provider routing kernel | `hosts/crates/host-kernel` | Remains provider-neutral; not the renderer |
-| Generated Rust representations | `faber-runtime` when required | Generated-code runtime only |
+| Generated Rust representations | `faber/runtime/rust` when required | Generated-code runtime only |
 | Build/package orchestration | `faber` and `cista` | Build and distribution seams only |
 | End-to-end workloads | `triga/corpus`, `examples` | World-building capstones and regression corpus |
 
@@ -503,11 +504,12 @@ model rather than creating a Triga-specific compiler fork.
 the application-facing workflow. It should not absorb renderer policy or
 become a second scene graph.
 
-### `faber-runtime`
+### `faber/runtime` (was `faber-runtime`)
 
-`faber-runtime` receives only the generated-code representations that the
+`faber/runtime/rust` receives only the generated-code representations that the
 application lane actually needs. It must not become the browser WebGPU engine
-or a duplicate of Triga's semantic contracts.
+or a duplicate of Triga's semantic contracts. (The standalone `faber-runtime`
+repo was retired; carriers live inside the `faber` repo.)
 
 ### Examples and corpus
 

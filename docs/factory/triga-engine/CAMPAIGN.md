@@ -3,7 +3,7 @@
 **Status**: active (2026-08-01) — **S0 architecture checkpoint COMPLETE**; S1 seam repair lowered as six parallel delivery specs
 **Mode**: run — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
-**Participating repos**: `triga`, `radix`, `hosts` (`webgpu-browser`), `faber`, `faber-runtime`, `examples`; `cista` only for an explicit distribution checkpoint
+**Participating repos**: `triga`, `radix`, `hosts` (`webgpu-browser`), `faber`, `examples` (generated Rust/Go/Swift carriers under `faber/runtime/` inside the `faber` repo; the standalone `faber-runtime` repo was retired); `cista` only for an explicit distribution checkpoint
 **Vision source**: [GOAL.md](GOAL.md) — Triga Engine And World-Building Architecture
 **Checkpoint report**: [S0 report](checkpoint/report.md) — frozen ownership map, seam schedule, reflection boundary, runtime-home decision, first artifact
 **Selected next stage**: S1 — Domain seam repair (Horizon 1); Wave 2 = six parallel delivery specs (DS-E geometry split, DS-A material→renderable, DS-B lighting, DS-D scene store/query, DS-G graph object/camera, DS-S2 engine extraction + vertical slice)
@@ -144,7 +144,7 @@ Radix's compiler engineering rules; source-library work follows Triga's
 | Language semantics, lowering, reflection, WGSL | `radix` | Typed shader/render facts, stage legality, target capability checks, artifact freshness |
 | Engine runtime (frame, extraction, residency, caches, passes, streaming) | `hosts/webgpu-browser` | Shared engine facade and backend adapter; the corpus `_host` renderer is a seed, not the distribution |
 | Provider routing kernel | `hosts/crates/host-kernel` | Remains provider-neutral; not the renderer |
-| Generated Rust representations | `faber-runtime` | Application-lane generated code only; not the engine or a second scene model |
+| Generated Rust representations | `faber/runtime/rust` (in the `faber` repo) | Application-lane generated code only; not the engine or a second scene model |
 | Build/package orchestration | `faber` | Provider imports and multi-artifact build/run workflow |
 | World-building capstones and regression corpus | `examples`, `triga/corpus` | Cross-repo scenes, assets, expected outputs, end-to-end workloads |
 | Distribution and versioned installation | `cista` | Explicit release checkpoint only |
@@ -202,8 +202,9 @@ Local authority:
   provisional points (programmable materials, advanced PBR, compressed/streamed
   assets, render graph/image quality, backend portability, high-scale
   rendering).
-- [factory README](../README.md) — open-campaign table and the note that the
-  engine goal requires an architecture checkpoint before delivery.
+- Factory inventory — the generated `docs/factory/README.md` was removed
+  workspace-wide 2026-08-14; open campaigns are tracked by each goal doc's
+  `**Status**` line (see the container `AGENTS.md` factory-queue rules).
 
 ## Current State
 
