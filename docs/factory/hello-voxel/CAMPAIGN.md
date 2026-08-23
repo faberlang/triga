@@ -1,6 +1,6 @@
 # Campaign: Hello Voxel
 
-**Status**: in factory
+**Status**: active — Goals 00–03 complete (re-grounded 2026-07-21); Goal 04 indexed-cube crossover selected next; Goals 05–08 remain
 **Selected next stage**: Goal 04 - Indexed Cube Crossover
 **Primary owner**: `triga`
 **Target repos**: `triga`, `radix`, `hosts`, `faber`, `tela`, `examples`
