@@ -17,30 +17,32 @@ if [[ ! -d "$RADIX/crates/radix" ]]; then
   exit 1
 fi
 
-if [[ -n "${FABER_ROOT:-}" ]]; then
-  FABER="$FABER_ROOT"
-elif [[ -f "$ROOT/../faber/Cargo.toml" ]]; then
-  FABER="$ROOT/../faber"
-else
-  FABER="$ROOT/../../../faber"
+# Sibling product CLI: FABER_BIN, else release then debug under the library home.
+# The faber product CLI accepts exempla TOML frontmatter and applies the
+# package locale from faber.toml (raw `radix check` rejects frontmatter).
+if [[ -z "${FABER_BIN:-}" ]]; then
+  if [[ -x "$FABER_LIBRARY_HOME/radix/target/release/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/release/faber"
+  elif [[ -x "$FABER_LIBRARY_HOME/radix/target/debug/faber" ]]; then
+    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/debug/faber"
+  else
+    echo "check-exempla-inventory: missing faber binary (set FABER_BIN or build $FABER_LIBRARY_HOME/radix/target/{release,debug}/faber)" >&2
+    exit 1
+  fi
 fi
 
-if [[ ! -f "$FABER/Cargo.toml" ]]; then
-  echo "check-exempla-inventory: missing faber checkout at $FABER" >&2
+if [[ "$FABER_BIN" != /* ]]; then
+  FABER_BIN="$(cd "$(dirname "$FABER_BIN")" && pwd)/$(basename "$FABER_BIN")"
+fi
+
+if [[ ! -x "$FABER_BIN" ]]; then
+  echo "check-exempla-inventory: faber binary not executable: $FABER_BIN" >&2
   exit 1
-fi
-
-RADIX_BIN="$RADIX/target/debug/radix"
-if [[ ! -x "$RADIX_BIN" ]]; then
-  (cd "$RADIX" && cargo build -q -p radix --bin radix)
 fi
 
 export FABER_LIBRARY_HOME
 export RADIX_ROOT="$RADIX"
-
-# The triga package reads English (faber.toml `[locale] locale = "en"`);
-# the radix CLI defaults to Latin, so the en reader locale must be passed
-# explicitly for each single-file check (--locale, formerly --locale-pack).
+export FABER_BIN
 
 contains() {
   local needle="$1"
@@ -143,8 +145,8 @@ compile_allowlist_reason() {
 }
 
 for file in "${documented[@]}"; do
-  echo "check-exempla-inventory: radix check $file"
-  "$RADIX_BIN" check --locale en "$ROOT/$file"
+  echo "check-exempla-inventory: faber check $file"
+  "$FABER_BIN" check "$ROOT/$file"
 done
 
 for file in "${documented[@]}"; do
@@ -153,13 +155,12 @@ for file in "${documented[@]}"; do
     continue
   fi
 
-  # Generated-Rust acceptance is pinned to the explicit Rust route: an
-  # un-targeted `faber run --compile` on a manifest package defaults to the
-  # store-based FHIR route (faber 6e243e7 portable default), which cannot
-  # serve triga's own exempla (imports triga:* with no declared dependency
-  # record — the FHIR store-closure validation is a real invariant and is NOT
-  # weakened) and currently hits a FHIR package-load bug (dangling DefId).
-  # The remaining exempla below generate-and-run clean Rust.
-  echo "check-exempla-inventory: faber run --target rust --compile $file"
-  (cd "$ROOT" && cargo run -q --manifest-path "$FABER/Cargo.toml" -- run --target rust --compile "$file")
+  # Generated-Rust acceptance rides the product build route (faber 7412e5e5
+  # retired `run --target/--compile`; compiled routes fail closed pointing at
+  # `faber build`). An un-targeted `faber run` on a manifest package is the
+  # store-based FHIR route, which cannot serve triga's own exempla (imports
+  # triga:* with no declared dependency record — the FHIR store-closure
+  # validation is a real invariant and is NOT weakened).
+  echo "check-exempla-inventory: faber build --target rust $file"
+  (cd "$ROOT" && "$FABER_BIN" build --target rust "$file")
 done
