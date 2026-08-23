@@ -1,6 +1,6 @@
 # Campaign: Triga Three.js 90
 
-**Status**: parked successor (2026-07-10) — ready for routing only
+**Status**: deferred (2026-07-10) — parked successor, ready for routing only; activation waits on the Three.js 80 Stage 12 audit
 **Mode**: draft/maintain — provisional campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga`, `radix`, `faber`, `examples` (generated carriers under `faber/runtime/`; the standalone `faber-runtime` repo was retired); host/runtime ownership to be reconciled at activation
