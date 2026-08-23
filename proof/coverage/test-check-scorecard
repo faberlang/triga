@@ -25,12 +25,12 @@ path = sys.argv[1]
 with open(path, encoding="utf-8") as source:
     scorecard = json.load(source)
 inventory = scorecard["inventory"]
-assert inventory["source_revision"] == "2e9daa06684269c58f177a8d1c36f0c8c2365152"
+assert inventory["source_revision"] == "cec9e551eebdd6d4dfdb95245a648c83189b15ca"
 assert re.fullmatch(r"[0-9a-f]{40}", inventory["observed_source_revision"])
 assert re.fullmatch(r"sha256:[0-9a-f]{64}", inventory["observed_source_digest"])
-assert inventory["inventory_mismatch"] is True
-assert inventory["source_revision"] != inventory["observed_source_revision"]
-assert scorecard["stage0_5"]["executed_module_count"] == 9
+assert inventory["inventory_mismatch"] is False
+assert inventory["source_revision"] == inventory["observed_source_revision"]
+assert scorecard["stage0_5"]["executed_module_count"] == 4
 assert scorecard["stage0_5"]["complete"] is False
 PY
 
@@ -52,7 +52,7 @@ if output=$(./proof/coverage/check-scorecard 2>&1); then
     exit 1
 fi
 printf '%s\n' "$output" | grep -Fq \
-    "error: scorecard.coverage_revision must be 2"
+    "error: scorecard.coverage_revision must be 3"
 
 cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
 python3 - proof/coverage-scorecard.json <<'PY'
@@ -106,7 +106,9 @@ import sys
 path = sys.argv[1]
 with open(path, encoding="utf-8") as source:
     scorecard = json.load(source)
-scorecard["inventory"]["inventory_mismatch"] = False
+# The fresh receipt pins source_revision to the observed census (snapshot ==
+# observed), so a marked mismatch is now the inconsistent state.
+scorecard["inventory"]["inventory_mismatch"] = True
 with open(path, "w", encoding="utf-8") as target:
     json.dump(scorecard, target, indent=2)
     target.write("\n")
