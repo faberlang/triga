@@ -9,8 +9,8 @@
     "inventory_revision": 1,
     "source_revision": "2e9daa06684269c58f177a8d1c36f0c8c2365152",
     "module_count": 26,
-    "observed_source_revision": "fdbbc09a9224066e1ab96b3c4290501c2b2d25e3",
-    "observed_source_digest": "sha256:343f9f5c9ee97327a4cae6b4f9f60fb3a04a17d194b4159bf0e6eb2f886a90d1",
+    "observed_source_revision": "59bb13fee9125fc22d9f06ce71074a9571bc759e",
+    "observed_source_digest": "sha256:565c26e33fc7c394a5e827fded8633455a94a1f6e4027901e33291ffd899da52",
     "inventory_mismatch": true
   },
   "exempla_inventory": {
@@ -80,12 +80,12 @@
       ],
       "co_located_proba": {
         "module": "src/face.fab",
-        "lines": 72,
+        "lines": 83,
         "groups": 1,
         "cases": 4
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -95,21 +95,30 @@
         "proba_path": "src/face.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "face.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include face.proba",
-        "exit_status": 0,
-        "passed": 4,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include face.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 4,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/face.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -129,12 +138,12 @@
       ],
       "co_located_proba": {
         "module": "src/geometry.fab",
-        "lines": 12,
+        "lines": 9,
         "groups": 1,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -144,21 +153,30 @@
         "proba_path": "src/geometry.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "geometry.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include geometry.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/geometry.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -178,7 +196,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/attribute.fab",
-        "lines": 74,
+        "lines": 72,
         "groups": 1,
         "cases": 3
       },
@@ -201,16 +219,17 @@
         "proba_path": "src/geometry/attribute.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "geometry/attribute.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/attribute.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include geometry/attribute.proba",
         "exit_status": 0,
         "passed": 3,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -235,7 +254,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/batch.fab",
-        "lines": 64,
+        "lines": 61,
         "groups": 1,
         "cases": 4
       },
@@ -257,16 +276,17 @@
         "proba_path": "src/geometry/batch.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "geometry/batch.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/batch.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include geometry/batch.proba",
         "exit_status": 0,
         "passed": 4,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -291,12 +311,12 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/bounds.fab",
-        "lines": 73,
+        "lines": 70,
         "groups": 1,
         "cases": 3
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -306,21 +326,30 @@
         "proba_path": "src/geometry/bounds.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "geometry/bounds.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/bounds.proba",
-        "exit_status": 0,
-        "passed": 3,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include geometry/bounds.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/geometry/bounds.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -340,7 +369,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/data.fab",
-        "lines": 246,
+        "lines": 247,
         "groups": 1,
         "cases": 7
       },
@@ -360,7 +389,7 @@
         "exempla/triga-stage4-source-facts.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -370,21 +399,30 @@
         "proba_path": "src/geometry/data.proba",
         "case_count": 7,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "geometry/data.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/data.proba",
-        "exit_status": 0,
-        "passed": 7,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include geometry/data.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 7,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/geometry/data.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -404,7 +442,7 @@
       ],
       "co_located_proba": {
         "module": "src/geometry/layout.fab",
-        "lines": 64,
+        "lines": 61,
         "groups": 1,
         "cases": 2
       },
@@ -419,16 +457,17 @@
         "proba_path": "src/geometry/layout.proba",
         "case_count": 2,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "geometry/layout.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include geometry/layout.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include geometry/layout.proba",
         "exit_status": 0,
         "passed": 2,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -453,12 +492,12 @@
       ],
       "co_located_proba": {
         "module": "src/graph.fab",
-        "lines": 14,
+        "lines": 11,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -468,21 +507,30 @@
         "proba_path": "src/graph.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "graph.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include graph.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/graph.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -502,7 +550,7 @@
       ],
       "co_located_proba": {
         "module": "src/graph/camera.fab",
-        "lines": 104,
+        "lines": 101,
         "groups": 0,
         "cases": 5
       },
@@ -510,7 +558,7 @@
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -520,21 +568,30 @@
         "proba_path": "src/graph/camera.proba",
         "case_count": 5,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "graph/camera.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph/camera.proba",
-        "exit_status": 0,
-        "passed": 5,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include graph/camera.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 5,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/graph/camera.proba",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -554,7 +611,7 @@
       ],
       "co_located_proba": {
         "module": "src/graph/object.fab",
-        "lines": 55,
+        "lines": 52,
         "groups": 0,
         "cases": 4
       },
@@ -562,7 +619,7 @@
         "exempla/triga-math-edge-cases.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -572,21 +629,30 @@
         "proba_path": "src/graph/object.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "graph/object.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include graph/object.proba",
-        "exit_status": 0,
-        "passed": 4,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include graph/object.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 4,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/graph/object.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -606,12 +672,12 @@
       ],
       "co_located_proba": {
         "module": "src/lighting.fab",
-        "lines": 11,
+        "lines": 8,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -621,21 +687,30 @@
         "proba_path": "src/lighting.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "lighting.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include lighting.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include lighting.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/lighting.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -655,12 +730,12 @@
       ],
       "co_located_proba": {
         "module": "src/lighting/light.fab",
-        "lines": 105,
+        "lines": 102,
         "groups": 0,
         "cases": 7
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -670,21 +745,30 @@
         "proba_path": "src/lighting/light.proba",
         "case_count": 7,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "lighting/light.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include lighting/light.proba",
-        "exit_status": 0,
-        "passed": 7,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include lighting/light.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 7,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/lighting/light.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -704,12 +788,12 @@
       ],
       "co_located_proba": {
         "module": "src/material.fab",
-        "lines": 11,
+        "lines": 8,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -719,21 +803,30 @@
         "proba_path": "src/material.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "material.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include material.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -753,7 +846,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/base.fab",
-        "lines": 101,
+        "lines": 98,
         "groups": 0,
         "cases": 4
       },
@@ -772,26 +865,27 @@
         "proba_path": "src/material/base.proba",
         "case_count": 4,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "material/base.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/base.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include material/base.proba",
         "exit_status": 1,
         "passed": 3,
         "failed": 1,
+        "blocked": 0,
         "skipped": 0,
         "status": "runner-failure",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "ok   opacity alpha and unsupported side values fail closed",
-          "FAIL texture descriptor preserves its placeholder shape",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "ok   /Users/ianzepp/work/faberlang/triga/src/material/base.proba::opacity alpha and unsupported side values fail closed (0 ms)",
+          "FAIL /Users/ianzepp/work/faberlang/triga/src/material/base.proba::texture descriptor preserves its placeholder shape (0 ms)",
+          "test result: FAILED. 3 passed; 1 failed; 0 blocked; 0 skipped",
           "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
+          "runner summary: 1 failed; 0 blocked; 0 skipped"
         ]
       }
     },
@@ -812,7 +906,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/basic.fab",
-        "lines": 74,
+        "lines": 71,
         "groups": 0,
         "cases": 3
       },
@@ -820,7 +914,7 @@
         "exempla/triga-basics.fab",
         "exempla/triga-graphics-pipeline-facts.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -830,21 +924,30 @@
         "proba_path": "src/material/basic.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "material/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/basic.proba",
-        "exit_status": 0,
-        "passed": 3,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include material/basic.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material/basic.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -864,7 +967,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/lit.fab",
-        "lines": 52,
+        "lines": 49,
         "groups": 0,
         "cases": 3
       },
@@ -881,27 +984,29 @@
         "proba_path": "src/material/lit.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "material/lit.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/lit.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include material/lit.proba",
         "exit_status": 1,
-        "passed": 1,
-        "failed": 2,
+        "passed": 0,
+        "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "runner-failure",
+        "status": "blocked",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL Phong defaults remain explicit carrier values",
-          "FAIL Phong carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material/lit.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       }
     },
@@ -922,7 +1027,7 @@
       ],
       "co_located_proba": {
         "module": "src/material/standard.fab",
-        "lines": 58,
+        "lines": 55,
         "groups": 0,
         "cases": 3
       },
@@ -939,27 +1044,29 @@
         "proba_path": "src/material/standard.proba",
         "case_count": 3,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "material/standard.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include material/standard.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include material/standard.proba",
         "exit_status": 1,
-        "passed": 1,
-        "failed": 2,
+        "passed": 0,
+        "failed": 0,
+        "blocked": 3,
         "skipped": 0,
-        "status": "runner-failure",
+        "status": "blocked",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL standard defaults remain explicit carrier values",
-          "FAIL standard carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material/standard.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       }
     },
@@ -980,7 +1087,7 @@
       ],
       "co_located_proba": {
         "module": "src/math.fab",
-        "lines": 384,
+        "lines": 381,
         "groups": 6,
         "cases": 17
       },
@@ -995,7 +1102,7 @@
         "exempla/triga-transforms.fab",
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1005,21 +1112,30 @@
         "proba_path": "src/math.proba",
         "case_count": 17,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "math.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include math.proba",
-        "exit_status": 0,
-        "passed": 17,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include math.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 17,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/math.proba",
+          "runner reported 0 passed for 17 declared cases",
+          "runner summary: 0 failed; 17 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1039,12 +1155,12 @@
       ],
       "co_located_proba": {
         "module": "src/primitives.fab",
-        "lines": 12,
+        "lines": 9,
         "groups": 1,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1054,21 +1170,30 @@
         "proba_path": "src/primitives.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "primitives.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include primitives.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include primitives.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/primitives.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1088,7 +1213,7 @@
       ],
       "co_located_proba": {
         "module": "src/primitives/basic.fab",
-        "lines": 442,
+        "lines": 439,
         "groups": 1,
         "cases": 10
       },
@@ -1104,7 +1229,7 @@
         "exempla/triga-normal-oracle.fab",
         "exempla/triga-stage4-source-facts.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1114,21 +1239,30 @@
         "proba_path": "src/primitives/basic.proba",
         "case_count": 10,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "primitives/basic.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include primitives/basic.proba",
-        "exit_status": 0,
-        "passed": 10,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include primitives/basic.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 10,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/primitives/basic.proba",
+          "runner reported 0 passed for 10 declared cases",
+          "runner summary: 0 failed; 10 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1148,12 +1282,12 @@
       ],
       "co_located_proba": {
         "module": "src/renderable.fab",
-        "lines": 14,
+        "lines": 11,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1163,21 +1297,30 @@
         "proba_path": "src/renderable.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "renderable.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include renderable.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include renderable.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/renderable.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1197,14 +1340,14 @@
       ],
       "co_located_proba": {
         "module": "src/renderable/mesh.fab",
-        "lines": 167,
+        "lines": 164,
         "groups": 3,
         "cases": 6
       },
       "exempla_coverage_refs": [
         "exempla/triga-types-untested.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1214,21 +1357,30 @@
         "proba_path": "src/renderable/mesh.proba",
         "case_count": 6,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "renderable/mesh.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include renderable/mesh.proba",
-        "exit_status": 0,
-        "passed": 6,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include renderable/mesh.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 6,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/renderable/mesh.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1248,14 +1400,14 @@
       ],
       "co_located_proba": {
         "module": "src/resource.fab",
-        "lines": 282,
+        "lines": 279,
         "groups": 2,
         "cases": 6
       },
       "exempla_coverage_refs": [
         "exempla/triga-scene-store.fab"
       ],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1265,21 +1417,28 @@
         "proba_path": "src/resource.proba",
         "case_count": 6,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "resource.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include resource.proba",
-        "exit_status": 0,
-        "passed": 6,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include resource.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 6,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/resource.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
+        ]
       }
     },
     {
@@ -1299,7 +1458,7 @@
       ],
       "co_located_proba": {
         "module": "src/scene.fab",
-        "lines": 147,
+        "lines": 144,
         "groups": 1,
         "cases": 5
       },
@@ -1317,25 +1476,28 @@
         "proba_path": "src/scene.proba",
         "case_count": 5,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "scene.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include scene.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include scene.proba",
         "exit_status": 1,
         "passed": 0,
-        "failed": 5,
+        "failed": 0,
+        "blocked": 5,
         "skipped": 0,
-        "status": "runner-failure",
+        "status": "blocked",
         "evidence_tier": "structural",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/scene.proba",
           "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
         ]
       }
     },
@@ -1356,7 +1518,7 @@
       ],
       "co_located_proba": {
         "module": "src/shader_contract.fab",
-        "lines": 242,
+        "lines": 239,
         "groups": 3,
         "cases": 15
       },
@@ -1371,16 +1533,17 @@
         "proba_path": "src/shader_contract.proba",
         "case_count": 15,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "shader_contract.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include shader_contract.proba",
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include shader_contract.proba",
         "exit_status": 0,
         "passed": 15,
         "failed": 0,
+        "blocked": 0,
         "skipped": 0,
         "status": "passed",
         "evidence_tier": "executed-proba",
@@ -1405,12 +1568,12 @@
       ],
       "co_located_proba": {
         "module": "src/triga.fab",
-        "lines": 12,
+        "lines": 9,
         "groups": 0,
         "cases": 1
       },
       "exempla_coverage_refs": [],
-      "evidence_tier": "executed-proba",
+      "evidence_tier": "structural",
       "stale_claims": [
         "module-map-size",
         "module-map-target-count",
@@ -1420,21 +1583,30 @@
         "proba_path": "src/triga.proba",
         "case_count": 1,
         "command": [
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+          "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
           "test",
-          "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+          "/Users/ianzepp/work/faberlang/triga",
           "--include",
           "triga.proba"
         ],
-        "command_text": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber test /Users/ianzepp/work/faberlang/worktrees/hand-35/triga --include triga.proba",
-        "exit_status": 0,
-        "passed": 1,
+        "command_text": "/Users/ianzepp/work/faberlang/radix/target/debug/faber test /Users/ianzepp/work/faberlang/triga --include triga.proba",
+        "exit_status": 1,
+        "passed": 0,
         "failed": 0,
+        "blocked": 1,
         "skipped": 0,
-        "status": "passed",
-        "evidence_tier": "executed-proba",
+        "status": "blocked",
+        "evidence_tier": "structural",
         "diagnostic_codes": {},
-        "failures": []
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/triga.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
       }
     }
   ],
@@ -1442,19 +1614,19 @@
     "unit": "tgh-s05-gate",
     "status": "blocked",
     "complete": false,
-    "run_at_utc": "2026-08-17T17:58:11Z",
+    "run_at_utc": "2026-08-21T17:41:27Z",
     "module_count": 26,
     "proba_source_count": 26,
-    "executed_module_count": 22,
+    "executed_module_count": 4,
     "executed_tier": "executed-proba",
-    "package_path": "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
-    "faber_bin": "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+    "package_path": "/Users/ianzepp/work/faberlang/triga",
+    "faber_bin": "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
     "faber_library_home": "/Users/ianzepp/work/faberlang",
     "filter_mode": "package-include-per-proba",
     "command_template": [
-      "/Users/ianzepp/work/faberlang/worktrees/hand-35/radix/target/debug/faber",
+      "/Users/ianzepp/work/faberlang/radix/target/debug/faber",
       "test",
-      "/Users/ianzepp/work/faberlang/worktrees/hand-35/triga",
+      "/Users/ianzepp/work/faberlang/triga",
       "--include",
       "<source-relative>.proba"
     ],
@@ -1466,56 +1638,328 @@
     "discovery_errors": [],
     "failures": [
       {
+        "module": "src/face.fab",
+        "proba_path": "src/face.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/face.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/geometry.fab",
+        "proba_path": "src/geometry.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/geometry.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/geometry/bounds.fab",
+        "proba_path": "src/geometry/bounds.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/geometry/bounds.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/geometry/data.fab",
+        "proba_path": "src/geometry/data.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/geometry/data.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/graph.fab",
+        "proba_path": "src/graph.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/graph.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/graph/camera.fab",
+        "proba_path": "src/graph/camera.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/graph/camera.proba",
+          "runner reported 0 passed for 5 declared cases",
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/graph/object.fab",
+        "proba_path": "src/graph/object.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/graph/object.proba",
+          "runner reported 0 passed for 4 declared cases",
+          "runner summary: 0 failed; 4 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/lighting.fab",
+        "proba_path": "src/lighting.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/lighting.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/lighting/light.fab",
+        "proba_path": "src/lighting/light.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/lighting/light.proba",
+          "runner reported 0 passed for 7 declared cases",
+          "runner summary: 0 failed; 7 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/material.fab",
+        "proba_path": "src/material.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
         "module": "src/material/base.fab",
         "proba_path": "src/material/base.proba",
         "status": "runner-failure",
         "diagnostic_codes": {},
         "failures": [
-          "ok   opacity alpha and unsupported side values fail closed",
-          "FAIL texture descriptor preserves its placeholder shape",
-          "test result: FAILED. 3 passed; 1 failed; 0 skipped",
+          "ok   /Users/ianzepp/work/faberlang/triga/src/material/base.proba::opacity alpha and unsupported side values fail closed (0 ms)",
+          "FAIL /Users/ianzepp/work/faberlang/triga/src/material/base.proba::texture descriptor preserves its placeholder shape (0 ms)",
+          "test result: FAILED. 3 passed; 1 failed; 0 blocked; 0 skipped",
           "runner reported 3 passed for 4 declared cases",
-          "runner summary: 1 failed; 0 skipped"
+          "runner summary: 1 failed; 0 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/material/basic.fab",
+        "proba_path": "src/material/basic.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material/basic.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       },
       {
         "module": "src/material/lit.fab",
         "proba_path": "src/material/lit.proba",
-        "status": "runner-failure",
+        "status": "blocked",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL Phong defaults remain explicit carrier values",
-          "FAIL Phong carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material/lit.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
         ]
       },
       {
         "module": "src/material/standard.fab",
         "proba_path": "src/material/standard.proba",
-        "status": "runner-failure",
+        "status": "blocked",
         "diagnostic_codes": {},
         "failures": [
-          "FAIL standard defaults remain explicit carrier values",
-          "FAIL standard carrier exposes invalid base facts as unsupported",
-          "test result: FAILED. 1 passed; 2 failed; 0 skipped",
-          "assertion failed",
-          "runner reported 1 passed for 3 declared cases",
-          "runner summary: 2 failed; 0 skipped"
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/material/standard.proba",
+          "runner reported 0 passed for 3 declared cases",
+          "runner summary: 0 failed; 3 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/math.fab",
+        "proba_path": "src/math.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/math.proba",
+          "runner reported 0 passed for 17 declared cases",
+          "runner summary: 0 failed; 17 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/primitives.fab",
+        "proba_path": "src/primitives.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/primitives.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/primitives/basic.fab",
+        "proba_path": "src/primitives/basic.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/primitives/basic.proba",
+          "runner reported 0 passed for 10 declared cases",
+          "runner summary: 0 failed; 10 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/renderable.fab",
+        "proba_path": "src/renderable.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/renderable.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/renderable/mesh.fab",
+        "proba_path": "src/renderable/mesh.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/renderable/mesh.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/resource.fab",
+        "proba_path": "src/resource.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/resource.proba",
+          "runner reported 0 passed for 6 declared cases",
+          "runner summary: 0 failed; 6 blocked; 0 skipped"
         ]
       },
       {
         "module": "src/scene.fab",
         "proba_path": "src/scene.proba",
-        "status": "runner-failure",
+        "status": "blocked",
         "diagnostic_codes": {},
         "failures": [
-          "error: invalid MIR: option unwrap operand is not nullable",
-          "error: package MIR test link failed",
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/scene.proba",
           "runner reported 0 passed for 5 declared cases",
-          "runner summary: 5 failed; 0 skipped"
+          "runner summary: 0 failed; 5 blocked; 0 skipped"
+        ]
+      },
+      {
+        "module": "src/triga.fab",
+        "proba_path": "src/triga.proba",
+        "status": "blocked",
+        "diagnostic_codes": {},
+        "failures": [
+          "error: unsupported MIR lowering: method call before runtime/provider MIR lowering",
+          "error: unsupported MIR lowering: path that does not resolve to a local value",
+          "error: unsupported MIR lowering: itera ex over tabula before map value iteration MIR lowering",
+          "error: unsupported MIR lowering: projection base that does not resolve to a local value",
+          "error: package MIR test link failed for /Users/ianzepp/work/faberlang/triga/src/triga.proba",
+          "runner reported 0 passed for 1 declared cases",
+          "runner summary: 0 failed; 1 blocked; 0 skipped"
         ]
       }
     ]
