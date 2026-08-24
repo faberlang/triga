@@ -1,6 +1,6 @@
 # Campaign: Triga Library Hardening
 
-**Status**: active (2026-08-17 Stage 0 landed; Stage 0.5 sources landed, tgh-s05-gate blocked at 22/26 executed-proba; Stage 1 spine units landed on main — known-red list: source-lint [intentional], exempla PARSE050, proba 22/26, WGSL PARSE family) — professional source-library baseline
+**Status**: active (2026-08-24: Stage 0.5 gate GREEN — 26/26 executed-proba, re-run receipt in proof/coverage-scorecard.json; former blockers resolved by radix 2d19d5fef + MRL-1/MRL-2 itera lowering, all ancestors of current binary; Stage 1 spine units landed — remaining known-reds: source-lint [intentional], exempla PARSE050, WGSL PARSE family) — professional source-library baseline
 **Mode**: run — campaign control plane
 **Owner repo**: `/Users/ianzepp/work/faberlang/triga`
 **Participating repos**: `triga` (primary); `radix` and `hosts` for the mandatory
