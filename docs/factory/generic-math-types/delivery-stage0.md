@@ -1,6 +1,6 @@
 # Generic Math Types — Stage 0 Delivery Spec
 
-**Status**: delivery-corrected — implementation not started; READY verdict superseded pending the §0 language-base re-baseline (2026-08-22): the spec's Radix pins, AST model, and census paths predate the crate split and the shape-generics/iuncta landings; re-derive S0-R0 against live main before dispatch
+**Status**: delivery-corrected — implementation not started; READY after the live-main re-baseline (2026-08-24): S0-R0/S0-R1 scopes, landed-vs-to-build model, PH-0..4 serialization surface, census, and baseline are pinned to current main
 
 **Campaign**: [`CAMPAIGN.md`](CAMPAIGN.md)
 
@@ -8,60 +8,72 @@
 
 **Mode**: discovery-first, then one serial proof batch
 
-**Planner**: initial lowering `planner-1`, task `6349e78e`; audit correction `planner-2`, task `b4c25788`, 2026-08-13
+**Planner**: initial lowering `planner-1`, task `6349e78e`; audit correction `planner-2`, task `b4c25788`, 2026-08-13; live-main revision `planner`, task `ad5b495f`, 2026-08-24
 
 **Owner repo**: `triga`; one proven prerequisite unit writes `radix`
 
-**Planning correction packet**: `worktrees/planner-2/triga` on `factory/planner-2-generic-math-stage0`
+**Planning correction packet**: historical `planner-2` evidence only; dispatch uses the committed live-main bases in §3.1
 
 **Implementation readiness**: `READY` — this is a delivery verdict, not a GO or ship approval
 
-## 0. Language-base re-baseline (2026-08-22)
+## 0. Language-base re-baseline (2026-08-24)
 
-This spec was authored against Triga `05c6ccf` and Radix `f4e6bec7d`, corrected
-against Radix `2a986d40` (2026-08-13/14). Live Radix main has moved past all
-three pins. A zombie-docs pass on 2026-08-22 verified the drift below against
-live code; every dispatching Hand re-reads this section first. The unit graph
-in §5 keeps its shape, but its Radix-facing content must be re-derived, not
-reused as written.
+This revision re-derives the Radix-facing half against committed live main,
+not against the old monolithic-crate layout. The current planning pins are
+Triga `01d26888a618c4054bcdd0507d34ec78475849fb` and Radix
+`6feab5a79ac047a09f443fe1ccd026c22d3ae6af`. The Triga checkout has unrelated
+working-tree dirt in `proof/coverage-scorecard.json`; it is foreign evidence,
+not part of this docs-only revision or the pinned baseline.
 
-**What the spec says that no longer matches live main:**
+The readiness read measured 172 commits from the original Triga baseline
+`05c6ccff5c0d48a0cfd02b740f8caff83578e3e4` to the then-current checkout. Live
+main advanced two commits before this revision, so the current count is 174;
+the document now pins `01d26888` rather than carrying the stale 172-count
+snapshot. The root Triga exempla count is 15, not 13.
 
-- **The S0-R0 AST model was never implemented as specified.** `GenericArgExpr`
-  and `AppliedArg` do not exist in live `radix`. The shipped design is:
-  `TypeParam { kind: GenericParamKind::{Typus, Magnitudo} }` for declaration
-  parameters (`radix-syntax/src/ast.rs`), applied arguments as
-  `TypeExprKind::Named(Ident, Vec<TypeExpr>)` / `Qualified`, and shapes as
-  dedicated `Tensor` / `Sparsa` / `Vector` / `Matrix` type nodes carrying
-  `FiguraExpr`. S0-R0's outcome must be restated against these names — or the
-  gap it was protecting against may already be closed for the alias case (see
-  the campaign's Language-base amendment).
-- **The census paths are stale.** The spec's `rg` commands target
-  `crates/radix/src` and `crates/radix-parser`; the crate split moved
-  `file_interface.rs` to `radix-program` / `radix-semantic` / `radix-module`.
-  Re-run every census against live paths before trusting its counts.
-- **Correction lock 1's producer path is gone.**
-  `radix/crates/faber/src/package/file_interface.rs` does not exist. The
-  package-producer seam is actively moving under
-  `radix/docs/factory/package-compile-ownership/` (goal active 2026-08-22);
-  S0-R1 must locate the then-current producer before writing its proof.
+### Landed versus to-build
 
-**What landed after authoring that reduces the prerequisite surface:**
+The names below are status claims about the pinned Radix main. They are not
+interchangeable, and a later Hand must not treat a landed type-only or hole
+path as proof of kinded size application.
 
-- Shape generics closed 2026-08-18 (`docs/archived/shape-generics/`, Phases
-  1–4); the spec's note "Shape Generics Phase 4 is a related but distinct
-  line" described an open goal — it is now closed.
-- Generic type aliases bind their own type parameters (D0 defect fixed;
-  `tela/spike/defects/d0-generic-alias-params.fab` records the repro and fix;
-  applied alias use green through HIR/Rust emit in `radix-hir-rust` tests).
-- Labeled tuples (`iuncta`) and `ratio` landed — new carrier options for the
-  Stage 0 representation decision (see the campaign's amendment §).
+| Item | Status at Radix `6feab5a79` | Evidence and Stage 0 consequence |
+| --- | --- | --- |
+| Declaration `GenericParamKind::{Typus, Magnitudo}` and `TypeParam.kind` | **LANDED** | `crates/radix-syntax/src/ast.rs:253`; parsing in `crates/radix-parser/src/decl.rs`; resolver/lowering kind handling in `crates/radix-semantic/src/{passes/resolve.rs,lower/mod.rs,lower/types.rs}`. S0-R0 consumes this metadata; it does not re-land generic declaration syntax. |
+| Type-alias parameters bind their own type parameters | **LANDED** | The D0 alias-parameter fix is covered by `radix-hir-rust` alias tests. This closes the old type-parameter binding defect only. |
+| Type-argument alias declaration/use emission | **LANDED for type arguments** | Radix commit `94c6b71d4`; `radix-hir-rust` and `radix-hir-ts` emit and test alias type parameters plus applied type uses. It does not prove applied size arguments or size-parameter emission. |
+| Alias-declared `magnitudo` with `figura` application | **TO BUILD** | The live parser and semantic `FiguraExpr` machinery exist, but no end-to-end alias-declared size-argument proof is landed. This remains S0-R0/S0-R1 prerequisite work. |
+| `GenericArgExpr` source cases | **TO BUILD** | No live definition exists. `TypeExprKind::{Named,Qualified}` still carry `Vec<TypeExpr>`, and `radix-parser/src/types.rs:548` interns an applied natural as a named identifier. S0-R0 must add the source-preserving kinded representation. |
+| `AppliedArg::{Type,Size}` and size-bearing `Type::Applied` | **TO BUILD** | No live `AppliedArg` exists. `radix-types/src/types.rs` still defines `Type::Applied(TypeId, Vec<TypeId>)`; all current applied arguments are type IDs. S0-R0 must add the bounded kinded checked form without changing type-only behavior. |
+| Interface declaration parameter kind/order and applied size serialization | **TO BUILD** | `radix-semantic/src/file_interface.rs` snapshots type aliases and applied arguments without declaration kind/order or size arguments. Extraction is in `radix-program/src/file_interface.rs`; `radix-module` re-exports the interface surface. The product package route consumes these through the `radix::program::file_interface` facade; the former package-local producer file is absent. S0-R1 owns both producers/consumers. |
+| PH-0..4 applied-parameter holes | **LANDED, separate surface** | PH-0..4 landed 2026-08-19. Explicit type `_` and marker holes are already represented and handled through `Type::Infer` / `Type::MarkerHole`; they are not `AppliedArg::Size`. S0-R0 must preserve and classify this existing surface while extending named applications. |
 
-**Still genuinely unproven** (verified absent 2026-08-22): alias-declared
-`magnitudo` parameters with `figura` application, declaration parameter
-kind/order preservation through the loose-file and package producers, TS
-emission of applied generic aliases, and the S0-R1 proof itself
-(`package_interface_preserves_generic_size` does not exist under any name).
+### What the old delivery text got wrong
+
+- The old S0-R0 AST model was written as if `GenericArgExpr`, `AppliedArg`, and
+  size-bearing `Type::Applied` already shipped. They do not.
+- The live AST uses `TypeExprKind::Named(Ident, Vec<TypeExpr>)` and
+  `Qualified`; built-in `Tensor`, `Sparsa`, `Vector`, and `Matrix` nodes carry
+  `FiguraExpr` directly. The target model in §2.3 is therefore a bounded S0-R0
+  implementation target, not a description of current code.
+- The old write scopes named a removed monolithic semantic/HIR/Forma/tool
+  layout. Current ownership is split across `radix-syntax`, `radix-parser`,
+  `radix-semantic`, `radix-types`, `radix-program`, `radix-module`, the HIR
+  backend crates, and the Faber package integration tests. The exact live
+  scopes are in §4 and Appendix A.
+- The old package producer path was not merely stale in content; it is absent.
+  S0-R1 must repair the current `radix-program` extraction and the actual Faber
+  package route rather than restore a deleted file.
+
+### Current boundary
+
+Landed declaration kinds and type-argument alias emission reduce the
+prerequisite surface. They do not close the first unit. S0-R0 still builds
+kinded named applications and their exhaustive consumers. S0-R1 then carries
+those arguments through loose-file extraction, the product Faber package route,
+and Rust/TypeScript emission. S0-R0 remains the first unit, and the settled
+public contract remains exactly `Vector<3>`, `Matrix<4,4>`, `Box<3>`, one clean
+break, and no aliases or compatibility names.
 
 ## 1. Interpreted Unit
 
@@ -91,9 +103,9 @@ Two serial compiler prerequisites are grounded in committed code. Faber can
 declare `type Vector<magnitudo N> = vector<f32, N>` (spelling corrected
 2026-08-22; capability itself to re-verify per §0 — alias-declared `magnitudo`
 parameters have no corpus coverage on live main), but named applications currently
-store only type expressions/IDs, and both the loose-file and Faber product
-package-interface producers erase declaration parameter kind/order for imported
-aliases and nominals. Stage 0 therefore splits the bounded kinded applied-argument
+store only type expressions/IDs, and the live interface extraction plus product
+package route do not preserve declaration parameter kind/order for imported aliases
+and nominals. Stage 0 therefore splits the bounded kinded applied-argument
 foundation (`S0-R0`) from the package/import and Rust/TypeScript emitter behavior
 that consumes it (`S0-R1`). No later Triga probe may invent either model.
 
@@ -152,68 +164,96 @@ does not require vectors and matrices to become wrappers. Three-dimensional ray
 and face behavior may constrain itself to `Box<3>`.
 
 
-### 2.3 Settled bounded applied-argument model
+### 2.3 S0-R0 target model — bounded design to build, not current live representation
 
-`S0-R0` does not ask its Hand to invent how a named application carries a
-mixture of type and size arguments. The delivery selects this bounded model:
+The following is the bounded internal target selected by this delivery. It is
+not a claim that the types already exist on Radix main. S0-R0 must implement
+it against the live crate owners in §4, preserving the landed declaration-kind,
+type-alias-emission, and PH-0..4 behavior listed in §0.
 
-- Syntax replaces the second field of `TypeExprKind::{Named, Qualified}` with
-  ordered `GenericArgExpr` values.
-- `GenericArgExpr` has three source-preserving cases: `Type(TypeExpr)`,
-  `Size(FiguraExpr)`, and `Name(Ident)`. Natural literals, shape tuples, and
-  explicit shape holes parse as `Size`. A bare identifier stays `Name` until
-  the declaration's ordered generic parameter kinds are known; it is then
-  resolved as a type name/parameter or a size/index parameter. It is never
-  encoded as a fake user type.
-- The resolver stores every local type declaration's ordered
-  `Vec<GenericParamKind>` beside its `Symbol`. Imported declarations receive
-  the same metadata from the interface snapshot in `S0-R1`. A namespace lookup
-  therefore returns both the base type and parameter kinds; kind-directed
-  lowering never guesses from identifier spelling.
-- The checked model is `AppliedArg::{Type(TypeId), Size(IndexId)}` and
-  `Type::Applied(TypeId, Vec<AppliedArg>)`. `AppliedArg` is owned by
-  `radix-types`; its kind tag uses `radix_syntax::GenericParamKind`, which is an
-  existing `radix-types -> radix-syntax` dependency. Order is preserved. Type
-  substitution consumes only `Type`; index substitution consumes only `Size`.
-  Kind/arity disagreement emits a structured diagnostic before HIR target
-  emission.
-- The portable interface model uses the same distinction:
+- The source representation for named and qualified applications becomes
+  ordered `GenericArgExpr` values. `GenericArgExpr` has three source-preserving
+  cases: `Type(TypeExpr)`, `Size(FiguraExpr)`, and `Name(Ident)`. Natural
+  literals, shape tuples, declared `magnitudo` variables, and explicit `_` in a
+  size position are `Size`. A bare identifier remains `Name` until the callee's
+  declaration metadata is known; it is then resolved as a type name/parameter
+  or a size/index parameter. It is never encoded as a fake user type.
+- The live resolver/HIR declaration identity, not the lexer `Symbol` tuple,
+  exposes the ordered `GenericParamKind` list for a local declaration. Imported
+  declarations receive the same metadata from the interface snapshot in S0-R1.
+  Kind-directed lowering must not guess from identifier spelling.
+- The checked target representation is `AppliedArg::{Type(TypeId),
+  Size(IndexId)}` and `Type::Applied(TypeId, Vec<AppliedArg>)`. `AppliedArg`
+  is owned by `radix-types` alongside `Type` and uses the existing syntax
+  `GenericParamKind` identity. Order is preserved. Type substitution consumes
+  only `Type`; index substitution consumes only `Size`. Kind/arity disagreement
+  emits a structured diagnostic before HIR target emission.
+- The portable interface target uses the same distinction:
   `InterfaceAppliedArg::{Type(InterfaceTypeSnapshot),
-  Size(InterfaceIndexSnapshot)}`. Alias and nominal export snapshots carry an
-  ordered list of `{name, kind}` declaration parameters. Alias exports carry
-  both that list and the body; struct/`Box<size N>` exports carry the list with
-  their fields and methods.
+  Size(InterfaceIndexSnapshot)}`. Alias, struct, enum, and interface export
+  snapshots carry an ordered list of `{name, kind}` declaration parameters.
+  Alias exports carry that list and the body. The live `radix-program`
+  extractor and the product Faber package route must populate and consume this
+  schema; no package-local deleted producer is restored.
 - HIR declaration parameters already retain `GenericParamKind`. Faber, Rust,
-  TypeScript, and FHIR consumers must preserve or validate `AppliedArg` by
-  kind. Other compile-relevant targets may keep their existing behavior for
-  type-only applications, but a surviving size argument must be represented or
-  rejected explicitly; it may not be dropped or converted to `TypeId`.
+  TypeScript, and FHIR consumers must preserve or validate `AppliedArg` by kind.
+  Other compile-relevant targets may keep their existing type-only behavior, but
+  a surviving size argument must be represented or rejected explicitly; it may
+  not be dropped or converted to `TypeId`.
 
-The model is intentionally limited to existing `FiguraExpr`/`IndexExpr` forms:
-natural literals, declared size variables, tuples where the receiving parameter
-admits them, and `_`. It does not add arithmetic on sizes, general dependent
-values, a new keyword, or a compatibility spelling.
+#### Existing PH-0..4 serialization surface (landed; preserve, do not conflate)
+
+Applied-parameter holes are a separate, already-shipped surface that the old
+§0 omitted. PH-0..4 landed on 2026-08-19 with the following receipts:
+
+| Unit | Landed behavior | Receipt |
+| --- | --- | --- |
+| PH-0 | EBNF/design notes define explicit type `_` and marker holes as a third hole species; no locale keyword | faber `a40a1e1`; radix `6e1b522d8` |
+| PH-1 | Explicit type `_`, mixed lists such as `both<_, textus>`, exact arity, and named reject `explicit_union_type_arg_unsupported` | radix `0ba9ad19a` |
+| PH-2 | `numerus<_>`, `fractus<_>`, `modulus<_>`, and `instans<_>` lower to family-preserving `Type::MarkerHole` | radix `0ba9ad19a` |
+| PH-3 | Marker holes unify to an exact same-family marker; unsolved holes and family mismatches reject; no numeric widening | radix `0ba9ad19a` |
+| PH-4 | Ship-marker/design closeout and type-inspection coverage; no new locale keyword or broad corpus claim | radix `6e1b522d8`; coverage `8194313b4` |
+
+The PH invariant is explicit: call-site `_` is a type hole, marker `_` is a
+family-preserving `Type::MarkerHole`, and a future `GenericArgExpr::Size` is a
+compile-time index argument. These three cases must not be collapsed. The
+current marker-hole serialization surface is owned by
+`radix-semantic/src/passes/typecheck`, `radix-types/src/{types.rs,numeric_width.rs,instans_precision.rs}`,
+`radix-program/src/mir/cli_plan.rs`, and the backend/MIR consumers listed in
+Appendix A.4. S0-R0 adds the kinded application surface without weakening the
+shipped PH diagnostics or turning a marker hole into an index argument.
+
+The target model is intentionally limited to existing `FiguraExpr`/`IndexExpr`
+forms: natural literals, declared size variables, tuples where the receiving
+parameter admits them, and `_`. It does not add arithmetic on sizes, general
+dependent values, a new keyword, or a compatibility spelling.
 
 The committed-base census is executable and mandatory before edits:
 
 ```sh
 cd "$RADIX_ROOT"
-rg -l 'TypeExprKind::(Named|Qualified)' EBNF.md crates \
+rg -l 'TypeExprKind::(Named|Qualified)' crates \
   | sort > /tmp/generic-math-syntax-consumers.txt
 rg -l 'Type::Applied' crates \
   | sort > /tmp/generic-math-applied-consumers.txt
-rg -l 'Symbol[[:space:]]*\{' crates/radix/src \
+rg -l 'Symbol[[:space:]]*\{' \
+  crates/radix-semantic crates/radix-program crates/radix-module \
+  crates/radix-syntax crates/radix-types \
   | sort > /tmp/generic-math-symbol-constructors.txt
-test "$(wc -l < /tmp/generic-math-syntax-consumers.txt)" -ge 22
-test "$(wc -l < /tmp/generic-math-applied-consumers.txt)" -ge 73
-test "$(wc -l < /tmp/generic-math-symbol-constructors.txt)" -ge 11
+rg -l 'Type::MarkerHole' crates \
+  | sort > /tmp/generic-math-marker-hole-consumers.txt
+test "$(wc -l < /tmp/generic-math-syntax-consumers.txt)" -ge 23
+test "$(wc -l < /tmp/generic-math-applied-consumers.txt)" -ge 85
+test "$(wc -l < /tmp/generic-math-symbol-constructors.txt)" -ge 17
+test "$(wc -l < /tmp/generic-math-marker-hole-consumers.txt)" -ge 33
 ```
 
-The counts are a stale-base alarm from Radix `2a986d40`; they are not a license
-to ignore new matches. `S0-R0` must classify every current match as
-behavior-bearing, type-only pass-through, explicit unsupported-size rejection,
-or test fixture, and commit that census in its unit evidence. Appendix A is the
-allowed exhaustive-consumer scope on the inspected base.
+At the revision pin the census is 23 syntax consumers, 85 `Type::Applied`
+consumers, 17 live resolver-symbol files, and 33 `Type::MarkerHole` consumers.
+The counts are stale-base alarms, not permission to ignore new matches. S0-R0
+classifies every current match as behavior-bearing, type-only pass-through,
+explicit unsupported-size rejection, PH marker-hole handling, or test fixture;
+Appendix A is the allowed exhaustive scope on the inspected base.
 
 ### 2.4 Required operation map
 
@@ -262,19 +302,19 @@ pre-filled with a preferred answer before probes run.
 
 ### 3.1 Snapshots inspected
 
-The campaign was authored against Triga `05c6ccf` and Radix `f4e6bec7d`. This
-lowering rechecked the named repositories read-only. Concurrent integration can
-move sibling `main`, so Hands must record their actual committed bases again at
-unit start.
+The original lowering used stale Triga `05c6ccf` and Radix `f4e6bec7d` pins.
+The readiness read measured a 172-commit Triga drift from that baseline. This
+revision re-pinned the two active prerequisite bases to live main; Triga had
+advanced two more commits, so the measured drift is now 174.
 
-| Repo | Committed snapshot observed during lowering | Evidence |
+| Repo | Committed snapshot observed during this revision | Evidence |
 | --- | --- | --- |
-| `triga` planning packet | `05c6ccff5c0d48a0cfd02b740f8caff83578e3e4` | `src/math.fab`, `src/math.proba`, direct source/exempla/corpus consumers, scripts, API/module policy |
-| `radix` live main | `2a986d40a1d96e47858180c25e97c47cbc5f1a95` during correction inspection | grammar/AST, `Applied` consumers, loose-file interfaces, private `crates/faber` package-interface producer/tests and CLI, Rust/TS/Faber/FHIR consumers, shape-generics P4 refs |
-| `norma` | `2d710c2c8142f32f46e70a17a60c810ad1b3be3b` | `src/vector.fab` generic intrinsic operations |
-| `examples` | `d04062f27c024a57b633deb194f1d1bfb3915bce` | hello-voxel, Budapest, Drift City, browser bridge, generated source consumers |
-| `hosts` | `57d659d604309c11b6046a514317c22dd6b468f1` | browser WebGPU payload writers/readers |
-| `faberlang.dev` | `60552196c5201dcd06257baca13e022a5c034ea7` | current Triga documentation consumer |
+| `triga` planning repo | `01d26888a618c4054bcdd0507d34ec78475849fb` | `src/math.fab`, `src/math.proba`, live exempla/corpus consumers, scripts, API/module policy |
+| `radix` live main | `6feab5a79ac047a09f443fe1ccd026c22d3ae6af` | split syntax/parser/semantic/types/program/module crates, interface extraction, HIR emitters, PH-0..4 consumers |
+| `norma` | `df3f16f0284279796142ca3d0c96eeea027863fa` | generic vector intrinsic operations |
+| `examples` | `4dedf671c85a5281ade1f13a77bfc7a3cceed96f` | hello-voxel, Budapest, Drift City, browser bridge, generated source consumers |
+| `hosts` | `e76cceb6fe49c07d4e418621cc90804f0b17bd1d` | browser WebGPU payload writers/readers |
+| `faberlang.dev` | `c924ae0d2c49d593ec13d7713ce93a6976934b45` | current Triga documentation consumer |
 
 ### 3.2 Triga baseline
 
@@ -294,7 +334,7 @@ bytes.
 
 The owned Triga blast radius is concentrated in `src/math.fab` but includes
 `src/{face,scene}.fab`, graph/camera/object, geometry bounds, lighting,
-`src/math.proba`, 13 root exempla, and five corpus camera/animation files. The
+`src/math.proba`, 15 root exempla, and five corpus camera/animation files. The
 migration map must classify every owned hit, including compound/helper names
 such as `Box3OverlapFacts`, `RayBox3Hit`, `box3_hit`, and
 `_ray_box3_hit_normal`. A raw substring count is not the closeout oracle.
@@ -329,57 +369,66 @@ affine-specific matrix behavior, graphics constructors, and boxes. Existing
 native intrinsics are reuse evidence, not a requirement to move all behavior
 into the compiler.
 
-### 3.4 Proven Radix prerequisites
+### 3.4 Proven Radix prerequisites and missing boundary
 
-Two serial prerequisites are proven from committed code. They are not speculative:
+At the pinned Radix main, these facts are separated explicitly:
 
-1. The parser accepts `size`/`magnitudo` parameters on declarations.
+1. `GenericParamKind::{Typus, Magnitudo}` is landed in the syntax AST, parser,
+   resolver, and HIR declaration metadata. The parser accepts ordered type
+   parameters followed by `magnitudo` parameters.
 2. Built-in `vector<T, N>` and `matrix<T, [R,C]>` parse shape arguments through
-   `FiguraExpr`.
-3. Named generic applications store only `Vec<TypeExpr>`. A literal such as
-   the `3` in `Vector<3>` is not a type expression, while a bare `N` is
-   ambiguous until the declaration parameter kind is known.
-4. Semantic `Type::Applied` stores only `Vec<TypeId>`, and alias normalization
-   substitutes only type-parameter identities. The settled §2.3 kinded model
-   is required; sizes may not be encoded as fake `TypeId` values.
-5. `FileExportKind::TypeAlias` snapshots only the body. `InterfaceStructExport`
-   also omits declaration generic parameters. Both lose parameter order/kind
-   before an importer installs the declaration.
-6. The Faber product package producer at
-   `crates/faber/src/package/file_interface.rs` independently builds those
-   incomplete snapshots. Repairing only `radix/src/file_interface.rs` would
-   leave the package route used by `S0-T1` broken.
-7. Rust and TypeScript alias declaration helpers intentionally emit only
-   `HirTypeParam::typus_params`; size parameters are omitted.
-8. Rust falls back to `Vec<T>`/`Vec<Vec<T>>` for parametric native shapes, while
-   TypeScript's current native carriers do not retain a checked dimension in
-   the carrier type.
-9. Radix `2a986d40` has 22 syntax `Named`/`Qualified` consumer files and 73
-   direct `Type::Applied` consumer files. At minimum these include
-   `radix-syntax/src/visit.rs`, both Forma emitters,
-   `radix-hir-faber/src/types.rs`, and `radix-hir-fhir/src/validate.rs`; an
-   arity change without the Appendix A census cannot compile honestly.
+   `FiguraExpr`; this is not evidence that a user named application such as
+   `Vector<3>` carries a checked size argument.
+3. Named generic applications still store only `Vec<TypeExpr>`. The parser's
+   natural applied argument remains a named identifier, and a bare name is not
+   kind-resolved from declaration metadata.
+4. Semantic `Type::Applied` still stores `Vec<TypeId>`. The requested
+   `AppliedArg::{Type,Size}` and index-bearing application are absent. A size
+   must not be encoded as a fake `TypeId`.
+5. `radix-semantic/src/file_interface.rs` snapshots type aliases and nominal
+   exports without ordered declaration kind/order metadata, and applied
+   snapshots contain type-only arguments. `radix-program/src/file_interface.rs`
+   is the live extraction producer; `radix-module/src/file_interface.rs`
+   re-exports the portable schema and owns module-side consumers.
+6. The product Faber package route now reaches the program extractor through
+   `radix::program::file_interface`, with integration fixtures in
+   `crates/faber/src/package_test.rs` and package helpers under
+   `crates/faber/src/package/`. The former package-local interface producer is
+   absent. Repairing only semantic extraction or only loose-file tests would
+   leave the product route unproved.
+7. Alias type-argument emission is landed for Rust and TypeScript (commit
+   `94c6b71d4`), including the applied type-argument tests. Size-parameter
+   declaration/application emission and dimension-preserving size arguments
+   remain to build.
+8. Rust still has parametric native-shape fallback behavior, and TypeScript's
+   current native carriers do not establish a checked source-static dimension.
+   The candidate matrix must test these rather than infer parity from the
+   landed type-alias emission.
+9. PH-0..4 is landed separately: explicit type holes use the existing type-hole
+   path, marker holes use `Type::MarkerHole`, and all backend/MIR consumers must
+   keep their explicit handling or rejection. PH does not provide a size-arg
+   representation.
+10. The live census at this pin is 23 syntax `Named`/`Qualified` consumer files,
+    85 `Type::Applied` consumer files, 17 resolver-symbol files, and 33
+    `Type::MarkerHole` consumer files. Appendix A records the exact lists.
 
-Therefore Stage 0 cannot honestly run the public `Vector<3>` / `Matrix<4,4>` /
-`Box<3>` comparison without `S0-R0` followed by `S0-R1`.
+Therefore Stage 0 still requires S0-R0 followed by S0-R1 before the public
+`Vector<3>` / `Matrix<4,4>` / `Box<3>` comparison can run honestly.
 
-### 3.5 Shape-generics P4 serialization
+### 3.5 Landed shape-generics and PH serialization
 
-Radix Shape Generics Phase 4 is a related but distinct line. Live main observed
-during lowering contained the Phase-4A MIR `ShapeSize` substitution commits
-`0d9f50ab0` and `beed90b1f`. Other Shape P4 branch/worktree commits were not
-assumed landed.
+Shape Generics Phase 4 is closed and archived at Radix commit `1eaf4ec68`.
+The landed `GenericParamKind`/`HirTypeParam` machinery is a prerequisite for
+S0-R0, not a replacement for it. Applied-parameter holes PH-0..4 are also
+closed, with the receipts in §2.3. Neither landing carries a named size
+argument through `TypeExprKind::{Named,Qualified}`, interfaces, package import,
+or Rust/TypeScript applied-alias emission.
 
-`S0-R0` begins only after Mind assigns one committed Radix base. The Hand must:
-
-- inspect the live committed main and all landed Shape P4 files;
-- reuse landed generic-size machinery;
-- avoid replaying an unmerged branch as though it were baseline; and
-- serialize `S0-R0` and `S0-R1` with any active writer touching the same
-  generic/application/import, package-interface, or emitter files.
-
-Shape P4's MIR monomorphization does not by itself satisfy named source alias,
-provider-import, or HIR Rust/TypeScript emission proofs.
+`S0-R0` starts from the committed live base in §3.1. The Hand must inspect the
+assigned base and any active writer before edits, reuse landed declaration-kind
+and PH behavior, and avoid treating unmerged work as baseline. The serial
+boundary remains: S0-R0 owns the new application identity and exhaustive
+consumers; S0-R1 owns interface/package reconstruction and target emission.
 
 ### 3.6 Consumers and host boundary
 
@@ -425,45 +474,45 @@ them.
 | Field | Value |
 | --- | --- |
 | `id` | `S0-R0` |
-| `outcome` | Radix represents every named generic application as the ordered §2.3 `AppliedArg::{Type, Size}` model from source AST through checked semantic types. Literal and declared size arguments are never fake user types. Existing type-only applications preserve behavior, and every compile-relevant consumer on the assigned base either handles size arguments or rejects them explicitly. |
-| `write_scope` | Repo `radix`, on the packet Mind assigns after the Shape P4 serialization check. Core model files: `crates/radix-syntax/src/{ast.rs,visit.rs}`; `crates/radix-parser/src/{types.rs,types_test.rs,mod_test.rs}`; `crates/radix-types/src/{index.rs,types.rs,types_test.rs}`; `crates/radix/src/forma/{pretty,author}/emit.rs`; `crates/radix/src/hir/lower/{types.rs,mod_test.rs}`; `crates/radix/src/semantic/{scope.rs,scope_test.rs,format_type.rs,resolved_use.rs}`; `crates/radix/src/semantic/passes/{collect.rs,collect_test.rs,resolve.rs,resolve_test.rs}`; `crates/radix/src/semantic/passes/typecheck/{generic.rs,generic_call_test.rs,infer.rs,finalize.rs,convert.rs,call.rs,aggregate.rs,ops.rs,access.rs,lookup.rs,mod.rs}`. Compile-preserving exhaustive-consumer edits are allowed only in the exact Appendix A files matched on the assigned base. Because `Symbol` gains declaration parameter kinds, compile-only constructor updates are also allowed in the Appendix A.3 `Symbol` constructor files; they must initialize an empty vector unless they construct a declared generic type. New focused tests may be added beside these modules with names beginning `generic_applied_arg`. No file-interface producer, package import behavior, target size emission, Triga, or sibling-repo edits. |
-| `read_scope` | `radix/AGENTS.md`; `EBNF.md`; all write-scope and Appendix A files; `docs/factory/shape-generics/**`; Shape P4 commits reachable from the assigned base; Triga `docs/factory/generic-math-types/{CAMPAIGN.md,delivery-stage0.md}`. Unmerged worktrees are evidence only. |
-| `done_when` | (1) `TypeExprKind::{Named,Qualified}` use ordered `GenericArgExpr`; literals/tuples/holes are `Size`, complex type syntax is `Type`, and bare names resolve by the callee declaration's ordered parameter kind. (2) Local declaration `Symbol` metadata records ordered `GenericParamKind` values and named/qualified lookup exposes those kinds to lowering; no spelling heuristic chooses a kind. (3) Checked applications use `Type::Applied(base, Vec<AppliedArg>)`; each `Size` carries an existing `IndexId`. (4) Local aliases and nominals accept literal sizes 2/3/4 and declared size parameters, while type/size arity or kind swaps reject with code+issue+args. (5) Type substitution and index substitution are separate and preserve vector width, both matrix dimensions, and `Box<N>` width. (6) The Appendix A census is refreshed against the assigned base; every match is classified and every affected crate compiles. Type-only generic behavior remains green. (7) `radix-syntax/src/visit.rs`, both Forma emitters, `radix-hir-faber/src/types.rs`, and `radix-hir-fhir/src/validate.rs` explicitly visit/print/validate the new argument kind. Faber source round-trip preserves `Vector<3>` and `Matrix<R,C>`. (8) Non-Rust/TS consumers may preserve type-only behavior, but a surviving size argument is handled or rejected explicitly and is never silently discarded. (9) No new keyword, locale alias, arithmetic-on-size syntax, or numbered Triga name is added. |
-| `validation` | Census commands from §2.3. Focused red/green: `cargo test -p radix-parser --lib generic_applied_arg`; `cargo test -p radix-types --lib generic_applied_arg`; `cargo test -p radix --lib generic_applied_arg`; `cargo test -p radix-hir-faber --lib generic_applied_arg`; `cargo test -p radix-hir-fhir --lib generic_applied_arg`. Existing gates: `cargo test -p radix-parser --lib`; `cargo test -p radix-types --lib`; `cargo test -p radix --lib`; `cargo test -p radix-hir-faber --lib`; `cargo test -p radix-hir-fhir --lib`. Compile census: `cargo check -p faber -p radix -p radix-syntax -p radix-parser -p radix-types -p radix-hir-faber -p radix-hir-fhir -p radix-hir-go -p radix-hir-lean -p radix-hir-rust -p radix-hir-swift -p radix-hir-ts -p radix-mir -p radix-mir-llvm -p radix-mir-sexp -p radix-mir-wasm`. Every filtered command must list at least one test; zero-test success is not evidence. |
-| `depends_on` | none in this delivery; Gate 0 requires one committed Radix base after live Shape P4/worktree inspection |
-| `non_goals` | File/package interface persistence; provider-package import proof; final Rust/TypeScript dimension carrier; Triga representation selection; general dependent values; size arithmetic; MIR monomorphization already owned by Shape P4. |
-| `risk` | **high** — this changes a central enum payload used by many targets. Appendix A and the full affected-crate `cargo check` are mandatory. A mechanical compile fix that drops `Size` is a correctness failure. |
+| `outcome` | Radix adds the ordered §2.3 `GenericArgExpr` → `AppliedArg::{Type, Size}` foundation to the live split crates. Literal and declared size arguments are never fake user types. Existing type-only applications, explicit type holes, and PH marker-hole behavior remain green; every compile-relevant consumer on the assigned base either handles a size argument or rejects it explicitly. |
+| `write_scope` | Repo `radix`, on the packet Mind assigns after the Gate 0 base check. Core syntax/parser/type owners: `crates/radix-syntax/src/{ast.rs,visit.rs}`; `crates/radix-parser/src/{decl.rs,types.rs,types_test.rs,mod_test.rs,generic_call_test.rs}`; `crates/radix-types/src/{index.rs,types.rs,types_test.rs,numeric_width.rs,instans_precision.rs}`. Semantic lowering/resolution/typecheck: `crates/radix-semantic/src/{scope.rs,scope_test.rs,format_type.rs,resolved_use.rs,lower/{mod.rs,decl.rs,expr.rs,types.rs},passes/{collect.rs,collect_test.rs,resolve.rs,resolve_test.rs,typecheck/{generic.rs,generic_call_test.rs,marker_hole_test.rs,infer.rs,finalize.rs,convert.rs,call.rs,aggregate.rs,ops.rs,access.rs,lookup.rs,mod.rs}}}`. Live HIR/module/program consumers: `crates/radix-hir/src/{nodes.rs,visit.rs}` only where declaration metadata requires it; `crates/radix-module/src/{file_interface.rs,forma_render.rs,hir/{visit.rs,nodes.rs},program/compile.rs}` and the exact Appendix A.2/A.4 consumer files; `crates/radix-program/src/{file_interface.rs,analyze.rs,library.rs,mir/{cli_plan.rs,link.rs}}`. Compile-preserving backend adaptations are limited to the exact current Appendix A lists. No Faber package integration, Triga, or sibling-repo edits in S0-R0. |
+| `read_scope` | `radix/AGENTS.md`; live `faber/docs/EBNF.md`; all write-scope and Appendix A files; `docs/archived/shape-generics/**`; PH-0..4 receipts and tests; Triga `docs/factory/generic-math-types/{CAMPAIGN.md,delivery-stage0.md}`. Unmerged worktrees are evidence only. |
+| `done_when` | (1) Named and qualified applications carry ordered source `GenericArgExpr` values; literals, tuples, declared size variables, and size holes are not fake type names, while bare names resolve from the callee's ordered declaration kinds. (2) The live resolver/HIR declaration identity exposes ordered `GenericParamKind` metadata; no spelling heuristic chooses a kind. (3) Checked applications use `Type::Applied(base, Vec<AppliedArg>)`; each `Size` carries an existing `IndexId`, and type/index substitution stay separate. (4) Local aliases and nominals accept literal sizes 2/3/4 and declared size parameters, while type/size arity or kind swaps reject with structured diagnostics. (5) The refreshed 23/85/17 census plus the 33-file PH census is classified against the assigned base; every affected crate compiles, and existing type-only/PH behavior remains green. (6) Syntax visiting/printing, semantic formatting, HIR Faber/FHIR validation, Rust/TS/backend consumers, and MIR serialization either preserve the new argument kind or reject unsupported size arguments explicitly. (7) No new keyword, locale alias, arithmetic-on-size syntax, numbered Triga name, or change to the PH hole rules is added. |
+| `validation` | Re-run the §2.3 census commands and compare counts/lists with Appendix A. Focused tests: `cargo test -p radix-parser --lib generic_applied_arg`; `cargo test -p radix-types --lib generic_applied_arg`; `cargo test -p radix-semantic --lib generic_applied_arg`; `cargo test -p radix-module --lib generic_applied_arg`; `cargo test -p radix-program --lib generic_applied_arg`; `cargo test -p radix-hir-faber --lib generic_applied_arg`; `cargo test -p radix-hir-fhir --lib generic_applied_arg`; `cargo test -p radix-module --lib marker_hole`; `cargo test -p radix-semantic --lib marker_hole`. Compile census: `cargo check -p radix-syntax -p radix-parser -p radix-types -p radix-semantic -p radix-program -p radix-module -p radix-hir-faber -p radix-hir-fhir -p radix-hir-rust -p radix-hir-ts -p radix-mir`. Every filtered command must list at least one test; zero-test success is not evidence. |
+| `depends_on` | none in this delivery; Gate 0 requires one committed Radix base after live Shape P4/PH overlap inspection |
+| `non_goals` | File/package interface persistence; provider-package import proof; final Rust/TypeScript dimension carrier; Triga representation selection; general dependent values; size arithmetic; MIR monomorphization already owned by landed Shape P4. |
+| `risk` | **high** — this changes a central application payload used by many targets and must coexist with the landed PH marker-hole enum surface. Appendix A and the affected-crate compile census are mandatory; a mechanical fix that drops `Size` or changes PH diagnostics is a correctness failure. |
 | `est_work_tokens` | `70k–110k` |
-| `est_basis` | `.tugboat/estimate-ledger.json` class `compiler-surface-feature`: 33 recorded units, 45–304 tool calls, median 150. The explicit split removes package/emitter behavior but retains a broad exhaustive compile boundary. |
+| `est_basis` | `.tugboat/estimate-ledger.json` class `compiler-surface-feature`: 33 recorded units, 45–304 tool calls, median 150. The split retains the broad exhaustive consumer boundary but excludes interface/package behavior. |
 | `tool_latency` | Cold crate checks dominate once. Run focused model crates first, then the single affected-crate compile census after fixes. No workspace suite and no shared `CARGO_TARGET_DIR`. |
-| `parallel_children_considered` | **none** — the AST and semantic enum shape is one coupled identity seam; independent edits would race exhaustive match consumers. |
+| `parallel_children_considered` | **none** — AST/source arguments, semantic checked types, resolver metadata, and PH/exhaustive consumers are one coupled identity seam. |
 
 **Retry/resume:** keep parser/model red fixtures first. If the bounded model
 cannot express a case without general dependent values, stop with the exact
-syntax or semantic boundary. Do not encode sizes as `TypeId` or weaken an
-exhaustive consumer to ignore them.
+syntax or semantic boundary. Do not encode sizes as `TypeId`, weaken a consumer
+to ignore them, or broaden PH marker-hole semantics.
 
 ### S0-R1 — package/import reconstruction and HIR Rust/TypeScript emission
 
 | Field | Value |
 | --- | --- |
 | `id` | `S0-R1` |
-| `outcome` | A named Faber alias or nominal declaration carries ordered type/size parameters and applied arguments through same-file calls, loose-file interfaces, the product Faber package-interface producer/importer, and compilable HIR Rust/TypeScript output without erasing concrete dimensions. |
-| `write_scope` | Repo `radix`, based on committed `S0-R0`. Interface model and loose-file route: `crates/radix/src/{file_interface.rs,file_interface_test.rs}`; `crates/radix/src/semantic/{scope.rs,scope_test.rs,annotation_contract_test.rs}`; `crates/radix/src/semantic/passes/{resolve_test.rs,typecheck/generic_call_test.rs,typecheck/union_construction_test.rs,typecheck/union_pattern_test.rs,typecheck/union_value_test.rs}`; `crates/radix/src/tool/commands/{compile.rs,compile_test.rs}`; compile-only interface constructor adaptation in `crates/radix/examples/flib_preview.rs`. Product package producer/tests: `crates/faber/src/package/file_interface.rs`; `crates/faber/src/package_test.rs`; `crates/faber/src/package/mir/cli_plan.rs`; an adjacent `crates/faber/src/package/file_interface_test.rs` may be added and wired only through `crates/faber/src/package/mod.rs`. HIR declaration/emitter route: `crates/radix-hir/src/{nodes.rs,visit.rs}` only if interface-preserved parameter metadata requires a compile-preserving change; `crates/radix/src/hir/lower/{decl.rs,types.rs,mod_test.rs}`; `crates/radix-hir-rust/src/{decl.rs,types.rs,module.rs,module_test.rs}`; `crates/radix-hir-ts/src/{decl.rs,types.rs,expr_test.rs}`; `crates/radix-hir-faber/src/{decl.rs,types.rs}`; `crates/radix-hir-fhir/src/validate.rs`. `EBNF.md` only if the implemented bounded source grammar differs from its current generic-argument production. The Hand refreshes `rg -l 'FileExportKind::TypeAlias|InterfaceStructExport\s*\{|InterfaceNominalExport\s*\{|InterfaceTypeSnapshot::Applied' crates` and may add only newly matched compile-relevant interface consumers to this scope. No MIR/device or sibling repository files. |
-| `read_scope` | All `S0-R0` evidence and Appendix A; listed write files; `crates/faber/src/package/{compile.rs,import_graph.rs,library.rs,test_support.rs}`; `radix/AGENTS.md`; target vector/matrix shape helpers; committed Shape P4 files; Triga campaign/delivery; Norma `src/vector.fab`. |
-| `done_when` | (0) The interface-consumer census from `write_scope` is refreshed on the assigned base; all matches compile, and any new match is classified before edit. (1) English and canonical-reader fixtures declare `Vector<size N> = vector<f32,N>`, `Matrix<size R,size C> = matrix<f32,[R,C]>`, and nominal `Box<size N>` over the vector form. (2) Same-file, loose-file imported, and real Faber provider-package/consumer-package calls substitute literal sizes 2/3/4 and declared size parameters. (3) A new `InterfaceTypeAliasExport { params, body }` replaces the body-only alias payload; `InterfaceStructExport` and other applicable nominal exports gain ordered `params`; each parameter is `{ name, kind }`. `InterfaceAppliedArg::{Type, Size}` preserves checked applied arguments. Both loose-file and Faber package producers populate that schema, and the importer installs the same ordered kinds into imported declaration metadata instead of flattening the body. (4) Type-for-size, size-for-type, vector-width, matrix-row/column, and box/vector-width mismatches reject in Faber source analysis with code+issue+args. (5) A non-zero focused `cargo test -p faber --lib package_interface_preserves_generic_size` proves alias and `Box<size N>` provider-package reconstruction through `crates/faber/src/package/file_interface.rs`. (6) Rust and TypeScript declarations/applied uses preserve concrete 2/3/4 dimensions in a backend-owned checked form; emitted provider-consumer source compiles. Rust may not use the unshaped `Vec` fallback for a source-static alias. (7) Existing type-only aliases, package imports, built-in vector/matrix syntax, and Shape P4 generic-call tests stay green. (8) No new keyword/locale alias or numbered Triga name enters Radix. |
-| `validation` | Inner loop: `cargo test -p radix --lib file_interface_preserves_generic_size`; `cargo test -p radix --lib import_contract_preserves_generic_size_alias`; `cargo test -p faber --lib package_interface_preserves_generic_size`; `cargo test -p radix-hir-rust --lib generic_size_alias`; `cargo test -p radix-hir-ts --lib generic_size_alias`; `cargo test -p radix-hir-faber --lib generic_applied_arg`; `cargo test -p radix-hir-fhir --lib generic_applied_arg`. Unit gate: `cargo test -p radix --lib`; `cargo test -p faber --lib`; `cargo test -p radix-hir-rust --lib`; `cargo test -p radix-hir-ts --lib`; `cargo test -p radix-hir-faber --lib`; `cargo test -p radix-hir-fhir --lib`; `cargo check -p faber -p radix -p radix-hir -p radix-hir-rust -p radix-hir-ts -p radix-hir-faber -p radix-hir-fhir`. Same-packet CLI gate: `(cd "$RADIX_ROOT" && cargo build -p radix --bin radix && cargo build -p faber --bin faber)`; `test -x "$RADIX_ROOT/target/debug/radix"`; `test -x "$RADIX_ROOT/target/debug/faber"`. Emitted fixture gate: `rustc --edition 2021 --crate-type lib /tmp/generic-math-types-rust/lib.rs`; `tsc --noEmit --strict --target ES2022 --module ES2022 /tmp/generic-math-types-ts/*.ts`. Every filtered command must list at least one test; zero-test success is not evidence. |
+| `outcome` | A named Faber alias or nominal declaration carries ordered type/size parameters and applied arguments through same-file calls, loose-file interfaces, the live `radix-program` extractor, the product Faber package route, and compilable HIR Rust/TypeScript output without erasing concrete dimensions. |
+| `write_scope` | Repo `radix`, based on committed S0-R0. Interface schema and loose-file extraction: `crates/radix-semantic/src/{file_interface.rs,file_interface_test.rs}`; `crates/radix-program/src/{file_interface.rs,file_interface_test.rs,analyze.rs,analyze_test.rs,library.rs}`; `crates/radix-module/src/{file_interface.rs,file_interface_test.rs,driver/mod.rs,program/compile.rs,program/compile_test.rs,import_resolve.rs,import_resolve_test.rs}`. Product-package integration: `crates/faber/src/package_test.rs`, `crates/faber/src/package/{binding.rs,binding_test.rs,fhir.rs,fhir_test.rs,mod.rs}` only where the live package route or its focused proof requires adaptation; the package producer is the live `radix-program` extractor, not a deleted Faber-local file. HIR declaration/emitter route: `crates/radix-hir/src/{nodes.rs,visit.rs}` only if interface-preserved parameter metadata requires a compile-preserving change; `crates/radix-hir-rust/src/{decl.rs,types.rs,module.rs,module_test.rs,decl_test.rs}`; `crates/radix-hir-ts/src/{decl.rs,types.rs,module.rs,decl_test.rs,expr_test.rs}`; `crates/radix-hir-faber/src/{decl.rs,types.rs}`; `crates/radix-hir-fhir/src/validate.rs`. The Hand refreshes `rg -l 'FileExportKind::TypeAlias|InterfaceStructExport\s*\{|InterfaceNominalExport\s*\{|InterfaceTypeSnapshot::Applied' crates` and admits only newly matched compile-relevant interface consumers. No MIR/device or sibling-repository files. |
+| `read_scope` | All S0-R0 evidence and Appendix A; listed write files; `crates/faber/src/package/{compile.rs,import_graph.rs,library.rs,test_support.rs}` where present; `radix/AGENTS.md`; live `faber/docs/EBNF.md`; target vector/matrix shape helpers; Triga campaign/delivery; Norma `src/vector.fab`. |
+| `done_when` | (0) The interface-consumer census is refreshed on the assigned base; all matches compile and every new match is classified before edit. (1) Fixtures declare `Vector<magnitudo N> = vector<f32,N>`, `Matrix<magnitudo R,magnitudo C> = matrix<f32,[R,C]>`, and nominal `Box<magnitudo N>` over the vector form. (2) Same-file, loose-file imported, and real Faber provider-package/consumer-package calls substitute literal sizes 2/3/4 and declared size parameters. (3) A portable interface schema carries ordered `{name, kind}` declaration metadata plus type/size applied arguments through semantic extraction, `radix-program`, `radix-module`, and the actual Faber package route. The implementation must extend the existing body-only/type-only snapshots; it must not restore a deleted package-local producer. (4) Type-for-size, size-for-type, vector-width, matrix-row/column, and box/vector-width mismatches reject in Faber source analysis with code+issue+args. (5) A non-zero focused `cargo test -p faber --lib package_interface_preserves_generic_size` proves provider-package reconstruction through the live `radix::program::file_interface` route and `crates/faber/src/package_test.rs`. (6) Rust and TypeScript declarations/applied uses preserve concrete 2/3/4 dimensions in a backend-owned checked form; emitted provider-consumer source compiles. The landed type-argument alias emission remains green, while size-parameter emission and size-argument preservation are added; Rust may not use an unshaped `Vec` fallback for a source-static alias. (7) Existing type-only aliases, package imports, built-in vector/matrix syntax, and PH-0..4 tests stay green. (8) No new keyword/locale alias or numbered Triga name enters Radix. |
+| `validation` | Inner loop: `cargo test -p radix-semantic --lib file_interface_preserves_generic_size`; `cargo test -p radix-program --lib file_interface_preserves_generic_size`; `cargo test -p radix-module --lib file_interface_preserves_generic_size`; `cargo test -p faber --lib package_interface_preserves_generic_size`; `cargo test -p radix-hir-rust --lib generic_size_alias`; `cargo test -p radix-hir-ts --lib generic_size_alias`; `cargo test -p radix-hir-faber --lib generic_applied_arg`; `cargo test -p radix-hir-fhir --lib generic_applied_arg`. Unit gate: `cargo test -p radix-semantic --lib`; `cargo test -p radix-program --lib`; `cargo test -p radix-module --lib`; `cargo test -p faber --lib`; `cargo test -p radix-hir-rust --lib`; `cargo test -p radix-hir-ts --lib`; `cargo test -p radix-hir-faber --lib`; `cargo test -p radix-hir-fhir --lib`. Same-packet CLI gate: `(cd "$RADIX_ROOT" && cargo build -p radix --bin radix && cargo build -p faber --bin faber)`; `test -x "$RADIX_ROOT/target/debug/radix"`; `test -x "$RADIX_ROOT/target/debug/faber"`. Emitted fixture gate: `rustc --edition 2021 --crate-type lib /tmp/generic-math-types-rust/lib.rs`; `tsc --noEmit --strict --target ES2022 --module ES2022 /tmp/generic-math-types-ts/*.ts`. Every filtered command must list at least one test; zero-test success is not evidence. |
 | `depends_on` | `S0-R0` committed; a refreshed Gate 0 overlap check before edits |
 | `non_goals` | Selecting the Triga representation; editing Triga/Norma/Examples; native operation semantics; MIR/device monomorphization; general value const generics or arithmetic on sizes; compatibility syntax. |
-| `risk` | **high** — loose-file and product package interfaces are distinct producers. Passing one route does not imply the other. Rust/TS can also compile after dimension erasure, so emitted carrier assertions are mandatory. |
+| `risk` | **high** — semantic extraction, program extraction, module consumers, and the Faber package route are distinct producers/consumers. Passing one route does not imply the others. Rust/TS can also compile after dimension erasure, so emitted carrier assertions are mandatory. |
 | `est_work_tokens` | `65k–95k` |
-| `est_basis` | `compiler-surface-feature` ledger class, median 150 tool calls. The unit spans two interface producers/importers and two HIR emitters but consumes the already-settled `S0-R0` identity model. |
-| `tool_latency` | Focused crate tests are seconds to tens of seconds warm; `cargo test -p faber --lib` and `cargo test -p radix --lib` dominate. Build each same-packet CLI once; tiny `rustc`/`tsc` fixtures are seconds. |
-| `parallel_children_considered` | **none** — interface schema, importer reconstruction, package producer, and emitters must agree on one ordered argument identity. |
+| `est_basis` | `compiler-surface-feature` ledger class, median 150 tool calls. The unit spans the live semantic/program/module interface layers, the Faber package route, and two HIR emitters but consumes the S0-R0 identity model. |
+| `tool_latency` | Focused crate tests are seconds to tens of seconds warm; package and program tests dominate. Build each same-packet CLI once; tiny `rustc`/`tsc` fixtures are seconds. |
+| `parallel_children_considered` | **none** — interface schema, importer reconstruction, package integration, and emitters must agree on one ordered argument identity. |
 
 **Retry/resume:** preserve loose-file and package red fixtures independently.
-A green loose-file route never permits skipping the package producer. If a new
-consumer appears on the assigned base, add it to the census and exact scope
+A green loose-file route never permits skipping the product package route. If a
+new consumer appears on the assigned base, add it to the census and exact scope
 before implementation; do not silently widen into unrelated compiler work.
 
 ### S0-T1 — equal candidate probe and representation selection
@@ -518,7 +567,7 @@ no Radix write authority.
 
 Mind should prepare exactly one live Hand at a time:
 
-1. a Radix Hand for `S0-R0` after the Shape P4 serialization check;
+1. a Radix Hand for `S0-R0` after the live-base and overlap check;
 2. a Radix Hand for `S0-R1` from committed `S0-R0`, after refreshing overlap state;
 3. a Triga Hand for `S0-T1` with `radix` and `faber` binaries built from the
    same committed `S0-R1` packet; then
@@ -532,8 +581,8 @@ base and foreign dirt before edits.
 
 | Surface | Owner in Stage 0 | Ownership rule |
 | --- | --- | --- |
-| Kinded type/size applied-argument identity | `radix`, `S0-R0` | One foundational unit; exhaustively classify/compile all consumers and serialize with Shape P4. |
-| Loose-file/package import and HIR emission | `radix`, `S0-R1` | Preserve ordered parameter kinds in both interface producers; build both CLIs from this packet. |
+| Kinded type/size applied-argument identity | `radix`, `S0-R0` | One foundational unit; exhaustively classify/compile all consumers while preserving landed Shape Generics and PH behavior. |
+| Loose-file/package import and HIR emission | `radix`, `S0-R1` | Preserve ordered parameter kinds across semantic/program/module interface layers and the product package route; build both CLIs from this packet. |
 | Candidate and selected proof sources | `triga`, `S0-T1/T2` | Non-public conformance fixtures only. |
 | Candidate runner | `triga`, `S0-T1/T2` | One runner for equal tests and final gates. |
 | Decision/migration/campaign records | `triga`, `S0-T1/T2` | Decision after probes; campaign completion last. |
@@ -547,7 +596,7 @@ base and foreign dirt before edits.
 Before `S0-R0` edits, and again before `S0-R1` edits:
 
 - record `git rev-parse HEAD` and `git status --short --branch` in Radix;
-- inspect which Shape P4 commits are ancestors of that HEAD;
+- confirm the landed Shape Generics and PH receipts are ancestors of that HEAD;
 - identify active worktrees touching any `S0-R1` file;
 - wait or route through Mind when write overlap exists; and
 - treat unmerged branches as read-only evidence.
@@ -608,18 +657,21 @@ post-migration checkpoint after Stages 1–4, not after this probe.
 ### Radix prerequisite
 
 ```sh
+cargo test -p radix-syntax --lib
 cargo test -p radix-parser --lib
 cargo test -p radix-types --lib
-cargo test -p radix-hir --lib
+cargo test -p radix-semantic --lib
+cargo test -p radix-program --lib
+cargo test -p radix-module --lib
 cargo test -p radix-hir-rust --lib
 cargo test -p radix-hir-ts --lib
-cargo test -p radix --lib
-cargo check -p radix-parser -p radix-types -p radix-hir \
-  -p radix-hir-rust -p radix-hir-ts -p radix
+cargo check -p radix-syntax -p radix-parser -p radix-types \
+  -p radix-semantic -p radix-program -p radix-module
 ```
 
-Focused filters and emitted-source compilation are specified in `S0-R1`.
-These are crate-scoped, not workspace suites.
+Focused filters, package-route proofs, PH marker-hole tests, and emitted-source
+compilation are specified in S0-R0/S0-R1. These are crate-scoped, not workspace
+suites.
 
 ### Triga representation and boundary proof
 
@@ -716,8 +768,8 @@ break, host-layout honesty, and unsupported-device posture are fixed.
 
 Routing questions remain Mind-owned:
 
-1. Which committed Radix packet follows the current Shape P4 integration line
-   for `S0-R0`, and which refreshed packet consumes it for `S0-R1`?
+1. Which committed Radix packet passes the live-base and overlap gate for
+   `S0-R0`, and which refreshed packet consumes it for `S0-R1`?
 2. Does the same Triga Hand continue from `S0-T1` into `S0-T2`, or does Mind
    create a fresh serial packet after the decision commit?
 
@@ -738,8 +790,8 @@ Stop and report `NOT READY` for the next unit if any of these occurs:
 - selected values would cross the host boundary with an undocumented layout;
 - a device path emits an artifact while silently substituting unsupported
   host/list behavior; or
-- active Shape P4 work overlaps `S0-R0` or `S0-R1` and no serialized committed
-  base exists.
+- active generic-application, interface, package, or emitter work overlaps
+  `S0-R0` or `S0-R1` and no serialized committed base exists.
 
 Do not stop because later migration touches many internal callers. Do not begin
 that migration from Stage 0.
@@ -748,7 +800,7 @@ that migration from Stage 0.
 
 **READY for factory dispatch, subject to Gate 0 serialization.**
 
-This corrected spec names two proven serial Radix prerequisites plus two
+This revised spec names two live-main-grounded serial Radix prerequisites plus two
 serial Triga units, exact write/read scopes, objective done conditions,
 crate-scoped and Triga validation,
 estimates grounded in the project ledger, decision artifacts, stop conditions,
@@ -756,49 +808,54 @@ and the handoff into campaign Stage 1. No product implementation has been
 performed by this planning task.
 
 
-## Appendix A — S0-R0 exhaustive consumer scope at Radix `2a986d40`
+## Appendix A — live S0-R0 consumer scope at Radix `6feab5a79`
 
 This appendix is an allowed scope, not a command to edit every file. The Hand
-refreshes both `rg -l` lists at unit start, classifies each match, and edits only
-files that need a compile-preserving or behavior-preserving adaptation. A new
-match on the assigned base is admitted only when it directly exhausts or
-constructs the settled syntax/semantic argument model; unrelated refactors stay
-out of scope.
+refreshes all four `rg -l` lists at unit start, classifies each match, and edits
+only files that need a compile-preserving or behavior-preserving adaptation. A
+new match on the assigned base is admitted only when it directly exhausts or
+constructs the settled syntax, semantic argument, or PH marker-hole model;
+unrelated refactors stay out of scope.
 
-### A.1 Syntax `Named`/`Qualified` consumers
+The refreshed counts are 23 syntax `Named`/`Qualified` files, 85 semantic
+`Type::Applied` files, 17 resolver-symbol files, and 33 PH marker-hole files.
+
+### A.1 Syntax `Named`/`Qualified` consumers (23)
 
 ```text
+crates/radix-module/src/program/compile.rs
 crates/radix-parser/src/decl.rs
 crates/radix-parser/src/expr_test.rs
 crates/radix-parser/src/expr.rs
 crates/radix-parser/src/generic_call_test.rs
+crates/radix-parser/src/lt_divert_regression_test.rs
 crates/radix-parser/src/mod_test.rs
 crates/radix-parser/src/schema_test.rs
 crates/radix-parser/src/types_test.rs
 crates/radix-parser/src/types.rs
+crates/radix-semantic/src/annotation_contract.rs
+crates/radix-semantic/src/cli.rs
+crates/radix-semantic/src/lower/expr.rs
+crates/radix-semantic/src/lower/stmt.rs
+crates/radix-semantic/src/lower/types.rs
+crates/radix-semantic/src/passes/collect_test.rs
+crates/radix-semantic/src/passes/resolve_test.rs
+crates/radix-semantic/src/passes/resolve.rs
+crates/radix-semantic/src/tuple_labels.rs
 crates/radix-syntax/src/braced_annotation.rs
 crates/radix-syntax/src/visit.rs
 crates/radix-types/src/instans_precision.rs
 crates/radix-types/src/numeric_width.rs
-crates/radix/src/cli.rs
-crates/radix/src/forma/author/emit.rs
-crates/radix/src/forma/pretty/emit.rs
-crates/radix/src/hir/lower/expr.rs
-crates/radix/src/hir/lower/types.rs
-crates/radix/src/semantic/annotation_contract.rs
-crates/radix/src/semantic/passes/collect_test.rs
-crates/radix/src/semantic/passes/resolve_test.rs
-crates/radix/src/semantic/passes/resolve.rs
-crates/radix/src/tool/commands/compile.rs
 ```
 
-### A.2 Semantic `Type::Applied` consumers
+### A.2 Semantic `Type::Applied` consumers (85)
 
 ```text
-crates/faber/src/package/mir/cli_plan.rs
-crates/faber/src/package/mir/link.rs
+crates/radix-hir-faber/src/comma_law_test.rs
+crates/radix-hir-faber/src/expr.rs
 crates/radix-hir-faber/src/types.rs
 crates/radix-hir-fhir/src/validate.rs
+crates/radix-hir-go/src/expr/access.rs
 crates/radix-hir-go/src/expr/call.rs
 crates/radix-hir-go/src/expr/control.rs
 crates/radix-hir-go/src/expr/convert.rs
@@ -807,7 +864,11 @@ crates/radix-hir-go/src/failable.rs
 crates/radix-hir-go/src/go_needs.rs
 crates/radix-hir-go/src/stmt.rs
 crates/radix-hir-go/src/types.rs
+crates/radix-hir-haskell/src/lower.rs
+crates/radix-hir-haskell/src/types.rs
+crates/radix-hir-lean/src/model_test.rs
 crates/radix-hir-lean/src/model.rs
+crates/radix-hir-rust/src/expr/access.rs
 crates/radix-hir-rust/src/expr/call/mod.rs
 crates/radix-hir-rust/src/expr/control/match_expr.rs
 crates/radix-hir-rust/src/expr/mod.rs
@@ -820,8 +881,10 @@ crates/radix-hir-rust/src/module_test.rs
 crates/radix-hir-rust/src/module.rs
 crates/radix-hir-rust/src/needs.rs
 crates/radix-hir-rust/src/types.rs
+crates/radix-hir-swift/src/expr/access.rs
+crates/radix-hir-swift/src/types_test.rs
 crates/radix-hir-swift/src/types.rs
-crates/radix-hir-ts/src/decl.rs
+crates/radix-hir-ts/src/decl_test.rs
 crates/radix-hir-ts/src/expr_test.rs
 crates/radix-hir-ts/src/expr.rs
 crates/radix-hir-ts/src/needs.rs
@@ -833,62 +896,120 @@ crates/radix-mir-wasm/src/collection.rs
 crates/radix-mir-wasm/src/operand.rs
 crates/radix-mir/src/device/safe.rs
 crates/radix-mir/src/generic.rs
+crates/radix-mir/src/layout_test.rs
 crates/radix-mir/src/layout.rs
 crates/radix-mir/src/validate/context.rs
 crates/radix-mir/src/validate/intrinsic.rs
 crates/radix-mir/src/validate/type.rs
+crates/radix-module/src/codegen/rust/tests/types_test.rs
+crates/radix-module/src/codegen/ts/mod_test.rs
+crates/radix-module/src/live_tuus_cursor_test.rs
+crates/radix-module/src/mir/fragment_instantiation.rs
+crates/radix-module/src/mir/lower.rs
+crates/radix-module/src/mir/lower/control.rs
+crates/radix-module/src/mir/lower/place.rs
+crates/radix-module/src/mir/lower/runtime.rs
+crates/radix-program/src/mir/cli_plan.rs
+crates/radix-program/src/mir/link.rs
+crates/radix-semantic/src/builtins/frame_types.rs
+crates/radix-semantic/src/coverage.rs
+crates/radix-semantic/src/file_interface.rs
+crates/radix-semantic/src/format_type.rs
+crates/radix-semantic/src/function_facts.rs
+crates/radix-semantic/src/live_tuus_cursor.rs
+crates/radix-semantic/src/lower/annotation.rs
+crates/radix-semantic/src/lower/types.rs
+crates/radix-semantic/src/passes/exhaustive.rs
+crates/radix-semantic/src/passes/fragment_definition.rs
+crates/radix-semantic/src/passes/resolve.rs
+crates/radix-semantic/src/passes/typecheck/access.rs
+crates/radix-semantic/src/passes/typecheck/aggregate.rs
+crates/radix-semantic/src/passes/typecheck/call.rs
+crates/radix-semantic/src/passes/typecheck/convert.rs
+crates/radix-semantic/src/passes/typecheck/finalize.rs
+crates/radix-semantic/src/passes/typecheck/generic.rs
+crates/radix-semantic/src/passes/typecheck/infer.rs
+crates/radix-semantic/src/passes/typecheck/lookup.rs
+crates/radix-semantic/src/passes/typecheck/mod.rs
+crates/radix-semantic/src/passes/typecheck/ops.rs
+crates/radix-semantic/src/resolved_use.rs
 crates/radix-types/src/lattice_property_test.rs
 crates/radix-types/src/types_test.rs
 crates/radix-types/src/types.rs
-crates/radix/src/builtins/frame_types.rs
-crates/radix/src/codegen/coverage.rs
-crates/radix/src/codegen/needs/rust.rs
-crates/radix/src/codegen/needs/ts.rs
-crates/radix/src/codegen/rust/tests/types_test.rs
-crates/radix/src/codegen/ts/mod_test.rs
-crates/radix/src/file_interface.rs
-crates/radix/src/hir/lower/annotation.rs
-crates/radix/src/hir/lower/types.rs
-crates/radix/src/live_tuus_cursor_test.rs
-crates/radix/src/live_tuus_cursor.rs
-crates/radix/src/mir/lower/control.rs
-crates/radix/src/mir/lower/runtime.rs
-crates/radix/src/semantic/format_type.rs
-crates/radix/src/semantic/function_facts.rs
-crates/radix/src/semantic/passes/exhaustive.rs
-crates/radix/src/semantic/passes/resolve.rs
-crates/radix/src/semantic/passes/typecheck/access.rs
-crates/radix/src/semantic/passes/typecheck/aggregate.rs
-crates/radix/src/semantic/passes/typecheck/call.rs
-crates/radix/src/semantic/passes/typecheck/convert.rs
-crates/radix/src/semantic/passes/typecheck/finalize.rs
-crates/radix/src/semantic/passes/typecheck/generic.rs
-crates/radix/src/semantic/passes/typecheck/infer.rs
-crates/radix/src/semantic/passes/typecheck/lookup.rs
-crates/radix/src/semantic/passes/typecheck/mod.rs
-crates/radix/src/semantic/passes/typecheck/ops.rs
-crates/radix/src/semantic/resolved_use.rs
 ```
 
-### A.3 Resolver `Symbol` constructor files
+### A.3 Resolver-symbol census (17)
+
+These are the current live files matched by the bounded `Symbol {` census.
+They are not all constructors. Constructor edits are compile-only unless the
+file declares or installs generic declaration metadata; the lexer `Symbol`
+tuple itself is not changed by this delivery.
 
 ```text
-crates/radix/src/builtins/forma.rs
-crates/radix/src/builtins/frame_types.rs
-crates/radix/src/builtins/gpu.rs
-crates/radix/src/builtins/mod.rs
-crates/radix/src/hir/lower/decl.rs
-crates/radix/src/semantic/mod.rs
-crates/radix/src/semantic/passes/collect.rs
-crates/radix/src/semantic/passes/companion_predeclare.rs
-crates/radix/src/semantic/passes/resolve.rs
-crates/radix/src/semantic/scope.rs
-crates/radix/src/semantic/scope_test.rs
+crates/radix-module/src/codegen/rust/mod.rs
+crates/radix-program/src/mir/cli_bind.rs
+crates/radix-program/src/mir/lower.rs
+crates/radix-semantic/src/builtins/forma.rs
+crates/radix-semantic/src/builtins/frame_types.rs
+crates/radix-semantic/src/builtins/gpu.rs
+crates/radix-semantic/src/builtins/mod.rs
+crates/radix-semantic/src/lib.rs
+crates/radix-semantic/src/lower/annotation.rs
+crates/radix-semantic/src/lower/decl.rs
+crates/radix-semantic/src/lower/expr.rs
+crates/radix-semantic/src/lower/stmt.rs
+crates/radix-semantic/src/passes/collect.rs
+crates/radix-semantic/src/passes/companion_predeclare.rs
+crates/radix-semantic/src/passes/resolve.rs
+crates/radix-semantic/src/scope_test.rs
+crates/radix-semantic/src/scope.rs
 ```
 
-The source census also finds function return signatures containing the word
-`Symbol`; those are not constructors and are excluded. Constructor edits in
-A.3 are compile-only unless the file declares a generic type identity.
+### A.4 PH-0..4 `Type::MarkerHole` serialization consumers (33)
 
-`S0-R1` separately owns the interface schema/producer paths because source and
-semantic exhaustiveness alone cannot prove the actual Faber package boundary.
+This supplemental list is required because the PH landing added an exhaustive
+serialization surface after the original delivery was written. It is not a
+second size-argument model. Each match must preserve the shipped exact-marker,
+unsolved-hole, family-mismatch, and explicit-union diagnostic behavior while
+S0-R0 changes applied-argument identity.
+
+```text
+crates/radix-hir-faber/src/types.rs
+crates/radix-hir-fhir/src/validate.rs
+crates/radix-hir-go/src/expr/control.rs
+crates/radix-hir-go/src/expr/ops.rs
+crates/radix-hir-go/src/types.rs
+crates/radix-hir-haskell/src/types.rs
+crates/radix-hir-lean/src/model.rs
+crates/radix-hir-rust/src/format_type.rs
+crates/radix-hir-rust/src/import_params.rs
+crates/radix-hir-rust/src/module.rs
+crates/radix-hir-rust/src/types.rs
+crates/radix-hir-swift/src/types.rs
+crates/radix-hir-ts/src/needs.rs
+crates/radix-hir-ts/src/types.rs
+crates/radix-mir-sexp/src/capability.rs
+crates/radix-mir-sexp/src/emit.rs
+crates/radix-mir/src/device/safe.rs
+crates/radix-mir/src/generic.rs
+crates/radix-mir/src/layout_test.rs
+crates/radix-mir/src/layout.rs
+crates/radix-mir/src/validate/type.rs
+crates/radix-program/src/mir/cli_plan.rs
+crates/radix-semantic/src/coverage.rs
+crates/radix-semantic/src/file_interface.rs
+crates/radix-semantic/src/format_type.rs
+crates/radix-semantic/src/passes/typecheck/finalize.rs
+crates/radix-semantic/src/passes/typecheck/infer.rs
+crates/radix-semantic/src/passes/typecheck/marker_hole_test.rs
+crates/radix-semantic/src/resolved_use.rs
+crates/radix-types/src/instans_precision.rs
+crates/radix-types/src/lattice_property_test.rs
+crates/radix-types/src/numeric_width.rs
+crates/radix-types/src/types.rs
+```
+
+S0-R1 separately owns the interface schema and producer/consumer paths because
+source and semantic exhaustiveness alone cannot prove the actual product Faber
+package boundary. The live producer is `radix-program/src/file_interface.rs`;
+Faber package tests consume it through `radix::program::file_interface`.
