@@ -1,6 +1,6 @@
 # Generic Math Types — Stage 0 Delivery Spec
 
-**Status**: delivery-corrected — implementation not started; READY after the live-main re-baseline (2026-08-24): S0-R0/S0-R1 scopes, landed-vs-to-build model, PH-0..4 serialization surface, census, and baseline are pinned to current main
+**Status**: active — S0-R0 LANDED 2026-08-24 (radix ae7c5e292: kinded applied arguments, census 23/85/17/33 matching Appendix A, all gates green); S0-R1 (interface kind/order + applied size serialization producers/consumers) is next and ready
 
 **Campaign**: [`CAMPAIGN.md`](CAMPAIGN.md)
 
