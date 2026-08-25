@@ -1,6 +1,6 @@
 # Generic Math Types — Stage 0 Delivery Spec
 
-**Status**: active — S0-R0 LANDED 2026-08-24 (radix ae7c5e292) and S0-R1 LANDED 2026-08-25 (radix 9a78fb080): both serial Radix prerequisites complete (see §0.1 re-baseline); **S0-T1 is next and dispatchable NOW**; S0-T2 waits on S0-T1
+**Status**: active — S0-R0 (`ae7c5e292`) + S0-R1 (`9a78fb080`) landed; S0-T1 landed `57c1b69` (all-fail stop, seven gaps routed); all eight gap units S0-G1…S0-G7 landed; **S0-T1R landed 2026-08-25 (task `7c09ef8c`): representation SELECTED — direct native types at radix pin `24ec99d7e`** (see `representation-decision.md`); **S0-T2 is dispatchable NOW** — its selection dependency is discharged
 
 **Campaign**: [`CAMPAIGN.md`](CAMPAIGN.md)
 
@@ -569,9 +569,13 @@ S0-R0  kinded type/size applied-argument foundation + exhaustive consumers (radi
          G1 construction · G2 alias transparency · G3R/G3T parametric intrinsics ·
          G4 rust decl params · G5 ts applied-size carrier · G6 emit-route inference ·
          G7 generic glyph matmul — see §4.1 for parallel waves and the dispatch-stop rule
-        -> S0-T1R  matrix re-adjudication + selection record (triga) — READY §4.1
+        -> S0-T1R  matrix re-adjudication + selection record (triga) — LANDED
+           2026-08-25 (task 7c09ef8c) — DIRECT SELECTED at radix pin
+           24ec99d7e; one routed residual (ts library-mode export emission,
+           need filed); dispatch-stop rule executed: no dispatched unit
+           withdrawn (all eight landed), queued G2-successor need withdrawn
           -> S0-T2  selected operation/payload/device proof + frozen migration map (triga)
-             READY — blocked only on a committed selection (S0-T1R)
+             DISPATCHABLE — selection dependency discharged
             -> campaign Stage 1 delivery lowering
 ```
 
@@ -897,6 +901,16 @@ routing act on a recorded selection, not a delivery amendment.
 | `parallel_children_considered` | none — serialized behind S0-G2 by the shared file |
 
 #### S0-T1R — matrix re-adjudication and selection record (closing unit, triga)
+
+> **LANDED 2026-08-25 — task `7c09ef8c`.** Matrix re-run at radix pin
+> `24ec99d7e` (detached clean worktree; all eight gap commits
+> ancestor-verified). **Direct native types selected** per the unchanged
+> preference rule (alias rejected on observed evidence; direct's sole red is
+> the shared routed TS2306 residual; wrapper not needed). Residual table and
+> withdrawal record: `representation-decision.md` §6. Runner staging fixed
+> in-unit (TS consumer compile now stages the emitted provider under the
+> library module name, removing the harness-side TS2307 artifact). S0-T2's
+> dependency is discharged.
 
 | Field | Value |
 | --- | --- |

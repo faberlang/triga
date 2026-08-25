@@ -218,6 +218,12 @@ run_candidate() {
   fi
   if emit_target "$candidate ts/provider-emit" "$FIXTURES/$candidate/provider.fab" ts ts; then
     compile_ts "$candidate ts/provider-compile" "$EMITTED_ARTIFACT"
+    # The emitted TS consumer imports the library module name
+    # ("probevectors:vectors" -> ./probevectors-vectors.js), not the input
+    # basename. Stage the emitted provider under that module name so the
+    # consumer compile measures the emitted source, not harness file naming.
+    # Rust consumers inline the provider (pub mod gmt) and need no staging.
+    cp "$EMITTED_ARTIFACT" "$WORK_ROOT/out/$PROVIDER_PKG-vectors.ts"
   fi
   if emit_target "$candidate ts/consumer-emit" "$FIXTURES/$candidate/consumer.fab" ts ts env FABER_LIBRARY_HOME="$LIBHOME"; then
     compile_ts "$candidate ts/consumer-compile" "$EMITTED_ARTIFACT"

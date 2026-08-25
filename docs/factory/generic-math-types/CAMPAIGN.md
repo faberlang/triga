@@ -1,6 +1,6 @@
 # Campaign: Parametric Math Types Clean Break
 
-**Status**: active — S0-R0 LANDED 2026-08-24 (radix `ae7c5e292`: kinded applied arguments, census 23/85/17/33, gates green); S0-R1 LANDED 2026-08-25 (radix `9a78fb080`: interface kind/order + applied size serialization, producer→consumer round-trip green, kind-mismatched applications fail closed) — Stage 0 Radix prerequisites complete; next step per delivery-stage0.md routing
+**Status**: active — Stage 0 representation SELECTED 2026-08-25 (S0-T1R, task `7c09ef8c`): **direct native types** — `vector<f32, N>` / `matrix<f32, [R, C]>` carriers with dimension-neutral Triga free operations, `Box<N>` generic nominal — adjudicated at radix pin `24ec99d7e` after S0-R0 (`ae7c5e292`), S0-R1 (`9a78fb080`), and all eight routed gap units S0-G1…S0-G7 landed; alias rejected on observed evidence; one routed residual (ts library-mode export emission, need filed); next step S0-T2 per delivery-stage0.md §4
 **Amended**: 2026-08-22 — language-base refresh (zombie-docs pass): spelling corrections plus the amendment section below; the shipped language moved under this campaign after 2026-08-13
 
 **Mode**: run
@@ -331,7 +331,7 @@ precede rendered HTML; do not patch `dist/` independently.
 
 ### Stage 0 — Parametric representation and backend probe
 
-**Status**: active — S0-R0/S0-R1 Radix prerequisites landed (`ae7c5e292`, `9a78fb080`); remaining Triga units S0-T1 (dispatchable now) → S0-T2 lowered per delivery-stage0.md §0.1/§4
+**Status**: active — representation SELECTED (S0-T1R, task `7c09ef8c`, 2026-08-25): **direct native types** at radix `24ec99d7e`; S0-T1's all-fail stop routed seven gap units, all landed (S0-G1 `ea8728ffb` · G2 `59e81cbc5` · G3R `e736f24b2` · G3T `e0687bd32` · G5 `bd71dfeb6` · G4 `1459eec1a` · G7 `7ec4c20a9` · G6 `86d00e94c`); remaining Triga unit S0-T2 (operations/payload/device + migration map) dispatchable now per delivery-stage0.md §4/§4.1
 
 **Lowers to**: Factory via [`delivery-stage0.md`](delivery-stage0.md)
 
