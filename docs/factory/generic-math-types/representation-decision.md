@@ -63,6 +63,12 @@ identities (`crate::gmt::Vector<4>`, `crate::gmt::Matrix<4, 4>`,
 
 ## 3. Observed compiler boundaries (routed to Mind)
 
+> **Lowered 2026-08-25 (planner task 1c5088cd):** the seven boundaries below
+> are dispatchable units `S0-G1…S0-G7` (+ closing `S0-T1R`) in
+> [`delivery-stage0.md`](delivery-stage0.md) §4.1, with verified HEAD anchors,
+> write scopes, and the runner rows each unit flips. This section remains the
+> observed-evidence record.
+
 Each boundary below is a candidate for a narrow Radix unit. Ordered by
 preference-rule impact, not size.
 
@@ -151,7 +157,9 @@ preference-rule impact, not size.
 - S0-T1 remains the adjudicator: after any routed Radix unit lands, re-run
   `RADIX_ROOT=… RADIX_BIN=… FABER_BIN=… ./scripta/check-generic-math-representation --matrix`
   and update this record; the selection rule then applies unchanged
-  (first fully passing candidate in alias → direct → wrapper order).
+  (first fully passing candidate in alias → direct → wrapper order). The
+  lowered unit graph and dispatch order live in `delivery-stage0.md` §4.1;
+  `S0-T1R` there is this re-adjudication as a dispatchable unit.
 - The runner's gap probes flip green exactly when their boundaries close,
   so the matrix is the re-adjudication instrument.
 - `representation-decision.md` selection row: resolved as **no selection at

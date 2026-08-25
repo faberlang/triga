@@ -562,10 +562,17 @@ S0-R0  kinded type/size applied-argument foundation + exhaustive consumers (radi
      LANDED 9a78fb080 (2026-08-25, interface-schema row; see §0.1 for the honest
      narrowing on the faber package-route test and alias size-param emission)
     -> S0-T1  equal candidate probes + representation decision (triga)
-       READY — DISPATCHABLE NOW (Gate 0 base check against radix 9a78fb080)
-      -> S0-T2  selected operation/payload/device proof + frozen migration map (triga)
-         READY — blocked only on S0-T1's committed selection
-        -> campaign Stage 1 delivery lowering
+       LANDED 57c1b69 (2026-08-25) — ALL-FAIL STOP: no candidate selectable at
+       radix 9a78fb080; seven compiler boundaries routed (representation-decision §3)
+      -> S0-G1..S0-G7  routed Radix gap units (lowered 2026-08-25, §4.1; ratchet =
+         ./scripta/check-generic-math-representation --matrix, exit 1 until rows land)
+         G1 construction · G2 alias transparency · G3R/G3T parametric intrinsics ·
+         G4 rust decl params · G5 ts applied-size carrier · G6 emit-route inference ·
+         G7 generic glyph matmul — see §4.1 for parallel waves and the dispatch-stop rule
+        -> S0-T1R  matrix re-adjudication + selection record (triga) — READY §4.1
+          -> S0-T2  selected operation/payload/device proof + frozen migration map (triga)
+             READY — blocked only on a committed selection (S0-T1R)
+            -> campaign Stage 1 delivery lowering
 ```
 
 The graph is deliberately serial. `S0-R0` fixes the shared identity model before
@@ -630,10 +637,11 @@ before implementation; do not silently widen into unrelated compiler work.
 
 ### S0-T1 — equal candidate probe and representation selection
 
-> **READY — DISPATCHABLE NOW.** Dependency satisfied at radix `9a78fb080`
-> (S0-R0 `ae7c5e292` + S0-R1 `9a78fb080` both ancestors of radix main). Gate 0
-> at dispatch: record the radix base, confirm both commits are ancestors, and
-> check for active writers overlapping the probe's read surfaces.
+> **LANDED 2026-08-25 — triga `57c1b69` (task c4af7704): all-fail stop.** No
+> candidate selectable at radix `9a78fb080`; row retained as the executed
+> contract. The seven observed compiler boundaries route as the §4.1 gap
+> units; `representation-decision.md` is the evidence record and
+> `S0-T1R` (§4.1) is the re-adjudicator.
 
 | Field | Value |
 | --- | --- |
@@ -687,6 +695,241 @@ return to `S0-T1` and update the candidate matrix. Do not locally wrap only that
 operation or relax the operation map. If a new compiler prerequisite is proven,
 stop and ask Mind to revise this delivery with a narrow Radix unit; `S0-T2` has
 no Radix write authority.
+
+### 4.1 Routed compiler-gap units — S0-G1…S0-G7 + S0-T1R (lowered 2026-08-25, planner task 1c5088cd)
+
+`S0-T1`'s all-fail stop routed seven compiler boundaries
+(`representation-decision.md` §3). This section lowers them into dispatchable
+Radix units plus the closing re-adjudication. Gap 3 splits by surface (rust/ts
+emitters are disjoint crates); no other gap splits.
+
+**Baseline verification (2026-08-25, before scoping).** Radix main is at
+`b162df4d5`; the probe pin `9a78fb080` is an ancestor, and
+`git log 9a78fb080..HEAD` over every cited anchor file is empty — all seven
+gap anchors are unchanged since the probe. Live anchors:
+
+| Gap (decision §3) | Live anchor at radix `b162df4d5` |
+| --- | --- |
+| 1 construction | `crates/radix-parser/src/expr.rs` ~1695–1720 (`try_parse_qualified_typed_constructor` + `LBrace`/`looks_like_typed_constructor_fields` branch; `Gen<3> {` routes `Ident<` to comparison); `crates/radix-semantic/src/passes/typecheck/aggregate.rs:26,300` (`check_struct_literal`, `field_initializer_type_mismatch`) |
+| 2 alias transparency | `crates/radix-semantic/src/passes/typecheck/ops.rs` (`numeric_shape` :430, `numeric_expected_type` :994, alias arms :257/:381/:809), `infer.rs` (`normalize_applied_alias` :716–758), `lookup.rs:325` (`lookup_method_signature`), `finalize.rs:286` (`cannot_infer_tensor_shape`), `convert.rs:789` |
+| 3 rust intrinsics | `crates/radix-hir-rust/src/expr/call/intrinsics.rs:371` (`CODEGEN001` concrete-width); `types.rs:481–497` (`vector_to_rust` `Vec<f32>` parametric fallback) |
+| 3 ts intrinsics | `crates/radix-hir-ts/src/expr.rs:3098` (intrinsic), `:2727` (conversion) — both `CODEGEN001` concrete-width |
+| 4 rust decl params | `crates/radix-hir-rust/src/decl.rs:930–947` (`write_type_param_list` filters to typus params only; shared by struct :723 and impl headers :924/:927) |
+| 5 ts applied-size | `crates/radix-hir-ts/src/types.rs:113–124` (`size_generic_argument_unsupported` fail-close in `Type::Applied`); `:40–42` (`Type::Vector` renders `Array<T>`, width erased) |
+| 6 emit-route inference | `crates/radix-semantic/src/scope.rs:1053–1067, 1239–1330` (`decl_param_kinds` artifact-restore path; the recorded S0-R1 residual) |
+| 7 generic glyph matmul | `crates/radix-semantic/src/passes/typecheck/ops.rs:1791` (`GLYPH_STATIC_SHAPE_REQUIRED`); catalog gate `crates/radix-semantic/src/catalog_semantic.rs`; rust emission arm `crates/radix-hir-rust/src/expr/ops.rs` |
+
+**Shared conventions (named once — every unit below inherits them).**
+
+- **Write boundary.** Radix units write only the repo `radix`, on the packet
+  Mind assigns after a Gate-0-style base check against committed radix main.
+  The probe fixtures (`exempla/conformance/generic-math-types/**`) and the
+  runner (`scripta/check-generic-math-representation`) are **read-only
+  reference**: a Radix Hand executes the runner from any triga checkout but
+  never edits triga.
+- **Packet tools.** `(cd "$RADIX_ROOT" && cargo build -p radix-cli --bin radix && cargo build -p faber --bin faber)`; derive `RADIX_BIN="$RADIX_ROOT/target/debug/radix"` and `FABER_BIN="$RADIX_ROOT/target/debug/faber"` (the bin package is `radix-cli`; the older `-p radix` spelling predates the split).
+- **Ratchet (the unit's flip proof).** `RADIX_ROOT=… RADIX_BIN=… FABER_BIN=… ./scripta/check-generic-math-representation --matrix` (or `--candidate alias|direct|wrapper` for a focused pass). The unit cites the row(s) it flips from FAIL to PASS. Exit 1 with other rows still red is expected between landings — failures are recorded evidence, not defects.
+- **Focused tests must be non-empty.** Every filtered `cargo test` below must
+  list at least one test; zero-test success is not evidence. Stage/`--full`
+  gates belong to lint/test/merge lanes, never to these children.
+- **No regression on the green surface.** The §4 negatives
+  (`SEM008:generic_argument_kind_mismatch`, width/shape `SEM010`), PH-0..4
+  behavior, concrete-width emission, and `norma/src/vector.fab` posture stay
+  green; a unit that weakens a diagnostic to pass a row is a correctness
+  failure.
+
+**Dispatch order (preference-impact) and parallel waves.**
+
+```text
+wave 1 (immediately, disjoint write scopes):
+  S0-G1  →  then  S0-G2            (G2 after G1 only for seat turnover, not a
+                                     hard edge; files are disjoint — Mind may
+                                     run both in parallel)
+  S0-G3R ∥ S0-G3T ∥ S0-G5 ∥ S0-G6  (four disjoint emitter/interface surfaces)
+wave 2 (dependency-forced):
+  S0-G4  after S0-G3R   — shared radix-hir-rust parametric-size seam
+                          (types.rs + decl.rs): concurrent Hands would collide
+  S0-G7  after S0-G2    — shared radix-semantic typecheck/ops.rs
+closing:
+  S0-T1R after the dispatch-stop condition (below)
+```
+
+Reorderings named: the decision doc's §3 sequence is 1,2,3,4,5,6,7. `S0-G4`
+(doc gap 4) must follow `S0-G3R` (doc gap 3, rust half) — both edit the same
+`radix-hir-rust` parametric-size rendering seam. `S0-G5` (doc gap 5) may run
+parallel to `S0-G3T`/`S0-G4` — its files (`hir-ts/types.rs`,`decl.rs`) are
+disjoint from `S0-G3T`'s (`hir-ts/expr.rs`) and from all rust-side units.
+
+**Dispatch-stop rule.** Units are dispatched greedily in the order above.
+After every landing, re-run the matrix. The first moment a candidate's rows
+fully pass, Mind may stop dispatching the remaining gap units and dispatch
+`S0-T1R`, which records the selection per the unchanged preference rule
+(alias → direct → wrapper) and names any still-red rows as routed residuals.
+Unneeded units are withdrawn by Mind at that point — narrowing that is a Mind
+routing act on a recorded selection, not a delivery amendment.
+
+#### S0-G1 — applied-generic nominal record construction
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G1` — **first-dispatchable** (decision §3.1; blocks `Box<N>` in all three candidates) |
+| `outcome` | `Gen<3> { lanes = … }` and context-instantiated `Gen { lanes = … }` parse and typecheck for generic nominals: applied size arguments reach field-type substitution, so field initializers check against the substituted field types and wrong-width initializers reject with the existing `SEM010` family. |
+| `write_scope` | Repo `radix`: `crates/radix-parser/src/{expr.rs,mod_test.rs}` (typed-constructor branch ~1695–1720; the applied-head `Ident<` path must route to the typed-constructor branch, not comparison); `crates/radix-semantic/src/passes/typecheck/{aggregate.rs,generic_construction_test.rs}` (applied-argument substitution into `check_struct_literal`); `crates/radix-syntax/src/ast.rs` and `crates/radix-hir/src/{nodes.rs,visit.rs}` only where compile-required to carry applied arguments on the constructor expression — prefer reusing the existing applied `TypeExpr` form. |
+| `done_when` | (1) Runner rows `gap/box-applied-construction` and `gap/box-bare-construction` PASS. (2) A wrong-width field initializer on an applied nominal rejects with the structured `SEM010` identity (negatives posture preserved). (3) Bare-name construction instantiates from the annotated/contextual type or rejects explicitly — never a silent wrong-arity acceptance. (4) Type-only generic nominals (`Gen<T> { … }`) construct too or already did; no type-argument regression. (5) No new keyword, locale alias, or numbered spelling. |
+| `validation` | `cargo test -p radix-parser --lib typed_constructor` (or the file's existing constructor filter — must be non-empty); `cargo test -p radix-semantic --lib generic_construction`; packet build; runner `--matrix` citing the two `gap/box-*` rows. |
+| `depends_on` | none |
+| `non_goals` | Alias transparency (S0-G2); emitter carrier forms (S0-G3R/G3T/G4/G5); fixture enrichment in triga; method-call emission on constructed nominals. |
+| `risk` | **high** — the parse branch sits on the `Ident<` ambiguity seam (comparison vs application); a naive lookahead fix can break generic call expressions. The existing generic-call and comparison tests are the guard. |
+| `integrable` | yes |
+| `est_work_tokens` | `40k–60k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none — parse + substitution is one coupled seam |
+
+#### S0-G2 — alias value transparency
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G2` (decision §3.2; re-opens the alias candidate, preference #1) |
+| `outcome` | A transparent alias (`type X<size N> = vector<f32, N>`) is value-transparent: methods (`.added/.dot/.cross/.swizzle`), glyph operators (`⊗`,`·`), literal conversions (`[…] ↦ X<2>`), and builtin→alias assignment all check green when the carrier supports them, with diagnostics otherwise unchanged. |
+| `write_scope` | Repo `radix`: `crates/radix-semantic/src/passes/typecheck/{ops.rs,ops_test files as present (glyph_binary_test.rs and neighbors),infer.rs,lookup.rs,finalize.rs,convert.rs,convert_test.rs}` plus the matching focused test files for each edited module. `crates/radix-types/src/types.rs` only where a shared see-through/unification helper must land; nominal (opaque) classes must not become transparent. |
+| `done_when` | (1) Runner row `gap/alias-assignment-transparency` PASS. (2) `alias source/provider` and `alias source/consumer(imported)` rows move to PASS **only jointly with S0-G7** (the alias provider's generic `·` body) — cite whichever flips in this unit's run. (3) Applied-alias shape inference rejects wrong widths exactly as the builtin does (`SEM010`/`SEM014` on genuine mismatches only). (4) Opaque nominal receivers keep `SEM004` for unknown methods — transparency is for aliases, not nominals. (5) `norma/src/vector.fab` posture unchanged. |
+| `validation` | `cargo test -p radix-semantic --lib alias` (non-empty filter across the edited modules); `cargo test -p radix-semantic --lib glyph`; packet build; runner `--candidate alias` then `--matrix`, citing `gap/alias-assignment-transparency`. |
+| `depends_on` | none (hard); Mind sequences after `S0-G1` for seat turnover |
+| `non_goals` | Constructor parse (S0-G1); emitter surfaces; making nominal genera transparent; new conversion syntax. |
+| `risk` | **high** — see-through touches numeric shape, method lookup, conversion inference, and assignment convertibility at once; over-transparent unification can silently equate distinct aliases. The negatives and `equality_exact_types_test.rs` are the guard. |
+| `integrable` | yes |
+| `est_work_tokens` | `45k–70k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none — one unification behavior across five coupled pass files |
+
+#### S0-G3R — hir-rust size-parametric emission (intrinsics, conversions, fn size params)
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G3R` (decision §3.3, rust half) |
+| `outcome` | Size-parametric vector/matrix receivers emit valid width-preserving Rust: `fn add<size N>(vector<f32,N>, vector<f32,N>) → vector<f32,N>` lowers as a generic function whose size parameter is in scope (const-generic or recorded equivalent), parametric widths render without the silent `Vec<f32>` erasure inside generic bodies, and intrinsic/conversion bodies emit over the parametric width instead of `CODEGEN001`. |
+| `write_scope` | Repo `radix`: `crates/radix-hir-rust/src/{expr/call/intrinsics.rs,types.rs,decl.rs,vector_width.rs,matrix_shape.rs,decl_test.rs,types_test.rs}` and the expr test files under `crates/radix-hir-rust/src/expr/` where intrinsic emission tests live. Applied alias/nominal size-argument rendering in signatures belongs here (same `types.rs` seam). |
+| `done_when` | (1) Runner rows `direct rust/provider-emit` and `direct rust/provider-compile` PASS (`rustc --edition 2021 --crate-type lib`). (2) No `CODEGEN001` concrete-width error for a size-parametric receiver. (3) Concrete-width emission (`[f32; 3]` inline math) byte-identical before/after. (4) The emitted provider carries the width in the type identity — an emitted `[f32; N]`-equivalent that erases to `Vec<f32>` inside a generic body fails this unit. |
+| `validation` | `cargo test -p radix-hir-rust --lib intrinsic` (non-empty); `cargo test -p radix-hir-rust --lib generic_size_alias`; packet build; runner `--candidate direct`, citing the two rust provider rows. |
+| `depends_on` | none |
+| `non_goals` | Nominal decl params (S0-G4 — serialized after this unit on the shared seam); TS emission; imported-call inference (S0-G6); host/device carriers. |
+| `risk` | **medium-high** — the const-generic decision shapes `S0-G4`; record the chosen mechanism in the unit report so `S0-G4` consumes it rather than re-deriving it. |
+| `integrable` | yes |
+| `est_work_tokens` | `40k–60k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none within rust; parallel with S0-G3T/S0-G5/S0-G6 (disjoint crates/files) |
+
+#### S0-G3T — hir-ts size-parametric intrinsic and conversion emission
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G3T` (decision §3.3, ts half) |
+| `outcome` | Vector intrinsic and conversion bodies emit width-generic TypeScript over the builtin carrier (`Array<number>`) — loops/maps rather than concrete-width tuples — so size-parametric receivers no longer hit `CODEGEN001` "requires concrete vector width" on the ts side. |
+| `write_scope` | Repo `radix`: `crates/radix-hir-ts/src/{expr.rs,expr_test.rs}`. |
+| `done_when` | (1) Runner rows `direct ts/provider-emit` and `direct ts/provider-compile` PASS (`tsc --noEmit --strict --target ES2022 --module ES2022`). (2) No `CODEGEN001` for size-parametric intrinsic/conversion receivers. (3) Concrete-width ts emission unchanged. (4) The emitted generic bodies typecheck under `--strict` against the builtin `Array` carrier. |
+| `validation` | `cargo test -p radix-hir-ts --lib intrinsic` (non-empty, or the expr filter covering `expr.rs:2727/:3098` paths); packet build; runner `--candidate direct`, citing the two ts provider rows. |
+| `depends_on` | none |
+| `non_goals` | The applied-size carrier form (S0-G5 — different files, may land in parallel); rust emission; imported inference (S0-G6). |
+| `risk` | **medium** — carrier coupling: if `S0-G5` lands tuple identities for applied nominals, generic bodies over applied receivers must still typecheck; this unit proves the builtin (direct-candidate) path, and the matrix re-run after both land is the joint check. |
+| `integrable` | yes |
+| `est_work_tokens` | `25k–40k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none within ts; parallel with S0-G5 (disjoint files in `radix-hir-ts`) |
+
+#### S0-G4 — hir-rust generic-nominal declaration parameters
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G4` (decision §3.4; **depends_on S0-G3R** — shared `radix-hir-rust` parametric-size seam: `types.rs` rendering + `decl.rs` param emission) |
+| `outcome` | Generic nominal declarations emit their size parameters: `class Box<size N>` lowers as a parametrized Rust struct/impl pair whose signatures and field types agree, eliminating the `E0425` "cannot find type `N`" mismatch between unparametrized structs and parametric references. |
+| `write_scope` | Repo `radix`: `crates/radix-hir-rust/src/{decl.rs,types.rs,decl_test.rs,types_test.rs,module.rs,module_test.rs}` — `write_type_param_list` (decl.rs:930–947) and the struct/impl call sites (:723,:924,:927), plus parametric field rendering through `vector_to_rust`/`matrix_to_rust`. |
+| `done_when` | (1) Runner rows `wrapper rust/provider-emit`, `wrapper rust/provider-compile`, `wrapper rust/consumer-emit`, `wrapper rust/consumer-compile` PASS (consumer legs jointly with S0-G6 where import inference is exercised). (2) Emitted nominal decls carry size params in the mechanism `S0-G3R` recorded; parametric-width fields render width-preserving — a silent `Vec<f32>` field under a size-parametric struct fails this unit. (3) Concrete-size nominal applications (`Vector<4>`) still render concretely. (4) Type-only generic structs (`Capsula<T>` posture) unchanged. |
+| `validation` | `cargo test -p radix-hir-rust --lib generic_nominal` or the existing struct-emission filter (non-empty); `cargo test -p radix-hir-rust --lib decl`; packet build; runner `--candidate wrapper`, citing the rust rows. |
+| `depends_on` | `S0-G3R` committed (shared seam, mechanism recorded there) |
+| `non_goals` | Construction parsing (S0-G1); TS carriers; method-body intrinsic emission beyond what the decl signatures require. |
+| `risk` | **medium** — mechanical param-list fix can compile while erasing dimensions; the width-preservation clause is the guard. |
+| `integrable` | yes |
+| `est_work_tokens` | `25k–40k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none — serialized behind S0-G3R by the shared file seam |
+
+#### S0-G5 — hir-ts applied-size carrier form
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G5` (decision §3.5; the recorded S0-R0 fail-close posture) |
+| `outcome` | Applied size arguments in TS-bound identities render a checked carrier — tuple identities for concrete sizes or the recorded equivalent for parametric positions — replacing the `CODEGEN001:size_generic_argument_unsupported` fail-close; unsupported forms still reject explicitly rather than silently erasing. |
+| `write_scope` | Repo `radix`: `crates/radix-hir-ts/src/{types.rs,decl.rs,types_test.rs,decl_test.rs}`. |
+| `done_when` | (1) Runner rows `wrapper ts/provider-emit` and `wrapper ts/consumer-emit` proceed past emission (compile legs PASS once the carrier typechecks under `tsc --strict`; source legs need S0-G1 only if fixtures gain construction, which they do not today). (2) `gmt.Vector<4>`-style applied signatures render the landed carrier; kind checking survives (type args stay type args). (3) The carrier decision — tuple identities or equivalent — is recorded in the unit report with the parametric-position story (what `Vector<N>` renders as inside a generic body). (4) The fail-close fires only for genuinely unsupported forms. |
+| `validation` | `cargo test -p radix-hir-ts --lib generic_size_alias`; `cargo test -p radix-hir-ts --lib types` (non-empty); packet build; runner `--candidate wrapper`, citing the ts rows. |
+| `depends_on` | none |
+| `non_goals` | Intrinsic body emission (S0-G3T); rust carriers; changing builtin `Array<T>` rendering beyond what the applied carrier requires. |
+| `risk` | **medium-high** — the carrier choice constrains S0-G3T's joint typecheck and later S0-T2 payload rows; record the decision, do not fork it per site. |
+| `integrable` | yes |
+| `est_work_tokens` | `35k–55k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none within ts; parallel with S0-G3T (disjoint files) |
+
+#### S0-G6 — emit-route imported generic-call size inference
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G6` (decision §3.6; `faber check` green vs `radix emit` red) |
+| `outcome` | The `radix emit` route infers imported generic-call results identically to `faber check`: `const vector<f32, 3> s ← gmt.add(a, b)` emits green, with the `SEM010:expression_type_mismatch`/`initializer_annotation_mismatch`/`SEM011` cascade gone. The unit confirms or refutes the recorded causation (artifact-restore path leaving `decl_param_kinds` empty) and names the mechanism in its report. |
+| `write_scope` | Repo `radix`: `crates/radix-semantic/src/{scope.rs,scope_test.rs}` (artifact-restore `decl_param_kinds` path :1053–1067, :1239–1330); `crates/radix-module/src/{program/compile.rs,program/compile_test.rs,driver/mod.rs}` and `crates/radix-program/src/{file_interface.rs,file_interface_test.rs}` only where the restore/compile route requires. |
+| `done_when` | (1) Runner rows `direct rust/consumer-emit` and `direct ts/consumer-emit` PASS (compile legs jointly with S0-G3R/S0-G3T provider-side emission). (2) A focused non-empty test proves the emit route agrees with the check route on an imported generic call with a concrete size result. (3) The `decl_param_kinds` residual is confirmed or refuted by name in the unit report — either outcome closes the open question, silence does not. (4) Loose-file and package import behavior stay green (S0-R1 surface). |
+| `validation` | `cargo test -p radix-semantic --lib file_interface` (non-empty); `cargo test -p radix-module --lib program`; packet build; runner `--candidate direct`, citing the consumer-emit rows. |
+| `depends_on` | none |
+| `non_goals` | Same-file alias transparency; emitter carrier forms; changing the interface schema shape landed in S0-R1. |
+| `risk` | **medium** — causation is unproven (decision §3.6 says "plausibly connected"); if the restore path is not the cause, the unit reports the actual mechanism rather than forcing the fix into scope.rs. |
+| `integrable` | yes |
+| `est_work_tokens` | `30k–50k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none — one route, one proof |
+
+#### S0-G7 — generic glyph matmul
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-G7` (decision §3.7; **depends_on S0-G2** — shared `radix-semantic/src/passes/typecheck/ops.rs`) |
+| `outcome` | `a · b` typechecks under parametric shapes: `fn multiply<size R, size K, size C>` bodies check green with result `matrix<f32, [R, C]>`, replacing `SEM011:glyph_static_shape_required` for glyph-static-but-parametric operands. Concrete-shape behavior is unchanged. |
+| `write_scope` | Repo `radix`: `crates/radix-semantic/src/passes/typecheck/{ops.rs,glyph_binary_test.rs}`; `crates/radix-semantic/src/catalog_semantic.rs` only if glyph admission is catalog-gated; `crates/radix-hir-rust/src/expr/ops.rs` only if rust emission of the generic glyph arm requires it (S0-G3R's mechanism feeds it). |
+| `done_when` | (1) Runner row `gap/generic-glyph-matmul` PASS. (2) Shape-mismatched concrete matmul still rejects (`SEM011`/`SEM010` per the negatives posture). (3) With S0-G2 landed, `alias source/provider` PASSes (its generic `multiply` body is the last alias-source blocker). |
+| `validation` | `cargo test -p radix-semantic --lib glyph` (non-empty); packet build; runner `--matrix`, citing `gap/generic-glyph-matmul` and the alias source row. |
+| `depends_on` | `S0-G2` committed (shared ops.rs file) |
+| `non_goals` | Runtime matmul semantics (MIR/device); new glyphs; changing the §2.4 operation map. |
+| `risk` | **low-medium** — narrow, well-anchored diagnostic; the guard is concrete-shape non-regression. |
+| `integrable` | yes |
+| `est_work_tokens` | `20k–35k` · `compiler-surface-feature` ledger class |
+| `parallel_children_considered` | none — serialized behind S0-G2 by the shared file |
+
+#### S0-T1R — matrix re-adjudication and selection record (closing unit, triga)
+
+| Field | Value |
+| --- | --- |
+| `id` | `S0-T1R` (decision §5/§6 residual; the S0-T1 retry rule executed) |
+| `outcome` | The full matrix re-runs against the landed Radix base; the preference rule applies unchanged and `representation-decision.md` records exactly one selected representation — or names the next observed gap with its diagnostic identity if one remains. |
+| `write_scope` | Repo `triga`: `docs/factory/generic-math-types/{representation-decision.md,delivery-stage0.md}` (this section's unit status marks). Fixtures/runner only if a row's evidence capture requires a runner-output citation — no fixture behavior change. |
+| `done_when` | (1) `--matrix` executed at a recorded radix pin (ancestor check included) with the full per-row output summarized in the decision record. (2) Either one candidate's rows fully pass and the selection is recorded with the preference order applied, or the remaining red rows are named as routed residuals with the next gap's boundary. (3) §5 residuals and the §1 verdict table are updated to the new base; no stale "no selection" text survives a made selection. (4) If a selection is made, `S0-T2`'s dependency is discharged and Mind is told explicitly. |
+| `validation` | `bash -n scripta/check-generic-math-representation`; the matrix run itself; `git diff --check` over the two docs. |
+| `depends_on` | The dispatch-stop condition: a candidate's rows fully pass (remaining gap units may be withdrawn by Mind at that point), or all of S0-G1…S0-G7 landed. |
+| `non_goals` | Any Radix edit; S0-T2 operations/payload/device rows; campaign status advancement (Mind's bookkeeping). |
+| `risk` | **low** — adjudication and record-keeping only; the risk is staleness, guarded by done_when (3). |
+| `integrable` | yes |
+| `est_work_tokens` | `15k–25k` · probe/record class |
+| `parallel_children_considered` | none |
+
+**Row-flip map (unit → runner rows).**
+
+| Unit | Flips |
+| --- | --- |
+| `S0-G1` | `gap/box-applied-construction`, `gap/box-bare-construction` |
+| `S0-G2` | `gap/alias-assignment-transparency`; `alias source/provider` + `alias source/consumer(imported)` (jointly with S0-G7) |
+| `S0-G3R` | `direct rust/provider-emit`, `direct rust/provider-compile` |
+| `S0-G3T` | `direct ts/provider-emit`, `direct ts/provider-compile` |
+| `S0-G4` | `wrapper rust/provider-*`, `wrapper rust/consumer-*` (consumer legs jointly with S0-G6) |
+| `S0-G5` | `wrapper ts/provider-emit`, `wrapper ts/consumer-emit` (compile legs jointly with carrier typecheck) |
+| `S0-G6` | `direct rust/consumer-emit`, `direct ts/consumer-emit` (compile legs jointly with S0-G3R/S0-G3T) |
+| `S0-G7` | `gap/generic-glyph-matmul`; last alias-source blocker jointly with S0-G2 |
+| `S0-T1R` | all rows re-adjudicated; selection recorded |
+
+Alias-candidate full pass additionally requires the applied-alias size rendering
+in `S0-G3R`'s signature seam and `S0-G5`'s carrier for `gmt.Vector<4>`-style
+consumer identities; the matrix re-run after each landing is the authority on
+which chain completes first.
 
 ## 5. Implementation Work
 
