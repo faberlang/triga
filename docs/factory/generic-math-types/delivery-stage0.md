@@ -1,6 +1,6 @@
 # Generic Math Types — Stage 0 Delivery Spec
 
-**Status**: active — S0-R0 LANDED 2026-08-24 (radix ae7c5e292: kinded applied arguments, census 23/85/17/33 matching Appendix A, all gates green); S0-R1 (interface kind/order + applied size serialization producers/consumers) is next and ready
+**Status**: active — S0-R0 LANDED 2026-08-24 (radix ae7c5e292) and S0-R1 LANDED 2026-08-25 (radix 9a78fb080): both serial Radix prerequisites complete (see §0.1 re-baseline); **S0-T1 is next and dispatchable NOW**; S0-T2 waits on S0-T1
 
 **Campaign**: [`CAMPAIGN.md`](CAMPAIGN.md)
 
@@ -37,16 +37,16 @@ The names below are status claims about the pinned Radix main. They are not
 interchangeable, and a later Hand must not treat a landed type-only or hole
 path as proof of kinded size application.
 
-| Item | Status at Radix `6feab5a79` | Evidence and Stage 0 consequence |
+| Item | Status (re-baselined 2026-08-25 at Radix `9a78fb080`; original column read the `6feab5a79` pin) | Evidence and Stage 0 consequence |
 | --- | --- | --- |
 | Declaration `GenericParamKind::{Typus, Magnitudo}` and `TypeParam.kind` | **LANDED** | `crates/radix-syntax/src/ast.rs:253`; parsing in `crates/radix-parser/src/decl.rs`; resolver/lowering kind handling in `crates/radix-semantic/src/{passes/resolve.rs,lower/mod.rs,lower/types.rs}`. S0-R0 consumes this metadata; it does not re-land generic declaration syntax. |
 | Type-alias parameters bind their own type parameters | **LANDED** | The D0 alias-parameter fix is covered by `radix-hir-rust` alias tests. This closes the old type-parameter binding defect only. |
-| Type-argument alias declaration/use emission | **LANDED for type arguments** | Radix commit `94c6b71d4`; `radix-hir-rust` and `radix-hir-ts` emit and test alias type parameters plus applied type uses. It does not prove applied size arguments or size-parameter emission. |
-| Alias-declared `magnitudo` with `figura` application | **TO BUILD** | The live parser and semantic `FiguraExpr` machinery exist, but no end-to-end alias-declared size-argument proof is landed. This remains S0-R0/S0-R1 prerequisite work. |
-| `GenericArgExpr` source cases | **TO BUILD** | No live definition exists. `TypeExprKind::{Named,Qualified}` still carry `Vec<TypeExpr>`, and `radix-parser/src/types.rs:548` interns an applied natural as a named identifier. S0-R0 must add the source-preserving kinded representation. |
-| `AppliedArg::{Type,Size}` and size-bearing `Type::Applied` | **TO BUILD** | No live `AppliedArg` exists. `radix-types/src/types.rs` still defines `Type::Applied(TypeId, Vec<TypeId>)`; all current applied arguments are type IDs. S0-R0 must add the bounded kinded checked form without changing type-only behavior. |
-| Interface declaration parameter kind/order and applied size serialization | **TO BUILD** | `radix-semantic/src/file_interface.rs` snapshots type aliases and applied arguments without declaration kind/order or size arguments. Extraction is in `radix-program/src/file_interface.rs`; `radix-module` re-exports the interface surface. The product package route consumes these through the `radix::program::file_interface` facade; the former package-local producer file is absent. S0-R1 owns both producers/consumers. |
-| PH-0..4 applied-parameter holes | **LANDED, separate surface** | PH-0..4 landed 2026-08-19. Explicit type `_` and marker holes are already represented and handled through `Type::Infer` / `Type::MarkerHole`; they are not `AppliedArg::Size`. S0-R0 must preserve and classify this existing surface while extending named applications. |
+| Type-argument alias declaration/use emission | **LANDED for type arguments** | Radix commit `94c6b71d4`; `radix-hir-rust` and `radix-hir-ts` emit and test alias type parameters plus applied type uses. |
+| Alias-declared `magnitudo` with `figura` application | **LANDED (S0-R1)** | `radix-program/src/file_interface_s0r1_test.rs` proves `typus Vector<magnitudo N> = vector<fractus<f32>, N>` snapshots params `[(N, Magnitudo)]` and applied `Vector<3>` carries `Size(Literal 3)`. |
+| `GenericArgExpr` source cases | **LANDED (S0-R0)** | `crates/radix-syntax/src/ast.rs:1507` defines `GenericArgExpr`; `TypeExprKind::{Named,Qualified}` now carry `Vec<GenericArgExpr>` (ast.rs:1582–1584). |
+| `AppliedArg::{Type,Size}` and size-bearing `Type::Applied` | **LANDED (S0-R0)** | `crates/radix-types/src/types.rs:1365` defines `AppliedArg`; `Type::Applied` carries `Vec<AppliedArg>`; hir-rust renders `Size` via `format_figura` (types.rs, ae7c5e292). |
+| Interface declaration parameter kind/order and applied size serialization | **LANDED (S0-R1)** | `radix-semantic/src/file_interface.rs`: `InterfaceGenericParam {name, kind}`, `InterfaceAppliedArg::{Type,Size}`, `InterfaceAliasExport {name, params, body}`, ordered params on struct/nominal exports; `radix-program` extraction and the `radix-module` re-export/consumer route populate and consume them. |
+| PH-0..4 applied-parameter holes | **LANDED, separate surface** | PH-0..4 landed 2026-08-19. Explicit type `_` and marker holes are already represented and handled through `Type::Infer` / `Type::MarkerHole`; they are not `AppliedArg::Size`. S0-R0 preserved this surface (marker_hole filters green at both landings). |
 
 ### What the old delivery text got wrong
 
@@ -74,6 +74,100 @@ those arguments through loose-file extraction, the product Faber package route,
 and Rust/TypeScript emission. S0-R0 remains the first unit, and the settled
 public contract remains exactly `Vector<3>`, `Matrix<4,4>`, `Box<3>`, one clean
 break, and no aliases or compatibility names.
+
+## 0.1 Post-prerequisite re-baseline (2026-08-25, planner task a8cfb7f6)
+
+Both serial Radix prerequisites are committed on radix `main`. The planning
+pin for all remaining Stage 0 work is **Radix `9a78fb080047395bec3124fe53eebcd660f6de1d`**
+(S0-R1 = radix HEAD at re-baseline; S0-R0 `ae7c5e292` is an ancestor of it).
+This section supersedes every pre-landing "TO BUILD"/"next" claim above and in
+§3.4 items 3–6 for the landed surfaces.
+
+**S0-R0 — landed `ae7c5e292` (2026-08-24, task c114ab4d).** Source
+`GenericArgExpr::{Type,Size,Name}` in `radix-syntax/src/ast.rs:1507` with
+`Named`/`Qualified` carrying `Vec<GenericArgExpr>`; checked
+`AppliedArg::{Type,Size}` in `radix-types/src/types.rs:1365` with
+`Type::Applied(base, Vec<AppliedArg>)`; kind-directed resolution in
+`radix-semantic` (resolve.rs, lower/types.rs); exhaustive consumer adaptations
+across HIR faber/fhir/go/rust/ts/swift/haskell/lean, MIR llvm/wasm/sexp,
+module, program, and parser per the Appendix A census (23/85/17/33 at landing).
+Emitter side, split behavior: hir-rust applied uses render `AppliedArg::Size`
+through `format_figura` (`radix-hir-rust/src/types.rs`), while hir-ts
+**fail-closes** on any size argument with structured diagnostic
+`size_generic_argument_unsupported` (`radix-hir-ts/src/types.rs:113–124`) —
+the S0-T1 TypeScript row observes this live posture per candidate rather than
+assuming parity with Rust.
+
+**S0-R1 — landed `9a78fb080` (2026-08-25, task c6190e05, the interface-schema
+row narrowed per the Mind assignment).** `InterfaceGenericParam {name, kind}`
+(reusing `radix_syntax::GenericParamKind`), `InterfaceAppliedArg::{Type,Size}`,
+`InterfaceTypeSnapshot::Applied(Vec<InterfaceAppliedArg>)`, and
+`InterfaceAliasExport {name, params, body}` behind `FileExportKind::TypeAlias`,
+plus ordered params on struct/nominal exports — all in
+`radix-semantic/src/file_interface.rs`, populated by
+`radix-program/src/file_interface.rs` from `HirTypeParam` and re-exported
+through `radix-module`. Imported declarations register decl kinds
+(`radix-semantic/src/scope.rs` `register_generic_param_kinds` /
+`namespace_file_decl_param_kinds`); `lower_qualified_type` kind-directs
+namespace applications, and kind-mismatched applications fail closed with
+`generic_argument_kind_mismatch`. Round-trip proofs:
+`file_interface_preserves_generic_size` filters green and non-zero in
+radix-semantic (2), radix-program (4, including `consumer_round_trip` on
+`importa ex "math:vectors" math + math.Vector<3>` and
+`kind_mismatch_fails_closed`), and radix-module (2). The interface-consumer
+census (`FileExportKind::TypeAlias | InterfaceStructExport{ |
+InterfaceNominalExport{ | InterfaceTypeSnapshot::Applied`) refreshed at
+landing: **18 files, all classified, no unadmitted consumer**.
+
+**Honest scope narrowing recorded at the S0-R1 landing (from the Hand report,
+mail d19b006d).** The S0-R1 row as originally written also named two proofs
+that the narrowed landing did not execute as focused tests:
+
+1. `cargo test -p faber --lib package_interface_preserves_generic_size` —
+   **no such test exists**; the landed evidence is `cargo check -p radix -p
+   faber` clean plus the Hand's observation that the faber package consumer's
+   interface payload matches (Struct/Function/Tuple) are unaffected by the new
+   alias/size snapshot shapes.
+2. Rust/TypeScript **alias size-parameter declaration emission** (e.g. Rust
+   `const N: usize` on an emitted alias) beyond S0-R0's applied-use rendering —
+   not separately proven by a focused `generic_size_alias` filter (none
+   exists). Compounding this, hir-ts rejects applied size arguments outright
+   (`size_generic_argument_unsupported`, see the S0-R0 paragraph above):
+   whether a transparent alias reaches TS emission as its substituted
+   built-in carrier (green) or as a size-carrying `Applied` node (fail-closed)
+   is live behavior the probe must record, not prior art.
+
+Recorded S0-R1 residuals (outside its narrowed scope):
+`InterfaceCallable.type_params` carries names only (functions were not in the
+{name,kind} requirement; the four type exports are); the artifact-restore path
+leaves `decl_param_kinds` empty (analysis-time fact); the
+`radix-module/src/program/compile.rs` AST route cannot produce `Applied`
+snapshots (pre-existing shape, unchanged).
+
+**Ruling for the remaining lowering — neither narrowing gates S0-T1.** The
+S0-T1 probe is exactly the instrument that observes imported provider→consumer
+substitution and emitted/compiled Rust+TypeScript output for all three
+candidates equally. If alias size-parameter declaration emission or the
+package-route reconstruction fails a mandatory matrix row, that is an observed
+row failure recorded with command, fixture, diagnostic, and snapshot — the
+delivery's existing stop/retry rules then route a narrow Radix unit back
+through Mind (S0-T2 has no Radix write authority). Per the standing no-holds
+ruling, no unit is gated on this fork in advance. No head-cto fork is open:
+the representation preference order, the fixed contract, and the probe-as-
+adjudicator are all settled.
+
+**Refreshed live census at Radix `9a78fb080` (2026-08-25):** 25 syntax
+`Named`/`Qualified` consumer files, 87 `Type::Applied` consumer files, 17
+resolver-symbol files, 33 `Type::MarkerHole` consumer files. The drift from
+23/85 is the landings' own new test files (e.g.
+`file_interface_s0r1_test.rs`) plus concurrent foreign WIP in the radix tree;
+counts remain stale-base alarms, not oracles. Appendix A stays the
+classification method, not a frozen file list.
+
+**Triga side is untouched and ready:** no `exempla/conformance/generic-math-types/`
+directory and no `scripta/check-generic-math-representation` runner exist yet;
+`src/math.fab` still carries the six numbered declarations. English locale
+(`class`, `f32`, `@ public`) matches the fixture spellings in §1/§2.1.
 
 ## 1. Interpreted Unit
 
@@ -371,6 +465,11 @@ into the compiler.
 
 ### 3.4 Proven Radix prerequisites and missing boundary
 
+> **Superseded 2026-08-25** for items 3–6 by §0.1: the named-application,
+> `AppliedArg`, and interface-schema surfaces described below as missing are
+> landed at Radix `9a78fb080`. The list is retained as the pre-landing
+> grounding record; read it against §0.1, not as current fact.
+
 At the pinned Radix main, these facts are separated explicitly:
 
 1. `GenericParamKind::{Typus, Magnitudo}` is landed in the syntax AST, parser,
@@ -458,9 +557,14 @@ and the campaign stop condition is handled.
 
 ```text
 S0-R0  kinded type/size applied-argument foundation + exhaustive consumers (radix)
+  LANDED ae7c5e292 (2026-08-24)
   -> S0-R1  loose-file/Faber-package import + Rust/TypeScript emitter prerequisite (radix)
+     LANDED 9a78fb080 (2026-08-25, interface-schema row; see §0.1 for the honest
+     narrowing on the faber package-route test and alias size-param emission)
     -> S0-T1  equal candidate probes + representation decision (triga)
+       READY — DISPATCHABLE NOW (Gate 0 base check against radix 9a78fb080)
       -> S0-T2  selected operation/payload/device proof + frozen migration map (triga)
+         READY — blocked only on S0-T1's committed selection
         -> campaign Stage 1 delivery lowering
 ```
 
@@ -470,6 +574,9 @@ and `S0-T2` cannot honestly map migration destinations before `S0-T1` selects
 them.
 
 ### S0-R0 — kinded applied-argument foundation and exhaustive consumers
+
+> **LANDED 2026-08-24 — radix `ae7c5e292` (task c114ab4d).** Row retained as
+> the executed contract; see §0.1 for the landed-surface receipts.
 
 | Field | Value |
 | --- | --- |
@@ -494,6 +601,12 @@ to ignore them, or broaden PH marker-hole semantics.
 
 ### S0-R1 — package/import reconstruction and HIR Rust/TypeScript emission
 
+> **LANDED 2026-08-25 — radix `9a78fb080` (task c6190e05), executed as the
+> interface-schema row with the honest narrowing in §0.1.** Row retained as
+> the contract of record; the two unexecuted-as-test proofs (faber
+> package-route filter, alias size-parameter declaration emission) transfer to
+> S0-T1's mandatory probe rows as observed evidence, not as prior art.
+
 | Field | Value |
 | --- | --- |
 | `id` | `S0-R1` |
@@ -517,15 +630,20 @@ before implementation; do not silently widen into unrelated compiler work.
 
 ### S0-T1 — equal candidate probe and representation selection
 
+> **READY — DISPATCHABLE NOW.** Dependency satisfied at radix `9a78fb080`
+> (S0-R0 `ae7c5e292` + S0-R1 `9a78fb080` both ancestors of radix main). Gate 0
+> at dispatch: record the radix base, confirm both commits are ancestors, and
+> check for active writers overlapping the probe's read surfaces.
+
 | Field | Value |
 | --- | --- |
 | `id` | `S0-T1` |
 | `outcome` | Transparent alias, direct native, and generic-wrapper candidates are exercised through the same source/import/call/negative/emitter matrix in the campaign's fixed order. `representation-decision.md` selects exactly one with observed evidence. |
 | `write_scope` | Repo `triga`, on a new implementation packet based on committed `S0-R1`: `exempla/conformance/generic-math-types/alias/{provider.fab,consumer.fab}`; `exempla/conformance/generic-math-types/direct/{provider.fab,consumer.fab}`; `exempla/conformance/generic-math-types/wrapper/{provider.fab,consumer.fab}`; `exempla/conformance/generic-math-types/negative/{vector-width.fab,matrix-shape.fab,box-width.fab,generic-kind.fab}`; `scripta/check-generic-math-representation`; `docs/factory/generic-math-types/representation-decision.md`. The runner may create only ignored temporary output under `${TMPDIR:-/tmp}/triga-generic-math-types/`. No `src/**`, root exempla, corpus, generated output, sibling repo, or campaign status edit in this unit. |
-| `read_scope` | Triga `AGENTS.md`, `faber.toml`, `src/math.fab`, `src/math.proba`, `docs/{api-shape-policy,module-map}.md`, `scripta/check-{source,compile,transforms}`; this delivery and campaign; Norma `src/vector.fab`; committed Radix generic/import/Rust/TS and private `crates/faber` package files/tests from `S0-R0/R1`; same-packet `radix`/`faber` CLI help; Examples and Hosts payload consumers read-only. |
+| `read_scope` | Triga `AGENTS.md`, `faber.toml`, `src/math.fab`, `src/math.proba`, `docs/{api-shape-policy,module-map}.md`, `scripta/check-{source,compile,transforms}`; this delivery and campaign; Norma `src/vector.fab`; landed S0-R0/S0-R1 surfaces at radix `9a78fb080` — `crates/radix-syntax/src/ast.rs` (`GenericArgExpr`), `crates/radix-types/src/types.rs` (`AppliedArg`), `crates/radix-semantic/src/file_interface.rs` (`InterfaceGenericParam`/`InterfaceAppliedArg`/`InterfaceAliasExport`), `crates/radix-program/src/file_interface_s0r1_test.rs` (round-trip + `generic_argument_kind_mismatch` proofs), `crates/radix-semantic/src/scope.rs` (decl-kind registration); private `crates/faber/src/package/**` + `package_test.rs` for the package-route probe row; same-packet `radix`/`faber` CLI help; Examples and Hosts payload consumers read-only. |
 | `done_when` | (1) The runner executes all three candidates; it does not stop after the preferred one passes. (2) Each candidate has equivalent provider and consumer behavior for vector sizes 2/3/4, matrix row/column arguments, `Box<N>`, same-file calls, imported calls, and construction/component access. (3) The four negative fixtures reject at source typecheck with structured identity; the mismatch cannot first appear in `rustc` or `tsc`. (4) Candidate Rust and TypeScript provider-consumer output is emitted and compiled. (5) The matrix records exact command, exit/evidence, diagnostic identity for failures, emitted carrier/shape, and committed repo hashes. (6) The first fully passing candidate in alias→direct→wrapper order is selected; every earlier rejection has observed evidence. (7) A wrapper cannot win merely to retain fields or methods; if selected, the record proves native-value storage and the exact domain behavior unavailable to alias/direct. (8) No clean-break name or numbered constructor/helper is created. (9) `representation-decision.md` has no unresolved selection, constructor, component-access, or emitter row. |
 | `validation` | `bash -n scripta/check-generic-math-representation`; same-packet build: `(cd "$RADIX_ROOT" && cargo build -p radix --bin radix && cargo build -p faber --bin faber)`; derive `RADIX_BIN="$RADIX_ROOT/target/debug/radix"` and `FABER_BIN="$RADIX_ROOT/target/debug/faber"`; `test -x "$RADIX_BIN" && test -x "$FABER_BIN"`; `RADIX_ROOT="$RADIX_ROOT" RADIX_BIN="$RADIX_BIN" FABER_BIN="$FABER_BIN" ./scripta/check-generic-math-representation --candidate alias`; same environment/command with `--candidate direct`, `--candidate wrapper`, then `--matrix`; `./scripta/check-source`; `git diff --check -- exempla/conformance/generic-math-types scripta/check-generic-math-representation docs/factory/generic-math-types/representation-decision.md`. The runner rejects a `RADIX_BIN` or `FABER_BIN` whose canonical path differs from the corresponding `$RADIX_ROOT/target/debug/*` path. Its Rust gate uses `rustc --edition 2021 --crate-type lib`; its TypeScript gate uses `tsc --noEmit --strict --target ES2022 --module ES2022`. |
-| `depends_on` | `S0-R1` committed; both CLIs built from that same assigned `RADIX_ROOT` packet |
+| `depends_on` | `S0-R1` committed at radix `9a78fb080` — **satisfied**; both CLIs built from that same assigned `RADIX_ROOT` packet |
 | `non_goals` | Public Triga migration; completing all math behavior; host payload code; device enablement; fixing a newly discovered compiler gap outside `S0-R1`; choosing a wrapper before alias/direct evidence; generated Examples or website output. |
 | `risk` | **high** — a shallow source-only probe can select a representation that fails imports or target compilation. The equal matrix and actual emitted-source compilers are mandatory. Candidate fixtures must differ only where the representation requires it. |
 | `est_work_tokens` | `45k–65k` |
@@ -538,6 +656,13 @@ passing candidate follows the fixed preference rule. If two candidates appear
 equivalent, select the earlier one. If all three fail a mandatory row, stop at
 the campaign condition and report the smallest observed boundary; do not pick
 the least-broken candidate.
+
+**§0.1 narrowing transfer:** the two S0-R1 proofs not executed as focused
+tests — the faber package-route reconstruction and alias size-parameter
+declaration emission — are mandatory S0-T1 matrix rows (Imported substitution /
+Rust / TypeScript). The probe records their live behavior for all three
+candidates; an observed failure routes back through Mind per the retry rules,
+it does not re-open S0-R1 in place.
 
 ### S0-T2 — selected operations, payload/device proof, and frozen migration map
 
@@ -567,10 +692,13 @@ no Radix write authority.
 
 Mind should prepare exactly one live Hand at a time:
 
-1. a Radix Hand for `S0-R0` after the live-base and overlap check;
-2. a Radix Hand for `S0-R1` from committed `S0-R0`, after refreshing overlap state;
-3. a Triga Hand for `S0-T1` with `radix` and `faber` binaries built from the
-   same committed `S0-R1` packet; then
+1. ~~a Radix Hand for `S0-R0` after the live-base and overlap check~~ —
+   **landed `ae7c5e292`**;
+2. ~~a Radix Hand for `S0-R1` from committed `S0-R0`, after refreshing overlap
+   state~~ — **landed `9a78fb080`** (interface-schema row; §0.1 records the
+   narrowing);
+3. **next: a Triga Hand for `S0-T1`** with `radix` and `faber` binaries built
+   from the committed radix `9a78fb080` packet — dispatchable NOW; then
 4. the same or a fresh Triga Hand for `S0-T2` on the committed `S0-T1` result.
 
 Do not dispatch three candidates as independent Hands. Do not dispatch public
@@ -768,12 +896,17 @@ break, host-layout honesty, and unsupported-device posture are fixed.
 
 Routing questions remain Mind-owned:
 
-1. Which committed Radix packet passes the live-base and overlap gate for
-   `S0-R0`, and which refreshed packet consumes it for `S0-R1`?
+1. ~~Which committed Radix packet passes the live-base and overlap gate for
+   `S0-R0`, and which refreshed packet consumes it for `S0-R1`?~~ **Answered:**
+   both landed serially on radix main — `ae7c5e292` then `9a78fb080`; the
+   S0-T1 packet consumes radix `9a78fb080`.
 2. Does the same Triga Hand continue from `S0-T1` into `S0-T2`, or does Mind
    create a fresh serial packet after the decision commit?
+3. (New, from §0.1) If the S0-T1 probe observes a mandatory-row failure caused
+   by an S0-R1-narrowed surface (package route or alias size-param emission),
+   Mind routes the narrow Radix follow-up unit rather than re-opening S0-R1.
 
-Neither question changes unit behavior or write scope.
+Neither standing question changes unit behavior or write scope.
 
 ## 10. Stop Conditions
 
@@ -798,14 +931,16 @@ that migration from Stage 0.
 
 ## 11. Delivery Readiness
 
-**READY for factory dispatch, subject to Gate 0 serialization.**
+**READY for factory dispatch.**
 
-This revised spec names two live-main-grounded serial Radix prerequisites plus two
-serial Triga units, exact write/read scopes, objective done conditions,
-crate-scoped and Triga validation,
-estimates grounded in the project ledger, decision artifacts, stop conditions,
-and the handoff into campaign Stage 1. No product implementation has been
-performed by this planning task.
+Re-baselined 2026-08-25 after both serial Radix prerequisites landed
+(`ae7c5e292`, `9a78fb080`; §0.1). **S0-T1 is dispatchable NOW** — dependency
+satisfied, write surfaces absent and unclaimed (`exempla/conformance/
+generic-math-types/`, `scripta/check-generic-math-representation`,
+`representation-decision.md`), no open technical fork. **S0-T2 is READY and
+blocked only on S0-T1's committed selection.** No product implementation has
+been performed by this planning task; no Stage 1–4 surface (math.fab,
+consumers, examples, docs) is touched by either remaining unit.
 
 
 ## Appendix A — live S0-R0 consumer scope at Radix `6feab5a79`

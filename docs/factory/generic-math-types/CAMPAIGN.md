@@ -331,7 +331,7 @@ precede rendered HTML; do not patch `dist/` independently.
 
 ### Stage 0 — Parametric representation and backend probe
 
-**Status**: active — delivery lowered; implementation not started
+**Status**: active — S0-R0/S0-R1 Radix prerequisites landed (`ae7c5e292`, `9a78fb080`); remaining Triga units S0-T1 (dispatchable now) → S0-T2 lowered per delivery-stage0.md §0.1/§4
 
 **Lowers to**: Factory via [`delivery-stage0.md`](delivery-stage0.md)
 
