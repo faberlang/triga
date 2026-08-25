@@ -1,0 +1,26 @@
++++
+locale = "en"
++++
+
+# S0-T1 wrapper-candidate consumer: imported substitution through the
+# provider package route, with nominal wrappers over register carriers. The
+# provider is assembled by the probe runner under the temporary library home
+# as package "probevectors", module "vectors".
+#
+# At radix 9a78fb080 wrapper values cannot be constructed, so the imported
+# surface is proven at the signature level with unreachable bodies, the
+# corpus idiom for signature-only probes.
+
+import from "probevectors:vectors" gmt
+
+fn imported_signature() → gmt.Vector<4> {
+    panic "signature probe"
+}
+
+fn imported_shapes() → gmt.Matrix<4, 4> {
+    panic "signature probe"
+}
+
+fn imported_box_signature() → gmt.Box<3> {
+    panic "signature probe"
+}

@@ -1,0 +1,45 @@
++++
+locale = "en"
++++
+
+# S0-T1 wrapper-candidate provider: generic nominal wrappers storing the
+# compiler-owned register carriers as fields, with dimension-neutral free
+# functions over the wrappers.
+#
+# At radix 9a78fb080 the wrapper's construction and operation functions are
+# not expressible: the applied-generic record form (Vector<N> { lanes = … })
+# does not parse, and the bare record form fails param instantiation. This
+# file therefore carries only the declaration and accessor surface that
+# checks at this base; the observed boundaries are recorded in
+# docs/factory/generic-math-types/representation-decision.md.
+
+@ public
+class Vector<size N> {
+    vector<f32, N> lanes
+}
+
+@ public
+class Matrix<size R, size C> {
+    matrix<f32, [R, C]> cells
+}
+
+@ public
+class Box<size N> {
+    Vector<N> minima
+    Vector<N> maxima
+}
+
+@ public
+fn lanes<size N>(Vector<N> v) → vector<f32, N> {
+    return v.lanes
+}
+
+@ public
+fn cells<size R, size C>(Matrix<R, C> m) → matrix<f32, [R, C]> {
+    return m.cells
+}
+
+@ public
+fn box_minima<size N>(Box<N> b) → Vector<N> {
+    return b.minima
+}

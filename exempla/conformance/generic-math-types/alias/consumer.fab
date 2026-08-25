@@ -1,0 +1,39 @@
++++
+locale = "en"
++++
+
+# S0-T1 alias-candidate consumer: imported substitution through the provider
+# package route. The provider is assembled by the probe runner under the
+# temporary library home as package "probevectors", module "vectors".
+#
+# This file records the alias candidate's imported posture at radix
+# 9a78fb080: the import resolves, provider diagnostics propagate into the
+# consumer check, and qualified applied types analyze in signature and
+# return positions. The matrix locals use the builtin carriers because
+# assigning builtin products to alias-annotated locals fails at this base
+# (SEM010 initializer_annotation_mismatch); see
+# docs/factory/generic-math-types/representation-decision.md.
+
+import from "probevectors:vectors" gmt
+
+fn imported() → f32 {
+    const gmt.Vector<3> a ← [1.0, 2.0, 3.0] ↦ gmt.Vector<3>
+    const gmt.Vector<3> b ← [2.0, 4.0, 6.0] ↦ gmt.Vector<3>
+    const gmt.Vector<3> s ← gmt.add(a, b)
+    const gmt.Vector<3> x ← gmt.cross(a, b)
+    return (s.dot(b) + x.dot(a)) + gmt.lane(a)
+}
+
+fn imported_signature() → gmt.Vector<4> {
+    const gmt.Vector<4> a ← [1.0, 2.0, 3.0, 4.0] ↦ gmt.Vector<4>
+    const gmt.Vector<4> b ← [2.0, 4.0, 6.0, 8.0] ↦ gmt.Vector<4>
+    return gmt.add(a, b)
+}
+
+fn imported_shapes() → gmt.Matrix<4, 4> {
+    const vector<f32, 4> s ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+    const vector<f32, 3> wide ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    const matrix<f32, [4, 3]> outer ← s ⊗ wide
+    const matrix<f32, [3, 4]> inner ← wide ⊗ s
+    return outer · inner
+}

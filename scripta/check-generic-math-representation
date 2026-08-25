@@ -1,0 +1,421 @@
+#!/usr/bin/env bash
+# check-generic-math-representation — S0-T1 equal-candidate probe runner for
+# the generic-math-types campaign (triga/docs/factory/generic-math-types/).
+#
+# Executes the source/import/emitter matrix for the three representation
+# candidates (alias / direct / wrapper) plus the shared negative and
+# gap-probe surfaces. Rows assert the delivery's ideal expectations: a row
+# that fails prints the observed command, exit status, and structured
+# diagnostic identities, and the run exits non-zero. Observed failures are
+# probe evidence for the representation decision record, not runner bugs.
+#
+# Environment:
+#   RADIX_ROOT  (required) assigned committed Radix packet root
+#   RADIX_BIN   (required) must canonical-resolve to $RADIX_ROOT/target/debug/radix
+#   FABER_BIN   (required) must canonical-resolve to $RADIX_ROOT/target/debug/faber
+#
+# Temporary output (assembled provider package, emitted sources, compiled
+# artifacts) is created only under ${TMPDIR:-/tmp}/triga-generic-math-types/
+# and is never committed.
+#
+# Gates: rustc --edition 2021 --crate-type lib; tsc --noEmit --strict
+# --target ES2022 --module ES2022.
+
+set -uo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: check-generic-math-representation [--candidate alias|direct|wrapper]
+                                          [--matrix] [--all] [-h]
+
+Options:
+  --candidate <name>  run one candidate's source/import/emitter rows
+  --matrix            run all three candidates plus negatives and gap probes
+  --all               same as --matrix (selected-target modes land with S0-T2)
+  -h, --help          this message
+EOF
+}
+
+TRIGA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+FIXTURES="$TRIGA_ROOT/exempla/conformance/generic-math-types"
+WORK_ROOT="${TMPDIR:-/tmp}/triga-generic-math-types"
+PROVIDER_PKG="probevectors"
+LIBHOME="$WORK_ROOT/libhome"
+
+fail_count=0
+declare -a SUMMARY=()
+
+record() {
+  # record <pass|fail> <row-id> [evidence lines...]
+  local status="$1" row="$2"
+  shift 2
+  if [[ "$status" == "pass" ]]; then
+    echo "[PASS] $row"
+  else
+    echo "[FAIL] $row"
+    fail_count=$((fail_count + 1))
+  fi
+  local line
+  for line in "$@"; do
+    [[ -n "$line" ]] && echo "       $line"
+  done
+  SUMMARY+=("$status $row")
+}
+
+first_error_identities() {
+  # Print the distinct error[CODE] / error[CODE:issue] identities from a
+  # diagnostics stream, capped for readable evidence.
+  grep -oE 'error\[[A-Z]+[0-9]+(:[a-z0-9_]+)?\]' | sort -u | head -6
+}
+
+# ── environment gates ──────────────────────────────────────────────────────
+
+if [[ -z "${RADIX_ROOT:-}" || -z "${RADIX_BIN:-}" || -z "${FABER_BIN:-}" ]]; then
+  echo "check-generic-math-representation: RADIX_ROOT, RADIX_BIN, and FABER_BIN are required" >&2
+  exit 2
+fi
+
+for tool in rustc tsc; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "check-generic-math-representation: $tool is not on PATH" >&2
+    exit 2
+  fi
+done
+
+canon() { python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$1"; }
+
+for pair in "RADIX_BIN:$RADIX_BIN:$RADIX_ROOT/target/debug/radix" "FABER_BIN:$FABER_BIN:$RADIX_ROOT/target/debug/faber"; do
+  var="${pair%%:*}"
+  rest="${pair#*:}"
+  given="${rest%%:*}"
+  expected="${rest#*:}"
+  if [[ ! -x "$given" ]]; then
+    echo "check-generic-math-representation: $var is not executable: $given" >&2
+    exit 2
+  fi
+  if [[ "$(canon "$given")" != "$(canon "$expected")" ]]; then
+    echo "check-generic-math-representation: $var canonical path must be $expected (got $(canon "$given"))" >&2
+    exit 2
+  fi
+done
+
+if [[ ! -d "$FIXTURES" ]]; then
+  echo "check-generic-math-representation: missing fixtures at $FIXTURES" >&2
+  exit 2
+fi
+
+# ── workspace ──────────────────────────────────────────────────────────────
+
+rm -rf "$WORK_ROOT/out"
+mkdir -p "$WORK_ROOT/out"
+mkdir -p "$LIBHOME/$PROVIDER_PKG/src"
+
+stage_provider() {
+  local candidate="$1"
+  cp "$FIXTURES/$candidate/provider.fab" "$LIBHOME/$PROVIDER_PKG/src/vectors.fab"
+}
+
+write_provider_manifest() {
+  cat > "$LIBHOME/$PROVIDER_PKG/faber.toml" <<'EOF'
+[package]
+name = "probevectors"
+version = "0.1.0"
+
+[library]
+provider = "probevectors"
+
+[paths]
+source = "src"
+
+[build]
+kind = "lib"
+targets = ["rust", "ts"]
+EOF
+}
+
+write_provider_manifest
+
+# check_source <label> <file> [extra env...]
+check_source() {
+  local label="$1" file="$2"
+  shift 2
+  local out exit_code
+  out="$("$@" "$FABER_BIN" check "$file" 2>&1)"
+  exit_code=$?
+  local identities
+  identities="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "$label" "command: faber check $(basename "$file")" "exit: 0"
+  else
+    record fail "$label" "command: faber check $(basename "$file")" "exit: $exit_code" "errors: ${identities:-none}"
+  fi
+}
+
+# emit_target <label> <file> <rust|ts> <out-ext> [extra env...]
+# On success, writes the artifact and sets EMITTED_ARTIFACT to its path.
+emit_target() {
+  local label="$1" file="$2" target="$3" ext="$4"
+  shift 4
+  local artifact="$WORK_ROOT/out/$(basename "$file" .fab).$ext"
+  local errfile="$WORK_ROOT/out/$(basename "$file" .fab).$ext.err"
+  local err exit_code identities
+  "$@" "$RADIX_BIN" emit -t "$target" "$file" > "$artifact" 2> "$errfile"
+  exit_code=$?
+  err="$(cat "$errfile")"
+  if [[ $exit_code -ne 0 ]]; then
+    : > "$artifact"
+  fi
+  identities="$(echo "$err" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -ne 0 ]]; then
+    record fail "$label" "command: radix emit -t $target $(basename "$file")" "exit: $exit_code" "errors: ${identities:-none}"
+    return 1
+  fi
+  EMITTED_ARTIFACT="$artifact"
+}
+
+# compile_rust <label> <artifact>
+compile_rust() {
+  local label="$1" artifact="$2"
+  local out exit_code
+  out="$(rustc --edition 2021 --crate-type lib "$artifact" -o "$WORK_ROOT/out/$(basename "$artifact" .rs).rlib" 2>&1)"
+  exit_code=$?
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "$label" "command: rustc --edition 2021 --crate-type lib $(basename "$artifact")" "exit: 0"
+  else
+    record fail "$label" "command: rustc --edition 2021 --crate-type lib $(basename "$artifact")" "exit: $exit_code" "first: $(echo "$out" | grep -E '^error' | head -2 | tr '\n' ' ')"
+  fi
+}
+
+# compile_ts <label> <artifact>
+compile_ts() {
+  local label="$1" artifact="$2"
+  local out exit_code
+  out="$(tsc --noEmit --strict --target ES2022 --module ES2022 "$artifact" 2>&1)"
+  exit_code=$?
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "$label" "command: tsc --noEmit --strict --target ES2022 --module ES2022 $(basename "$artifact")" "exit: 0"
+  else
+    record fail "$label" "command: tsc --noEmit --strict --target ES2022 --module ES2022 $(basename "$artifact")" "exit: $exit_code" "first: $(echo "$out" | grep -E 'error TS' | head -2 | tr '\n' ' ')"
+  fi
+}
+
+# ── candidate pass ─────────────────────────────────────────────────────────
+
+run_candidate() {
+  local candidate="$1"
+  echo ""
+  echo "== candidate: $candidate =="
+  stage_provider "$candidate"
+
+  check_source "$candidate source/provider" "$FIXTURES/$candidate/provider.fab"
+  check_source "$candidate source/consumer(imported)" "$FIXTURES/$candidate/consumer.fab" env FABER_LIBRARY_HOME="$LIBHOME"
+
+  if emit_target "$candidate rust/provider-emit" "$FIXTURES/$candidate/provider.fab" rust rs; then
+    compile_rust "$candidate rust/provider-compile" "$EMITTED_ARTIFACT"
+  fi
+  if emit_target "$candidate rust/consumer-emit" "$FIXTURES/$candidate/consumer.fab" rust rs env FABER_LIBRARY_HOME="$LIBHOME"; then
+    compile_rust "$candidate rust/consumer-compile" "$EMITTED_ARTIFACT"
+  fi
+  if emit_target "$candidate ts/provider-emit" "$FIXTURES/$candidate/provider.fab" ts ts; then
+    compile_ts "$candidate ts/provider-compile" "$EMITTED_ARTIFACT"
+  fi
+  if emit_target "$candidate ts/consumer-emit" "$FIXTURES/$candidate/consumer.fab" ts ts env FABER_LIBRARY_HOME="$LIBHOME"; then
+    compile_ts "$candidate ts/consumer-compile" "$EMITTED_ARTIFACT"
+  fi
+}
+
+# ── negatives ──────────────────────────────────────────────────────────────
+
+run_negatives() {
+  echo ""
+  echo "== negatives (expected: source-typecheck rejection with structured identity) =="
+
+  local negative identity out exit_code
+  for negative in vector-width matrix-shape box-width generic-kind; do
+    out="$("$FABER_BIN" check "$FIXTURES/negative/$negative.fab" 2>&1)"
+    exit_code=$?
+    identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+    if [[ $exit_code -ne 0 && -n "$identity" ]]; then
+      # The mismatch rejected in Faber analysis, never deferred to rustc/tsc.
+      record pass "negative/$negative" "command: faber check $negative.fab" "exit: $exit_code" "errors: $identity"
+    else
+      record fail "negative/$negative" "command: faber check $negative.fab" "exit: $exit_code" "errors: ${identity:-none}"
+    fi
+  done
+}
+
+# ── gap probes ─────────────────────────────────────────────────────────────
+# Ideal expectations: each form analyzes green. Today's observed failures
+# carry the diagnostic identity that routes the narrow Radix unit.
+
+run_gap_probes() {
+  echo ""
+  echo "== gap probes (ideal: green; observed failures are routed evidence) =="
+  local probe out exit_code identity
+  probe="$WORK_ROOT/out/gap-box-applied.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+class Gen<size N> {
+    vector<f32, N> lanes
+}
+
+fn make(vector<f32, 3> lanes) → Gen<3> {
+    return Gen<3> { lanes = lanes }
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/box-applied-construction" "exit: 0"
+  else
+    record fail "gap/box-applied-construction" "command: faber check gap-box-applied.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/gap-box-bare.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+class Gen<size N> {
+    vector<f32, N> lanes
+}
+
+fn make(vector<f32, 3> lanes) → Gen<3> {
+    return Gen { lanes = lanes }
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/box-bare-construction" "exit: 0"
+  else
+    record fail "gap/box-bare-construction" "command: faber check gap-box-bare.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/gap-generic-glyph.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+fn multiply<size R, size K, size C>(matrix<f32, [R, K]> a, matrix<f32, [K, C]> b) → matrix<f32, [R, C]> {
+    return a · b
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/generic-glyph-matmul" "exit: 0"
+  else
+    record fail "gap/generic-glyph-matmul" "command: faber check gap-generic-glyph.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  # The alias-assignment probe stages a minimal green alias provider: the
+  # candidate alias provider is red and would mask the boundary with
+  # propagated diagnostics. The probe assigns a builtin outer product to an
+  # alias-annotated local — the transparency claim under test.
+  cat > "$LIBHOME/$PROVIDER_PKG/src/vectors.fab" <<'EOF'
++++
+locale = "en"
++++
+
+@ public
+type Matrix<size R, size C> = matrix<f32, [R, C]>
+EOF
+  probe="$WORK_ROOT/out/gap-alias-assignment.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+import from "probevectors:vectors" gmt
+
+fn probe() → gmt.Matrix<4, 3> {
+    const vector<f32, 4> s ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+    const vector<f32, 3> wide ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    const gmt.Matrix<4, 3> outer ← s ⊗ wide
+    panic "signature probe"
+}
+EOF
+  out="$(env FABER_LIBRARY_HOME="$LIBHOME" "$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/alias-assignment-transparency" "exit: 0"
+  else
+    record fail "gap/alias-assignment-transparency" "command: faber check gap-alias-assignment.fab" "exit: $exit_code" "errors: $identity"
+  fi
+}
+
+# ── args ───────────────────────────────────────────────────────────────────
+
+MODE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --candidate)
+      shift
+      if [[ $# -eq 0 ]]; then
+        echo "error: --candidate requires alias|direct|wrapper" >&2
+        exit 2
+      fi
+      if [[ ! "$1" =~ ^(alias|direct|wrapper)$ ]]; then
+        echo "error: unknown candidate: $1" >&2
+        exit 2
+      fi
+      MODE="candidate"
+      CANDIDATE="$1"
+      shift
+      ;;
+    --matrix|--all)
+      MODE="matrix"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "error: unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ -z "$MODE" ]]; then
+  usage >&2
+  exit 2
+fi
+
+echo "check-generic-math-representation — S0-T1 equal-candidate probe"
+echo "triga HEAD: $(git -C "$TRIGA_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
+echo "radix HEAD: $(git -C "$RADIX_ROOT" rev-parse HEAD 2>/dev/null || echo unknown) (RADIX_ROOT pin)"
+echo "work root:  $WORK_ROOT"
+
+if [[ "$MODE" == "candidate" ]]; then
+  run_candidate "$CANDIDATE"
+else
+  run_candidate alias
+  run_candidate direct
+  run_candidate wrapper
+  run_negatives
+  run_gap_probes
+fi
+
+echo ""
+echo "== summary =="
+printf '%s\n' "${SUMMARY[@]}"
+echo ""
+if [[ $fail_count -eq 0 ]]; then
+  echo "result: all executed rows met the delivery's expectations"
+  exit 0
+fi
+echo "result: $fail_count row(s) failed the delivery's expectations — recorded as probe evidence (see docs/factory/generic-math-types/representation-decision.md)"
+exit 1

@@ -1,0 +1,19 @@
++++
+locale = "en"
++++
+
+# S0-T1 negative: generic argument kind mismatch (type-for-size and
+# size-for-type) must reject at Faber source typecheck with the structured
+# generic_argument_kind_mismatch diagnostic.
+
+type Vector<size N> = vector<f32, N>
+
+type Wrapper<T> = list<T>
+
+fn type_for_size() → Vector<string> {
+    panic "unreachable"
+}
+
+fn size_for_type() → Wrapper<3> {
+    panic "unreachable"
+}

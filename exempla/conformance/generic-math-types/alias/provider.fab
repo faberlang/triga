@@ -1,0 +1,82 @@
++++
+locale = "en"
++++
+
+# S0-T1 alias-candidate provider: transparent generic aliases over the
+# compiler-owned register carriers, plus the Box spatial genus.
+#
+# Representation under test: Vector and Matrix are aliases; behavior lives on
+# the underlying compiler intrinsics and dimension-neutral free functions.
+# Widths appear in types, never in names.
+#
+# This file is the committed carrier for the alias candidate's observed
+# source posture at radix 9a78fb080: it parses whole, and the operation
+# bodies below record the live diagnostics (SEM004 unknown_method on alias
+# receivers, SEM011 glyph_operands_unsupported, SEM014 shape inference
+# through alias conversions). Box value construction is absent because the
+# applied-generic record form does not parse at this base; see
+# docs/factory/generic-math-types/representation-decision.md.
+
+@ public
+type Vector<size N> = vector<f32, N>
+
+@ public
+type Matrix<size R, size C> = matrix<f32, [R, C]>
+
+@ public
+class Box<size N> {
+    Vector<N> minima
+    Vector<N> maxima
+}
+
+@ public
+fn add<size N>(Vector<N> a, Vector<N> b) → Vector<N> {
+    return a.added(b)
+}
+
+@ public
+fn dot<size N>(Vector<N> a, Vector<N> b) → f32 {
+    return a.dot(b)
+}
+
+@ public
+fn cross(Vector<3> a, Vector<3> b) → Vector<3> {
+    return a.cross(b)
+}
+
+@ public
+fn lane(Vector<3> a) → f32 {
+    const Vector<3> swapped ← a.swizzle("zyx")
+    return swapped.dot(a)
+}
+
+@ public
+fn multiply<size R, size K, size C>(Matrix<R, K> a, Matrix<K, C> b) → Matrix<R, C> {
+    return a · b
+}
+
+@ public
+fn box_minima<size N>(Box<N> b) → Vector<N> {
+    return b.minima
+}
+
+# Same-file use: construction at widths 2, 3, and 4 through the one
+# conversion posture, generic calls substituting each width, outer products,
+# and concrete-shape matrix multiplication.
+
+fn same_file() → f32 {
+    const Vector<2> a2 ← [1.0, 2.0] ↦ Vector<2>
+    const Vector<2> b2 ← [2.0, 4.0] ↦ Vector<2>
+    const Vector<3> a3 ← [1.0, 2.0, 3.0] ↦ Vector<3>
+    const Vector<3> b3 ← [2.0, 4.0, 6.0] ↦ Vector<3>
+    const Vector<4> a4 ← [1.0, 2.0, 3.0, 4.0] ↦ Vector<4>
+    const Vector<4> b4 ← [2.0, 4.0, 6.0, 8.0] ↦ Vector<4>
+    const Vector<2> s2 ← add(a2, b2)
+    const Vector<3> s3 ← add(a3, b3)
+    const Vector<4> s4 ← add(a4, b4)
+    const Vector<3> x3 ← cross(a3, b3)
+    const Matrix<3, 2> outer ← a3 ⊗ b2
+    const Matrix<2, 3> inner ← b2 ⊗ a3
+    const Matrix<3, 3> product ← outer · inner
+    return ((s2.dot(b2) + s3.dot(b3)) + s4.dot(b4)) + (x3.dot(a3) + lane(a3))
+}

@@ -1,0 +1,17 @@
++++
+locale = "en"
++++
+
+# S0-T1 negative: vector-width mismatch must reject at Faber source
+# typecheck with a structured diagnostic, never first in rustc or tsc.
+# Bodies are unreachable signature probes; the mismatch is the call.
+
+type Vector<size N> = vector<f32, N>
+
+fn add(Vector<3> a, Vector<3> b) → Vector<3> {
+    panic "unreachable"
+}
+
+fn mismatch(Vector<4> wide) → Vector<3> {
+    return add(wide, wide)
+}

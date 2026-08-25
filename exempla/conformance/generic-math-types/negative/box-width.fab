@@ -1,0 +1,22 @@
++++
+locale = "en"
++++
+
+# S0-T1 negative: box/vector-width mismatch must reject at Faber source
+# typecheck with a structured diagnostic, never first in rustc or tsc.
+# Bodies are unreachable signature probes; the mismatch is the call.
+
+type Vector<size N> = vector<f32, N>
+
+class Box<size N> {
+    Vector<N> minima
+    Vector<N> maxima
+}
+
+fn box_minima<size N>(Box<N> b) → Vector<N> {
+    panic "unreachable"
+}
+
+fn mismatch(Box<2> flat) → Vector<3> {
+    return box_minima(flat)
+}

@@ -1,0 +1,17 @@
++++
+locale = "en"
++++
+
+# S0-T1 negative: matrix row/column shape mismatch must reject at Faber
+# source typecheck with a structured diagnostic, never first in rustc or
+# tsc. Bodies are unreachable signature probes; the mismatch is the call.
+
+type Matrix<size R, size C> = matrix<f32, [R, C]>
+
+fn multiply(Matrix<2, 3> a, Matrix<3, 4> b) → Matrix<2, 4> {
+    panic "unreachable"
+}
+
+fn mismatch(Matrix<4, 2> wrong) → Matrix<2, 4> {
+    return multiply(wrong, wrong)
+}
