@@ -331,7 +331,7 @@ precede rendered HTML; do not patch `dist/` independently.
 
 ### Stage 0 — Parametric representation and backend probe
 
-**Status**: active — S0-T2 stopped 2026-08-25 (task `96894b30`) on the proven compiler prerequisite (decision §7 N1–N6; proposed narrow units S0-G8..G10). Proven and standing: representation selected (direct native types, S0-T1R task `7c09ef8c`, radix `24ec99d7e`, gap units S0-G1 `ea8728ffb` · G2 `59e81cbc5` · G3R `e736f24b2` · G3T `e0687bd32` · G5 `bd71dfeb6` · G4 `1459eec1a` · G7 `7ec4c20a9` · G6 `86d00e94c`), §2.4 operation map proven with placements, host payload contract proven, device posture fail-closed. Waiting on Mind: narrow Radix units, then S0-T2 resumes to freeze the migration map and close Stage 0
+**Status**: active — S0-T2 RESUMED and COMPLETED its freeze 2026-08-25 (task `f53e576b`) after the routed narrow units landed (S0-G8 `0f7d26f5a` N1/N2 · S0-G9 `a7d731ec0` N3 · S0-G10 `4628590fd` N4/N5/N6): the five `--selected` runner invocations re-executed green modulo routed residuals (decision §8), G10's TS2307 staging residual fixed runner-side, the nullable Rust list-index residual fixed at radix `fbec200be`, TS coordinate emission routed pre-Stage-1, and **`migration-map.md` frozen** — every retired family mapped, no compatibility destinations, ordered Stage 1–5 graph, bounded grep oracle. Representation SELECTED (direct native types, S0-T1R task `7c09ef8c`, radix `24ec99d7e`, gap units S0-G1 `ea8728ffb` · G2 `59e81cbc5` · G3R `e736f24b2` · G3T `e0687bd32` · G5 `bd71dfeb6` · G4 `1459eec1a` · G7 `7ec4c20a9` · G6 `86d00e94c`). Stage 0 completion is claimed in the task report; the campaign Status line and Stage 1 dispatch are Mind's
 
 **Lowers to**: Factory via [`delivery-stage0.md`](delivery-stage0.md)
 

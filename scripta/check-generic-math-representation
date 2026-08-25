@@ -195,6 +195,24 @@ compile_rust() {
 # compile_ts <label> <artifact>
 compile_ts() {
   local label="$1" artifact="$2"
+  # Emitted library-mode TS imports "@faber/runtime" helpers (e.g.
+  # `__faberDisplay`). tsc on a bare file cannot resolve a package import,
+  # which surfaces as a harness TS2307 artifact — same family as the T1R
+  # provider-module staging fix. Stage a minimal ambient module so the
+  # compile measures emitted source, not packaging.
+  mkdir -p "$WORK_ROOT/out/node_modules/@faber/runtime"
+  cat > "$WORK_ROOT/out/node_modules/@faber/runtime/package.json" <<'EOF'
+{
+  "name": "@faber/runtime",
+  "version": "0.0.0",
+  "types": "./index.d.ts"
+}
+EOF
+  cat > "$WORK_ROOT/out/node_modules/@faber/runtime/index.d.ts" <<'EOF'
+// Minimal ambient surface for emitted @faber/runtime imports (staged by the
+// checker; the real runtime package is not part of this proof).
+export declare function __faberDisplay(...values: unknown[]): string;
+EOF
   local out exit_code
   out="$(tsc --noEmit --strict --target ES2022 --module ES2022 "$artifact" 2>&1)"
   exit_code=$?

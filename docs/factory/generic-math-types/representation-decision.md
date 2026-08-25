@@ -358,3 +358,42 @@ classification is the resumed unit's migration-map input):
 Stage 0 classifies and maps these; it does not require them to be zero.
 The frozen map with per-row destinations is the resumed S0-T2's
 deliverable after the narrow Radix units land.
+
+## 8. S0-T2 resume — Stage 0 freeze (2026-08-25, task f53e576b)
+
+Executed after S0-G8 (`0f7d26f5a`, N1/N2), S0-G9 (`a7d731ec0`, N3), and
+S0-G10 (`4628590fd`, N4/N5/N6) landed on radix main. Run base: radix main
+at `fbec200be` = `9c8bd6a9` + the in-unit adjudicated G10 residual fix
+below; binaries built same-tree. triga base `f1ccbac` + this commit.
+
+### Five --selected invocations (final results)
+
+| Invocation | Result |
+| --- | --- |
+| `--selected --operations` | source PASS; all four negatives red with structured identities; all six gap probes PASS; migration/map-frozen PASS (map frozen this unit); numbered-spelling PASS |
+| `--selected --targets rust,ts` | `payload/rust-compile` PASS (was E0308, fixed this unit); `payload/ts-emit` PASS; reds: `operations/rust-emit` (routed R4), `operations/ts-compile` (routed, below), `payload/ts-compile` (routed, below) |
+| `--selected --payload` | all rows PASS — source, `faber run` count-layout (32 floats), decision row |
+| `--selected --device-posture` | all rows PASS — wgsl/metal fail closed with `CODEGEN001` structured identity, 0 artifact bytes |
+| `--all` | full matrix re-run; every S0-T2 row as above; candidate rows unchanged from §1/§2 (direct selected stands) |
+
+### G10 named residuals — adjudication
+
+| Residual | Adjudication |
+| --- | --- |
+| checker TS2307 runtime staging artifact (emitted payload imports `@faber/runtime`, unstaged for tsc) | **FIXED runner-side** this unit, per the T1R staging precedent: `compile_ts` now stages a minimal ambient `@faber/runtime` module in the run root, so the compile measures emitted source, not packaging. TS2307 is gone from the row output. |
+| nullable Rust list-index diagnostics (`payload/rust-compile` E0308: `.get(i).cloned().expect("lista index trap")` yields f32 where the source expression is `f32 ∪ null`) | **FIXED compiler-side** (adjudicated small, in-scope residual fix): radix `fbec200be` — hir-rust index emission now returns the `Option` unchanged when the index expression type is nullable, and keeps the OOB trap for non-nullable contexts. Focused test `nullable_lista_index_emits_option_without_trap` (radix-hir-rust, non-empty, green); full crate lib suite 163/163 green. |
+| TS coordinate emission beyond prelude | **ROUTED** — not small: three distinct hir-ts defects (Box-receiver method calls over tuple-carrier parameters, `TS2339`; untyped `reduce` accumulator parameters, `TS7006`; index-assignment + iteration-coordinate emission in the payload flatten, `TS2364`/`TS2304`). Named for Mind as narrow pre-Stage-1 Radix units; they block Stage 1–4 emitted-artifact compile gates, not the freeze. |
+
+The pre-existing routed R4 (rust emission of the size-parametric glyph-matmul
+body, `CODEGEN001`) is unchanged and rides the same Stage-1 route.
+
+### Stage 0 closeout
+
+`migration-map.md` is **frozen** this unit (every retired
+declaration/method/helper/consumer family mapped to an exact action; no
+compatibility destinations; ordered Stage 1–5 graph; bounded classified grep
+oracle; exclusions classified). The §2.4 operation table (§7 above) is total.
+Stage 0's remaining reds are the routed residuals above — recorded with
+identity and disposition, none blocks a migration destination. Stage 0
+completion is claimed to Mind in the task report; the campaign Status line is
+Mind's bookkeeping.
