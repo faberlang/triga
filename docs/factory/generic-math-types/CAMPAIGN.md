@@ -1,6 +1,6 @@
 # Campaign: Parametric Math Types Clean Break
 
-**Status**: active — Stage 0 representation SELECTED 2026-08-25 (S0-T1R, task `7c09ef8c`): **direct native types** — `vector<f32, N>` / `matrix<f32, [R, C]>` carriers with dimension-neutral Triga free operations, `Box<N>` generic nominal — adjudicated at radix pin `24ec99d7e` after S0-R0 (`ae7c5e292`), S0-R1 (`9a78fb080`), and all eight routed gap units S0-G1…S0-G7 landed; alias rejected on observed evidence; one routed residual (ts library-mode export emission, need filed); next step S0-T2 per delivery-stage0.md §4
+**Status**: active — S0-T2 EXECUTED 2026-08-25 (task `96894b30`) and **STOPPED on a proven new compiler prerequisite** per delivery-stage0.md §4 retry/resume: the selected representation's §2.4 operation map is proven at natural widths with placements classified, the host payload contract (32 f32 / 128 bytes, model-then-VP, column-major, no native-layout assumption) is proven under `faber run`, and device posture is recorded fail-closed with structured diagnostics — but six carrier-independent compiler boundaries (decision §7 N1–N6: parametric vector scalar-algebra/lane-access, matrix materialize/transpose, TS prelude members, rust apud-matrix emission, runner vector→list) block the family-wide rows, so the migration map is NOT frozen and Stage 0 is NOT complete. Mind routes the narrow Radix units (proposed S0-G8..G10), then S0-T2 resumes to freeze `migration-map.md` and advance Stage 0. Representation itself stays SELECTED — direct native types at radix `24ec99d7e` (S0-T1R, task `7c09ef8c`); the new gaps are identical under alias/wrapper carriers, so the §2 retry rule does not apply
 **Amended**: 2026-08-22 — language-base refresh (zombie-docs pass): spelling corrections plus the amendment section below; the shipped language moved under this campaign after 2026-08-13
 
 **Mode**: run
@@ -331,7 +331,7 @@ precede rendered HTML; do not patch `dist/` independently.
 
 ### Stage 0 — Parametric representation and backend probe
 
-**Status**: active — representation SELECTED (S0-T1R, task `7c09ef8c`, 2026-08-25): **direct native types** at radix `24ec99d7e`; S0-T1's all-fail stop routed seven gap units, all landed (S0-G1 `ea8728ffb` · G2 `59e81cbc5` · G3R `e736f24b2` · G3T `e0687bd32` · G5 `bd71dfeb6` · G4 `1459eec1a` · G7 `7ec4c20a9` · G6 `86d00e94c`); remaining Triga unit S0-T2 (operations/payload/device + migration map) dispatchable now per delivery-stage0.md §4/§4.1
+**Status**: active — S0-T2 stopped 2026-08-25 (task `96894b30`) on the proven compiler prerequisite (decision §7 N1–N6; proposed narrow units S0-G8..G10). Proven and standing: representation selected (direct native types, S0-T1R task `7c09ef8c`, radix `24ec99d7e`, gap units S0-G1 `ea8728ffb` · G2 `59e81cbc5` · G3R `e736f24b2` · G3T `e0687bd32` · G5 `bd71dfeb6` · G4 `1459eec1a` · G7 `7ec4c20a9` · G6 `86d00e94c`), §2.4 operation map proven with placements, host payload contract proven, device posture fail-closed. Waiting on Mind: narrow Radix units, then S0-T2 resumes to freeze the migration map and close Stage 0
 
 **Lowers to**: Factory via [`delivery-stage0.md`](delivery-stage0.md)
 

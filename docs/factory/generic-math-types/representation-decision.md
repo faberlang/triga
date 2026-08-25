@@ -208,3 +208,153 @@ Stage 0 no longer needs it). R1 is the single new routed need.
 S0-T2 is unblocked by this selection: its dependency ("one selected
 representation and complete candidate matrix") is discharged. No Stage 1+
 surface is touched by this unit.
+
+## 7. S0-T2 selected-representation proof (2026-08-25, task 96894b30)
+
+Executed at the same selection pin `24ec99d7e1fe6b179cbc75bbc194bc9162e5fa4a`
+(detached clean worktree; radix main again carried live foreign WIP in
+`crates/radix-mir-metal/**` at run time — classified Class B with a live
+owner, off every probe path, untouched). Fixtures:
+`exempla/conformance/generic-math-types/selected/{operations,payload,device}.fab`;
+runner: `./scripta/check-generic-math-representation --selected …` (five
+invocations per the delivery §4 validation recipe).
+
+**VERDICT: S0-T2 STOPPED on a proven new compiler prerequisite** per the
+delivery's retry/resume clause — "if a new compiler prerequisite is proven,
+stop and ask Mind to revise this delivery with a narrow Radix unit; S0-T2
+has no Radix write authority." The selection itself is NOT reopened: every
+gap below is carrier-independent (alias and wrapper compose over the same
+intrinsics and would hit the identical walls), so the §2 retry rule
+("return to S0-T1") does not apply. The migration map is NOT frozen and
+Stage 0 is NOT complete; both wait for Mind's narrow Radix units and the
+resumed S0-T2.
+
+### S0-T2 operations (done_when 1-2)
+
+`selected/operations.fab` checks green and proves every §2.4 row at its
+natural width, each classified [I] intrinsic / [F] dimension-neutral free
+function / [R] surviving receiver / [T] type-invariant retirement:
+
+| §2.4 row | Placement | Proof |
+| --- | --- | --- |
+| Vector<N> construction 2/3/4 | [F] one conversion posture `[…] ↦ vector<f32, N>` | `lanes_2/3/4` + every construction below |
+| lane access | [I]+[F] basis-dot `v.dot(e_i)` and width-preserving swizzle (repeats broadcast a lane) | `lanes_2/3/4`, `uniform_3/4` |
+| add / subtract / elementwise / dot | [I] `.added/.subtract/.multiply/.dot`, parametric | `addita/subtracta/multiplicata/productum` |
+| length | [F] Babylonian root on the dot product (`radix_f32`, same shape as current Triga) | `longitudo` — `.power(0.5)` is source-green but its emitted TS prelude member is not strict-green (N4) |
+| guarded normalization | [I] `.normalize()` concrete; [F] guarded form at width 4 | `normata` — **parametric intrinsic is red** (N1) |
+| distance | [F] `distantia` parametric over subtract+length | green |
+| scalar scale / interpolation / projection | [F] elementwise multiply against a swizzle-broadcast uniform, proven at width 4 | `scala/interpolata/projecta` — **parametric forms red** (N1) |
+| Vector<3> cross | [I] `.cross`, width-3-constrained in types | `transversum` |
+| 3D camera/face/ray uses | [F] over concrete width-3 lane reads | `camera_directio`, `face_normal`, `axis_interval`, `capsa_intersecat_radium` |
+| Matrix<R,C> two-axis access | [I] `for from m at [r, c]` cell iteration, parametric at source | `cells_summa` — emitters red (N4/N5) |
+| Matrix<R,C> compile-time shape | [T] the type; negatives stay red | `negative/matrix-shape` |
+| Matrix<R,C> multiplication | [I] glyph `·` parametric at source (S0-G7); method `.matmul` is NOT parametric | `multiplicata_matrix` — rust emission of the generic body is the known R4 |
+| Matrix<R,C> transpose | [F] construction from read columns at [4,4] | `transposita` — no glyph/method exists (N3) |
+| Matrix<4,4> domain rows | [F] basis outer-product construction `ex_columnis` + readable elements | `identitas/translatio/scala_diagonals/composita/perspectiva/conspectus/determinans_affinis/applica_punctum/inversa_affinis` |
+| Retired `Matrix4.validum()` | [T] NO runtime replacement — `matrix<f32, [4, 4]>` makes 16 lanes a type invariant; caller-guard removal is a migration-map action, domain failures (perspectiva/conspectus/inversa_affinis) stay nullable and separate | fixture comment + `negative/matrix-shape` |
+| Box<N> construction | [R] applied/bare generic-nominal construction (S0-G1) | `Box<3> {…}` in `capsa_*` |
+| Box<N> size / translation | [R] parametric receivers | `Box.mensura/translata` |
+| Box<3> validity/containment/intersection/inflate/center/overlap/union | [F] width-in-type free functions over lane reads + uniforms | `capsa_validum/continet/intersecat/inflata/centrum/superpositio/unio` — **parametric Box<N> receivers red** (N1/N2) |
+| Box<3> mutable inflate | ROUTED — field stores on applied generic nominals reject, and the generic mutator needs the parametric uniform | gap-probe evidence; not proven |
+| Host payload | see below | `selected/payload.fab` |
+
+### S0-T2 rust/typescript (done_when 2)
+
+Observed rows (verbatim in the runner output): Rust — `operations.fab`
+EMIT is red on the generic glyph-matmul body (`CODEGEN001` "glyph
+product operator `·` requires a concrete static shape at codegen" — the
+known routed R4), so its rust compile leg is not reached; `payload.fab`
+emits and its rust compile is red on the matrix cell iteration — the
+emitted coordinates are out of scope (`E0425: cannot find value 'c'/'r'
+in this scope`, N5; an isolated probe additionally shows the row-array
+binding `E0277: cannot add '[f32; 2]' to 'f32'`). TypeScript — both
+fixtures emit green; `tsc --noEmit --strict` is red on the
+matrix/vector-intrinsic surface: emitted members `normalizata`
+(vectors), `subtrahe` (matrices), `applica` (matrices), `potentia`
+(scalars) and the `FaberMatrix[Symbol.iterator]` protocol are absent
+from the emitted prelude (`TS2339`/`TS2488`, N4), and the emitted
+payload artifact references an unstaged `@faber/runtime` module
+(`TS2307`, a library-mode packaging boundary in R1's family). The
+mismatch negatives stay red in Faber analysis while the positives emit;
+these reds are recorded evidence, not fixture defects.
+
+### S0-T2 host payload (done_when 3)
+
+`selected/payload.fab` proves the frozen wire contract on the selected
+representation under `faber run` (all asserts pass): model then
+view-projection, each column-major via explicit `c * 4 + r` placement of
+cells read through the typed iteration surface, 32 `f32`, 128 bytes,
+accessor halves enforced. **Native memory layout is not assumed** — no
+reinterpretation of the register carrier occurs; the retired lane-count
+guard has no successor. The runner's `--selected --payload` row is the
+executable oracle.
+
+### S0-T2 device posture (done_when 4)
+
+`selected/device.fab` (vector/matrix/Box subset) FAILS CLOSED on both
+device targets before artifact use, with stable structured identities:
+`CODEGEN001:unsupported_mir_lowering_vector_method_with_non_literal_width_before_mir_lowering`
+(the Box generic in the fixture rejects first), and
+`CODEGEN001:mir_wgsl_text_unsupported` / `CODEGEN001:mir_metal_text_unsupported`
+for non-Box vector/matrix functions, exit ≠ 0, zero artifact bytes.
+The device-supported subset at the pin is buffer-backed `@ kernel`
+tensor programs (verified: a tensor kernel emits real WGSL/MSL); the
+selected CPU representation does not silently substitute a list-backed or
+host fallback. Posture recorded: unsupported, fail-closed, structured.
+
+### Proven compiler prerequisite (the stop) — proposed S0-G8..G10
+
+Observed identities, each reproduced by a committed runner gap probe
+(`--selected --operations` tail) at the pin:
+
+| # | Boundary | Observed identity | Blocks (§2.4) |
+| --- | --- | --- | --- |
+| N1 | parametric vector scalar algebra: no splat/broadcast, no scalar-operand elementwise multiply, `⊗` demands static shapes, `.normalize` red under `size N` | `SEM011:glyph_static_shape_required`; `SEM014:cannot_infer_tensor_shape`; `SEM010` on `.multiply(scalar)` at every width | scalar scale, interpolation, projection, guarded normalization (family-wide forms) |
+| N2 | parametric vector lane access and applied-generic field substitution: no `v[i]`, iteration does not yield scalars, applied `Box<3>` field binds/stores reject | `SEM011:indexing_requires_array_or_map`; `SEM010:incompatible_tensor_index` | Box<N> predicate receivers (validity/containment/intersection/overlap/union), mutable inflate |
+| N3 | matrix materialization and transpose: no `list ↦ matrix`, no `ᵀ`, no `.transpose`, `.apply` demands literal shapes | `SEM016:matrix_materialize_unsupported`; `SEM011:glyph_transpose_operands_unsupported`; `SEM011:matrix_applica_requires_literal_shape` | dimension-neutral matrix construction, transpose, parametric matvec |
+| N4 | TS emitted prelude member coverage: `normalizata`, `subtrahe`, `applica`, `potentia`, `FaberMatrix[Symbol.iterator]` missing; emitted payload imports unstaged `@faber/runtime` | `TS2339`, `TS2488`, `TS2307` under `tsc --strict` | normalization, matrix subtract/apply, two-axis access, power-based length, payload artifact on TypeScript |
+| N5 | Rust emission of `for from m at [r, c]`: coordinates out of scope at the placement store; isolated probe binds the row array instead of the cell scalar | `E0425` (`c`/`r`), `E0277` under `rustc` | two-axis access / payload flatten on Rust |
+| N6 | MIR runner: `vector ↦ list<f32>` fails at execution ("valor to lista conversion failed") despite check-green | runner error | list-flatten routes in interpreted proofs |
+
+Suggested narrow Radix units for Mind (delivery revision): **S0-G8**
+parametric vector splat-or-scalar-multiply + parametric normalize +
+parametric lane access (N1/N2); **S0-G9** matrix materialization +
+transpose + literal-shape relaxation for `.apply` (N3); **S0-G10**
+emitter/runner repair — TS prelude members, rust apud-matrix cell
+binding, runner vector→list (N4/N5/N6). After they land, S0-T2 resumes:
+re-run the five `--selected` invocations, freeze `migration-map.md`, and
+advance the campaign.
+
+### What is NOT stopped
+
+The selection, the payload contract proof, the device posture, the
+negatives posture, and the §2.4 classifications above all stand as
+recorded. Only the migration freeze and the Stage 0 completion claim
+wait on the routed units.
+
+### §7 bounded clean-break scans (pre-freeze inventory, 2026-08-25)
+
+Executed per delivery §7 at the pin (counts are per-file hit counts;
+classification is the resumed unit's migration-map input):
+
+- **triga** `src exempla corpus`: 28 files — `src/math.fab` 112,
+  `src/math.proba` 78, scene/graph/face/lighting/geometry consumers,
+  corpus webgl programs, `exempla/triga-*` probes. The two
+  `selected/*.fab` hits are comment rows documenting the
+  `Matrix4.validum()` retirement (classification: retirement record, not
+  usage).
+- **examples** (hello-voxel, triga-budapest, triga-drift-city,
+  browser-app): 19 files across source and tests; browser-app clean.
+- **radix** bounded (`stdlib/locale/en/pack.toml`,
+  `crates/faber/src/package_test.rs`, `crates/faber/src/package/**`):
+  `pack.toml` clean; 6 test/emitter files carry sample-type uses
+  (`ts_emit.rs`/`ts_rewrite.rs` naming + 4 test fixtures) — the direct
+  Triga-metadata-vs-unrelated-sample split the campaign requires.
+- **faberlang.dev** (`src/en-US`, `dist/en-US`): authored
+  `libraries/triga.md` 8 + generated `examples/triga-budapest.md` 1 +
+  rendered HTML 9 — the Stage 4 Examples-source-before-generator,
+  source-before-`dist` ordering applies.
+
+Stage 0 classifies and maps these; it does not require them to be zero.
+The frozen map with per-row destinations is the resumed S0-T2's
+deliverable after the narrow Radix units land.

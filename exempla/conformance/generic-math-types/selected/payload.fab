@@ -1,0 +1,124 @@
++++
+locale = "en"
++++
+
+# S0-T2 host-payload proof for the selected representation
+# (representation-decision.md §1): `matrix<f32, [4, 4]>` → the 32-float
+# TransformPayload wire contract.
+#
+# The frozen wire contract (math.fab TRANSFORM PAYLOAD CONTRACT, Stage 1
+# freeze) is preserved exactly:
+#   - model first, then view-projection (write order);
+#   - each matrix column-major (column j at floats 4*j .. 4*j+3);
+#   - 32 `f32` values, 128 bytes.
+#
+# Native memory layout is NOT assumed: cells are read through the typed
+# two-axis iteration surface (`for from m at [r, c]`) and written by
+# explicit index arithmetic into the wire list. No reinterpretation of the
+# register carrier, no runtime lane guard — `matrix<f32, [4, 4]>` makes
+# the 16-lane condition a type invariant, so the retired
+# `Matrix4.validum()` guard has no replacement here; nullable returns are
+# reserved for genuine domain failures only.
+
+fn payload_float_count(list<f32> values) → int ∪ null {
+    if values.length() ≠ 32 then return null
+    return values.length()
+}
+
+fn payload_byte_count(list<f32> values) → int ∪ null {
+    if values.length() ≠ 32 then return null
+    return values.length() * 4
+}
+
+fn payload_model_value(list<f32> values, int index) → f32 ∪ null {
+    if values.length() ≠ 32 then return null
+    if index ≺ 0 or index ≥ 16 then return null
+    return values[index]
+}
+
+fn payload_view_projection_value(list<f32> values, int index) → f32 ∪ null {
+    if values.length() ≠ 32 then return null
+    if index ≺ 0 or index ≥ 16 then return null
+    return values[index + 16]
+}
+
+# Flatten both matrices into the wire list. Iteration visits (r, c)
+# row-major; the explicit `c * 4 + r` placement writes the declared
+# column-major order regardless of the carrier's internal layout, with the
+# view-projection half based at float 16. Indexed placement stores are
+# local-list operations at the pin, so both passes live on the owning
+# local (the S0-T2 routed note records the ref-parameter store block).
+
+fn transform_payload(matrix<f32, [4, 4]> model, matrix<f32, [4, 4]> view_projection) → list<f32> {
+    var list<f32> values ← empty
+    var int i ← 0
+    while i < 32 {
+        values.append(0.0)
+        i ← i + 1
+    }
+    for from model at [r, c] const cell {
+        values[c * 4 + r] ← cell
+    }
+    const int vp_base ← 16
+    for from view_projection at [r, c] const cell {
+        values[vp_base + c * 4 + r] ← cell
+    }
+    return values
+}
+
+main {
+    # Model: identity with translation (2, 3, 5) — built from basis outer
+    # products exactly as the operations proof constructs matrices.
+    const vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
+    const vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
+    const vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
+    const vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+    const vector<f32, 4> t ← [2.0, 3.0, 5.0, 1.0] ↦ vector<f32, 4>
+    const matrix<f32, [4, 4]> model ← (e0 ⊗ e0).added(e1 ⊗ e1).added(e2 ⊗ e2).added(t ⊗ e3)
+    # View-projection: 2× identity — distinguishable from the model half.
+    const matrix<f32, [4, 4]> twice ← (e0 ⊗ e0).added(e1 ⊗ e1).added(e2 ⊗ e2).added(e3 ⊗ e3).added(e0 ⊗ e0).added(e1 ⊗ e1).added(e2 ⊗ e2).added(e3 ⊗ e3)
+
+    const list<f32> values ← transform_payload(model, twice)
+
+    # Count/layout: 32 floats, 128 bytes.
+    const int thirty_two ← 32
+    const int one_hundred_twenty_eight ← 128
+    assert values.length() ≡ thirty_two
+    assert (payload_float_count(values) coalesce 0) ≡ thirty_two
+    assert (payload_byte_count(values) coalesce 0) ≡ one_hundred_twenty_eight
+
+    # Column-major model: diagonal ones at 0/5/10, translation column at
+    # 12/13/14, last row slot 15 = 1.
+    const f32 one ← 1.0
+    const f32 zero ← 0.0
+    const f32 two ← 2.0
+    const f32 three ← 3.0
+    const f32 five ← 5.0
+    assert values[0] ≡ one
+    assert values[5] ≡ one
+    assert values[10] ≡ one
+    assert values[1] ≡ zero
+    assert values[12] ≡ two
+    assert values[13] ≡ three
+    assert values[14] ≡ five
+    assert values[15] ≡ one
+
+    # View-projection half: model-then-VP order puts the doubled diagonal
+    # at floats 16+; column-major means 16/21/26/31 hold the diagonal.
+    const f32 four ← 4.0
+    assert values[16] ≡ two
+    assert values[21] ≡ two
+    assert values[26] ≡ two
+    assert values[31] ≡ two
+    assert values[17] ≡ zero
+    assert values[12 + 16] ≡ zero
+
+    # Accessor boundary: model and VP read through their own halves.
+    assert (payload_model_value(values, 12) coalesce 0.0) ≡ two
+    assert (payload_view_projection_value(values, 0) coalesce 0.0) ≡ two
+    assert payload_model_value(values, 16) is null
+    assert payload_view_projection_value(values, 16) is null
+    assert payload_model_value(values, -1) is null
+
+    print values.length()
+}

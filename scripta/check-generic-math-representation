@@ -27,11 +27,17 @@ usage() {
   cat <<'EOF'
 Usage: check-generic-math-representation [--candidate alias|direct|wrapper]
                                           [--matrix] [--all] [-h]
+                                          [--selected --operations]
+                                          [--selected --targets rust,ts]
+                                          [--selected --payload]
+                                          [--selected --device-posture]
 
 Options:
   --candidate <name>  run one candidate's source/import/emitter rows
   --matrix            run all three candidates plus negatives and gap probes
-  --all               same as --matrix (selected-target modes land with S0-T2)
+  --all               matrix plus every --selected S0-T2 mode
+  --selected          run S0-T2 selected-representation rows; requires one of
+                      --operations, --targets <list>, --payload, --device-posture
   -h, --help          this message
 EOF
 }
@@ -360,9 +366,308 @@ EOF
   fi
 }
 
+# ── S0-T2 selected-representation rows ─────────────────────────────────────
+# The selected representation is DIRECT NATIVE TYPES (representation-
+# decision.md §1): vector<f32, N> / matrix<f32, [R, C]> carriers with
+# dimension-neutral Triga free operations and the Box<N> nominal genus.
+# Fixtures live in exempla/conformance/generic-math-types/selected/.
+
+SELECTED_FIXTURES="$FIXTURES/selected"
+DECISION_DOC="$TRIGA_ROOT/docs/factory/generic-math-types/representation-decision.md"
+MIGRATION_DOC="$TRIGA_ROOT/docs/factory/generic-math-types/migration-map.md"
+
+# decision_rows <mode...> — done_when (5)/(9): each selected mode's proof
+# must be recorded in the decision doc; a missing row is a checker FAIL.
+decision_rows() {
+  local row grep_pattern
+  while [[ $# -gt 0 ]]; do
+    row="$1"
+    shift
+    case "$row" in
+      operations) grep_pattern='S0-T2 operations' ;;
+      targets) grep_pattern='S0-T2 rust/typescript' ;;
+      payload) grep_pattern='S0-T2 host payload' ;;
+      device) grep_pattern='S0-T2 device posture' ;;
+      residual) grep_pattern='N1' ;;
+      *) grep_pattern="$row" ;;
+    esac
+    if [[ -f "$DECISION_DOC" ]] && grep -q "$grep_pattern" "$DECISION_DOC"; then
+      record pass "decision/row-$row" "pattern: $grep_pattern in representation-decision.md"
+    else
+      record fail "decision/row-$row" "pattern: $grep_pattern missing from representation-decision.md"
+    fi
+  done
+}
+
+# migration_freeze — done_when (6)/(9): the frozen map must exist with no
+# TBD rows and no compatibility destinations. Absent map = routed stop.
+migration_freeze() {
+  if [[ ! -f "$MIGRATION_DOC" ]]; then
+    record fail "migration/map-frozen" "no migration-map.md — S0-T2 stopped on the proven compiler prerequisite (see representation-decision.md §7); freeze resumes after Mind's narrow Radix units land"
+    return
+  fi
+  local tbd
+  tbd="$(grep -cE 'TBD' "$MIGRATION_DOC" || true)"
+  if [[ "$tbd" -ne 0 ]]; then
+    record fail "migration/map-frozen" "migration-map.md carries $tbd TBD row(s)"
+  else
+    record pass "migration/map-frozen" "migration-map.md present with zero TBD rows"
+  fi
+}
+
+# numbered_spelling_scan — done_when (9): no numbered compatibility
+# spelling may exist in the selected fixtures or the decision doc.
+numbered_spelling_scan() {
+  local hits
+  hits="$(grep -nE '\b(vector[234]|matrix[34]_|box3_|Vector[234]|Matrix[34]|Box3)[a-z_]*\(' \
+    "$SELECTED_FIXTURES"/*.fab "$DECISION_DOC" 2>/dev/null || true)"
+  if [[ -n "$hits" ]]; then
+    record fail "selected/numbered-spelling" "numbered compatibility spelling observed:" "$(echo "$hits" | head -3)"
+  else
+    record pass "selected/numbered-spelling" "no numbered constructor/helper spelling in selected fixtures or decision doc"
+  fi
+}
+
+run_selected_operations() {
+  echo ""
+  echo "== selected: operations (S0-T2 done_when 1-2) =="
+
+  if [[ ! -f "$SELECTED_FIXTURES/operations.fab" ]]; then
+    record fail "selected operations/source" "missing fixture: $SELECTED_FIXTURES/operations.fab"
+    return
+  fi
+  check_source "selected operations/source" "$SELECTED_FIXTURES/operations.fab"
+
+  # The compile-time mismatch side stays red while positives are green.
+  run_negatives
+
+  decision_rows operations residual
+  numbered_spelling_scan
+  migration_freeze
+}
+
+run_selected_targets() {
+  echo ""
+  echo "== selected: rust + typescript emission (S0-T2 done_when 2) =="
+
+  local fixture artifact ext compiler_out exit_code
+  for fixture in operations payload; do
+    if [[ ! -f "$SELECTED_FIXTURES/$fixture.fab" ]]; then
+      record fail "selected $fixture/rust-provider-emit" "missing fixture: $SELECTED_FIXTURES/$fixture.fab"
+      continue
+    fi
+    if emit_target "selected $fixture/rust-emit" "$SELECTED_FIXTURES/$fixture.fab" rust rs; then
+      artifact="$EMITTED_ARTIFACT"
+      compile_rust "selected $fixture/rust-compile" "$artifact"
+    fi
+    if emit_target "selected $fixture/ts-emit" "$SELECTED_FIXTURES/$fixture.fab" ts ts; then
+      artifact="$EMITTED_ARTIFACT"
+      compile_ts "selected $fixture/ts-compile" "$artifact"
+    fi
+  done
+  decision_rows targets
+}
+
+run_selected_payload() {
+  echo ""
+  echo "== selected: host payload proof (S0-T2 done_when 3) =="
+
+  if [[ ! -f "$SELECTED_FIXTURES/payload.fab" ]]; then
+    record fail "selected payload/source" "missing fixture: $SELECTED_FIXTURES/payload.fab"
+    return
+  fi
+  check_source "selected payload/source" "$SELECTED_FIXTURES/payload.fab"
+
+  # Count/layout oracle: the fixture's own asserts prove 32 f32 / 128
+  # bytes, model-then-view-projection order, and column-major placement
+  # under the MIR runner. A failing assert exits non-zero.
+  local out exit_code
+  out="$("$FABER_BIN" run "$SELECTED_FIXTURES/payload.fab" 2>&1)"
+  exit_code=$?
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "selected payload/count-layout" "command: faber run payload.fab" "exit: 0" "floats: $(echo "$out" | tail -1)"
+  else
+    record fail "selected payload/count-layout" "command: faber run payload.fab" "exit: $exit_code" "output: $(echo "$out" | grep -E 'error|assert' | head -2)"
+  fi
+  decision_rows payload
+}
+
+run_selected_device_posture() {
+  echo ""
+  echo "== selected: device posture (S0-T2 done_when 4) =="
+
+  if [[ ! -f "$SELECTED_FIXTURES/device.fab" ]]; then
+    record fail "selected device/source" "missing fixture: $SELECTED_FIXTURES/device.fab"
+    return
+  fi
+  check_source "selected device/source" "$SELECTED_FIXTURES/device.fab"
+
+  # Either a validated emission or a structured pre-artifact rejection.
+  # Overclaim fails: silent success without target markers, or a
+  # rejection without a code+issue identity.
+  local target marker artifact err exit_code identities size
+  for target in wgsl-text metal-text; do
+    case "$target" in
+      wgsl-text) marker='@compute\|@group' ;;
+      metal-text) marker='kernel void\|#include <metal_stdlib>' ;;
+    esac
+    artifact="$WORK_ROOT/out/device.$target.out"
+    err="$WORK_ROOT/out/device.$target.err"
+    "$RADIX_BIN" emit -t "$target" "$SELECTED_FIXTURES/device.fab" > "$artifact" 2> "$err"
+    exit_code=$?
+    identities="$(cat "$err" | first_error_identities | tr '\n' ' ')"
+    size="$(wc -c < "$artifact" | tr -d ' ')"
+    if [[ $exit_code -eq 0 ]]; then
+      if grep -qE "$marker" "$artifact"; then
+        record pass "selected device/$target-emits-validated" "exit: 0" "artifact bytes: $size" "markers: $marker"
+      else
+        record fail "selected device/$target-overclaim" "exit: 0 but artifact lacks $marker markers — unvalidated success"
+      fi
+    elif [[ -n "$identities" && "$size" -eq 0 ]]; then
+      record pass "selected device/$target-fails-closed" "exit: $exit_code" "errors: $identities" "artifact bytes: 0 (rejected before artifact use)"
+    else
+      record fail "selected device/$target-overclaim" "exit: $exit_code" "errors: ${identities:-none}" "artifact bytes: $size — rejection is not structured-and-empty"
+    fi
+  done
+  decision_rows device
+}
+
+# S0-T2 gap probes: ideal expectations are green; observed failures carry
+# the identity that routes the narrow Radix unit (decision §7 N1-N3).
+run_selected_gap_probes() {
+  echo ""
+  echo "== selected gap probes (ideal: green; observed failures are routed evidence) =="
+
+  local probe out exit_code identity
+
+  probe="$WORK_ROOT/out/s0t2-gap-parametric-normalize.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+fn normata<size N>(vector<f32, N> v) → vector<f32, N> {
+    return v.normalize()
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/parametric-normalize" "exit: 0"
+  else
+    record fail "gap/parametric-normalize" "command: faber check s0t2-gap-parametric-normalize.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/s0t2-gap-parametric-scale.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+fn scala<size N>(vector<f32, N> v, f32 s) → vector<f32, N> {
+    const vector<f32, 1> w ← [s] ↦ vector<f32, 1>
+    const vector<f32, 1> unus ← [1.0] ↦ vector<f32, 1>
+    return (v ⊗ w).apply(unus)
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/parametric-scalar-scale" "exit: 0"
+  else
+    record fail "gap/parametric-scalar-scale" "command: faber check s0t2-gap-parametric-scale.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/s0t2-gap-lane-index.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+fn lane<size N>(vector<f32, N> v, int index) → f32 {
+    return v[index]
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/parametric-lane-index" "exit: 0"
+  else
+    record fail "gap/parametric-lane-index" "command: faber check s0t2-gap-lane-index.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/s0t2-gap-matrix-materialize.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+fn flat_to_matrix(list<f32> flat) → matrix<f32, [4, 4]> {
+    return flat ↦ matrix<f32, [4, 4]>
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/matrix-materialize" "exit: 0"
+  else
+    record fail "gap/matrix-materialize" "command: faber check s0t2-gap-matrix-materialize.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/s0t2-gap-matrix-transpose.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+fn transpone(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> {
+    return mᵀ
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/matrix-transpose" "exit: 0"
+  else
+    record fail "gap/matrix-transpose" "command: faber check s0t2-gap-matrix-transpose.fab" "exit: $exit_code" "errors: $identity"
+  fi
+
+  probe="$WORK_ROOT/out/s0t2-gap-applied-field-read.fab"
+  cat > "$probe" <<'EOF'
++++
+locale = "en"
++++
+
+class Box<size N> {
+    vector<f32, N> minima
+    vector<f32, N> maxima
+}
+
+fn minimum(Box<3> capsam) → vector<f32, 3> {
+    const vector<f32, 3> lo ← capsam.minima
+    return lo
+}
+EOF
+  out="$("$FABER_BIN" check "$probe" 2>&1)"
+  exit_code=$?
+  identity="$(echo "$out" | first_error_identities | tr '\n' ' ')"
+  if [[ $exit_code -eq 0 ]]; then
+    record pass "gap/applied-generic-field-read" "exit: 0"
+  else
+    record fail "gap/applied-generic-field-read" "command: faber check s0t2-gap-applied-field-read.fab" "exit: $exit_code" "errors: $identity"
+  fi
+}
+
 # ── args ───────────────────────────────────────────────────────────────────
 
 MODE=""
+SELECTED_MODE=""
+SELECTED_TARGETS=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --candidate)
@@ -379,8 +684,38 @@ while [[ $# -gt 0 ]]; do
       CANDIDATE="$1"
       shift
       ;;
-    --matrix|--all)
+    --matrix)
       MODE="matrix"
+      shift
+      ;;
+    --selected)
+      MODE="selected"
+      shift
+      ;;
+    --operations)
+      SELECTED_MODE="operations"
+      shift
+      ;;
+    --targets)
+      shift
+      if [[ $# -eq 0 ]]; then
+        echo "error: --targets requires a comma list (rust,ts)" >&2
+        exit 2
+      fi
+      SELECTED_MODE="targets"
+      SELECTED_TARGETS="$1"
+      shift
+      ;;
+    --payload)
+      SELECTED_MODE="payload"
+      shift
+      ;;
+    --device-posture)
+      SELECTED_MODE="device"
+      shift
+      ;;
+    --all)
+      MODE="all"
       shift
       ;;
     -h|--help)
@@ -400,19 +735,47 @@ if [[ -z "$MODE" ]]; then
   exit 2
 fi
 
-echo "check-generic-math-representation — S0-T1 equal-candidate probe"
+if [[ "$MODE" == "selected" && -z "$SELECTED_MODE" ]]; then
+  echo "error: --selected requires --operations, --targets <list>, --payload, or --device-posture" >&2
+  exit 2
+fi
+
+if [[ -n "$SELECTED_MODE" && "$MODE" != "selected" && "$MODE" != "all" ]]; then
+  echo "error: --$SELECTED_MODE belongs with --selected (or --all)" >&2
+  exit 2
+fi
+
+if [[ "$SELECTED_MODE" == "targets" && "$SELECTED_TARGETS" != "rust,ts" ]]; then
+  echo "error: --selected --targets supports exactly rust,ts (got: $SELECTED_TARGETS)" >&2
+  exit 2
+fi
+
+echo "check-generic-math-representation — S0-T1 equal-candidate probe + S0-T2 selected proof"
 echo "triga HEAD: $(git -C "$TRIGA_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
 echo "radix HEAD: $(git -C "$RADIX_ROOT" rev-parse HEAD 2>/dev/null || echo unknown) (RADIX_ROOT pin)"
 echo "work root:  $WORK_ROOT"
 
 if [[ "$MODE" == "candidate" ]]; then
   run_candidate "$CANDIDATE"
+elif [[ "$MODE" == "selected" ]]; then
+  case "$SELECTED_MODE" in
+    operations) run_selected_operations ;;
+    targets) run_selected_targets ;;
+    payload) run_selected_payload ;;
+    device) run_selected_device_posture ;;
+  esac
+  run_selected_gap_probes
 else
   run_candidate alias
   run_candidate direct
   run_candidate wrapper
   run_negatives
   run_gap_probes
+  run_selected_operations
+  run_selected_targets
+  run_selected_payload
+  run_selected_device_posture
+  run_selected_gap_probes
 fi
 
 echo ""

@@ -1,0 +1,47 @@
++++
+locale = "en"
++++
+
+# S0-T2 device-posture fixture for the selected representation
+# (representation-decision.md §1).
+#
+# Device posture contract (delivery-stage0.md §2.1): the selected source
+# either emits a validated device subset or fails closed BEFORE artifact
+# use with a stable structured diagnostic (code + issue). A host
+# fallback, list substitution, panic, or unsupported output labeled
+# success fails the gate.
+#
+# At the selection pin the register-class carriers (`vector<f32, N>`,
+# `matrix<f32, [R, C]>`) and the `Box<N>` nominal are NOT device-backed:
+# `radix emit -t wgsl-text` and `-t metal-text` reject these functions
+# with `CODEGEN001:mir_wgsl_text_unsupported` /
+# `CODEGEN001:mir_metal_text_unsupported` and produce no artifact. The
+# device-supported subset at the pin is buffer-backed tensor kernels,
+# which the selected CPU representation does not silently substitute
+# into. The runner asserts the rejection identity and the empty
+# artifact; representation-decision.md §7 records the posture.
+
+fn vector_addition(vector<f32, 4> a, vector<f32, 4> b) → vector<f32, 4> {
+    return a.added(b)
+}
+
+fn vector_productum(vector<f32, 4> a, vector<f32, 4> b) → f32 {
+    return a.dot(b)
+}
+
+fn matrix_application(matrix<f32, [4, 4]> m, vector<f32, 4> v) → vector<f32, 4> {
+    return m.apply(v)
+}
+
+fn matrix_productum(matrix<f32, [4, 4]> a, matrix<f32, [4, 4]> b) → matrix<f32, [4, 4]> {
+    return a · b
+}
+
+class Box<size N> {
+    vector<f32, N> minima
+    vector<f32, N> maxima
+}
+
+fn box_mensura<size N>(Box<N> b) → vector<f32, N> {
+    return b.maxima.subtract(b.minima)
+}
