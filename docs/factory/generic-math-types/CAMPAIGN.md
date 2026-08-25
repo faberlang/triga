@@ -1,6 +1,6 @@
 # Campaign: Parametric Math Types Clean Break
 
-**Status**: active — S0-R0 LANDED 2026-08-24 (radix `ae7c5e292`: kinded applied arguments, census 23/85/17/33, gates green); S0-R1 dispatched 2026-08-25 (interface kind/order + applied size serialization)
+**Status**: active — S0-R0 LANDED 2026-08-24 (radix `ae7c5e292`: kinded applied arguments, census 23/85/17/33, gates green); S0-R1 LANDED 2026-08-25 (radix `9a78fb080`: interface kind/order + applied size serialization, producer→consumer round-trip green, kind-mismatched applications fail closed) — Stage 0 Radix prerequisites complete; next step per delivery-stage0.md routing
 **Amended**: 2026-08-22 — language-base refresh (zombie-docs pass): spelling corrections plus the amendment section below; the shipped language moved under this campaign after 2026-08-13
 
 **Mode**: run
