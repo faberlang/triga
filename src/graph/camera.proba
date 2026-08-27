@@ -2,8 +2,8 @@
 #
 # These cases pin the camera data facts, projection matrices, compact facts,
 # view-projection composition, and fail-closed invalid-input behavior.
-# Matrix length stands in for Matrix4.validum() so the cases stay on executed
-# fields instead of the unsupported validum provider path.
+# Matrix length stands in for Matrix4.valid() so the cases stay on executed
+# fields instead of the unsupported valid provider path.
 
 import from "triga:graph/camera" camera
 import from "triga:graph/object" graph_object
@@ -11,8 +11,8 @@ import from "triga:math" math
 
 const f32 TOLERATIO ← 0.01
 
-fn base_camera(string nomen, f32 z) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(0.0, 0.0, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, visible = true, name = nomen}
+fn base_camera(string name, f32 z) → graph_object.Object3D {
+    return graph_object.Object3D {position = math.vector3(0.0, 0.0, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = empty, visible = true, name = name}
 }
 
 fn empty_matrix() → math.Matrix4 {
@@ -29,7 +29,7 @@ fn empty_view_facts() → camera.ViewProjectionFacts {
 
 test "PerspectiveCamera emits a valid projection and projection facts" {
     const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("cam", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
-    const math.Matrix4 ∪ null projection_result ← cam.projectio()
+    const math.Matrix4 ∪ null projection_result ← cam.projection()
     const math.Matrix4 projection ← projection_result coalesce empty_matrix()
     assert cam.base.name ≡ "cam"
     assert cam.fov ≡ (90.0 ∷ f32)
@@ -38,7 +38,7 @@ test "PerspectiveCamera emits a valid projection and projection facts" {
     assert projection.elements.length() ≡ 16
     assert projection.elements[11] ≡ (-1.0 ∷ f32)
 
-    const camera.PerspectiveCameraProjectionFacts ∪ null facts_result ← cam.projectio_facta()
+    const camera.PerspectiveCameraProjectionFacts ∪ null facts_result ← cam.projection_facts()
     const camera.PerspectiveCameraProjectionFacts facts ← facts_result coalesce empty_projection_facts()
     assert facts_result not is null
     assert facts.fov_y_degrees ≡ (90.0 ∷ f32)
@@ -53,13 +53,13 @@ test "PerspectiveCamera emits a valid projection and projection facts" {
 
 test "PerspectiveCamera emits view-projection output and facts" {
     const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("view-camera", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
-    const math.Matrix4 ∪ null view_projection_result ← cam.visus_projectio(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+    const math.Matrix4 ∪ null view_projection_result ← cam.view_projection(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
     const math.Matrix4 view_projection ← view_projection_result coalesce empty_matrix()
     assert view_projection_result not is null
     assert view_projection.elements.length() ≡ 16
     assert view_projection.elements[11] ≡ (-1.0 ∷ f32)
 
-    const camera.ViewProjectionFacts ∪ null facts_result ← cam.visus_projectio_facta(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+    const camera.ViewProjectionFacts ∪ null facts_result ← cam.view_projection_facts(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
     const camera.ViewProjectionFacts facts ← facts_result coalesce empty_view_facts()
     assert facts_result not is null
     assert facts.float_count ≡ 16
@@ -86,16 +86,16 @@ test "PerspectiveCamera rejects invalid projection field ranges" {
     const camera.PerspectiveCamera bad_aspect ← camera.PerspectiveCamera {base = base_camera("bad-aspect", 0.0), fov = 50.0, aspect = 0.0, near = 0.1, far = 100.0}
     const camera.PerspectiveCamera bad_near ← camera.PerspectiveCamera {base = base_camera("bad-near", 0.0), fov = 50.0, aspect = 1.0, near = 0.0, far = 100.0}
     const camera.PerspectiveCamera bad_far ← camera.PerspectiveCamera {base = base_camera("bad-far", 0.0), fov = 50.0, aspect = 1.0, near = 100.0, far = 100.0}
-    assert bad_fov.projectio() is null
-    assert bad_fov.projectio_facta() is null
-    assert bad_aspect.projectio() is null
-    assert bad_near.projectio() is null
-    assert bad_far.projectio() is null
+    assert bad_fov.projection() is null
+    assert bad_fov.projection_facts() is null
+    assert bad_aspect.projection() is null
+    assert bad_near.projection() is null
+    assert bad_far.projection() is null
 }
 
 test "PerspectiveCamera rejects degenerate view inputs" {
     const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("degenerate-view", 5.0), fov = 50.0, aspect = 1.0, near = 0.1, far = 100.0}
-    assert cam.visus_projectio(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0)) is null
-    assert cam.visus_projectio(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 1.0)) is null
-    assert cam.visus_projectio_facta(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0)) is null
+    assert cam.view_projection(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0)) is null
+    assert cam.view_projection(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 1.0)) is null
+    assert cam.view_projection_facts(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0)) is null
 }

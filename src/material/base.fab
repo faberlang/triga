@@ -3,7 +3,7 @@
 # Public import: import from "triga:material/base" base
 #
 # Owns: Material (+ receiver methods), MaterialPipelineFacts, TextureDescriptor
-# (H3 placeholder seed), and the materia_ex_nomine constructor.
+# (H3 placeholder seed), and the material_from_name constructor.
 # MaterialPipelineFacts.side_code is frozen ABI (api-shape-policy §3).
 # TextureDescriptor relocates to material/texture.fab when the texture
 # pipeline (samplers, mipmaps, render targets) is designed (report §1.3).
@@ -25,7 +25,7 @@ class Material {
     bool depth_test = true
     f32 alpha_test = 0.0
 
-    fn valida() → bool {
+    fn valid() → bool {
         if self.name ≡ "" then return false
         if self.side ≻ 2 then return false
         if self.opacity ≺ 0.0 or self.opacity ≻ 1.0 then return false
@@ -37,12 +37,12 @@ class Material {
         return Material {name = self.name, side = 2, transparent = self.transparent, opacity = self.opacity, depth_write = self.depth_write, depth_test = self.depth_test, alpha_test = self.alpha_test}
     }
 
-    fn est_double_sided() → bool {
+    fn is_double_sided() → bool {
         return self.side ≡ (2 ↦ int<u32>)
     }
 
     fn side_code() → int ∪ null {
-        if self.valida() ≡ false then return null
+        if self.valid() ≡ false then return null
         return self.side ↦ int
     }
 
@@ -59,7 +59,7 @@ class Material {
     }
 
     fn pipeline_facts() → MaterialPipelineFacts ∪ null {
-        if self.valida() ≡ false then return null
+        if self.valid() ≡ false then return null
         return MaterialPipelineFacts {side_code = self.side ↦ int, depth_test_enabled = self.depth_test, depth_write_enabled = self.depth_write, transparent = self.transparent, alpha = self.opacity, alpha_test = self.alpha_test}
     }
 }
@@ -90,6 +90,6 @@ class TextureDescriptor {
 }
 
 @ public
-fn materia_ex_nomine(string name) → Material {
+fn material_from_name(string name) → Material {
     return Material {name = name, side = 0, transparent = false, opacity = 1.0, depth_write = true, depth_test = true, alpha_test = 0.0}
 }

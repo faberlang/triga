@@ -32,10 +32,10 @@ test "Phong material preserves lit carrier fields and base pipeline facts" {
 }
 
 test "Phong defaults remain explicit carrier values" {
-    const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = base.materia_ex_nomine("phong-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+    const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = base.material_from_name("phong-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert material.shininess ≡ (30.0 ∷ f32)
-    assert material.base.valida()
+    assert material.base.valid()
     assert material.base.pipeline_facts() not is null
 }
 
@@ -43,7 +43,7 @@ test "Phong carrier exposes invalid base facts as unsupported" {
     const base.Material invalid_base ← base.Material {name = "invalid-phong", side = 0 ∷ int<u32>, opacity = 1.2}
     const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
-    assert material.base.valida() ≡ false
+    assert material.base.valid() ≡ false
     assert material.base.pipeline_facts() is null
     assert material.shininess ≡ (30.0 ∷ f32)
 }

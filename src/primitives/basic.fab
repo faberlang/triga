@@ -210,7 +210,7 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
     const list<f32> ring_n ← [1.0, 0.70710678, 0.0, -0.70710678, -1.0, -0.70710678, 0.0, 0.70710678, 1.0]
     const list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
     const f32 side_slope ← radius / height
-    const f32 side_scale ← math.radix_f32(1.0 + side_slope * side_slope)
+    const f32 side_scale ← math.sqrt_f32(1.0 + side_slope * side_slope)
     var list<f32> positions ← empty
     var list<f32> normals ← empty
     var list<f32> uvs ← empty
@@ -315,7 +315,7 @@ fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry �
     const attribute.BufferAttribute positions ← attribute.float32_attribute("position", 0, 3, 8, [-x, -y, -z, x, -y, -z, x, y, -z, -x, y, -z, -x, -y, z, x, -y, z, x, y, z, -x, y, z])
     const list<u32> indices ← [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
     const data.BufferGeometry wire ← data.line_geometry(8, [positions], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
-    if wire.valida() ≡ false then return null
+    if wire.valid() ≡ false then return null
     return wire
 }
 

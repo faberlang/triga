@@ -15,8 +15,8 @@ class ResourceHandle {
     int index
     int generation
 
-    fn equals(ref ResourceHandle alter) → bool {
-        return self.index ≡ alter.index and self.generation ≡ alter.generation
+    fn equals(ref ResourceHandle other) → bool {
+        return self.index ≡ other.index and self.generation ≡ other.generation
     }
 
     fn next() → ResourceHandle {
@@ -61,7 +61,7 @@ class ResourceTransition {
     ResourceHandle current
     bool changed
 
-    fn valida() → bool {
+    fn valid() → bool {
         if self.previous.index ≠ self.current.index then return false
         if self.changed then return self.current.generation ≡ self.previous.generation + 1
         return self.current.generation ≡ self.previous.generation
@@ -78,7 +78,7 @@ class ResourceLifecycleTransition {
     bool changed
     bool removed
 
-    fn valida() → bool {
+    fn valid() → bool {
         if self.previous is null and self.current is null then return false
         if self.previous not is null {
             const ResourceHandle previous ← self.previous
@@ -140,10 +140,10 @@ fn transition_index_seen(ref list<ResourceTransition> transitions, int limit, in
 }
 
 @ public
-fn transitions_valida(ref list<ResourceTransition> transitions) → bool {
+fn transitions_valid(ref list<ResourceTransition> transitions) → bool {
     for range 0‥transitions.length() const i {
         const ResourceTransition transition ← transitions[i]
-        if transition.valida() ≡ false then return false
+        if transition.valid() ≡ false then return false
         if transition_index_seen(transitions, i, transition.current.index) then return false
     }
     return true
@@ -151,7 +151,7 @@ fn transitions_valida(ref list<ResourceTransition> transitions) → bool {
 
 @ public
 fn transition_changed_count(ref list<ResourceTransition> transitions) → int ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.changed {
@@ -163,7 +163,7 @@ fn transition_changed_count(ref list<ResourceTransition> transitions) → int �
 
 @ public
 fn transition_unchanged_count(ref list<ResourceTransition> transitions) → int ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.changed ≡ false {
@@ -175,7 +175,7 @@ fn transition_unchanged_count(ref list<ResourceTransition> transitions) → int 
 
 @ public
 fn transition_changed_indices(ref list<ResourceTransition> transitions) → list<int> ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.changed {
@@ -187,7 +187,7 @@ fn transition_changed_indices(ref list<ResourceTransition> transitions) → list
 
 @ public
 fn transition_changed_handles(ref list<ResourceTransition> transitions) → list<ResourceHandle> ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.changed {
@@ -199,7 +199,7 @@ fn transition_changed_handles(ref list<ResourceTransition> transitions) → list
 
 @ public
 fn transition_current_handles(ref list<ResourceTransition> transitions) → list<ResourceHandle> ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         handles.append(transition.current)
@@ -209,7 +209,7 @@ fn transition_current_handles(ref list<ResourceTransition> transitions) → list
 
 @ public
 fn transition_unchanged_indices(ref list<ResourceTransition> transitions) → list<int> ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.changed ≡ false {
@@ -221,7 +221,7 @@ fn transition_unchanged_indices(ref list<ResourceTransition> transitions) → li
 
 @ public
 fn transition_unchanged_handles(ref list<ResourceTransition> transitions) → list<ResourceHandle> ∪ null {
-    if transitions_valida(transitions) ≡ false then return null
+    if transitions_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.changed ≡ false {
@@ -252,10 +252,10 @@ fn lifecycle_index_seen(ref list<ResourceLifecycleTransition> transitions, int l
 }
 
 @ public
-fn lifecycles_valida(ref list<ResourceLifecycleTransition> transitions) → bool {
+fn lifecycles_valid(ref list<ResourceLifecycleTransition> transitions) → bool {
     for range 0‥transitions.length() const i {
         const ResourceLifecycleTransition transition ← transitions[i]
-        if transition.valida() ≡ false then return false
+        if transition.valid() ≡ false then return false
         if lifecycle_index_seen(transitions, i, transition.logical_index) then return false
     }
     return true
@@ -263,7 +263,7 @@ fn lifecycles_valida(ref list<ResourceLifecycleTransition> transitions) → bool
 
 @ public
 fn lifecycle_changed_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.changed {
@@ -275,7 +275,7 @@ fn lifecycle_changed_count(ref list<ResourceLifecycleTransition> transitions) �
 
 @ public
 fn lifecycle_unchanged_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.changed ≡ false {
@@ -287,7 +287,7 @@ fn lifecycle_unchanged_count(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_created_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.previous is null and transition.current not is null {
@@ -299,7 +299,7 @@ fn lifecycle_created_count(ref list<ResourceLifecycleTransition> transitions) �
 
 @ public
 fn lifecycle_removed_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.removed {
@@ -311,7 +311,7 @@ fn lifecycle_removed_count(ref list<ResourceLifecycleTransition> transitions) �
 
 @ public
 fn lifecycle_live_count(ref list<ResourceLifecycleTransition> transitions) → int ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var int count ← 0
     for from transitions const transition {
         if transition.current not is null {
@@ -323,7 +323,7 @@ fn lifecycle_live_count(ref list<ResourceLifecycleTransition> transitions) → i
 
 @ public
 fn lifecycle_batch_facts(ref list<ResourceLifecycleTransition> transitions) → ResourceLifecycleBatchFacts ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var int changed_count ← 0
     var int unchanged_count ← 0
     var int created_count ← 0
@@ -351,7 +351,7 @@ fn lifecycle_batch_facts(ref list<ResourceLifecycleTransition> transitions) → 
 
 @ public
 fn lifecycle_changed_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.changed {
@@ -363,7 +363,7 @@ fn lifecycle_changed_indices(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_unchanged_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.changed ≡ false {
@@ -375,7 +375,7 @@ fn lifecycle_unchanged_indices(ref list<ResourceLifecycleTransition> transitions
 
 @ public
 fn lifecycle_removed_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.removed {
@@ -387,7 +387,7 @@ fn lifecycle_removed_indices(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_live_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.current not is null {
@@ -399,7 +399,7 @@ fn lifecycle_live_indices(ref list<ResourceLifecycleTransition> transitions) →
 
 @ public
 fn lifecycle_retired_indices(ref list<ResourceLifecycleTransition> transitions) → list<int> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<int> indices ← empty
     for from transitions const transition {
         if transition.changed and transition.previous not is null {
@@ -411,7 +411,7 @@ fn lifecycle_retired_indices(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_changed_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.changed and transition.current not is null {
@@ -427,7 +427,7 @@ fn lifecycle_changed_handles(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_unchanged_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.changed ≡ false and transition.current not is null {
@@ -443,7 +443,7 @@ fn lifecycle_unchanged_handles(ref list<ResourceLifecycleTransition> transitions
 
 @ public
 fn lifecycle_removed_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.removed and transition.previous not is null {
@@ -459,7 +459,7 @@ fn lifecycle_removed_handles(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_retired_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.changed and transition.previous not is null {
@@ -475,7 +475,7 @@ fn lifecycle_retired_handles(ref list<ResourceLifecycleTransition> transitions) 
 
 @ public
 fn lifecycle_current_handles(ref list<ResourceLifecycleTransition> transitions) → list<ResourceHandle> ∪ null {
-    if lifecycles_valida(transitions) ≡ false then return null
+    if lifecycles_valid(transitions) ≡ false then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
         if transition.current not is null {

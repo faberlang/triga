@@ -2,14 +2,14 @@
 #
 # Public import: import from "triga:shader_contract" contract
 #
-# The compiler (radix) owns the generic shader-contract lane: the
+# The compiler (root) owns the generic shader-contract lane: the
 # `@ shader_contract "<role>"` annotation, identity-resolved ingestion,
 # fail-closed code tables, validation, reflection, and WGSL emission.
 # Triga owns the concrete external Faber contract and maps its real API onto
 # that generic surface. This module is that mapping:
 #
 #   * contract-role functions carrying the compiler-owned annotation, whose
-#     call argument shapes match the canonical surface radix recognizes
+#     call argument shapes match the canonical surface root recognizes
 #     (roles: vertex_layout / varying / fragment_output / pipeline /
 #     resource_binding), each stage-I/O role declared explicitly via
 #     `stage_io_role_code` (radix U6; roles are never synthesized from

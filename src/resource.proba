@@ -24,13 +24,13 @@ describe "resource handle identity" {
         transitions.append(stable)
         transitions.append(replaced)
 
-        assert stable.valida()
-        assert replaced.valida()
+        assert stable.valid()
+        assert replaced.valid()
         assert stable.changed ≡ false
         assert replaced.changed
         assert replaced.previous.generation ≡ 1
         assert replaced.current.generation ≡ 2
-        assert resource.transitions_valida(transitions)
+        assert resource.transitions_valid(transitions)
         const int ∪ null changed_count ← resource.transition_changed_count(transitions)
         const int ∪ null unchanged_count ← resource.transition_unchanged_count(transitions)
         if changed_count is null {
@@ -81,10 +81,10 @@ describe "resource handle identity" {
         var list<resource.ResourceTransition> invalid ← empty
         invalid.append(wrong_slot)
 
-        assert wrong_slot.valida() ≡ false
-        assert skipped_generation.valida() ≡ false
-        assert changed_without_generation.valida() ≡ false
-        assert resource.transitions_valida(invalid) ≡ false
+        assert wrong_slot.valid() ≡ false
+        assert skipped_generation.valid() ≡ false
+        assert changed_without_generation.valid() ≡ false
+        assert resource.transitions_valid(invalid) ≡ false
         # Invalid input returns absence from the accessor, not a valid zero count.
         assert resource.transition_changed_count(invalid) is null
         assert resource.transition_current_handles(invalid) is null
@@ -107,11 +107,11 @@ describe "resource lifecycle facts" {
         transitions.append(replaced)
         transitions.append(removed)
 
-        assert created.valida()
-        assert stable.valida()
-        assert replaced.valida()
-        assert removed.valida()
-        assert resource.lifecycles_valida(transitions)
+        assert created.valid()
+        assert stable.valid()
+        assert replaced.valid()
+        assert removed.valid()
+        assert resource.lifecycles_valid(transitions)
         const int ∪ null changed_count ← resource.lifecycle_changed_count(transitions)
         const int ∪ null unchanged_count ← resource.lifecycle_unchanged_count(transitions)
         const int ∪ null created_count ← resource.lifecycle_created_count(transitions)
@@ -269,10 +269,10 @@ describe "resource lifecycle facts" {
         invalid_batch.append(invalid_none)
         invalid_batch.append(invalid_removed)
 
-        assert invalid_none.valida() ≡ false
-        assert invalid_removed.valida() ≡ false
-        assert resource.lifecycles_valida(duplicate_batch) ≡ false
-        assert resource.lifecycles_valida(invalid_batch) ≡ false
+        assert invalid_none.valid() ≡ false
+        assert invalid_removed.valid() ≡ false
+        assert resource.lifecycles_valid(duplicate_batch) ≡ false
+        assert resource.lifecycles_valid(invalid_batch) ≡ false
         assert resource.lifecycle_batch_facts(duplicate_batch) is null
         assert resource.lifecycle_live_indices(invalid_batch) is null
     }

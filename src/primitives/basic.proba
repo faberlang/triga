@@ -30,7 +30,7 @@ fn exact_u32_values(list<int<u32>> actual, list<int<u32>> expected) → bool {
 fn primitive_geometry_matches(data.BufferGeometry ∪ null geometry, int vertex_count, list<f32> positions, list<f32> normals, list<f32> uvs, list<int<u32>> indices) → bool {
     if geometry is null then return false
     const data.BufferGeometry actual ← data.BufferGeometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
-    if actual.valida() ≡ false then return false
+    if actual.valid() ≡ false then return false
     if actual.indexed ≡ false then return false
     if (actual.topology_code() coalesce 0) ≠ 1 then return false
     if actual.vertex_count ≠ vertex_count then return false
@@ -57,7 +57,7 @@ fn primitive_geometry_matches(data.BufferGeometry ∪ null geometry, int vertex_
 fn wire_geometry_matches(data.BufferGeometry ∪ null geometry, list<f32> positions, list<int<u32>> indices) → bool {
     if geometry is null then return false
     const data.BufferGeometry actual ← data.BufferGeometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
-    if actual.valida() ≡ false then return false
+    if actual.valid() ≡ false then return false
     if actual.indexed ≡ false then return false
     if (actual.topology_code() coalesce 0) ≠ 2 then return false
     if actual.vertex_count ≠ 8 then return false
@@ -78,7 +78,7 @@ fn wire_geometry_matches(data.BufferGeometry ∪ null geometry, list<f32> positi
 # The cone side-normal scale uses the leaf's published Newton sqrt. The helper
 # is private, so the probe repeats that same iteration to pin the public
 # payload without calling the implementation through a back door.
-fn published_radix_f32(f32 value) → f32 {
+fn published_sqrt_f32(f32 value) → f32 {
     if value ≤ 0.0 then return 0.0
     var f32 scaled ← value
     var f32 scale ← 1.0
@@ -240,7 +240,7 @@ describe "primitive generator contracts" {
         const f32 cap_d ← (d + 1.0) * 0.5
         const f32 cap_n ← (-d + 1.0) * 0.5
         const f32 side_slope ← 0.5
-        const f32 side_scale ← published_radix_f32(1.0 + side_slope * side_slope)
+        const f32 side_scale ← published_sqrt_f32(1.0 + side_slope * side_slope)
         const f32 ny ← side_slope / side_scale
         const f32 inv ← 1.0 / side_scale
         const f32 ndiv ← d / side_scale

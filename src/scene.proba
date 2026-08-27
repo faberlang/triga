@@ -9,27 +9,27 @@ describe "scene store lifecycle" {
         const scene.SceneHandle negative_generation ← scene.SceneHandle {index = 0, generation = -1}
 
         # No node named `missing` is genuine absence, not handle rejection.
-        assert store.inveni("missing") is null
+        assert store.find("missing") is null
         # These calls reject handles that do not identify a live slot.
-        assert store.continet(missing) ≡ false
-        assert store.cape(missing) is null
-        assert store.continet(negative_generation) ≡ false
-        assert store.cape(negative_generation) is null
+        assert store.contains(missing) ≡ false
+        assert store.take(missing) is null
+        assert store.contains(negative_generation) ≡ false
+        assert store.take(negative_generation) is null
         assert store.traverse(missing) is null
     }
 
     test "insertion establishes defaults and deep and orphaned traversal" {
         var scene.SceneStore store ← scene.scene_store()
-        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
-        const scene.SceneHandle middle ← store.insere(scene.scene_group("middle"))
-        const scene.SceneHandle leaf ← store.insere(scene.scene_group("leaf"))
-        const scene.SceneHandle orphan ← store.insere(scene.scene_group("orphan"))
+        const scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        const scene.SceneHandle middle ← store.insert(scene.scene_group("middle"))
+        const scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+        const scene.SceneHandle orphan ← store.insert(scene.scene_group("orphan"))
 
-        assert store.adiunge(middle, root)
-        assert store.adiunge(leaf, middle)
+        assert store.attach(middle, root)
+        assert store.attach(leaf, middle)
 
         const list<scene.SceneHandle> empty_handles ← empty
-        const scene.SceneNode ∪ null root_value ← store.cape(root)
+        const scene.SceneNode ∪ null root_value ← store.take(root)
         assert root_value not is null
         assert root_value!.name ≡ "root"
         assert root_value!.parent is null
@@ -49,27 +49,27 @@ describe "scene store lifecycle" {
         assert isolated not is null
         assert isolated_value.length() ≡ 1
         assert scene.scene_handle_equals(isolated_value[0], orphan)
-        assert store.inveni("leaf") not is null
-        assert store.inveni("missing") is null
+        assert store.find("leaf") not is null
+        assert store.find("missing") is null
     }
 
     test "self attach and cycles are rejected while reparent and detach update both sides" {
         var scene.SceneStore store ← scene.scene_store()
-        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
-        const scene.SceneHandle left ← store.insere(scene.scene_group("left"))
-        const scene.SceneHandle right ← store.insere(scene.scene_group("right"))
-        const scene.SceneHandle leaf ← store.insere(scene.scene_group("leaf"))
+        const scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        const scene.SceneHandle left ← store.insert(scene.scene_group("left"))
+        const scene.SceneHandle right ← store.insert(scene.scene_group("right"))
+        const scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
 
-        assert store.adiunge(root, root) ≡ false
-        assert store.adiunge(left, root)
-        assert store.adiunge(leaf, left)
-        assert store.adiunge(leaf, left) ≡ false
-        assert store.adiunge(root, leaf) ≡ false
-        assert store.adiunge(leaf, right)
+        assert store.attach(root, root) ≡ false
+        assert store.attach(left, root)
+        assert store.attach(leaf, left)
+        assert store.attach(leaf, left) ≡ false
+        assert store.attach(root, leaf) ≡ false
+        assert store.attach(leaf, right)
 
-        const scene.SceneNode ∪ null old_parent ← store.cape(left)
-        const scene.SceneNode ∪ null new_parent ← store.cape(right)
-        const scene.SceneNode ∪ null moved ← store.cape(leaf)
+        const scene.SceneNode ∪ null old_parent ← store.take(left)
+        const scene.SceneNode ∪ null new_parent ← store.take(right)
+        const scene.SceneNode ∪ null moved ← store.take(leaf)
         assert old_parent not is null
         assert old_parent!.children.length() ≡ 0
         assert new_parent not is null
@@ -79,66 +79,66 @@ describe "scene store lifecycle" {
         assert moved!.parent!.index ≡ right.index
         assert moved!.parent!.generation ≡ right.generation
 
-        assert store.seiunge(leaf)
-        const scene.SceneNode ∪ null detached ← store.cape(leaf)
+        assert store.detach(leaf)
+        const scene.SceneNode ∪ null detached ← store.take(leaf)
         assert detached not is null
         assert detached!.parent is null
-        assert store.seiunge(leaf) ≡ false
+        assert store.detach(leaf) ≡ false
     }
 
     test "visibility traversal follows inherited visibility and mesh filtering" {
         var scene.SceneStore store ← scene.scene_store()
         const resource.ResourceHandle geometry ← resource.ResourceHandle {index = 4, generation = 1}
         const resource.ResourceHandle material ← resource.ResourceHandle {index = 8, generation = 2}
-        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
-        const scene.SceneHandle mesh ← store.insere(scene.scene_mesh("mesh", geometry, material))
+        const scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        const scene.SceneHandle mesh ← store.insert(scene.scene_mesh("mesh", geometry, material))
 
-        assert store.adiunge(mesh, root)
-        assert store.efficax_visibile(mesh)
+        assert store.attach(mesh, root)
+        assert store.effectively_visible(mesh)
 
         const list<scene.SceneHandle> empty_handles ← empty
-        const list<scene.SceneHandle> ∪ null visible ← store.traverse_visibilia(root)
+        const list<scene.SceneHandle> ∪ null visible ← store.traverse_visible(root)
         const list<scene.SceneHandle> visible_value ← visible coalesce empty_handles
-        const list<scene.SceneHandle> ∪ null visible_meshes ← store.traverse_visibilia_rete(root)
+        const list<scene.SceneHandle> ∪ null visible_meshes ← store.traverse_visible_mesh(root)
         const list<scene.SceneHandle> visible_meshes_value ← visible_meshes coalesce empty_handles
         assert visible not is null
         assert visible_value.length() ≡ 2
         assert visible_meshes not is null
         assert visible_meshes_value.length() ≡ 1
         assert scene.scene_handle_equals(visible_meshes_value[0], mesh)
-        assert store.inveni("mesh") not is null
+        assert store.find("mesh") not is null
 
-        assert store.pone_visibile(root, false)
-        assert store.efficax_visibile(mesh) ≡ false
-        const list<scene.SceneHandle> ∪ null hidden ← store.traverse_visibilia(root)
+        assert store.set_visible(root, false)
+        assert store.effectively_visible(mesh) ≡ false
+        const list<scene.SceneHandle> ∪ null hidden ← store.traverse_visible(root)
         const list<scene.SceneHandle> hidden_value ← hidden coalesce empty_handles
-        const list<scene.SceneHandle> ∪ null hidden_meshes ← store.traverse_visibilia_rete(root)
+        const list<scene.SceneHandle> ∪ null hidden_meshes ← store.traverse_visible_mesh(root)
         const list<scene.SceneHandle> hidden_meshes_value ← hidden_meshes coalesce empty_handles
         assert hidden not is null
         assert hidden_value.length() ≡ 0
         assert hidden_meshes not is null
         assert hidden_meshes_value.length() ≡ 0
 
-        assert store.pone_visibile(root, true)
-        assert store.efficax_visibile(mesh)
+        assert store.set_visible(root, true)
+        assert store.effectively_visible(mesh)
     }
 
     test "deletion rejects non-leaves and retires stale generations" {
         var scene.SceneStore store ← scene.scene_store()
-        const scene.SceneHandle root ← store.insere(scene.scene_group("root"))
-        const scene.SceneHandle child ← store.insere(scene.scene_group("child"))
-        assert store.adiunge(child, root)
-        assert store.detrahe(root) ≡ false
-        assert store.detrahe(child)
-        assert store.continet(child) ≡ false
-        assert store.cape(child) is null
-        assert store.detrahe(child) ≡ false
+        const scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        const scene.SceneHandle child ← store.insert(scene.scene_group("child"))
+        assert store.attach(child, root)
+        assert store.remove(root) ≡ false
+        assert store.remove(child)
+        assert store.contains(child) ≡ false
+        assert store.take(child) is null
+        assert store.remove(child) ≡ false
 
         const scene.SceneHandle stale_generation ← scene.SceneHandle {index = child.index, generation = child.generation + 1}
-        assert store.continet(stale_generation) ≡ false
-        assert store.cape(stale_generation) is null
-        assert store.detrahe(root)
-        assert store.continet(root) ≡ false
+        assert store.contains(stale_generation) ≡ false
+        assert store.take(stale_generation) is null
+        assert store.remove(root)
+        assert store.contains(root) ≡ false
         assert store.traverse(root) is null
     }
 }

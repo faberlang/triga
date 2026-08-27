@@ -16,7 +16,7 @@ describe "geometry bounds" {
         const data.BufferGeometry value ← data.BufferGeometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
         const bounds.BoundingBox ∪ null box ← value.bounding_box()
         const bounds.BoundingSphere ∪ null sphere ← value.bounding_sphere()
-        assert value.valida()
+        assert value.valid()
         assert box not is null
         assert box!.min_x ≡ (0.0 ∷ f32)
         assert box!.min_y ≡ (0.0 ∷ f32)
@@ -52,7 +52,7 @@ describe "geometry bounds" {
         const data.BufferGeometry empty_geometry ← data.triangle_geometry(1, [empty_position], batch.DrawRange {start = 0, count = 0}, empty)
         const bounds.BoundingBox ∪ null empty_box ← empty_geometry.bounding_box()
         const bounds.BoundingSphere ∪ null empty_sphere ← empty_geometry.bounding_sphere()
-        assert not empty_geometry.valida()
+        assert not empty_geometry.valid()
         assert empty_box is null
         assert empty_sphere is null
 
@@ -60,7 +60,7 @@ describe "geometry bounds" {
         const data.BufferGeometry degenerate ← data.triangle_geometry(3, [point_position], batch.DrawRange {start = 0, count = 3}, empty)
         const bounds.BoundingBox ∪ null degenerate_box ← degenerate.bounding_box()
         const bounds.BoundingSphere ∪ null degenerate_sphere ← degenerate.bounding_sphere()
-        assert degenerate.valida()
+        assert degenerate.valid()
         assert degenerate_box not is null
         assert degenerate_box!.min_x ≡ (2.0 ∷ f32)
         assert degenerate_box!.max_z ≡ (2.0 ∷ f32)
