@@ -26,7 +26,7 @@ class PerspectiveCamera {
         const math.Matrix4 ∪ null projection_result ← self.projection()
         if projection_result is null then return null
         const math.Matrix4 projection ← projection_result
-        if projection.valid() ≡ false then return null
+        if not projection.valid() then return null
         return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = projection.elements.length(), x_scale = projection.elements[0], y_scale = projection.elements[5], depth_scale = projection.elements[10]}
     }
 
@@ -44,7 +44,7 @@ class PerspectiveCamera {
         const math.Matrix4 ∪ null view_projection_result ← self.view_projection(eye, target, up)
         if view_projection_result is null then return null
         const math.Matrix4 view_projection ← view_projection_result
-        if view_projection.valid() ≡ false then return null
+        if not view_projection.valid() then return null
         return ViewProjectionFacts {float_count = view_projection.elements.length(), x_scale = view_projection.elements[0], y_scale = view_projection.elements[5], depth_scale = view_projection.elements[10], view_translation_z = view_projection.elements[14]}
     }
 }

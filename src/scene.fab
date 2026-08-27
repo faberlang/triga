@@ -95,7 +95,7 @@ class SceneSlot {
 class SceneStore {
     list<SceneSlot> slots
 
-    # ── Mutation (Imperativus) ──────────────────────────────────────────
+    # --- Mutation ------------------------------------------------------------
     # These methods reject stale handles, duplicate parents, and cycles while
     # preserving the slot/generation identity of every live node.
 
@@ -112,13 +112,13 @@ class SceneStore {
     }
 
     fn take(ref SceneHandle handle) → SceneNode ∪ null {
-        if self.contains(handle) ≡ false then return null
+        if not self.contains(handle) then return null
         return self.slots[handle.index].node
     }
 
     fn attach(ref SceneHandle child, ref SceneHandle parent) → bool {
-        if self.contains(child) ≡ false then return false
-        if self.contains(parent) ≡ false then return false
+        if not self.contains(child) then return false
+        if not self.contains(parent) then return false
         if self.would_cycle(child, parent) then return false
         const SceneNode ∪ null child_result ← self.take(child)
         const SceneNode ∪ null parent_result ← self.take(parent)
@@ -144,13 +144,12 @@ class SceneStore {
         }
         # Add child to parent's children list
         var list<SceneHandle> children ← empty
-        for range 0‥parent_node.children.length() const i {
-            const SceneHandle existing ← parent_node.children[i]
+        for from parent_node.children const existing {
             children.append(existing)
         }
         children.append(child)
-        const SceneNode updated_parent ← SceneNode {name = parent_node.name, kind = parent_node.kind, parent = parent_node.parent, children = children, visible = parent_node.visible, local_matrix = parent_node.local_matrix, world_matrix = parent_node.world_matrix, world_dirty = parent_node.world_dirty}
-        const SceneNode updated_child ← SceneNode {name = child_node.name, kind = child_node.kind, parent = parent, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
+        const _ updated_parent ← SceneNode {name = parent_node.name, kind = parent_node.kind, parent = parent_node.parent, children = children, visible = parent_node.visible, local_matrix = parent_node.local_matrix, world_matrix = parent_node.world_matrix, world_dirty = parent_node.world_dirty}
+        const _ updated_child ← SceneNode {name = child_node.name, kind = child_node.kind, parent = parent, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
         self.replace(parent, updated_parent)
         self.replace(child, updated_child)
         self.mark_world_dirty(child)
@@ -158,7 +157,7 @@ class SceneStore {
     }
 
     fn detach(ref SceneHandle child) → bool {
-        if self.contains(child) ≡ false then return false
+        if not self.contains(child) then return false
         const SceneNode ∪ null child_result ← self.take(child)
         if child_result is null then return false
         const SceneNode child_node ← child_result
@@ -169,7 +168,7 @@ class SceneStore {
         const SceneNode ∪ null parent_result ← self.take(parent_value)
         if parent_result is null then return false
         const SceneNode parent_node ← parent_result
-        const SceneNode detached_child ← SceneNode {name = child_node.name, kind = child_node.kind, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
+        const _ detached_child ← SceneNode {name = child_node.name, kind = child_node.kind, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
         self.replace(parent_value, self.without_children(parent_node, child))
         self.replace(child, detached_child)
         self.mark_world_dirty(child)
@@ -177,14 +176,14 @@ class SceneStore {
     }
 
     fn remove(ref SceneHandle handle) → bool {
-        if self.contains(handle) ≡ false then return false
+        if not self.contains(handle) then return false
         const SceneNode ∪ null node_result ← self.take(handle)
         if node_result is null then return false
         const SceneNode node ← node_result
         if node.children.length() ≻ 0 then return false
         if node.parent not is null {
             const bool detached ← self.detach(handle)
-            if detached ≡ false then return false
+            if not detached then return false
         }
         const SceneSlot slot ← self.slots[handle.index]
         self.slots[handle.index] ← SceneSlot {generation = slot.generation + 1, alive = false, node = slot.node}
@@ -195,8 +194,7 @@ class SceneStore {
         const SceneTraversal ∪ null result ← self.traverse_preorder(SceneHandle {index = 0, generation = 0}, empty, self.slots.length())
         if result is null then return null
         const SceneTraversal traversal ← result
-        for range 0‥traversal.handles.length() const i {
-            const SceneHandle handle ← traversal.handles[i]
+        for from traversal.handles const handle {
             const SceneNode ∪ null node_result ← self.take(handle)
             if node_result is null then return null
             const SceneNode node ← node_result
@@ -250,7 +248,7 @@ class SceneStore {
             const SceneNode ∪ null current_result ← self.take(cursor)
             if current_result is null then return false
             const SceneNode current_node ← current_result
-            if current_node.visible ≡ false then return false
+            if not current_node.visible then return false
             if current_node.parent is null then return true
             const SceneHandle ∪ null parent_opt ← parent_handle(current_node.parent)
             if parent_opt is null then return true
@@ -270,12 +268,11 @@ class SceneStore {
         return true
     }
 
-    # ── Internal helpers ────────────────────────────────────────────────
+    # --- Internal helpers -----------------------------------------------------
 
     fn traversal_contains(ref list<SceneHandle> handles, ref SceneHandle handle) → bool {
-        for range 0‥handles.length() const i {
-            const SceneHandle existing ← handles[i]
-            if scene_handle_equals(existing, handle) ≡ true then return true
+        for from handles const existing {
+            if scene_handle_equals(existing, handle) then return true
         }
         return false
     }
@@ -307,8 +304,8 @@ class SceneStore {
         var list<SceneHandle> updated_handles ← handles
         updated_handles.append(handle)
         var SceneTraversal traversal ← SceneTraversal {handles = updated_handles, remaining = remaining - 1}
-        for range 0‥node.children.length() const i {
-            const SceneTraversal ∪ null current ← self.traverse_preorder(node.children[i], traversal.handles, traversal.remaining)
+        for from node.children const child_handle {
+            const SceneTraversal ∪ null current ← self.traverse_preorder(child_handle, traversal.handles, traversal.remaining)
             if current is null then return null
             const SceneTraversal current_value ← current
             traversal ← SceneTraversal {handles = current_value.handles, remaining = current_value.remaining}
@@ -328,8 +325,8 @@ class SceneStore {
             updated_handles.append(handle)
         }
         var SceneTraversal traversal ← SceneTraversal {handles = updated_handles, remaining = remaining - 1}
-        for range 0‥node.children.length() const i {
-            const SceneTraversal ∪ null current ← self.traverse_visible_preorder(node.children[i], traversal.handles, traversal.remaining, effectively_visible)
+        for from node.children const child_handle {
+            const SceneTraversal ∪ null current ← self.traverse_visible_preorder(child_handle, traversal.handles, traversal.remaining, effectively_visible)
             if current is null then return null
             const SceneTraversal current_value ← current
             traversal ← SceneTraversal {handles = current_value.handles, remaining = current_value.remaining}
@@ -359,8 +356,8 @@ class SceneStore {
             }
         }
         var SceneTraversal traversal ← SceneTraversal {handles = updated_handles, remaining = remaining - 1}
-        for range 0‥node.children.length() const i {
-            const SceneTraversal ∪ null current ← self.traverse_visible_mesh_preorder(node.children[i], traversal.handles, traversal.remaining, effectively_visible)
+        for from node.children const child_handle {
+            const SceneTraversal ∪ null current ← self.traverse_visible_mesh_preorder(child_handle, traversal.handles, traversal.remaining, effectively_visible)
             if current is null then return null
             const SceneTraversal current_value ← current
             traversal ← SceneTraversal {handles = current_value.handles, remaining = current_value.remaining}
@@ -392,12 +389,12 @@ class SceneStore {
             }
         }
         var SceneMeshResourceTraversal traversal ← SceneMeshResourceTraversal {resources = updated_resources, remaining = remaining - 1}
-        for range 0‥node.children.length() const i {
-            const SceneMeshResourceTraversal ∪ null current ← self.traverse_visible_mesh_resources_preorder(node.children[i], traversal.resources, updated_seen, traversal.remaining, effectively_visible)
+        for from node.children const child_handle {
+            const SceneMeshResourceTraversal ∪ null current ← self.traverse_visible_mesh_resources_preorder(child_handle, traversal.resources, updated_seen, traversal.remaining, effectively_visible)
             if current is null then return null
             const SceneMeshResourceTraversal current_value ← current
             traversal ← SceneMeshResourceTraversal {resources = current_value.resources, remaining = current_value.remaining}
-            updated_seen.append(SceneHandle {index = node.children[i].index, generation = node.children[i].generation})
+            updated_seen.append(SceneHandle {index = child_handle.index, generation = child_handle.generation})
         }
         return traversal
     }
@@ -431,12 +428,12 @@ class SceneStore {
             }
         }
         var resource.ResourceHandleTraversal traversal ← resource.ResourceHandleTraversal {handles = updated_handles, remaining = remaining - 1}
-        for range 0‥node.children.length() const i {
-            const resource.ResourceHandleTraversal ∪ null current ← self.visible_mesh_resource_handles_preorder(node.children[i], traversal.handles, updated_seen, traversal.remaining, effectively_visible, geometry_handles)
+        for from node.children const child_handle {
+            const resource.ResourceHandleTraversal ∪ null current ← self.visible_mesh_resource_handles_preorder(child_handle, traversal.handles, updated_seen, traversal.remaining, effectively_visible, geometry_handles)
             if current is null then return null
             const resource.ResourceHandleTraversal current_value ← current
             traversal ← resource.ResourceHandleTraversal {handles = current_value.handles, remaining = current_value.remaining}
-            updated_seen.append(SceneHandle {index = node.children[i].index, generation = node.children[i].generation})
+            updated_seen.append(SceneHandle {index = child_handle.index, generation = child_handle.generation})
         }
         return traversal
     }
@@ -449,9 +446,8 @@ class SceneStore {
 
     fn without_children(SceneNode parent, ref SceneHandle child) → SceneNode {
         var list<SceneHandle> children ← empty
-        for range 0‥parent.children.length() const i {
-            const SceneHandle existing ← parent.children[i]
-            if scene_handle_equals(existing, child) ≡ false {
+        for from parent.children const existing {
+            if not scene_handle_equals(existing, child) {
                 children.append(existing)
             }
         }
@@ -481,8 +477,8 @@ class SceneStore {
         if node_result is null then return false
         const SceneNode node ← node_result
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = node.world_matrix, world_dirty = true})
-        for range 0‥node.children.length() const i {
-            self.mark_world_dirty(node.children[i])
+        for from node.children const child_handle {
+            self.mark_world_dirty(child_handle)
         }
         return true
     }
@@ -493,8 +489,8 @@ class SceneStore {
         const SceneNode node ← node_result
         const math.Matrix4 world ← parent_world.multiply(node.local_matrix)
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = world, world_dirty = false})
-        for range 0‥node.children.length() const i {
-            self.refresh_world_node(node.children[i], world)
+        for from node.children const child_handle {
+            self.refresh_world_node(child_handle, world)
         }
         return true
     }
@@ -619,14 +615,14 @@ class VisibleMeshes {
     }
 }
 
-# ── Visibilia entry point ─────────────────────────────────────────────
+# --- Visible meshes entry point ---------------------------------------------
 
 # One traversal collects visible mesh handles, resource handles, and packed
 # transforms. Keeping this as one query avoids making callers repeat the scene
 # walk and gives the host a coherent snapshot of the visible set.
 @ public
 fn visible_meshes(ref SceneStore store, ref SceneHandle root, ref math.Matrix4 view_projection) → VisibleMeshes ∪ null {
-    if view_projection.valid() ≡ false then return null
+    if not view_projection.valid() then return null
     # Single traversal: collect all visible mesh data at once
     const SceneTraversal ∪ null handles_result ← store.traverse_visible_mesh_preorder(root, empty, store.slots.length(), true)
     if handles_result is null then return null
@@ -656,7 +652,7 @@ fn visible_meshes(ref SceneStore store, ref SceneHandle root, ref math.Matrix4 v
     return meshes
 }
 
-# ── Free constructors ─────────────────────────────────────────────────
+# --- Free constructors ------------------------------------------------------
 
 # Constructors establish identity defaults in one place: empty children,
 # identity local/world matrices, and a dirty world cache.
@@ -690,7 +686,7 @@ fn scene_light(string name) → SceneNode {
     return scene_node(name, SceneLight())
 }
 
-# ── Free utilities on handles ─────────────────────────────────────────
+# --- Free utilities on handles ----------------------------------------------
 
 fn parent_handle(SceneHandle ∪ null parent) → SceneHandle ∪ null {
     if parent is null then return null

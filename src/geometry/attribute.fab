@@ -120,7 +120,7 @@ class BufferAttribute {
     }
 
     fn vertex_layout() → layout.VertexAttributeLayout ∪ null {
-        if self.valid() ≡ false then return null
+        if not self.valid() then return null
         return layout.VertexAttributeLayout {source_name = self.name, shader_location = self.shader_location, vertex_format = self.format(), offset_bytes = 0, stride_bytes = self.stride_bytes(), step_mode = layout.vertex_step_mode_vertex_step()}
     }
 }

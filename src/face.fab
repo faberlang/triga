@@ -24,7 +24,7 @@ class FaceQuad {
 # `null` so callers can keep malformed voxel input out of geometry buffers.
 @ public
 fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ null {
-    if math.face_code_valid(code) ≡ false then return null
+    if not math.face_code_valid(code) then return null
     if size ≤ 0.0 then return null
     const f32 x1 ← x + size
     const f32 y1 ← y + size

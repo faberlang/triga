@@ -374,12 +374,12 @@ class Box3 {
     }
 
     fn size() → Vector3 ∪ null {
-        if self.valid() ≡ false then return null
+        if not self.valid() then return null
         return self.max.subtract(self.min)
     }
 
     fn center() → Vector3 ∪ null {
-        if self.valid() ≡ false then return null
+        if not self.valid() then return null
         return self.min.add(self.max).scale(0.5)
     }
 
@@ -388,31 +388,13 @@ class Box3 {
     }
 
     fn overlap(ref Box3 other) → Vector3 ∪ null {
-        if self.intersects(other) ≡ false then return null
-        var f32 min_x ← self.max.x
-        var f32 min_y ← self.max.y
-        var f32 min_z ← self.max.z
-        var f32 max_x ← self.min.x
-        var f32 max_y ← self.min.y
-        var f32 max_z ← self.min.z
-        if other.max.x ≺ min_x {
-            min_x ← other.max.x
-        }
-        if other.max.y ≺ min_y {
-            min_y ← other.max.y
-        }
-        if other.max.z ≺ min_z {
-            min_z ← other.max.z
-        }
-        if other.min.x ≻ max_x {
-            max_x ← other.min.x
-        }
-        if other.min.y ≻ max_y {
-            max_y ← other.min.y
-        }
-        if other.min.z ≻ max_z {
-            max_z ← other.min.z
-        }
+        if not self.intersects(other) then return null
+        const f32 min_x ← self.max.x ⤓ other.max.x
+        const f32 min_y ← self.max.y ⤓ other.max.y
+        const f32 min_z ← self.max.z ⤓ other.max.z
+        const f32 max_x ← self.min.x ⤒ other.min.x
+        const f32 max_y ← self.min.y ⤒ other.min.y
+        const f32 max_z ← self.min.z ⤒ other.min.z
         return vector3(min_x - max_x, min_y - max_y, min_z - max_z)
     }
 
@@ -424,36 +406,18 @@ class Box3 {
     }
 
     fn union(ref Box3 other) → Box3 ∪ null {
-        if self.valid() ≡ false or other.valid() ≡ false then return null
-        var f32 min_x ← self.min.x
-        var f32 min_y ← self.min.y
-        var f32 min_z ← self.min.z
-        var f32 max_x ← self.max.x
-        var f32 max_y ← self.max.y
-        var f32 max_z ← self.max.z
-        if other.min.x ≺ min_x {
-            min_x ← other.min.x
-        }
-        if other.min.y ≺ min_y {
-            min_y ← other.min.y
-        }
-        if other.min.z ≺ min_z {
-            min_z ← other.min.z
-        }
-        if other.max.x ≻ max_x {
-            max_x ← other.max.x
-        }
-        if other.max.y ≻ max_y {
-            max_y ← other.max.y
-        }
-        if other.max.z ≻ max_z {
-            max_z ← other.max.z
-        }
+        if not self.valid() or not other.valid() then return null
+        const f32 min_x ← self.min.x ⤓ other.min.x
+        const f32 min_y ← self.min.y ⤓ other.min.y
+        const f32 min_z ← self.min.z ⤓ other.min.z
+        const f32 max_x ← self.max.x ⤒ other.max.x
+        const f32 max_y ← self.max.y ⤒ other.max.y
+        const f32 max_z ← self.max.z ⤒ other.max.z
         return Box3 {min = vector3(min_x, min_y, min_z), max = vector3(max_x, max_y, max_z)}
     }
 
     fn translated(ref Vector3 offset) → Box3 {
-        if self.valid() ≡ false then return Box3 {min = self.min, max = self.max}
+        if not self.valid() then return Box3 {min = self.min, max = self.max}
         return Box3 {min = self.min.add(offset), max = self.max.add(offset)}
     }
 }
@@ -504,7 +468,7 @@ class Ray {
     }
 
     fn intersects_box(ref Box3 box, f32 max_distance) → f32 ∪ null {
-        if box.valid() ≡ false then return null
+        if not box.valid() then return null
         if max_distance ≺ 0.0 then return null
         const RayInterval ∪ null x_interval ← axis_interval(self.origin.x, self.direction.x, box.min.x, box.max.x)
         if x_interval is null then return null
@@ -512,26 +476,17 @@ class Ray {
         if y_interval is null then return null
         const RayInterval ∪ null z_interval ← axis_interval(self.origin.z, self.direction.z, box.min.z, box.max.z)
         if z_interval is null then return null
-        var f32 entry ← x_interval!.minimum
-        if y_interval!.minimum ≻ entry {
-            entry ← y_interval!.minimum
-        }
-        if z_interval!.minimum ≻ entry {
-            entry ← z_interval!.minimum
-        }
-        if entry ≺ 0.0 {
-            entry ← 0.0
-        }
-        var f32 exit ← x_interval!.maximum
-        if y_interval!.maximum ≺ exit {
-            exit ← y_interval!.maximum
-        }
-        if z_interval!.maximum ≺ exit {
-            exit ← z_interval!.maximum
-        }
-        if max_distance ≺ exit {
-            exit ← max_distance
-        }
+        const RayInterval x_axis ← x_interval
+        const RayInterval y_axis ← y_interval
+        const RayInterval z_axis ← z_interval
+        var f32 entry ← x_axis.minimum
+        entry ← entry ⤒ y_axis.minimum
+        entry ← entry ⤒ z_axis.minimum
+        entry ← entry ⤒ 0.0
+        var f32 exit ← x_axis.maximum
+        exit ← exit ⤓ y_axis.maximum
+        exit ← exit ⤓ z_axis.maximum
+        exit ← exit ⤓ max_distance
         if entry ≻ exit then return null
         return entry
     }
@@ -640,7 +595,7 @@ fn face_code_valid(int code) → bool {
 
 @ public
 fn face_code_axis_code(int code) → int ∪ null {
-    if face_code_valid(code) ≡ false then return null
+    if not face_code_valid(code) then return null
     if code ≤ 2 then return 1
     if code ≤ 4 then return 2
     return 3
@@ -648,7 +603,7 @@ fn face_code_axis_code(int code) → int ∪ null {
 
 @ public
 fn face_code_opposite(int code) → int ∪ null {
-    if face_code_valid(code) ≡ false then return null
+    if not face_code_valid(code) then return null
     switch code {
         case 1 {
             return 2
@@ -676,7 +631,7 @@ fn face_code_opposite(int code) → int ∪ null {
 
 @ public
 fn face_code_x_offset(int code) → int ∪ null {
-    if face_code_valid(code) ≡ false then return null
+    if not face_code_valid(code) then return null
     const int negative ← -1
     switch code {
         case 1 {
@@ -693,7 +648,7 @@ fn face_code_x_offset(int code) → int ∪ null {
 
 @ public
 fn face_code_y_offset(int code) → int ∪ null {
-    if face_code_valid(code) ≡ false then return null
+    if not face_code_valid(code) then return null
     const int negative ← -1
     switch code {
         case 3 {
@@ -710,7 +665,7 @@ fn face_code_y_offset(int code) → int ∪ null {
 
 @ public
 fn face_code_z_offset(int code) → int ∪ null {
-    if face_code_valid(code) ≡ false then return null
+    if not face_code_valid(code) then return null
     const int negative ← -1
     switch code {
         case 5 {
@@ -781,7 +736,7 @@ fn face_code_color(int code) → Color ∪ null {
 
 @ public
 fn face_code_facts(int code) → FaceCodeFacts ∪ null {
-    if face_code_valid(code) ≡ false then return null
+    if not face_code_valid(code) then return null
     const int ∪ null axis_result ← face_code_axis_code(code)
     if axis_result is null then return null
     const int ∪ null opposite_result ← face_code_opposite(code)
@@ -878,9 +833,7 @@ fn radians_from_degrees(f32 degrees) → f32 {
 
 @ public
 fn camera_pitch_clamped(f32 pitch_degrees) → f32 {
-    if pitch_degrees ≻ 89.0 then return 89.0
-    if pitch_degrees ≺ -89.0 then return -89.0
-    return pitch_degrees
+    return pitch_degrees ⤒ -89.0 ⤓ 89.0
 }
 
 @ public
@@ -928,8 +881,8 @@ fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees
 # non-positive sizes. Each returns null, keeping Box3.valid explicit.
 @ public
 fn box3_from_min_max(ref Vector3 minimum, ref Vector3 maximum) → Box3 ∪ null {
-    const Box3 bounds ← Box3 {min = minimum, max = maximum}
-    if bounds.valid() ≡ false then return null
+    const _ bounds ← Box3 {min = minimum, max = maximum}
+    if not bounds.valid() then return null
     return bounds
 }
 
@@ -951,14 +904,11 @@ fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInt
         if origin ≺ minimum or origin ≻ maximum then return null
         return RayInterval {minimum = -1000000000.0, maximum = 1000000000.0}
     }
-    var f32 first ← (minimum - origin) / direction
-    var f32 second ← (maximum - origin) / direction
-    if first ≻ second {
-        const f32 swap ← first
-        first ← second
-        second ← swap
-    }
-    return RayInterval {minimum = first, maximum = second}
+    const f32 first ← (minimum - origin) / direction
+    const f32 second ← (maximum - origin) / direction
+    const f32 lo ← first ⤓ second
+    const f32 hi ← first ⤒ second
+    return RayInterval {minimum = lo, maximum = hi}
 }
 
 fn hit_normal(ref Box3 bounds, ref Vector3 point) → Vector3 {
@@ -983,8 +933,8 @@ fn matrix4_identity() → Matrix4 {
 # 16-element Matrix4 values.
 @ public
 fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → TransformPayload ∪ null {
-    if model.valid() ≡ false then return null
-    if view_projection.valid() ≡ false then return null
+    if not model.valid() then return null
+    if not view_projection.valid() then return null
     var list<f32> values ← empty
     for from model.elements const value {
         values.append(value)
@@ -1035,7 +985,7 @@ fn matrix4_perspective(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Mat
     if sine.abs() ≤ 0.000001 then return null
     const f32 focal ← cosine / sine
     const f32 depth ← far / (near - far)
-    return Matrix4 {elements = [focal / aspect, 0.0, 0.0, 0.0, 0.0, focal, 0.0, 0.0, 0.0, 0.0, depth, -1.0 ∷ f32, 0.0, 0.0, near * depth, 0.0]}
+    return Matrix4 {elements = [focal / aspect, 0.0, 0.0, 0.0, 0.0, focal, 0.0, 0.0, 0.0, 0.0, depth, -1.0, 0.0, 0.0, near * depth, 0.0]}
 }
 
 # Build a view matrix from eye, target, and up. Coincident or collinear inputs
