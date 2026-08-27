@@ -37,7 +37,7 @@ union AttributeData {
 }
 
 # One named CPU-side vertex stream and the facts needed to describe it to a
-# host. `valida()` is the projection boundary: a valid stream has a non-empty
+# host. `valid()` is the projection boundary: a valid stream has a non-empty
 # name, an unnormalized component width from 1 through 4, a positive element
 # count, and exactly component_width * element_count scalars.
 @ public
@@ -70,7 +70,7 @@ class BufferAttribute {
 
     # Validation intentionally stays close to the payload: it checks the
     # metadata and the scalar count before any host-facing layout is emitted.
-    fn valida() → bool {
+    fn valid() → bool {
         if self.name ≡ "" then return false
         if self.normalized then return false
         if self.component_width ≺ 1 or self.component_width ≻ 4 then return false
@@ -120,7 +120,7 @@ class BufferAttribute {
     }
 
     fn vertex_layout() → layout.VertexAttributeLayout ∪ null {
-        if self.valida() ≡ false then return null
+        if not self.valid() then return null
         return layout.VertexAttributeLayout {source_name = self.name, shader_location = self.shader_location, vertex_format = self.format(), offset_bytes = 0, stride_bytes = self.stride_bytes(), step_mode = layout.vertex_step_mode_vertex_step()}
     }
 }
@@ -128,7 +128,7 @@ class BufferAttribute {
 # --- Free constructors for BufferAttribute ---
 
 # The starter constructor makes the common CPU-side case explicit: a static,
-# unnormalized float32 stream. `valida()` remains the authority for checking
+# unnormalized float32 stream. `valid()` remains the authority for checking
 # that the supplied values match the declared element shape.
 @ public
 fn float32_attribute(string name, int shader_location, int component_width, int element_count, list<f32> values) → BufferAttribute {

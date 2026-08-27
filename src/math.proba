@@ -12,12 +12,12 @@ describe "vector carriers and arithmetic" {
 
         const math.Vector3 a ← math.vector3(1.0, 2.0, 3.0)
         const math.Vector3 b ← math.vector3(4.0, 5.0, 6.0)
-        const math.Vector3 added ← a.addita(b)
-        const math.Vector3 subtracted ← b.subtracta(a)
-        const math.Vector3 scaled ← a.multiplicata(2.0)
-        const math.Vector3 crossed ← a.transversum(b)
-        const math.Vector3 halfway ← a.interpolata(b, 0.5)
-        const math.Vector3 projection ← a.projecta(math.vector3(1.0, 0.0, 0.0))
+        const math.Vector3 added ← a.add(b)
+        const math.Vector3 subtracted ← b.subtract(a)
+        const math.Vector3 scaled ← a.scale(2.0)
+        const math.Vector3 crossed ← a.cross(b)
+        const math.Vector3 halfway ← a.lerp(b, 0.5)
+        const math.Vector3 projection ← a.project(math.vector3(1.0, 0.0, 0.0))
 
         assert added.x ≡ (5.0 ∷ f32)
         assert added.y ≡ (7.0 ∷ f32)
@@ -28,12 +28,12 @@ describe "vector carriers and arithmetic" {
         assert scaled.x ≡ (2.0 ∷ f32)
         assert scaled.y ≡ (4.0 ∷ f32)
         assert scaled.z ≡ (6.0 ∷ f32)
-        assert a.productum(b) ≡ (32.0 ∷ f32)
+        assert a.dot(b) ≡ (32.0 ∷ f32)
         assert crossed.x ≡ (-3.0 ∷ f32)
         assert crossed.y ≡ (6.0 ∷ f32)
         assert crossed.z ≡ (-3.0 ∷ f32)
-        assert a.longitudo() > (3.7 ∷ f32)
-        assert a.distantia(b) > (5.1 ∷ f32)
+        assert a.length() > (3.7 ∷ f32)
+        assert a.distance(b) > (5.1 ∷ f32)
         assert halfway.x ≡ (2.5 ∷ f32)
         assert halfway.y ≡ (3.5 ∷ f32)
         assert halfway.z ≡ (4.5 ∷ f32)
@@ -43,10 +43,10 @@ describe "vector carriers and arithmetic" {
     }
 
     test "normalization and projection have zero-vector boundaries" {
-        const math.Vector3 normalized ← math.vector3(0.0, 0.0, 3.0).normata()
+        const math.Vector3 normalized ← math.vector3(0.0, 0.0, 3.0).normalized()
         const math.Vector3 zero ← math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 zero_normalized ← zero.normata()
-        const math.Vector3 zero_projection ← math.vector3(1.0, 2.0, 3.0).projecta(zero)
+        const math.Vector3 zero_normalized ← zero.normalized()
+        const math.Vector3 zero_projection ← math.vector3(1.0, 2.0, 3.0).project(zero)
 
         assert normalized.z > (0.99 ∷ f32)
         assert zero_normalized.x ≡ (0.0 ∷ f32)
@@ -61,28 +61,28 @@ describe "vector carriers and arithmetic" {
 describe "matrix and transform carriers" {
     test "matrix builders and operations preserve column-major facts" {
         const math.Matrix3 matrix3 ← math.Matrix3 {elements = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]}
-        const math.Matrix4 identity ← math.matrix4_identitas()
+        const math.Matrix4 identity ← math.matrix4_identity()
         const math.Vector3 offset ← math.vector3(5.0, -2.0, 3.0)
         const math.Vector3 scale_vector ← math.vector3(2.0, 3.0, 4.0)
-        const math.Matrix4 translation ← math.matrix4_translatio(offset)
-        const math.Matrix4 scale ← math.matrix4_scala(scale_vector)
-        const math.Matrix4 world ← translation.multiplicata(scale)
-        const math.Vector3 transformed ← world.applica_punctum(math.vector3(1.0, 2.0, -1.0))
-        const math.Matrix4 transposed ← translation.transposita()
+        const math.Matrix4 translation ← math.matrix4_translation(offset)
+        const math.Matrix4 scale ← math.matrix4_scale(scale_vector)
+        const math.Matrix4 world ← translation.multiply(scale)
+        const math.Vector3 transformed ← world.apply_point(math.vector3(1.0, 2.0, -1.0))
+        const math.Matrix4 transposed ← translation.transpose()
         const math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
-        const math.Matrix4 composed ← math.matrix4_composita(offset, identity_rotation, scale_vector)
+        const math.Matrix4 composed ← math.matrix4_compose(offset, identity_rotation, scale_vector)
 
         assert matrix3.elements.length() ≡ 9
-        assert identity.validum()
+        assert identity.valid()
         assert identity.elements.length() ≡ 16
-        assert identity.determinans_affinis() ≡ (1.0 ∷ f32)
+        assert identity.affine_determinant() ≡ (1.0 ∷ f32)
         assert translation.elements[12] ≡ (5.0 ∷ f32)
         assert translation.elements[13] ≡ (-2.0 ∷ f32)
         assert translation.elements[14] ≡ (3.0 ∷ f32)
         assert scale.elements[0] ≡ (2.0 ∷ f32)
         assert scale.elements[5] ≡ (3.0 ∷ f32)
         assert scale.elements[10] ≡ (4.0 ∷ f32)
-        assert world.validum()
+        assert world.valid()
         assert transformed.x ≡ (7.0 ∷ f32)
         assert transformed.y ≡ (4.0 ∷ f32)
         assert transformed.z ≡ (-1.0 ∷ f32)
@@ -95,16 +95,16 @@ describe "matrix and transform carriers" {
 
     test "matrix shape and projection boundaries are explicit" {
         const math.Matrix4 malformed ← math.Matrix4 {elements = [1.0]}
-        const math.Matrix4 identity ← math.matrix4_identitas()
-        const math.Matrix4 translation ← math.matrix4_translatio(math.vector3(1.0, 2.0, 3.0))
-        const math.Matrix4 ∪ null inverse_result ← translation.inversa_affinis()
-        const math.Matrix4 ∪ null perspective_result ← math.matrix4_perspectiva(60.0, 1.0, 0.1, 100.0)
-        const math.Matrix4 ∪ null invalid_perspective ← math.matrix4_perspectiva(0.0, 1.0, 0.1, 100.0)
-        const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
-        const math.Matrix4 ∪ null invalid_view ← math.matrix4_conspectus(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+        const math.Matrix4 identity ← math.matrix4_identity()
+        const math.Matrix4 translation ← math.matrix4_translation(math.vector3(1.0, 2.0, 3.0))
+        const math.Matrix4 ∪ null inverse_result ← translation.affine_inverse()
+        const math.Matrix4 ∪ null perspective_result ← math.matrix4_perspective(60.0, 1.0, 0.1, 100.0)
+        const math.Matrix4 ∪ null invalid_perspective ← math.matrix4_perspective(0.0, 1.0, 0.1, 100.0)
+        const math.Matrix4 ∪ null view_result ← math.matrix4_look_at(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+        const math.Matrix4 ∪ null invalid_view ← math.matrix4_look_at(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
 
-        assert malformed.validum() ≡ false
-        assert identity.transposita().elements[0] ≡ (1.0 ∷ f32)
+        assert malformed.valid() ≡ false
+        assert identity.transpose().elements[0] ≡ (1.0 ∷ f32)
         assert inverse_result not is null
         assert perspective_result not is null
         assert invalid_perspective is null
@@ -113,8 +113,8 @@ describe "matrix and transform carriers" {
     }
 
     test "transform payload records model and view-projection facts" {
-        const math.Matrix4 model ← math.matrix4_translatio(math.vector3(1.0, 2.0, 3.0))
-        const math.Matrix4 view_projection ← math.matrix4_scala(math.vector3(4.0, 5.0, 6.0))
+        const math.Matrix4 model ← math.matrix4_translation(math.vector3(1.0, 2.0, 3.0))
+        const math.Matrix4 view_projection ← math.matrix4_scale(math.vector3(4.0, 5.0, 6.0))
         const math.TransformPayload ∪ null payload_result ← math.transform_payload(model, view_projection)
         const math.Matrix4 malformed_matrix ← math.Matrix4 {elements = [1.0]}
         const math.TransformPayload ∪ null invalid_payload ← math.transform_payload(malformed_matrix, view_projection)
@@ -148,10 +148,10 @@ describe "quaternion and euler rotation" {
     test "quaternion constructors normalize, multiply, and interpolate" {
         const math.Quaternion identity ← math.quaternion(0.0, 0.0, 0.0, 1.0)
         const math.Quaternion doubled ← math.quaternion(0.0, 0.0, 0.0, 2.0)
-        const math.Quaternion normalized ← doubled.normata()
-        const math.Quaternion zero_normalized ← math.quaternion(0.0, 0.0, 0.0, 0.0).normata()
-        const math.Quaternion multiplied ← identity.multiplicata(normalized)
-        const math.Quaternion interpolated ← identity.interpolata(identity, 0.5)
+        const math.Quaternion normalized ← doubled.normalized()
+        const math.Quaternion zero_normalized ← math.quaternion(0.0, 0.0, 0.0, 0.0).normalized()
+        const math.Quaternion multiplied ← identity.multiply(normalized)
+        const math.Quaternion interpolated ← identity.lerp(identity, 0.5)
 
         assert normalized.w > (0.99 ∷ f32)
         assert zero_normalized.w ≡ (1.0 ∷ f32)
@@ -163,12 +163,12 @@ describe "quaternion and euler rotation" {
         const math.Euler zero ← math.euler(0.0, 0.0, 0.0)
         const math.Euler other ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}
         const math.Euler unsupported ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "ZYX"}
-        const math.Quaternion ∪ null quaternion_result ← zero.ad_quaternionem()
-        const math.Quaternion ∪ null composed_result ← zero.composita(other)
-        const math.Euler ∪ null interpolated_result ← zero.interpolata(other, 0.5)
-        const math.Quaternion ∪ null unsupported_quaternion ← unsupported.ad_quaternionem()
-        const math.Quaternion ∪ null unsupported_composition ← unsupported.composita(other)
-        const math.Euler ∪ null unsupported_interpolation ← unsupported.interpolata(other, 0.5)
+        const math.Quaternion ∪ null quaternion_result ← zero.to_quaternion()
+        const math.Quaternion ∪ null composed_result ← zero.compose(other)
+        const math.Euler ∪ null interpolated_result ← zero.lerp(other, 0.5)
+        const math.Quaternion ∪ null unsupported_quaternion ← unsupported.to_quaternion()
+        const math.Quaternion ∪ null unsupported_composition ← unsupported.compose(other)
+        const math.Euler ∪ null unsupported_interpolation ← unsupported.lerp(other, 0.5)
 
         assert zero.order ≡ "XYZ"
         assert quaternion_result not is null
@@ -184,12 +184,12 @@ describe "color, angle, and camera contracts" {
     test "color validation and interpolation keep channel boundaries" {
         const math.Color black ← math.Color {r = 0.0, g = 0.0, b = 0.0}
         const math.Color white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
-        const math.Color midpoint ← black.interpolata(white, 0.5)
+        const math.Color midpoint ← black.lerp(white, 0.5)
         const math.Color invalid ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
-        assert black.valida()
-        assert white.valida()
-        assert invalid.valida() ≡ false
+        assert black.valid()
+        assert white.valid()
+        assert invalid.valid() ≡ false
         assert midpoint.r ≡ (0.5 ∷ f32)
         assert midpoint.g ≡ (0.5 ∷ f32)
         assert midpoint.b ≡ (0.5 ∷ f32)
@@ -197,17 +197,17 @@ describe "color, angle, and camera contracts" {
 
     test "camera helpers clamp pitch and return coherent carriers" {
         const math.Vector3 origin ← math.vector3(2.0, 3.0, 4.0)
-        const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(0.0, 100.0)
-        const math.Vector3 planar_forward ← math.camera_prorsum_planus_ex_yaw(0.0)
-        const math.Vector3 planar_right ← math.camera_dextra_ex_yaw(0.0)
-        const math.Vector3 stopped ← math.camera_motus_planus_ex_yaw(0.0, 1.0, 0.0, 0.0, 1.0)
-        const math.Vector3 moved ← math.camera_motus_planus_ex_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
-        const math.Ray camera_ray ← math.camera_ray_ex_yaw_pitch(origin, 90.0, 0.0)
+        const math.Vector3 direction ← math.camera_direction_from_yaw_pitch(0.0, 100.0)
+        const math.Vector3 planar_forward ← math.camera_planar_forward_from_yaw(0.0)
+        const math.Vector3 planar_right ← math.camera_right_from_yaw(0.0)
+        const math.Vector3 stopped ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 0.0, 1.0)
+        const math.Vector3 moved ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
+        const math.Ray camera_ray ← math.camera_ray_from_yaw_pitch(origin, 90.0, 0.0)
         const math.CameraYawPitchFacts facts ← math.camera_yaw_pitch_facts(origin, 90.0, 100.0)
 
-        assert math.radians_ex_gradibus((0.0 ∷ f32)) ≡ (0.0 ∷ f32)
-        assert math.camera_pitch_coercita((100.0 ∷ f32)) ≡ (89.0 ∷ f32)
-        assert math.camera_pitch_coercita((-100.0 ∷ f32)) ≡ (-89.0 ∷ f32)
+        assert math.radians_from_degrees((0.0 ∷ f32)) ≡ (0.0 ∷ f32)
+        assert math.camera_pitch_clamped((100.0 ∷ f32)) ≡ (89.0 ∷ f32)
+        assert math.camera_pitch_clamped((-100.0 ∷ f32)) ≡ (-89.0 ∷ f32)
         assert direction.y > (0.99 ∷ f32)
         assert planar_forward.z ≡ (-1.0 ∷ f32)
         assert planar_right.x ≡ (1.0 ∷ f32)
@@ -228,11 +228,11 @@ describe "box, sphere, and plane volumes" {
         const math.Vector3 minimum ← math.vector3(0.0, 0.0, 0.0)
         const math.Vector3 maximum ← math.vector3(2.0, 2.0, 2.0)
         const math.Vector3 size ← math.vector3(2.0, 2.0, 2.0)
-        const math.Box3 ∪ null bounds_result ← math.box3_ex_minimo_et_maximo(minimum, maximum)
-        const math.Box3 ∪ null sized_result ← math.box3_ex_minimo_et_mensura(minimum, size)
-        const math.Box3 ∪ null centered_result ← math.box3_ex_centro_et_mensura(math.vector3(1.0, 1.0, 1.0), size)
-        const math.Box3 ∪ null invalid_bounds ← math.box3_ex_minimo_et_maximo(maximum, minimum)
-        const math.Box3 ∪ null invalid_size ← math.box3_ex_minimo_et_mensura(minimum, math.vector3(0.0, 1.0, 1.0))
+        const math.Box3 ∪ null bounds_result ← math.box3_from_min_max(minimum, maximum)
+        const math.Box3 ∪ null sized_result ← math.box3_from_min_and_size(minimum, size)
+        const math.Box3 ∪ null centered_result ← math.box3_from_center_and_size(math.vector3(1.0, 1.0, 1.0), size)
+        const math.Box3 ∪ null invalid_bounds ← math.box3_from_min_max(maximum, minimum)
+        const math.Box3 ∪ null invalid_size ← math.box3_from_min_and_size(minimum, math.vector3(0.0, 1.0, 1.0))
 
         assert bounds_result not is null
         assert sized_result not is null
@@ -248,28 +248,28 @@ describe "box, sphere, and plane volumes" {
         const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
         const math.Box3 disjoint_box ← math.Box3 {min = math.vector3(3.0, 3.0, 3.0), max = math.vector3(4.0, 4.0, 4.0)}
 
-        assert bounds.validum()
-        assert bounds.continet(math.vector3((2.0 ∷ f32), (2.0 ∷ f32), (2.0 ∷ f32)))
-        assert bounds.continet_capsam(centered)
-        assert bounds.intersecat(overlap_box)
-        assert bounds.intersecat(disjoint_box) ≡ false
+        assert bounds.valid()
+        assert bounds.contains(math.vector3((2.0 ∷ f32), (2.0 ∷ f32), (2.0 ∷ f32)))
+        assert bounds.contains_box(centered)
+        assert bounds.intersects(overlap_box)
+        assert bounds.intersects(disjoint_box) ≡ false
         assert sized.max.x ≡ (2.0 ∷ f32)
         assert centered.min.x ≡ (0.0 ∷ f32)
     }
 
     test "box inflation mutates or copies by the published contract" {
         const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Box3 expanded ← bounds.inflata(1.0)
+        const math.Box3 expanded ← bounds.inflated(1.0)
         var math.Box3 mutable_bounds ← bounds
-        mutable_bounds.infla(1.0)
+        mutable_bounds.inflate(1.0)
         assert expanded.min.x ≡ (-1.0 ∷ f32)
         assert mutable_bounds.min.x ≡ (-1.0 ∷ f32)
     }
 
     test "box measure and center match the published corners" {
         const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Vector3 measure ← bounds.mensura() coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 center ← bounds.centrum() coalesce math.vector3(0.0, 0.0, 0.0)
+        const math.Vector3 measure ← bounds.size() coalesce math.vector3(0.0, 0.0, 0.0)
+        const math.Vector3 center ← bounds.center() coalesce math.vector3(0.0, 0.0, 0.0)
         assert measure.x ≡ (2.0 ∷ f32)
         assert center.x ≡ (1.0 ∷ f32)
     }
@@ -277,10 +277,10 @@ describe "box, sphere, and plane volumes" {
     test "box overlap union and translation preserve bound facts" {
         const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
         const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
-        const math.Vector3 overlap ← bounds.superpositio(overlap_box) coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Box3OverlapFacts facts ← bounds.superpositio_facta(overlap_box) coalesce math.Box3OverlapFacts {overlap = math.vector3(0.0, 0.0, 0.0), x = 0.0, y = 0.0, z = 0.0}
-        const math.Box3 unioned ← bounds.unio(overlap_box) coalesce bounds
-        const math.Box3 translated ← bounds.translata(math.vector3(2.0, 0.0, 0.0))
+        const math.Vector3 overlap ← bounds.overlap(overlap_box) coalesce math.vector3(0.0, 0.0, 0.0)
+        const math.Box3OverlapFacts facts ← bounds.overlap_facts(overlap_box) coalesce math.Box3OverlapFacts {overlap = math.vector3(0.0, 0.0, 0.0), x = 0.0, y = 0.0, z = 0.0}
+        const math.Box3 unioned ← bounds.union(overlap_box) coalesce bounds
+        const math.Box3 translated ← bounds.translated(math.vector3(2.0, 0.0, 0.0))
         assert overlap.x ≡ (1.0 ∷ f32)
         assert facts.overlap.y ≡ (1.0 ∷ f32)
         assert facts.x ≡ (1.0 ∷ f32)
@@ -293,19 +293,19 @@ describe "box, sphere, and plane volumes" {
         const math.Sphere sphere ← math.Sphere {center = math.vector3(0.0, 0.0, 0.0), radius = 2.0}
         const math.Plane plane ← math.Plane {normal = math.vector3(0.0, 1.0, 0.0), constant = -2.0}
         const math.Box3 other ← math.Box3 {min = math.vector3(3.0, 3.0, 3.0), max = math.vector3(4.0, 4.0, 4.0)}
-        const math.Box3 ∪ null invalid_measure_box ← invalid_box.unio(other)
-        const math.Vector3 ∪ null invalid_measure ← invalid_box.mensura()
-        const math.Vector3 ∪ null invalid_center ← invalid_box.centrum()
-        const math.Vector3 ∪ null invalid_overlap ← invalid_box.superpositio(other)
+        const math.Box3 ∪ null invalid_measure_box ← invalid_box.union(other)
+        const math.Vector3 ∪ null invalid_measure ← invalid_box.size()
+        const math.Vector3 ∪ null invalid_center ← invalid_box.center()
+        const math.Vector3 ∪ null invalid_overlap ← invalid_box.overlap(other)
 
-        assert invalid_box.validum() ≡ false
+        assert invalid_box.valid() ≡ false
         assert invalid_measure_box is null
         assert invalid_measure is null
         assert invalid_center is null
         assert invalid_overlap is null
-        assert sphere.continet(math.vector3((2.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32)))
-        assert sphere.continet(math.vector3((3.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32))) ≡ false
-        assert plane.distantia(math.vector3((0.0 ∷ f32), (3.0 ∷ f32), (0.0 ∷ f32))) ≡ (1.0 ∷ f32)
+        assert sphere.contains(math.vector3((2.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32)))
+        assert sphere.contains(math.vector3((3.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32))) ≡ false
+        assert plane.distance(math.vector3((0.0 ∷ f32), (3.0 ∷ f32), (0.0 ∷ f32))) ≡ (1.0 ∷ f32)
     }
 }
 
@@ -315,9 +315,9 @@ describe "ray intersections and face-code facts" {
         const math.Ray ray ← math.Ray {origin = math.vector3(-2.0, 0.5, 0.5), direction = math.vector3(1.0, 0.0, 0.0)}
         const math.RayInterval interval ← math.RayInterval {minimum = 1.0, maximum = 2.0}
         const math.RayBox3Hit ∪ null hit_result ← ray.box3_hit(box, 10.0)
-        const f32 ∪ null distance_result ← ray.intersecat_capsam(box, 10.0)
-        const f32 ∪ null rejected_distance ← ray.intersecat_capsam(box, -1.0)
-        const math.Vector3 point ← ray.punctum(2.0)
+        const f32 ∪ null distance_result ← ray.intersects_box(box, 10.0)
+        const f32 ∪ null rejected_distance ← ray.intersects_box(box, -1.0)
+        const math.Vector3 point ← ray.point_at(2.0)
 
         const math.RayBox3Hit hit ← math.RayBox3Hit {distance = 2.0, point = point, normal = math.vector3(-1.0, 0.0, 0.0)}
         const math.FaceCodeFacts facts ← math.FaceCodeFacts {code = 1, axis_code = 1, opposite_code = 2, x_offset = -1, y_offset = 0, z_offset = 0, normal = math.vector3(-1.0, 0.0, 0.0), color = math.Color {r = 0.8, g = 0.1, b = 0.1}}
@@ -355,9 +355,9 @@ describe "ray intersections and face-code facts" {
         const math.Vector3 ∪ null invalid_normal ← math.face_code_normal(0)
         const math.FaceCodeFacts ∪ null invalid_facts ← math.face_code_facts(7)
 
-        assert math.face_code_valida(1)
-        assert math.face_code_valida(6)
-        assert math.face_code_valida(0) ≡ false
+        assert math.face_code_valid(1)
+        assert math.face_code_valid(6)
+        assert math.face_code_valid(0) ≡ false
         assert math.face_code_axis_code(code) not is null
         assert math.face_code_opposite(code) not is null
         assert math.face_code_x_offset(code) not is null

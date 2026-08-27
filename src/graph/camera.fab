@@ -18,33 +18,33 @@ class PerspectiveCamera {
     f32 near = 0.1
     f32 far = 2000.0
 
-    fn projectio() → math.Matrix4 ∪ null {
-        return math.matrix4_perspectiva(self.fov, self.aspect, self.near, self.far)
+    fn projection() → math.Matrix4 ∪ null {
+        return math.matrix4_perspective(self.fov, self.aspect, self.near, self.far)
     }
 
-    fn projectio_facta() → PerspectiveCameraProjectionFacts ∪ null {
-        const math.Matrix4 ∪ null projection_result ← self.projectio()
+    fn projection_facts() → PerspectiveCameraProjectionFacts ∪ null {
+        const math.Matrix4 ∪ null projection_result ← self.projection()
         if projection_result is null then return null
         const math.Matrix4 projection ← projection_result
-        if projection.validum() ≡ false then return null
+        if not projection.valid() then return null
         return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = projection.elements.length(), x_scale = projection.elements[0], y_scale = projection.elements[5], depth_scale = projection.elements[10]}
     }
 
-    fn visus_projectio(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → math.Matrix4 ∪ null {
-        const math.Matrix4 ∪ null projection_result ← self.projectio()
+    fn view_projection(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → math.Matrix4 ∪ null {
+        const math.Matrix4 ∪ null projection_result ← self.projection()
         if projection_result is null then return null
-        const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(eye, target, up)
+        const math.Matrix4 ∪ null view_result ← math.matrix4_look_at(eye, target, up)
         if view_result is null then return null
         const math.Matrix4 projection ← projection_result
         const math.Matrix4 view ← view_result
-        return projection.multiplicata(view)
+        return projection.multiply(view)
     }
 
-    fn visus_projectio_facta(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → ViewProjectionFacts ∪ null {
-        const math.Matrix4 ∪ null view_projection_result ← self.visus_projectio(eye, target, up)
+    fn view_projection_facts(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → ViewProjectionFacts ∪ null {
+        const math.Matrix4 ∪ null view_projection_result ← self.view_projection(eye, target, up)
         if view_projection_result is null then return null
         const math.Matrix4 view_projection ← view_projection_result
-        if view_projection.validum() ≡ false then return null
+        if not view_projection.valid() then return null
         return ViewProjectionFacts {float_count = view_projection.elements.length(), x_scale = view_projection.elements[0], y_scale = view_projection.elements[5], depth_scale = view_projection.elements[10], view_translation_z = view_projection.elements[14]}
     }
 }
@@ -65,7 +65,7 @@ class PerspectiveCameraProjectionFacts {
 }
 
 # ViewProjectionFacts describes the combined projection × view result used by
-# a render path. The full matrix remains available from `visus_projectio`; this
+# a render path. The full matrix remains available from `view_projection`; this
 # genus is for compact validation and reflection facts.
 @ public
 class ViewProjectionFacts {

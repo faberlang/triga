@@ -25,7 +25,7 @@ describe "buffer geometry contracts" {
         const data.BufferGeometry geometry ← quad_geometry()
         const list<layout.VertexAttributeLayout> empty_layouts ← empty
         const list<layout.VertexAttributeLayout> layouts ← geometry.vertex_layouts() coalesce empty_layouts
-        assert geometry.valida()
+        assert geometry.valid()
         assert geometry.indexed
         assert geometry.element_count() ≡ 6
         assert (geometry.validated_vertex_count() coalesce 0) ≡ 6
@@ -133,7 +133,7 @@ describe "buffer geometry contracts" {
         const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
         const data.BufferGeometry triangles ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
         const batch.GeometryDrawCommand ∪ null triangle_draw ← triangles.draw_command(2)
-        assert triangles.valida()
+        assert triangles.valid()
         assert not triangles.indexed
         assert triangles.element_count() ≡ 3
         assert triangles.index_count() is null
@@ -147,7 +147,7 @@ describe "buffer geometry contracts" {
         const attribute.BufferAttribute line_position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0])
         const data.BufferGeometry lines ← data.line_geometry(4, [line_position], [0, 1, 2, 3], batch.DrawRange {start = 0, count = 4}, [batch.GeometryGroup {start = 0, count = 4, material_index = 4}])
         const batch.LineGeometryDrawBatchFacts ∪ null line_facts ← lines.line_draw_batch_facts(2)
-        assert lines.valida()
+        assert lines.valid()
         assert (lines.line_count() coalesce 0) ≡ 2
         assert lines.triangle_count() is null
         assert (lines.topology_code() coalesce 0) ≡ 2
@@ -173,13 +173,13 @@ describe "buffer geometry contracts" {
         const data.BufferGeometry bad_groups ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 2, count = 3, material_index = 1}])
         const data.BufferGeometry duplicate_names ← data.indexed_triangle_geometry(6, [position, duplicate_name], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
         const data.BufferGeometry duplicate_locations ← data.indexed_triangle_geometry(6, [position, duplicate_location], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
-        assert not short_geometry.valida()
-        assert not bad_index.valida()
-        assert not empty_index.valida()
-        assert not bad_range.valida()
-        assert not bad_groups.valida()
-        assert not duplicate_names.valida()
-        assert not duplicate_locations.valida()
+        assert not short_geometry.valid()
+        assert not bad_index.valid()
+        assert not empty_index.valid()
+        assert not bad_range.valid()
+        assert not bad_groups.valid()
+        assert not duplicate_names.valid()
+        assert not duplicate_locations.valid()
         assert short_geometry.bounding_box() is null
         assert bad_index.draw_command(1) is null
         assert data.colored_indexed_geometry(3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0], [], [0, 1, 2]) is null
@@ -240,7 +240,7 @@ describe "buffer geometry contracts" {
 
         const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 3, [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         const data.BufferGeometry degenerate ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
-        assert degenerate.valida()
+        assert degenerate.valid()
         assert degenerate.vertex_normals() is null
         assert degenerate.planar_uvs() is null
     }

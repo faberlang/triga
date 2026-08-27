@@ -7,8 +7,8 @@
 import from "triga:graph/object" graph_object
 import from "triga:math" math
 
-fn objectum(string nomen) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, visible = true, name = nomen}
+fn objectum(string name) → graph_object.Object3D {
+    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = empty, visible = true, name = name}
 }
 
 test "Object3D preserves identity and default node state" {
@@ -20,14 +20,14 @@ test "Object3D preserves identity and default node state" {
     assert node.rotation.order ≡ "XYZ"
     assert node.quaternion.w ≡ (1.0 ∷ f32)
     assert node.scale.x ≡ (1.0 ∷ f32)
-    assert node.matrix.validum()
+    assert node.matrix.valid()
     assert node.children.length() ≡ 0
     assert node.visible
 }
 
 test "Object3D child lists preserve parent and child defaults" {
     const graph_object.Object3D child ← objectum("child")
-    const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = [child], visible = true, name = "parent"}
+    const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = [child], visible = true, name = "parent"}
     assert parent.name ≡ "parent"
     assert parent.children.length() ≡ 1
     assert parent.children[0].name ≡ "child"

@@ -20,45 +20,45 @@ class MeshBasicMaterial {
     base.Material base
     math.Color color
 
-    fn valida() → bool {
-        return self.base.valida() and self.color.valida()
+    fn valid() → bool {
+        return self.base.valid() and self.color.valid()
     }
 
     fn color_r() → f32 ∪ null {
-        if self.valida() ≡ false then return null
+        if not self.valid() then return null
         return self.color.r
     }
 
     fn color_g() → f32 ∪ null {
-        if self.valida() ≡ false then return null
+        if not self.valid() then return null
         return self.color.g
     }
 
     fn color_b() → f32 ∪ null {
-        if self.valida() ≡ false then return null
+        if not self.valid() then return null
         return self.color.b
     }
 
     fn alpha() → f32 ∪ null {
-        if self.valida() ≡ false then return null
+        if not self.valid() then return null
         return self.base.opacity
     }
 
     fn pipeline_facts() → base.MaterialPipelineFacts ∪ null {
-        if self.valida() ≡ false then return null
+        if not self.valid() then return null
         return self.base.pipeline_facts()
     }
 }
 
 @ public
 fn basic_material(string name, ref math.Color color) → MeshBasicMaterial ∪ null {
-    const base.Material base_material ← base.materia_ex_nomine(name)
-    if base_material.valida() ≡ false then return null
+    const base.Material base_material ← base.material_from_name(name)
+    if not base_material.valid() then return null
     # The ∪ null contract extends to the color: every accessor already
-    # fails closed on an invalid color (valida), so the constructor must not
+    # fails closed on an invalid color (valid), so the constructor must not
     # return a material whose accessors all return null (the correctness-fix
     # slice — the accessors were the authority, the constructor now matches
     # the contract).
-    if color.valida() ≡ false then return null
+    if not color.valid() then return null
     return MeshBasicMaterial {base = base_material, color = color}
 }

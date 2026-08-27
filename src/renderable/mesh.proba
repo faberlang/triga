@@ -18,8 +18,8 @@ import from "triga:material/basic" basic
 import from "triga:material/lit" lit
 import from "triga:material/standard" standard
 
-fn objectum(string nomen) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, visible = true, name = nomen}
+fn objectum(string name) → graph_object.Object3D {
+    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = empty, visible = true, name = name}
 }
 
 fn triangle_geometryum() → data.BufferGeometry {
@@ -40,7 +40,7 @@ describe "Mesh valid composition" {
         const data.BufferGeometry geometry ← triangle_geometryum()
         const math.Color color ← math.Color {r = 0.2, g = 0.4, b = 0.8}
         const basic.MeshBasicMaterial ∪ null constructed ← basic.basic_material("basic", color)
-        const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = base.materia_ex_nomine("basic"), color = color}
+        const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = base.material_from_name("basic"), color = color}
         const base.MaterialPipelineFacts ∪ null material_facts ← material.pipeline_facts()
         const mesh.Mesh value ← mesh.Mesh {base = node, geometry = geometry, material = material}
 
@@ -51,8 +51,8 @@ describe "Mesh valid composition" {
         assert value.base.position.z ≡ (3.0 ∷ f32)
         assert value.base.visible
         assert value.base.children.length() ≡ 0
-        assert value.base.matrix.validum()
-        assert value.geometry.valida()
+        assert value.base.matrix.valid()
+        assert value.geometry.valid()
         assert value.geometry.indexed
         assert value.geometry.element_count() ≡ 3
         assert (value.geometry.validated_vertex_count() coalesce 0) ≡ 3
@@ -60,7 +60,7 @@ describe "Mesh valid composition" {
         assert (value.geometry.triangle_count() coalesce 0) ≡ 1
         assert (value.geometry.group_count() coalesce 0) ≡ 1
         assert value.material not is null
-        assert material.valida()
+        assert material.valid()
         assert (material.color_r() coalesce -1.0) ≡ (0.2 ∷ f32)
         assert (material.color_g() coalesce -1.0) ≡ (0.4 ∷ f32)
         assert (material.color_b() coalesce -1.0) ≡ (0.8 ∷ f32)
@@ -77,9 +77,9 @@ describe "Mesh valid composition" {
 
     test "Mesh accepts each supported material family without claiming a draw" {
         const data.BufferGeometry geometry ← triangle_geometryum()
-        const basic.MeshBasicMaterial basic_material ← basic.MeshBasicMaterial {base = base.materia_ex_nomine("basic-family"), color = math.Color {r = 1.0, g = 0.0, b = 0.0}}
-        const lit.MeshPhongMaterial phong_material ← lit.MeshPhongMaterial {base = base.materia_ex_nomine("phong-family"), color = math.Color {r = 0.0, g = 1.0, b = 0.0}, specular = math.Color {r = 1.0, g = 1.0, b = 1.0}, shininess = 48.0}
-        const standard.MeshStandardMaterial standard_material ← standard.MeshStandardMaterial {base = base.materia_ex_nomine("standard-family"), color = math.Color {r = 0.0, g = 0.0, b = 1.0}, emissive = math.Color {r = 0.1, g = 0.2, b = 0.3}, roughness = 0.35, metalness = 0.8, emissive_intensity = 1.5}
+        const basic.MeshBasicMaterial basic_material ← basic.MeshBasicMaterial {base = base.material_from_name("basic-family"), color = math.Color {r = 1.0, g = 0.0, b = 0.0}}
+        const lit.MeshPhongMaterial phong_material ← lit.MeshPhongMaterial {base = base.material_from_name("phong-family"), color = math.Color {r = 0.0, g = 1.0, b = 0.0}, specular = math.Color {r = 1.0, g = 1.0, b = 1.0}, shininess = 48.0}
+        const standard.MeshStandardMaterial standard_material ← standard.MeshStandardMaterial {base = base.material_from_name("standard-family"), color = math.Color {r = 0.0, g = 0.0, b = 1.0}, emissive = math.Color {r = 0.1, g = 0.2, b = 0.3}, roughness = 0.35, metalness = 0.8, emissive_intensity = 1.5}
         const mesh.Mesh basic_mesh ← mesh.Mesh {base = objectum("basic-node"), geometry = geometry, material = basic_material}
         const mesh.Mesh phong_mesh ← mesh.Mesh {base = objectum("phong-node"), geometry = geometry, material = phong_material}
         const mesh.Mesh standard_mesh ← mesh.Mesh {base = objectum("standard-node"), geometry = geometry, material = standard_material}
@@ -87,7 +87,7 @@ describe "Mesh valid composition" {
         assert basic_mesh.material not is null
         assert phong_mesh.material not is null
         assert standard_mesh.material not is null
-        assert basic_mesh.geometry.valida()
+        assert basic_mesh.geometry.valid()
         assert phong_mesh.base.name ≡ "phong-node"
         assert standard_mesh.base.name ≡ "standard-node"
         assert phong_material.shininess ≡ (48.0 ∷ f32)
@@ -104,7 +104,7 @@ describe "Mesh public facts and missing components" {
 
         assert value.base.name ≡ "unshaded-node"
         assert value.base.visible
-        assert value.geometry.valida()
+        assert value.geometry.valid()
         assert value.geometry.indexed
         assert value.material is null
     }
@@ -117,14 +117,14 @@ describe "Mesh public facts and missing components" {
         const mesh.Mesh value ← mesh.Mesh {base = objectum("invalid-components"), geometry = invalid_geometry, material = invalid_material}
 
         assert rejected_material is null
-        assert invalid_geometry.valida() ≡ false
+        assert invalid_geometry.valid() ≡ false
         assert invalid_geometry.validated_vertex_count() is null
         assert invalid_geometry.index_count() is null
         assert invalid_geometry.triangle_count() is null
-        assert invalid_material.valida() ≡ false
+        assert invalid_material.valid() ≡ false
         assert invalid_material.pipeline_facts() is null
         assert value.base.name ≡ "invalid-components"
-        assert value.geometry.valida() ≡ false
+        assert value.geometry.valid() ≡ false
         assert value.material not is null
     }
 }
@@ -132,7 +132,7 @@ describe "Mesh public facts and missing components" {
 describe "Mesh composition edges" {
     test "Mesh keeps graph hierarchy and visibility in the carrier" {
         const graph_object.Object3D child ← objectum("child")
-        const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(2.0, 2.0, 2.0), matrix = math.matrix4_identitas(), children = [child], visible = false, name = "parent"}
+        const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(2.0, 2.0, 2.0), matrix = math.matrix4_identity(), children = [child], visible = false, name = "parent"}
         const data.BufferGeometry geometry ← triangle_geometryum()
         const mesh.Mesh value ← mesh.Mesh {base = parent, geometry = geometry}
 
@@ -153,7 +153,7 @@ describe "Mesh composition edges" {
         const mesh.Mesh value ← mesh.Mesh {base = objectum("nonindexed-node"), geometry = geometry}
 
         assert value.base.name ≡ "nonindexed-node"
-        assert value.geometry.valida()
+        assert value.geometry.valid()
         assert value.geometry.indexed ≡ false
         assert value.geometry.element_count() ≡ 3
         assert (value.geometry.validated_vertex_count() coalesce 0) ≡ 3
