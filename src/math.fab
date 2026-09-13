@@ -479,14 +479,8 @@ class Ray {
         const RayInterval x_axis ← x_interval
         const RayInterval y_axis ← y_interval
         const RayInterval z_axis ← z_interval
-        var f32 entry ← x_axis.minimum
-        entry ← entry ⤒ y_axis.minimum
-        entry ← entry ⤒ z_axis.minimum
-        entry ← entry ⤒ 0.0
-        var f32 exit ← x_axis.maximum
-        exit ← exit ⤓ y_axis.maximum
-        exit ← exit ⤓ z_axis.maximum
-        exit ← exit ⤓ max_distance
+        const f32 entry ← (((x_axis.minimum ⤒ y_axis.minimum) ⤒ z_axis.minimum) ⤒ 0.0)
+        const f32 exit ← (((x_axis.maximum ⤓ y_axis.maximum) ⤓ z_axis.maximum) ⤓ max_distance)
         if entry ≻ exit then return null
         return entry
     }
@@ -604,29 +598,8 @@ fn face_code_axis_code(int code) → int ∪ null {
 @ public
 fn face_code_opposite(int code) → int ∪ null {
     if not face_code_valid(code) then return null
-    switch code {
-        case 1 {
-            return 2
-        }
-        case 2 {
-            return 1
-        }
-        case 3 {
-            return 4
-        }
-        case 4 {
-            return 3
-        }
-        case 5 {
-            return 6
-        }
-        case 6 {
-            return 5
-        }
-        default {
-            return null
-        }
-    }
+    if code % 2 ≡ 1 then return code + 1
+    return code - 1
 }
 
 @ public
