@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Regression suite for proof/coverage/check-scorecard, run against a hermetic
+# extract of HEAD. Every expectation is derived from the committed scorecard,
+# the committed inventory, and the receipts themselves; no revision, digest,
+# count, or mismatch state is pinned here. A committed fixture that fails a
+# fresh derivation fails the first case.
+
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/triga-scorecard-regression.XXXXXX")
 trap 'rm -rf "$WORK"' EXIT
@@ -8,117 +14,181 @@ trap 'rm -rf "$WORK"' EXIT
 git -C "$ROOT" archive HEAD | tar -x -C "$WORK"
 cd "$WORK"
 
-# A marked inventory mismatch is recorded provenance, not a source_revision
-# equality failure. Overlay staleness may still fail the checker.
-cp proof/coverage-scorecard.json "$WORK/scorecard-good.json"
-output=$(./proof/coverage/check-scorecard 2>&1 || true)
-printf '%s\n' "$output" | grep -Fvq \
-    "scorecard.inventory.source_revision does not match committed inventory"
-printf '%s\n' "$output" | grep -Fvq \
-    "scorecard.inventory.inventory_mismatch disagrees"
-python3 - proof/coverage-scorecard.json <<'PY'
+SCORECARD=proof/coverage-scorecard.json
+cp "$SCORECARD" scorecard-good.json
+
+expect_reject() {
+  local label="$1" message="$2"
+  local output
+  if output=$(./proof/coverage/check-scorecard 2>&1); then
+    printf '%s\n' "error: checker accepted ${label}" >&2
+    exit 1
+  fi
+  printf '%s\n' "$output" | grep -Fq "$message" || {
+    printf '%s\n' "error: checker rejected ${label} without naming it: ${message}" >&2
+    printf '%s\n' "$output" >&2
+    exit 1
+  }
+}
+
+# The committed scorecard must pass a fresh derivation and the live-source
+# comparison. This is the live oracle: drift between the committed fixture
+# and the inventory/exempla/docs it summarizes fails here.
+if output=$(./proof/coverage/check-scorecard 2>&1); then
+  :
+else
+  printf '%s\n' "error: checker rejected the committed scorecard:" >&2
+  printf '%s\n' "$output" >&2
+  exit 1
+fi
+
+# A marked inventory mismatch is recorded provenance, not a failure.
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
 import json
-import re
 import sys
 
-path = sys.argv[1]
-with open(path, encoding="utf-8") as source:
+with open(sys.argv[1], encoding="utf-8") as source:
     scorecard = json.load(source)
 inventory = scorecard["inventory"]
-assert inventory["source_revision"] == "cec9e551eebdd6d4dfdb95245a648c83189b15ca"
-assert re.fullmatch(r"[0-9a-f]{40}", inventory["observed_source_revision"])
-assert re.fullmatch(r"sha256:[0-9a-f]{64}", inventory["observed_source_digest"])
-assert inventory["inventory_mismatch"] is False
-assert inventory["source_revision"] == inventory["observed_source_revision"]
-assert scorecard["stage0_5"]["executed_module_count"] == 4
-assert scorecard["stage0_5"]["complete"] is False
+observed = inventory["observed_source_revision"]
+# Synthetic snapshot guaranteed to differ from the observed revision.
+inventory["source_revision"] = ("0" if observed[0] != "0" else "1") + observed[1:]
+inventory["inventory_mismatch"] = True
+with open(sys.argv[1], "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
 PY
+if output=$(./proof/coverage/check-scorecard 2>&1); then
+  :
+else
+  printf '%s\n' "error: checker treated a marked inventory mismatch as a failure:" >&2
+  printf '%s\n' "$output" >&2
+  exit 1
+fi
 
-python3 - proof/coverage-scorecard.json <<'PY'
+# The same mismatch left unmarked must be rejected by name.
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
 import json
 import sys
 
-path = sys.argv[1]
-with open(path, encoding="utf-8") as source:
+with open(sys.argv[1], encoding="utf-8") as source:
+    scorecard = json.load(source)
+inventory = scorecard["inventory"]
+observed = inventory["observed_source_revision"]
+inventory["source_revision"] = ("0" if observed[0] != "0" else "1") + observed[1:]
+inventory["inventory_mismatch"] = False
+with open(sys.argv[1], "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+expect_reject "an unmarked inventory mismatch" \
+    "scorecard.inventory.inventory_mismatch disagrees with observed vs snapshot revision"
+
+# Observed write-time provenance is required.
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as source:
+    scorecard = json.load(source)
+inventory = scorecard["inventory"]
+inventory.pop("observed_source_revision")
+inventory.pop("observed_source_digest")
+inventory.pop("inventory_mismatch")
+with open(sys.argv[1], "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+expect_reject "a scorecard without observed source provenance" \
+    "scorecard.inventory: missing fields: inventory_mismatch, observed_source_digest, observed_source_revision"
+
+# The schema revision gate fires by name.
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as source:
     scorecard = json.load(source)
 scorecard["coverage_revision"] = 1
-with open(path, "w", encoding="utf-8") as target:
+with open(sys.argv[1], "w", encoding="utf-8") as target:
     json.dump(scorecard, target, indent=2)
     target.write("\n")
 PY
+expect_reject "a non-revision-3 scorecard" "scorecard.coverage_revision must be 3"
 
-if output=$(./proof/coverage/check-scorecard 2>&1); then
-    printf '%s\n' "error: checker accepted a non-revision-2 scorecard" >&2
-    exit 1
-fi
-printf '%s\n' "$output" | grep -Fq \
-    "error: scorecard.coverage_revision must be 3"
-
-cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
-python3 - proof/coverage-scorecard.json <<'PY'
+# A committed fixture that no longer matches a fresh derivation is rejected;
+# this drift signal replaces any frozen revision equality.
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
 import json
 import sys
 
-path = sys.argv[1]
-with open(path, encoding="utf-8") as source:
+with open(sys.argv[1], encoding="utf-8") as source:
     scorecard = json.load(source)
-scorecard["stage0_5"]["module_count"] = 25
-with open(path, "w", encoding="utf-8") as target:
+scorecard["modules"][0]["lines"] += 1
+with open(sys.argv[1], "w", encoding="utf-8") as target:
     json.dump(scorecard, target, indent=2)
     target.write("\n")
 PY
+expect_reject "a committed scorecard stale against a fresh derivation" \
+    "committed scorecard differs from a fresh derived baseline"
 
-if output=$(./proof/coverage/check-scorecard 2>&1); then
-    printf '%s\n' "error: checker accepted a malformed stage0_5 schema" >&2
-    exit 1
-fi
-printf '%s\n' "$output" | grep -Fq \
-    "error: scorecard.stage0_5.module_count must remain 26"
-
-cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
-python3 - proof/coverage-scorecard.json <<'PY'
+# The stage0_5 execution receipt must stay internally consistent; both
+# expectations are derived from the committed receipt, not pinned.
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
 import json
 import sys
 
-path = sys.argv[1]
-with open(path, encoding="utf-8") as source:
+with open(sys.argv[1], encoding="utf-8") as source:
     scorecard = json.load(source)
-scorecard["inventory"].pop("observed_source_revision")
-scorecard["inventory"].pop("observed_source_digest")
-scorecard["inventory"].pop("inventory_mismatch")
-with open(path, "w", encoding="utf-8") as target:
+executed = sum(
+    1
+    for row in scorecard["modules"]
+    if isinstance(row, dict)
+    and isinstance(row.get("proba_execution"), dict)
+    and row["proba_execution"].get("evidence_tier") == "executed-proba"
+)
+scorecard["stage0_5"]["executed_module_count"] = executed + 1
+with open(sys.argv[1], "w", encoding="utf-8") as target:
     json.dump(scorecard, target, indent=2)
     target.write("\n")
 PY
+expect_reject "a stage0_5 receipt with a wrong executed count" \
+    "scorecard.stage0_5.executed_module_count disagrees with module execution rows"
 
-if output=$(./proof/coverage/check-scorecard 2>&1); then
-    printf '%s\n' "error: checker accepted a scorecard without observed source provenance" >&2
-    exit 1
-fi
-printf '%s\n' "$output" | grep -Fq \
-    "error: scorecard.inventory: missing fields: inventory_mismatch, observed_source_digest, observed_source_revision"
-
-cp "$WORK/scorecard-good.json" proof/coverage-scorecard.json
-python3 - proof/coverage-scorecard.json <<'PY'
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
 import json
 import sys
 
-path = sys.argv[1]
-with open(path, encoding="utf-8") as source:
+with open(sys.argv[1], encoding="utf-8") as source:
     scorecard = json.load(source)
-# The fresh receipt pins source_revision to the observed census (snapshot ==
-# observed), so a marked mismatch is now the inconsistent state.
-scorecard["inventory"]["inventory_mismatch"] = True
-with open(path, "w", encoding="utf-8") as target:
+scorecard["stage0_5"]["complete"] = not scorecard["stage0_5"]["complete"]
+with open(sys.argv[1], "w", encoding="utf-8") as target:
     json.dump(scorecard, target, indent=2)
     target.write("\n")
 PY
+expect_reject "a stage0_5 complete flag inconsistent with its receipt" \
+    "scorecard.stage0_5.complete is inconsistent with the execution receipt"
 
-if output=$(./proof/coverage/check-scorecard 2>&1); then
-    printf '%s\n' "error: checker accepted an unmarked inventory mismatch" >&2
-    exit 1
-fi
-printf '%s\n' "$output" | grep -Fq \
-    "error: scorecard.inventory.inventory_mismatch disagrees with observed vs snapshot revision"
+cp scorecard-good.json "$SCORECARD"
+python3 - "$SCORECARD" <<'PY'
+import json
+import sys
 
-printf '%s\n' "scorecard regression ok: observed source provenance required; unmarked mismatch rejected"
+with open(sys.argv[1], encoding="utf-8") as source:
+    scorecard = json.load(source)
+scorecard["stage0_5"]["module_count"] = scorecard["stage0_5"]["module_count"] + 1
+with open(sys.argv[1], "w", encoding="utf-8") as target:
+    json.dump(scorecard, target, indent=2)
+    target.write("\n")
+PY
+expect_reject "a malformed stage0_5 module count" \
+    "scorecard.stage0_5.module_count must remain"
+
+printf '%s\n' "scorecard regression ok: committed state green; provenance, schema, derivation, and receipt verdicts fire"

@@ -28,7 +28,8 @@ jobs:
             scripta/check-capabilities \
             scripta/check-compile \
             scripta/check-proba-coverage \
-            scripta/check-wgsl-shader-contract-conformance
+            scripta/check-wgsl-shader-contract-conformance \
+            proof/coverage/test-check-scorecard
           do
             if [[ ! -f "$script" ]]; then
               echo "missing script: $script" >&2
@@ -65,6 +66,11 @@ jobs:
         if: ${{ !cancelled() && steps.scripts.outcome == 'success' }}
         run: ./scripta/check-capabilities
 
+      - name: coverage-scorecard regression
+        id: scorecard
+        if: ${{ !cancelled() && steps.scripts.outcome == 'success' }}
+        run: ./proof/coverage/test-check-scorecard
+
       - name: public-execution — Faber-dependent rungs
         id: public_execution
         if: ${{ !cancelled() && steps.scripts.outcome == 'success' }}
@@ -85,6 +91,7 @@ jobs:
           SOURCE_KIND: ${{ steps.source.outputs.kind }}
           SOURCE_OUTCOME: ${{ steps.source.outcome }}
           CAP_OUTCOME: ${{ steps.capabilities.outcome }}
+          SCORECARD_OUTCOME: ${{ steps.scorecard.outcome }}
           PUB_OUTCOME: ${{ steps.public_execution.outcome }}
         run: |
           set -euo pipefail
@@ -102,6 +109,10 @@ jobs:
           fi
           if [[ "$CAP_OUTCOME" != "success" ]]; then
             echo "workflow conclusion: check-capabilities red"
+            exit 1
+          fi
+          if [[ "$SCORECARD_OUTCOME" != "success" ]]; then
+            echo "workflow conclusion: coverage-scorecard regression red"
             exit 1
           fi
           if [[ "$PUB_OUTCOME" != "success" ]]; then
