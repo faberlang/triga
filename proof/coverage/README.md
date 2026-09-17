@@ -26,35 +26,25 @@ MIR, or runner failure is isolated to its module row rather than fail-closing
 the remaining rows. The direct single-`.proba` route is deliberately not used;
 it skips the package link step that resolves receiver methods before lowering.
 
-The current receipt (`proof/coverage-scorecard.json`, coverage revision 3)
-records **4/26** module selections at `executed-proba` through this package-link
-route, using the workspace release binary
-`/Users/ianzepp/work/faberlang/radix/target/release/faber` (faber 1.8.0) with
-`FABER_LIBRARY_HOME=/Users/ianzepp/work/faberlang`. The passing selections are
-`src/geometry/attribute.fab`, `src/geometry/batch.fab`,
-`src/geometry/layout.fab`, and `src/shader_contract.fab`. This is a partial
-package-link result, not 26/26.
+The committed receipt (`proof/coverage-scorecard.json`, coverage revision 3)
+records the Stage-0.5 aggregate as complete: all 26 module selections ran at
+the `executed-proba` tier through this package-link route, using the workspace
+release binary with `FABER_LIBRARY_HOME=/Users/ianzepp/work/faberlang`. The
+authoritative counts, run timestamp, command template, and per-module rows
+live in the scorecard's `stage0_5` object and `modules` array; this README
+does not restate them. `proof/coverage/test-check-scorecard` derives every
+expectation from the committed scorecard, inventory, and receipts, so the
+prose and the artefact cannot drift silently.
 
-This receipt was refreshed at `2026-08-23T19:58:59Z`. Twenty modules are
-`blocked` on the same radix-side MIR gap: `unsupported MIR lowering: itera
-collection before iterator MIR lowering`. The current triga source uses
-`itera` collections (`src/math.fab`, `src/scene.fab`); the current radix does
-not lower an `itera` collection before iterator MIR lowering, so every probe
-that imports those modules blocks before any case runs. That is a radix
-frontend/MIR gap, not a triga paper, and it keeps the receipt at 4/26.
-
-Two further reds are not the itera block:
-
-- `src/material/base.fab` 3 passed / 1 failed — the revision-2 assertion
-  residual persists: `texture descriptor preserves its placeholder shape`
-  (imported struct literals omit class field defaults; radix
-  `materialize_struct_fields` fills only local-HIR structs)
-- `src/primitives/basic.fab` fails package analysis (`error: package analysis
-  failed`) before any case runs
-
-`rdx-s05-3` remains `unresolved` on the MIR-unsupported evidence. No
-`PARSE050` row is present. The gate exit is 1 (`blocked`, `complete: false`);
-the run stays open at 4/26, not 26/26.
+The blocked era is historical evidence. An earlier revision-3 refresh
+(2026-08-23) held at a partial receipt: twenty modules blocked on the
+radix-side MIR gap (`unsupported MIR lowering: itera collection before
+iterator MIR lowering`), with `src/material/base.fab` failing on the
+revision-2 assertion residual and `src/primitives/basic.fab` failing package
+analysis. Radix landed `itera` collection lowering (MRL-1/MRL-2) and the
+gate was re-run green on 2026-08-24; the committed scorecard is that re-run's
+record. Campaign narration of the blocked era lives in
+`docs/factory/triga-hardening/CAMPAIGN.md`.
 
 `FABER_BIN` may be set explicitly. Otherwise the gate uses
 `$FABER_LIBRARY_HOME/radix/target/release/faber`. `PROBA_TIMEOUT_SECONDS` may
