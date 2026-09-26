@@ -111,7 +111,6 @@ class Matrix3 {
 class Matrix4 {
     list<f32> elements
 
-    @ public
     fn valid() → bool {
         return self.elements.length() ≡ 16
     }
