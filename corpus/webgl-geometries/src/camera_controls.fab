@@ -31,19 +31,19 @@ fn spawn_camera() → OrbitCamera {
     return OrbitCamera {target = math.vector3(0.0, 0.0, 0.0), yaw_degrees = -30.0 ∷ f32, pitch_degrees = -20.0 ∷ f32, distance = 15.0, input = CameraInput {}}
 }
 
-fn _clamp_distance(f32 distance) → f32 {
+fn clamp_distance(f32 distance) → f32 {
     if distance ≺ 5.0 then return 5.0
     if distance ≻ 40.0 then return 40.0
     return distance
 }
 
-fn _clamp_delta(f32 delta_seconds) → f32 {
+fn clamp_delta(f32 delta_seconds) → f32 {
     if delta_seconds ≺ 0.0 then return 0.0
     if delta_seconds ≻ 0.05 then return 0.05
     return delta_seconds
 }
 
-fn _input_axis(bool negative, bool positive) → f32 {
+fn input_axis(bool negative, bool positive) → f32 {
     if negative and positive then return 0.0
     if negative then return 0.0 - 1.0
     if positive then return 1.0
@@ -88,15 +88,15 @@ fn set_key_by_code(ref CameraInput input, string code, bool pressed) → CameraI
 
 @ public
 fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
-    const f32 safe_delta ← _clamp_delta(delta_seconds)
-    const f32 yaw_axis ← _input_axis(camera.input.yaw_left, camera.input.yaw_right)
-    const f32 pitch_axis ← _input_axis(camera.input.pitch_down, camera.input.pitch_up)
-    const f32 dolly_axis ← _input_axis(camera.input.dolly_in, camera.input.dolly_out)
-    const f32 pan_right_axis ← _input_axis(camera.input.pan_left, camera.input.pan_right)
-    const f32 pan_forward_axis ← _input_axis(camera.input.pan_back, camera.input.pan_forward)
+    const f32 safe_delta ← clamp_delta(delta_seconds)
+    const f32 yaw_axis ← input_axis(camera.input.yaw_left, camera.input.yaw_right)
+    const f32 pitch_axis ← input_axis(camera.input.pitch_down, camera.input.pitch_up)
+    const f32 dolly_axis ← input_axis(camera.input.dolly_in, camera.input.dolly_out)
+    const f32 pan_right_axis ← input_axis(camera.input.pan_left, camera.input.pan_right)
+    const f32 pan_forward_axis ← input_axis(camera.input.pan_back, camera.input.pan_forward)
     const f32 next_yaw ← camera.yaw_degrees + (yaw_axis * 55.0) * safe_delta
     const f32 next_pitch ← math.camera_pitch_coercita(camera.pitch_degrees + (pitch_axis * 38.0) * safe_delta)
-    const f32 next_distance ← _clamp_distance(camera.distance + (dolly_axis * 14.0) * safe_delta)
+    const f32 next_distance ← clamp_distance(camera.distance + (dolly_axis * 14.0) * safe_delta)
     const math.Vector3 pan ← math.camera_motus_planus_ex_yaw(next_yaw, pan_forward_axis, pan_right_axis, 6.0, safe_delta)
     return OrbitCamera {target = camera.target.addita(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input}
 }
