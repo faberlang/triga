@@ -10,8 +10,8 @@ class WaterMesh {
     list<u32> index_payload
 }
 
-const int GRID_SEGMENTS ← 24
-const f32 GRID_EXTENT ← 24.0
+static int GRID_SEGMENTS = 24
+static f32 GRID_EXTENT = 24.0
 
 fn floats_textus(de list<f32> values) → string {
     var string output ← ""
