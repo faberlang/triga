@@ -10,7 +10,7 @@ test "standard material preserves PBR carrier fields and pipeline facts" {
     const math.Color color ← math.Color {r = 0.2, g = 0.3, b = 0.4}
     const math.Color emissive ← math.Color {r = 0.05, g = 0.1, b = 0.15}
     const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = policy, color = color, roughness = 0.35, metalness = 0.8, emissive = emissive, emissive_intensity = 1.5}
-    const base.MaterialPipelineFacts ∪ null facts_result ← material.base.pipeline_facts()
+    const base.MaterialPipelineFacts ∪ none facts_result ← material.base.pipeline_facts()
 
     assert material.base.name ≡ "standard"
     assert material.color.r ≡ (0.2 ∷ f32)
@@ -22,8 +22,8 @@ test "standard material preserves PBR carrier fields and pipeline facts" {
     assert material.emissive.g ≡ (0.1 ∷ f32)
     assert material.emissive.b ≡ (0.15 ∷ f32)
     assert material.emissive_intensity ≡ (1.5 ∷ f32)
-    assert facts_result not is null
-    if facts_result not is null {
+    assert facts_result not is none
+    if facts_result not is none {
         assert facts_result!.side_code ≡ 2
         assert facts_result!.depth_test_enabled ≡ false
         assert facts_result!.depth_write_enabled
@@ -40,7 +40,7 @@ test "standard defaults remain explicit carrier values" {
     assert material.metalness ≡ (0.0 ∷ f32)
     assert material.emissive_intensity ≡ (0.0 ∷ f32)
     assert material.base.valid()
-    assert material.base.pipeline_facts() not is null
+    assert material.base.pipeline_facts() not is none
 }
 
 test "standard carrier exposes invalid base facts as unsupported" {
@@ -48,7 +48,7 @@ test "standard carrier exposes invalid base facts as unsupported" {
     const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert material.base.valid() ≡ false
-    assert material.base.pipeline_facts() is null
+    assert material.base.pipeline_facts() is none
     assert material.roughness ≡ (1.0 ∷ f32)
     assert material.metalness ≡ (0.0 ∷ f32)
     assert material.emissive_intensity ≡ (0.0 ∷ f32)

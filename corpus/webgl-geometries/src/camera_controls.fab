@@ -101,7 +101,7 @@ fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
     return OrbitCamera {target = camera.target.addita(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input}
 }
 
-fn view_projection(ref OrbitCamera cam, f32 aspect) → math.Matrix4 ∪ null {
+fn view_projection(ref OrbitCamera cam, f32 aspect) → math.Matrix4 ∪ none {
     const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
     const math.Vector3 eye ← cam.target.subtracta(direction.multiplicata(cam.distance))
     const camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.1, far = 200.0}
@@ -109,9 +109,9 @@ fn view_projection(ref OrbitCamera cam, f32 aspect) → math.Matrix4 ∪ null {
 }
 
 @ public
-fn transform_payload(ref OrbitCamera cam, f32 aspect) → math.TransformPayload ∪ null {
-    const math.Matrix4 ∪ null view_projection_result ← view_projection(cam, aspect)
-    if view_projection_result is null then return null
+fn transform_payload(ref OrbitCamera cam, f32 aspect) → math.TransformPayload ∪ none {
+    const math.Matrix4 ∪ none view_projection_result ← view_projection(cam, aspect)
+    if view_projection_result is none then return null
     const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
     return math.transform_payload(math.matrix4_identitas(), view_projection_matrix)
 }

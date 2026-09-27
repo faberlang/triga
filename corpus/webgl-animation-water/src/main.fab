@@ -100,22 +100,22 @@ fn model_matrix(f32 elapsed_seconds) → math.Matrix4 {
     return math.matrix4_composita(math.vector3(elapsed_seconds * 0.35, 0.0, 0.0), quaternion, math.vector3(1.0, 1.0, 1.0))
 }
 
-fn view_projection(f32 camera_yaw_degrees, f32 aspect) → math.Matrix4 ∪ null {
+fn view_projection(f32 camera_yaw_degrees, f32 aspect) → math.Matrix4 ∪ none {
     const math.Vector3 target ← math.vector3(0.0, 0.0, 0.0)
     const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(camera_yaw_degrees, -28.0)
     const math.Vector3 eye ← target.subtracta(direction.multiplicata(17.0))
-    const math.Matrix4 ∪ null projection_result ← math.matrix4_perspectiva(45.0, aspect, 0.1, 200.0)
-    if projection_result is null then return null
-    const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
-    if view_result is null then return null
+    const math.Matrix4 ∪ none projection_result ← math.matrix4_perspectiva(45.0, aspect, 0.1, 200.0)
+    if projection_result is none then return null
+    const math.Matrix4 ∪ none view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
+    if view_result is none then return null
     const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
     const math.Matrix4 view ← math.Matrix4 {elements = view_result!.elements}
     return projection.multiplicata(view)
 }
 
-fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ null {
-    const math.Matrix4 ∪ null view_projection_result ← view_projection(-35.0 + elapsed_seconds * 5.0, aspect)
-    if view_projection_result is null then return null
+fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ none {
+    const math.Matrix4 ∪ none view_projection_result ← view_projection(-35.0 + elapsed_seconds * 5.0, aspect)
+    if view_projection_result is none then return null
     const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
     const math.Matrix4 model ← model_matrix(elapsed_seconds)
     return math.transform_payload(model, view_projection_matrix)
@@ -137,8 +137,8 @@ fn corpus_animation_water_controller(dom.Scope scope) → list<dom.Subscription>
     dom.attr_set(facts, "data-water-grid", GRID_SEGMENTS ↦ string)
     dom.text_set(status, "water-ready")
 
-    const math.TransformPayload ∪ null initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
-    if initial_payload is null {
+    const math.TransformPayload ∪ none initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
+    if initial_payload is none {
         dom.attr_set(facts, "data-transform-status", "invalid")
     }
     else {
@@ -148,8 +148,8 @@ fn corpus_animation_water_controller(dom.Scope scope) → list<dom.Subscription>
     const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
         const f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
-        const math.TransformPayload ∪ null payload ← transform_payload(elapsed_seconds, canvas_aspect)
-        if payload is null {
+        const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
+        if payload is none {
             dom.attr_set(facts, "data-transform-status", "invalid")
         }
         else {

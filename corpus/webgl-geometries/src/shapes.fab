@@ -22,11 +22,11 @@ class CorpusMesh {
 }
 
 @ private { }
-fn mesh_ex_geometry(string name, ref data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → CorpusMesh ∪ null {
+fn mesh_ex_geometry(string name, ref data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → CorpusMesh ∪ none {
     if geom.attributes.length() ≺ 2 then return null
-    const list<f32> ∪ null pos_opt ← geom.attributes[0].float32_values()
-    const list<f32> ∪ null nrm_opt ← geom.attributes[1].float32_values()
-    if pos_opt is null or nrm_opt is null then return null
+    const list<f32> ∪ none pos_opt ← geom.attributes[0].float32_values()
+    const list<f32> ∪ none nrm_opt ← geom.attributes[1].float32_values()
+    if pos_opt is none or nrm_opt is none then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
     if pos.length() ≠ geom.vertex_count * 3 then return null
@@ -49,10 +49,10 @@ fn mesh_ex_geometry(string name, ref data.BufferGeometry geom, f32 ox, f32 oy, f
 }
 
 @ private { }
-fn add_mesh(list<CorpusMesh> meshes, string name, data.BufferGeometry ∪ null geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<CorpusMesh> {
-    if geom_opt is null then return meshes
-    const CorpusMesh ∪ null mesh_opt ← mesh_ex_geometry(name, geom_opt, ox, oy, oz, r, g, b)
-    if mesh_opt is null then return meshes
+fn add_mesh(list<CorpusMesh> meshes, string name, data.BufferGeometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<CorpusMesh> {
+    if geom_opt is none then return meshes
+    const CorpusMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom_opt, ox, oy, oz, r, g, b)
+    if mesh_opt is none then return meshes
     const CorpusMesh mesh ← mesh_opt
     if mesh.vertex_count ≡ 0 then return meshes
     meshes.append(mesh)

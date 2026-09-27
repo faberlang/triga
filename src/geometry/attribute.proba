@@ -18,11 +18,11 @@ describe "buffer attribute contracts" {
         assert value.scalar_count() ≡ 6
         assert value.scalar_bytes() ≡ 4
         assert value.stride_bytes() ≡ 12
-        assert value.float32_values() not is null
+        assert value.float32_values() not is none
         assert values.length() ≡ 6
         assert values[0] ≡ (1.0 ∷ f32)
         assert values[5] ≡ (6.0 ∷ f32)
-        const layout.VertexAttributeLayout ∪ null projected ← value.vertex_layout()
+        const layout.VertexAttributeLayout ∪ none projected ← value.vertex_layout()
         const layout.VertexAttributeLayout empty_layout ← layout.VertexAttributeLayout {
             source_name = "",
             shader_location = 0,
@@ -32,7 +32,7 @@ describe "buffer attribute contracts" {
             step_mode = layout.vertex_step_mode_vertex_step()
         }
         const layout.VertexAttributeLayout lay ← projected coalesce empty_layout
-        assert projected not is null
+        assert projected not is none
         assert lay.source_name ≡ "position"
         assert lay.shader_location ≡ 0
         assert lay.offset_bytes ≡ 0
@@ -48,9 +48,9 @@ describe "buffer attribute contracts" {
         const list<f32> short_values ← invalid.float32_values() coalesce empty_values
         assert valid.valid()
         assert not invalid.valid()
-        assert invalid.float32_values() not is null
+        assert invalid.float32_values() not is none
         assert short_values.length() ≡ 2
-        assert invalid.vertex_layout() is null
+        assert invalid.vertex_layout() is none
     }
 
     test "empty and malformed metadata are rejected" {
@@ -66,7 +66,7 @@ describe "buffer attribute contracts" {
         assert not wide.valid()
         assert not zero_elements.valid()
         assert not short_payload.valid()
-        assert short_payload.float32_values() not is null
+        assert short_payload.float32_values() not is none
         assert short_values.length() ≡ 3
     }
 }

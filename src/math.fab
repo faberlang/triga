@@ -147,7 +147,7 @@ class Matrix4 {
         return vector3((((e[0] * point.x + e[4] * point.y) + e[8] * point.z) + e[12]) / divisor, (((e[1] * point.x + e[5] * point.y) + e[9] * point.z) + e[13]) / divisor, (((e[2] * point.x + e[6] * point.y) + e[10] * point.z) + e[14]) / divisor)
     }
 
-    fn affine_inverse() → Matrix4 ∪ null {
+    fn affine_inverse() → Matrix4 ∪ none {
         const list<f32> e ← self.elements
         const f32 a00 ← e[0]
         const f32 a01 ← e[4]
@@ -217,23 +217,23 @@ class Matrix4 {
 class TransformPayload {
     var list<f32> values
 
-    fn float_count() → int ∪ null {
+    fn float_count() → int ∪ none {
         if self.values.length() ≠ 32 then return null
         return self.values.length()
     }
 
-    fn byte_count() → int ∪ null {
+    fn byte_count() → int ∪ none {
         if self.values.length() ≠ 32 then return null
         return self.values.length() * 4
     }
 
-    fn model_value(int index) → f32 ∪ null {
+    fn model_value(int index) → f32 ∪ none {
         if self.values.length() ≠ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
         return self.values[index]
     }
 
-    fn view_projection_value(int index) → f32 ∪ null {
+    fn view_projection_value(int index) → f32 ∪ none {
         if self.values.length() ≠ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
         return self.values[index + 16]
@@ -309,7 +309,7 @@ class Euler {
     var f32 z
     var string order = "XYZ"
 
-    fn to_quaternion() → Quaternion ∪ null {
+    fn to_quaternion() → Quaternion ∪ none {
         if self.order ≠ "XYZ" then return null
         const f32 hx ← self.x * 0.5
         const f32 hy ← self.y * 0.5
@@ -323,17 +323,17 @@ class Euler {
         return quaternion((sx * cy) * cz + (cx * sy) * sz, (cx * sy) * cz - (sx * cy) * sz, (cx * cy) * sz + (sx * sy) * cz, (cx * cy) * cz - (sx * sy) * sz).normalized()
     }
 
-    fn compose(ref Euler other) → Quaternion ∪ null {
-        const Quaternion ∪ null qa ← self.to_quaternion()
-        if qa is null then return null
-        const Quaternion ∪ null qb ← other.to_quaternion()
-        if qb is null then return null
+    fn compose(ref Euler other) → Quaternion ∪ none {
+        const Quaternion ∪ none qa ← self.to_quaternion()
+        if qa is none then return null
+        const Quaternion ∪ none qb ← other.to_quaternion()
+        if qb is none then return null
         const Quaternion av ← qa
         const Quaternion bv ← qb
         return av.multiply(bv).normalized()
     }
 
-    fn lerp(ref Euler other, f32 ratio) → Euler ∪ null {
+    fn lerp(ref Euler other, f32 ratio) → Euler ∪ none {
         if self.order ≠ other.order then return null
         if self.order ≠ "XYZ" then return null
         return Euler {x = self.x + (other.x - self.x) * ratio, y = self.y + (other.y - self.y) * ratio, z = self.z + (other.z - self.z) * ratio, order = "XYZ"}
@@ -372,12 +372,12 @@ class Box3 {
         return (self.min.x ≤ self.max.x and self.min.y ≤ self.max.y) and self.min.z ≤ self.max.z
     }
 
-    fn size() → Vector3 ∪ null {
+    fn size() → Vector3 ∪ none {
         if not self.valid() then return null
         return self.max.subtract(self.min)
     }
 
-    fn center() → Vector3 ∪ null {
+    fn center() → Vector3 ∪ none {
         if not self.valid() then return null
         return self.min.add(self.max).scale(0.5)
     }
@@ -386,7 +386,7 @@ class Box3 {
         return self.contains(other.min) and self.contains(other.max)
     }
 
-    fn overlap(ref Box3 other) → Vector3 ∪ null {
+    fn overlap(ref Box3 other) → Vector3 ∪ none {
         if not self.intersects(other) then return null
         const f32 min_x ← self.max.x ⤓ other.max.x
         const f32 min_y ← self.max.y ⤓ other.max.y
@@ -397,14 +397,14 @@ class Box3 {
         return vector3(min_x - max_x, min_y - max_y, min_z - max_z)
     }
 
-    fn overlap_facts(ref Box3 other) → Box3OverlapFacts ∪ null {
-        const Vector3 ∪ null overlap_result ← self.overlap(other)
-        if overlap_result is null then return null
+    fn overlap_facts(ref Box3 other) → Box3OverlapFacts ∪ none {
+        const Vector3 ∪ none overlap_result ← self.overlap(other)
+        if overlap_result is none then return null
         const Vector3 overlap ← overlap_result
         return Box3OverlapFacts {overlap = overlap, x = overlap.x, y = overlap.y, z = overlap.z}
     }
 
-    fn union(ref Box3 other) → Box3 ∪ null {
+    fn union(ref Box3 other) → Box3 ∪ none {
         if not self.valid() or not other.valid() then return null
         const f32 min_x ← self.min.x ⤓ other.min.x
         const f32 min_y ← self.min.y ⤓ other.min.y
@@ -466,15 +466,15 @@ class Ray {
         return self.origin.add(self.direction.scale(distance))
     }
 
-    fn intersects_box(ref Box3 box, f32 max_distance) → f32 ∪ null {
+    fn intersects_box(ref Box3 box, f32 max_distance) → f32 ∪ none {
         if not box.valid() then return null
         if max_distance ≺ 0.0 then return null
-        const RayInterval ∪ null x_interval ← axis_interval(self.origin.x, self.direction.x, box.min.x, box.max.x)
-        if x_interval is null then return null
-        const RayInterval ∪ null y_interval ← axis_interval(self.origin.y, self.direction.y, box.min.y, box.max.y)
-        if y_interval is null then return null
-        const RayInterval ∪ null z_interval ← axis_interval(self.origin.z, self.direction.z, box.min.z, box.max.z)
-        if z_interval is null then return null
+        const RayInterval ∪ none x_interval ← axis_interval(self.origin.x, self.direction.x, box.min.x, box.max.x)
+        if x_interval is none then return null
+        const RayInterval ∪ none y_interval ← axis_interval(self.origin.y, self.direction.y, box.min.y, box.max.y)
+        if y_interval is none then return null
+        const RayInterval ∪ none z_interval ← axis_interval(self.origin.z, self.direction.z, box.min.z, box.max.z)
+        if z_interval is none then return null
         const RayInterval x_axis ← x_interval
         const RayInterval y_axis ← y_interval
         const RayInterval z_axis ← z_interval
@@ -484,9 +484,9 @@ class Ray {
         return entry
     }
 
-    fn box3_hit(ref Box3 box, f32 max_distance) → RayBox3Hit ∪ null {
-        const f32 ∪ null distance_result ← self.intersects_box(box, max_distance)
-        if distance_result is null then return null
+    fn box3_hit(ref Box3 box, f32 max_distance) → RayBox3Hit ∪ none {
+        const f32 ∪ none distance_result ← self.intersects_box(box, max_distance)
+        if distance_result is none then return null
         const f32 distance ← distance_result
         const Vector3 point ← self.point_at(distance)
         return RayBox3Hit {distance = distance, point = point, normal = hit_normal(box, point)}
@@ -525,7 +525,7 @@ class RayBox3Hit {
     var Vector3 point
     var Vector3 normal
 
-    fn hit_face_code() → int ∪ null {
+    fn hit_face_code() → int ∪ none {
         if self.normal.x ≡ -1.0 ∷ f32 then return 1
         if self.normal.x ≡ 1.0 ∷ f32 then return 2
         if self.normal.y ≡ -1.0 ∷ f32 then return 3
@@ -535,30 +535,30 @@ class RayBox3Hit {
         return null
     }
 
-    fn hit_face_offset_x() → int ∪ null {
-        const int ∪ null code_result ← self.hit_face_code()
-        if code_result is null then return null
+    fn hit_face_offset_x() → int ∪ none {
+        const int ∪ none code_result ← self.hit_face_code()
+        if code_result is none then return null
         const int code ← code_result
         return face_code_x_offset(code)
     }
 
-    fn hit_face_offset_y() → int ∪ null {
-        const int ∪ null code_result ← self.hit_face_code()
-        if code_result is null then return null
+    fn hit_face_offset_y() → int ∪ none {
+        const int ∪ none code_result ← self.hit_face_code()
+        if code_result is none then return null
         const int code ← code_result
         return face_code_y_offset(code)
     }
 
-    fn hit_face_offset_z() → int ∪ null {
-        const int ∪ null code_result ← self.hit_face_code()
-        if code_result is null then return null
+    fn hit_face_offset_z() → int ∪ none {
+        const int ∪ none code_result ← self.hit_face_code()
+        if code_result is none then return null
         const int code ← code_result
         return face_code_z_offset(code)
     }
 
-    fn hit_face_facts() → FaceCodeFacts ∪ null {
-        const int ∪ null code_result ← self.hit_face_code()
-        if code_result is null then return null
+    fn hit_face_facts() → FaceCodeFacts ∪ none {
+        const int ∪ none code_result ← self.hit_face_code()
+        if code_result is none then return null
         const int code ← code_result
         return face_code_facts(code)
     }
@@ -587,7 +587,7 @@ fn face_code_valid(int code) → bool {
 }
 
 @ public
-fn face_code_axis_code(int code) → int ∪ null {
+fn face_code_axis_code(int code) → int ∪ none {
     if not face_code_valid(code) then return null
     if code ≤ 2 then return 1
     if code ≤ 4 then return 2
@@ -595,14 +595,14 @@ fn face_code_axis_code(int code) → int ∪ null {
 }
 
 @ public
-fn face_code_opposite(int code) → int ∪ null {
+fn face_code_opposite(int code) → int ∪ none {
     if not face_code_valid(code) then return null
     if code % 2 ≡ 1 then return code + 1
     return code - 1
 }
 
 @ public
-fn face_code_x_offset(int code) → int ∪ null {
+fn face_code_x_offset(int code) → int ∪ none {
     if not face_code_valid(code) then return null
     const int negative ← -1
     switch code {
@@ -619,7 +619,7 @@ fn face_code_x_offset(int code) → int ∪ null {
 }
 
 @ public
-fn face_code_y_offset(int code) → int ∪ null {
+fn face_code_y_offset(int code) → int ∪ none {
     if not face_code_valid(code) then return null
     const int negative ← -1
     switch code {
@@ -636,7 +636,7 @@ fn face_code_y_offset(int code) → int ∪ null {
 }
 
 @ public
-fn face_code_z_offset(int code) → int ∪ null {
+fn face_code_z_offset(int code) → int ∪ none {
     if not face_code_valid(code) then return null
     const int negative ← -1
     switch code {
@@ -653,7 +653,7 @@ fn face_code_z_offset(int code) → int ∪ null {
 }
 
 @ public
-fn face_code_normal(int code) → Vector3 ∪ null {
+fn face_code_normal(int code) → Vector3 ∪ none {
     switch code {
         case 1 {
             return vector3(-1.0, 0.0, 0.0)
@@ -680,7 +680,7 @@ fn face_code_normal(int code) → Vector3 ∪ null {
 }
 
 @ public
-fn face_code_color(int code) → Color ∪ null {
+fn face_code_color(int code) → Color ∪ none {
     switch code {
         case 1 {
             return Color {r = 0.8, g = 0.1, b = 0.1}
@@ -707,22 +707,22 @@ fn face_code_color(int code) → Color ∪ null {
 }
 
 @ public
-fn face_code_facts(int code) → FaceCodeFacts ∪ null {
+fn face_code_facts(int code) → FaceCodeFacts ∪ none {
     if not face_code_valid(code) then return null
-    const int ∪ null axis_result ← face_code_axis_code(code)
-    if axis_result is null then return null
-    const int ∪ null opposite_result ← face_code_opposite(code)
-    if opposite_result is null then return null
-    const int ∪ null x_offset_result ← face_code_x_offset(code)
-    if x_offset_result is null then return null
-    const int ∪ null y_offset_result ← face_code_y_offset(code)
-    if y_offset_result is null then return null
-    const int ∪ null z_offset_result ← face_code_z_offset(code)
-    if z_offset_result is null then return null
-    const Vector3 ∪ null normal_result ← face_code_normal(code)
-    if normal_result is null then return null
-    const Color ∪ null color_result ← face_code_color(code)
-    if color_result is null then return null
+    const int ∪ none axis_result ← face_code_axis_code(code)
+    if axis_result is none then return null
+    const int ∪ none opposite_result ← face_code_opposite(code)
+    if opposite_result is none then return null
+    const int ∪ none x_offset_result ← face_code_x_offset(code)
+    if x_offset_result is none then return null
+    const int ∪ none y_offset_result ← face_code_y_offset(code)
+    if y_offset_result is none then return null
+    const int ∪ none z_offset_result ← face_code_z_offset(code)
+    if z_offset_result is none then return null
+    const Vector3 ∪ none normal_result ← face_code_normal(code)
+    if normal_result is none then return null
+    const Color ∪ none color_result ← face_code_color(code)
+    if color_result is none then return null
     const int axis_code ← axis_result
     const int opposite_code ← opposite_result
     const int x_offset ← x_offset_result
@@ -852,26 +852,26 @@ fn camera_yaw_pitch_facts(ref Vector3 origin, f32 yaw_degrees, f32 pitch_degrees
 # The min/max constructor rejects reversed bounds; the size constructors reject
 # non-positive sizes. Each returns null, keeping Box3.valid explicit.
 @ public
-fn box3_from_min_max(ref Vector3 minimum, ref Vector3 maximum) → Box3 ∪ null {
+fn box3_from_min_max(ref Vector3 minimum, ref Vector3 maximum) → Box3 ∪ none {
     const _ bounds ← Box3 {min = minimum, max = maximum}
     if not bounds.valid() then return null
     return bounds
 }
 
 @ public
-fn box3_from_min_and_size(ref Vector3 minimum, ref Vector3 size) → Box3 ∪ null {
+fn box3_from_min_and_size(ref Vector3 minimum, ref Vector3 size) → Box3 ∪ none {
     if (size.x ≤ 0.0 or size.y ≤ 0.0) or size.z ≤ 0.0 then return null
     return Box3 {min = minimum, max = minimum.add(size)}
 }
 
 @ public
-fn box3_from_center_and_size(ref Vector3 center, ref Vector3 size) → Box3 ∪ null {
+fn box3_from_center_and_size(ref Vector3 center, ref Vector3 size) → Box3 ∪ none {
     if (size.x ≤ 0.0 or size.y ≤ 0.0) or size.z ≤ 0.0 then return null
     const Vector3 half ← size.scale(0.5)
     return Box3 {min = center.subtract(half), max = center.add(half)}
 }
 
-fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ null {
+fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ none {
     if direction.abs() ≤ 0.000001 {
         if origin ≺ minimum or origin ≻ maximum then return null
         return RayInterval {minimum = -1000000000.0, maximum = 1000000000.0}
@@ -904,7 +904,7 @@ fn matrix4_identity() → Matrix4 {
 # Pack model followed by view_projection. Both inputs must already be valid
 # 16-element Matrix4 values.
 @ public
-fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → TransformPayload ∪ null {
+fn transform_payload(ref Matrix4 model, ref Matrix4 view_projection) → TransformPayload ∪ none {
     if not model.valid() then return null
     if not view_projection.valid() then return null
     var list<f32> values ← empty
@@ -947,7 +947,7 @@ fn matrix4_compose(ref Vector3 position, ref Quaternion rotation, ref Vector3 sc
 # Perspective construction validates its degree-based field of view, aspect,
 # and near/far ordering before returning a matrix.
 @ public
-fn matrix4_perspective(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Matrix4 ∪ null {
+fn matrix4_perspective(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Matrix4 ∪ none {
     if fov_y_degrees ≤ 0.0 or fov_y_degrees ≥ 180.0 then return null
     if aspect ≤ 0.0 then return null
     if near ≤ 0.0 or far ≤ near then return null
@@ -963,7 +963,7 @@ fn matrix4_perspective(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → Mat
 # Build a view matrix from eye, target, and up. Coincident or collinear inputs
 # return null when a usable forward or side direction cannot be formed.
 @ public
-fn matrix4_look_at(ref Vector3 eye, ref Vector3 target, ref Vector3 up) → Matrix4 ∪ null {
+fn matrix4_look_at(ref Vector3 eye, ref Vector3 target, ref Vector3 up) → Matrix4 ∪ none {
     const Vector3 forward ← target.subtract(eye).normalized()
     if forward.length() ≤ 0.000001 then return null
     const Vector3 side ← forward.cross(up).normalized()

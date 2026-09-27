@@ -89,77 +89,77 @@ class VisibleFaceMeshFacts {
 # expanded into the fixed visible-face topology and byte counts above.
 
 @ public
-fn visible_face_vertex_count(int face_count) → int ∪ null {
+fn visible_face_vertex_count(int face_count) → int ∪ none {
     if face_count ≤ 0 then return null
     return face_count * 4
 }
 
 @ public
-fn visible_face_index_count(int face_count) → int ∪ null {
+fn visible_face_index_count(int face_count) → int ∪ none {
     if face_count ≤ 0 then return null
     return face_count * 6
 }
 
 @ public
-fn visible_face_triangle_count(int face_count) → int ∪ null {
+fn visible_face_triangle_count(int face_count) → int ∪ none {
     if face_count ≤ 0 then return null
     return face_count * 2
 }
 
 @ public
-fn visible_face_position_payload_byte_count(int face_count) → int ∪ null {
-    const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
-    if vertex_count_result is null then return null
+fn visible_face_position_payload_byte_count(int face_count) → int ∪ none {
+    const int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
+    if vertex_count_result is none then return null
     const int vertex_count ← vertex_count_result
     return (vertex_count * 3) * 4
 }
 
 @ public
-fn visible_face_color_payload_byte_count(int face_count) → int ∪ null {
-    const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
-    if vertex_count_result is null then return null
+fn visible_face_color_payload_byte_count(int face_count) → int ∪ none {
+    const int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
+    if vertex_count_result is none then return null
     const int vertex_count ← vertex_count_result
     return (vertex_count * 3) * 4
 }
 
 @ public
-fn visible_face_index_payload_byte_count(int face_count) → int ∪ null {
-    const int ∪ null index_count_result ← visible_face_index_count(face_count)
-    if index_count_result is null then return null
+fn visible_face_index_payload_byte_count(int face_count) → int ∪ none {
+    const int ∪ none index_count_result ← visible_face_index_count(face_count)
+    if index_count_result is none then return null
     const int index_count ← index_count_result
     return index_count * 4
 }
 
 @ public
-fn visible_face_payload_byte_count(int face_count) → int ∪ null {
-    const int ∪ null position_bytes_result ← visible_face_position_payload_byte_count(face_count)
-    if position_bytes_result is null then return null
+fn visible_face_payload_byte_count(int face_count) → int ∪ none {
+    const int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
+    if position_bytes_result is none then return null
     const int position_bytes ← position_bytes_result
-    const int ∪ null color_bytes_result ← visible_face_color_payload_byte_count(face_count)
-    if color_bytes_result is null then return null
+    const int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    if color_bytes_result is none then return null
     const int color_bytes ← color_bytes_result
-    const int ∪ null index_bytes_result ← visible_face_index_payload_byte_count(face_count)
-    if index_bytes_result is null then return null
+    const int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    if index_bytes_result is none then return null
     const int index_bytes ← index_bytes_result
     return (position_bytes + color_bytes) + index_bytes
 }
 
 @ public
-fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ null {
-    const int ∪ null vertex_count_result ← visible_face_vertex_count(face_count)
-    if vertex_count_result is null then return null
-    const int ∪ null index_count_result ← visible_face_index_count(face_count)
-    if index_count_result is null then return null
-    const int ∪ null triangle_count_result ← visible_face_triangle_count(face_count)
-    if triangle_count_result is null then return null
-    const int ∪ null position_bytes_result ← visible_face_position_payload_byte_count(face_count)
-    if position_bytes_result is null then return null
-    const int ∪ null color_bytes_result ← visible_face_color_payload_byte_count(face_count)
-    if color_bytes_result is null then return null
-    const int ∪ null index_bytes_result ← visible_face_index_payload_byte_count(face_count)
-    if index_bytes_result is null then return null
-    const int ∪ null total_bytes_result ← visible_face_payload_byte_count(face_count)
-    if total_bytes_result is null then return null
+fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ none {
+    const int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
+    if vertex_count_result is none then return null
+    const int ∪ none index_count_result ← visible_face_index_count(face_count)
+    if index_count_result is none then return null
+    const int ∪ none triangle_count_result ← visible_face_triangle_count(face_count)
+    if triangle_count_result is none then return null
+    const int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
+    if position_bytes_result is none then return null
+    const int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    if color_bytes_result is none then return null
+    const int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    if index_bytes_result is none then return null
+    const int ∪ none total_bytes_result ← visible_face_payload_byte_count(face_count)
+    if total_bytes_result is none then return null
     const int vertex_count ← vertex_count_result
     const int index_count ← index_count_result
     const int triangle_count ← triangle_count_result

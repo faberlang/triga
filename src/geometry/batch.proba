@@ -25,15 +25,15 @@ describe "geometry batch facts" {
     }
 
     test "empty and malformed face counts are rejected" {
-        assert batch.visible_face_vertex_count(0) is null
-        assert batch.visible_face_index_count(0) is null
-        assert batch.visible_face_triangle_count(0) is null
-        assert batch.visible_face_position_payload_byte_count(0) is null
-        assert batch.visible_face_color_payload_byte_count(0) is null
-        assert batch.visible_face_index_payload_byte_count(0) is null
-        assert batch.visible_face_payload_byte_count(0) is null
-        assert batch.visible_face_mesh_facts(0) is null
-        assert batch.visible_face_mesh_facts(-1) is null
+        assert batch.visible_face_vertex_count(0) is none
+        assert batch.visible_face_index_count(0) is none
+        assert batch.visible_face_triangle_count(0) is none
+        assert batch.visible_face_position_payload_byte_count(0) is none
+        assert batch.visible_face_color_payload_byte_count(0) is none
+        assert batch.visible_face_index_payload_byte_count(0) is none
+        assert batch.visible_face_payload_byte_count(0) is none
+        assert batch.visible_face_mesh_facts(0) is none
+        assert batch.visible_face_mesh_facts(-1) is none
     }
 
     test "draw ranges groups and commands publish their scalar fields" {

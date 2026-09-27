@@ -31,39 +31,39 @@ describe "resource handle identity" {
         assert replaced.previous.generation ≡ 1
         assert replaced.current.generation ≡ 2
         assert resource.transitions_valid(transitions)
-        const int ∪ null changed_count ← resource.transition_changed_count(transitions)
-        const int ∪ null unchanged_count ← resource.transition_unchanged_count(transitions)
-        if changed_count is null {
+        const int ∪ none changed_count ← resource.transition_changed_count(transitions)
+        const int ∪ none unchanged_count ← resource.transition_unchanged_count(transitions)
+        if changed_count is none {
             assert false
         }
         else {
             assert changed_count ≡ 1
         }
-        if unchanged_count is null {
+        if unchanged_count is none {
             assert false
         }
         else {
             assert unchanged_count ≡ 1
         }
 
-        const list<int> ∪ null changed_indices ← resource.transition_changed_indices(transitions)
-        const list<int> ∪ null unchanged_indices ← resource.transition_unchanged_indices(transitions)
-        const list<resource.ResourceHandle> ∪ null current_handles ← resource.transition_current_handles(transitions)
-        if changed_indices is null {
+        const list<int> ∪ none changed_indices ← resource.transition_changed_indices(transitions)
+        const list<int> ∪ none unchanged_indices ← resource.transition_unchanged_indices(transitions)
+        const list<resource.ResourceHandle> ∪ none current_handles ← resource.transition_current_handles(transitions)
+        if changed_indices is none {
             assert false
         }
         else {
             assert changed_indices.length() ≡ 1
             assert changed_indices[0] ≡ 9
         }
-        if unchanged_indices is null {
+        if unchanged_indices is none {
             assert false
         }
         else {
             assert unchanged_indices.length() ≡ 1
             assert unchanged_indices[0] ≡ 2
         }
-        if current_handles is null {
+        if current_handles is none {
             assert false
         }
         else {
@@ -86,8 +86,8 @@ describe "resource handle identity" {
         assert changed_without_generation.valid() ≡ false
         assert resource.transitions_valid(invalid) ≡ false
         # Invalid input returns absence from the accessor, not a valid zero count.
-        assert resource.transition_changed_count(invalid) is null
-        assert resource.transition_current_handles(invalid) is null
+        assert resource.transition_changed_count(invalid) is none
+        assert resource.transition_current_handles(invalid) is none
     }
 }
 
@@ -112,44 +112,44 @@ describe "resource lifecycle facts" {
         assert replaced.valid()
         assert removed.valid()
         assert resource.lifecycles_valid(transitions)
-        const int ∪ null changed_count ← resource.lifecycle_changed_count(transitions)
-        const int ∪ null unchanged_count ← resource.lifecycle_unchanged_count(transitions)
-        const int ∪ null created_count ← resource.lifecycle_created_count(transitions)
-        const int ∪ null removed_count ← resource.lifecycle_removed_count(transitions)
-        const int ∪ null live_count ← resource.lifecycle_live_count(transitions)
-        if changed_count is null {
+        const int ∪ none changed_count ← resource.lifecycle_changed_count(transitions)
+        const int ∪ none unchanged_count ← resource.lifecycle_unchanged_count(transitions)
+        const int ∪ none created_count ← resource.lifecycle_created_count(transitions)
+        const int ∪ none removed_count ← resource.lifecycle_removed_count(transitions)
+        const int ∪ none live_count ← resource.lifecycle_live_count(transitions)
+        if changed_count is none {
             assert false
         }
         else {
             assert changed_count ≡ 3
         }
-        if unchanged_count is null {
+        if unchanged_count is none {
             assert false
         }
         else {
             assert unchanged_count ≡ 1
         }
-        if created_count is null {
+        if created_count is none {
             assert false
         }
         else {
             assert created_count ≡ 1
         }
-        if removed_count is null {
+        if removed_count is none {
             assert false
         }
         else {
             assert removed_count ≡ 1
         }
-        if live_count is null {
+        if live_count is none {
             assert false
         }
         else {
             assert live_count ≡ 3
         }
 
-        const resource.ResourceLifecycleBatchFacts ∪ null facts ← resource.lifecycle_batch_facts(transitions)
-        if facts is null {
+        const resource.ResourceLifecycleBatchFacts ∪ none facts ← resource.lifecycle_batch_facts(transitions)
+        if facts is none {
             assert false
         }
         else {
@@ -161,38 +161,38 @@ describe "resource lifecycle facts" {
             assert facts.live_count ≡ 3
         }
 
-        const list<int> ∪ null changed_indices ← resource.lifecycle_changed_indices(transitions)
-        const list<int> ∪ null unchanged_indices ← resource.lifecycle_unchanged_indices(transitions)
-        const list<int> ∪ null removed_indices ← resource.lifecycle_removed_indices(transitions)
-        const list<int> ∪ null live_indices ← resource.lifecycle_live_indices(transitions)
-        const list<int> ∪ null retired_indices ← resource.lifecycle_retired_indices(transitions)
-        if changed_indices is null {
+        const list<int> ∪ none changed_indices ← resource.lifecycle_changed_indices(transitions)
+        const list<int> ∪ none unchanged_indices ← resource.lifecycle_unchanged_indices(transitions)
+        const list<int> ∪ none removed_indices ← resource.lifecycle_removed_indices(transitions)
+        const list<int> ∪ none live_indices ← resource.lifecycle_live_indices(transitions)
+        const list<int> ∪ none retired_indices ← resource.lifecycle_retired_indices(transitions)
+        if changed_indices is none {
             assert false
         }
         else {
             assert changed_indices.length() ≡ 3
         }
-        if unchanged_indices is null {
+        if unchanged_indices is none {
             assert false
         }
         else {
             assert unchanged_indices.length() ≡ 1
             assert unchanged_indices[0] ≡ 2
         }
-        if removed_indices is null {
+        if removed_indices is none {
             assert false
         }
         else {
             assert removed_indices.length() ≡ 1
             assert removed_indices[0] ≡ 6
         }
-        if live_indices is null {
+        if live_indices is none {
             assert false
         }
         else {
             assert live_indices.length() ≡ 3
         }
-        if retired_indices is null {
+        if retired_indices is none {
             assert false
         }
         else {
@@ -209,12 +209,12 @@ describe "resource lifecycle facts" {
         transitions.append(replaced_handle.lifecycle_replaced())
         transitions.append(removed_handle.lifecycle_removed())
 
-        const list<resource.ResourceHandle> ∪ null changed_handles ← resource.lifecycle_changed_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null unchanged_handles ← resource.lifecycle_unchanged_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null removed_handles ← resource.lifecycle_removed_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null retired_handles ← resource.lifecycle_retired_handles(transitions)
-        const list<resource.ResourceHandle> ∪ null current_handles ← resource.lifecycle_current_handles(transitions)
-        if changed_handles is null {
+        const list<resource.ResourceHandle> ∪ none changed_handles ← resource.lifecycle_changed_handles(transitions)
+        const list<resource.ResourceHandle> ∪ none unchanged_handles ← resource.lifecycle_unchanged_handles(transitions)
+        const list<resource.ResourceHandle> ∪ none removed_handles ← resource.lifecycle_removed_handles(transitions)
+        const list<resource.ResourceHandle> ∪ none retired_handles ← resource.lifecycle_retired_handles(transitions)
+        const list<resource.ResourceHandle> ∪ none current_handles ← resource.lifecycle_current_handles(transitions)
+        if changed_handles is none {
             assert false
         }
         else {
@@ -222,20 +222,20 @@ describe "resource lifecycle facts" {
             assert changed_handles[0].index ≡ 10
             assert changed_handles[1].generation ≡ 3
         }
-        if unchanged_handles is null {
+        if unchanged_handles is none {
             assert false
         }
         else {
             assert unchanged_handles.length() ≡ 0
         }
-        if removed_handles is null {
+        if removed_handles is none {
             assert false
         }
         else {
             assert removed_handles.length() ≡ 1
             assert removed_handles[0].generation ≡ 5
         }
-        if retired_handles is null {
+        if retired_handles is none {
             assert false
         }
         else {
@@ -246,7 +246,7 @@ describe "resource lifecycle facts" {
             assert retired_handles[0].index ≡ 11
             assert retired_handles[1].index ≡ 12
         }
-        if current_handles is null {
+        if current_handles is none {
             assert false
         }
         else {
@@ -273,7 +273,7 @@ describe "resource lifecycle facts" {
         assert invalid_removed.valid() ≡ false
         assert resource.lifecycles_valid(duplicate_batch) ≡ false
         assert resource.lifecycles_valid(invalid_batch) ≡ false
-        assert resource.lifecycle_batch_facts(duplicate_batch) is null
-        assert resource.lifecycle_live_indices(invalid_batch) is null
+        assert resource.lifecycle_batch_facts(duplicate_batch) is none
+        assert resource.lifecycle_live_indices(invalid_batch) is none
     }
 }

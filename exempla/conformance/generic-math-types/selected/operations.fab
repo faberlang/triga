@@ -172,7 +172,7 @@ fn camera_directio(f32 yaw_radians, f32 pitch_radians) → vector<f32, 3> {
 # [F] face normal at width 3 — literal lane construction, no nominal
 # wrapper needed for the retired `.x/.y/.z` access.
 
-fn face_normal(int code) → vector<f32, 3> ∪ null {
+fn face_normal(int code) → vector<f32, 3> ∪ none {
     if code ≡ 1 then return [-1.0, 0.0, 0.0] ↦ vector<f32, 3>
     if code ≡ 2 then return [1.0, 0.0, 0.0] ↦ vector<f32, 3>
     if code ≡ 3 then return [0.0, -1.0, 0.0] ↦ vector<f32, 3>
@@ -185,7 +185,7 @@ fn face_normal(int code) → vector<f32, 3> ∪ null {
 # [F] one axis' ray-box slab at width 3 — the retired `axis_interval`
 # shape with explicit lane reads.
 
-fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → f32 ∪ null {
+fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → f32 ∪ none {
     if direction.abs() ≤ 0.000001 {
         if origin ≺ minimum or origin ≻ maximum then return null
         const f32 zero ← 0.0
@@ -346,7 +346,7 @@ fn radians_ex_gradibus(f32 degrees) → f32 {
 # [F] perspective: domain failures (fov, aspect, near/far ordering) stay
 # explicit nullable checks — the lane-count guard is NOT among them.
 
-fn perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matrix<f32, [4, 4]> ∪ null {
+fn perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matrix<f32, [4, 4]> ∪ none {
     if fov_y_degrees ≤ 0.0 or fov_y_degrees ≥ 180.0 then return null
     if aspect ≤ 0.0 then return null
     if near ≤ 0.0 or far ≤ near then return null
@@ -364,7 +364,7 @@ fn perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matrix<f32,
 
 # [F] look-at/view construction — collinear inputs return null.
 
-fn conspectus(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → matrix<f32, [4, 4]> ∪ null {
+fn conspectus(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → matrix<f32, [4, 4]> ∪ none {
     const vector<f32, 3> forward ← target.subtract(eye).normalize()
     if longitudo(forward) ≤ 0.000001 then return null
     const vector<f32, 3> side ← forward.cross(up).normalize()
@@ -428,7 +428,7 @@ fn applica_punctum(matrix<f32, [4, 4]> m, vector<f32, 3> punctum) → vector<f32
 # [F] affine inverse: near-zero determinant is a domain failure (nihil),
 # distinct from the retired lane-count guard.
 
-fn inversa_affinis(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> ∪ null {
+fn inversa_affinis(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> ∪ none {
     const f32 determinant ← determinans_affinis(m)
     if determinant.abs() ≤ 0.000001 then return null
     const f32 d ← 1.0 / determinant
@@ -555,7 +555,7 @@ fn capsa_centrum(Box<3> capsam) → vector<f32, 3> {
     return inferior.added(superior).multiply(half)
 }
 
-fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ null {
+fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ none {
     if capsa_intersecat(una, alia) ≡ false then return null
     const f32 minx ← una.maxima.dot(e0_basis3(0))
     const f32 miny ← una.maxima.dot(e0_basis3(1))
@@ -566,7 +566,7 @@ fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ null {
     return [minx - maxx, miny - maxy, minz - maxz] ↦ vector<f32, 3>
 }
 
-fn capsa_unio(Box<3> una, Box<3> alia) → Box<3> ∪ null {
+fn capsa_unio(Box<3> una, Box<3> alia) → Box<3> ∪ none {
     if capsa_validum(una) ≡ false or capsa_validum(alia) ≡ false then return null
     const f32 minx ← una.minima.dot(e0_basis3(0))
     const f32 miny ← una.minima.dot(e0_basis3(1))
@@ -602,15 +602,15 @@ fn capsa_unio(Box<3> una, Box<3> alia) → Box<3> ∪ null {
 # row names, over the selected carriers. Each axis contributes a slab
 # [entry, exit]; the box hit is the intersection of the three slabs.
 
-fn capsa_intersecat_radium(Box<3> capsam, vector<f32, 3> origin, vector<f32, 3> direction, f32 distantia_maxima) → f32 ∪ null {
+fn capsa_intersecat_radium(Box<3> capsam, vector<f32, 3> origin, vector<f32, 3> direction, f32 distantia_maxima) → f32 ∪ none {
     if capsa_validum(capsam) ≡ false then return null
     if distantia_maxima ≺ 0.0 then return null
-    const f32 ∪ null x_entry ← axis_interval(origin.dot(e0_basis3(0)), direction.dot(e0_basis3(0)), capsam.minima.dot(e0_basis3(0)), capsam.maxima.dot(e0_basis3(0)))
-    if x_entry is null then return null
-    const f32 ∪ null y_entry ← axis_interval(origin.dot(e0_basis3(1)), direction.dot(e0_basis3(1)), capsam.minima.dot(e0_basis3(1)), capsam.maxima.dot(e0_basis3(1)))
-    if y_entry is null then return null
-    const f32 ∪ null z_entry ← axis_interval(origin.dot(e0_basis3(2)), direction.dot(e0_basis3(2)), capsam.minima.dot(e0_basis3(2)), capsam.maxima.dot(e0_basis3(2)))
-    if z_entry is null then return null
+    const f32 ∪ none x_entry ← axis_interval(origin.dot(e0_basis3(0)), direction.dot(e0_basis3(0)), capsam.minima.dot(e0_basis3(0)), capsam.maxima.dot(e0_basis3(0)))
+    if x_entry is none then return null
+    const f32 ∪ none y_entry ← axis_interval(origin.dot(e0_basis3(1)), direction.dot(e0_basis3(1)), capsam.minima.dot(e0_basis3(1)), capsam.maxima.dot(e0_basis3(1)))
+    if y_entry is none then return null
+    const f32 ∪ none z_entry ← axis_interval(origin.dot(e0_basis3(2)), direction.dot(e0_basis3(2)), capsam.minima.dot(e0_basis3(2)), capsam.maxima.dot(e0_basis3(2)))
+    if z_entry is none then return null
     const f32 xe ← x_entry coalesce 0.0
     const f32 ye ← y_entry coalesce 0.0
     const f32 ze ← z_entry coalesce 0.0

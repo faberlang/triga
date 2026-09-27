@@ -78,8 +78,8 @@ fn attribute_values(data.BufferGeometry geometry, string name) → list<f32> {
     while i ≺ geometry.attributes.length() {
         const attribute.BufferAttribute attr ← geometry.attributes[i]
         if attr.name ≡ name {
-            const list<f32> ∪ null values ← attr.float32_values()
-            if values not is null {
+            const list<f32> ∪ none values ← attr.float32_values()
+            if values not is none {
                 const list<f32> non_null ← values
                 return non_null
             }
@@ -152,8 +152,8 @@ main {
     # Closed cylinder (radius 1, height 2): 96 indices — 16 side quads
     # (elements 0..47), 8 bottom-cap fan triangles (48..71), 8 top-cap fan
     # triangles (72..95).
-    const data.BufferGeometry ∪ null cylinder_opt ← basic.cylinder_geometry(1.0, 2.0)
-    if cylinder_opt is null {
+    const data.BufferGeometry ∪ none cylinder_opt ← basic.cylinder_geometry(1.0, 2.0)
+    if cylinder_opt is none {
         print false
     } else {
         const list<f32> cylinder_positions ← attribute_values(cylinder_opt, "position")
@@ -172,8 +172,8 @@ main {
     # Sphere (radius 1): 144 indices — 8 south-pole fan triangles (0..23),
     # 32 middle-band triangles (24..119), 8 north-pole fan triangles
     # (120..143).
-    const data.BufferGeometry ∪ null sphere_opt ← basic.sphere_geometry(1.0)
-    if sphere_opt is null {
+    const data.BufferGeometry ∪ none sphere_opt ← basic.sphere_geometry(1.0)
+    if sphere_opt is none {
         print false
     } else {
         const list<f32> sphere_positions ← attribute_values(sphere_opt, "position")

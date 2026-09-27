@@ -34,7 +34,7 @@ fn assemble_geometry(int vertex_count, list<f32> positions, list<f32> normals, l
 
 # A centered plane on the XY axes, with its normal pointing along +Z.
 @ public
-fn plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ null {
+fn plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ none {
     if width ≤ 0.0 or height ≤ 0.0 then return null
     const f32 half_width ← width * 0.5
     const f32 half_height ← height * 0.5
@@ -43,7 +43,7 @@ fn plane_geometry(f32 width, f32 height) → data.BufferGeometry ∪ null {
 
 # An eight-sector, center-fan circle on the XY plane.
 @ public
-fn circle_geometry(f32 radius) → data.BufferGeometry ∪ null {
+fn circle_geometry(f32 radius) → data.BufferGeometry ∪ none {
     if radius ≤ 0.0 then return null
     const f32 diagonal ← radius * 0.70710678
     return assemble_geometry(9, [0.0, 0.0, 0.0, radius, 0.0, 0.0, diagonal, diagonal, 0.0, 0.0, radius, 0.0, -diagonal, diagonal, 0.0, -radius, 0.0, 0.0, -diagonal, -diagonal, 0.0, 0.0, -radius, 0.0, diagonal, -diagonal, 0.0], [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0], [0.5, 0.5, 1.0, 0.5, 0.85355339, 0.85355339, 0.5, 1.0, 0.14644661, 0.85355339, 0.0, 0.5, 0.14644661, 0.14644661, 0.5, 0.0, 0.85355339, 0.14644661], [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 1])
@@ -56,7 +56,7 @@ fn circle_geometry(f32 radius) → data.BufferGeometry ∪ null {
 # Smooth radial normals with per-vertex spherical UV mapping:
 # u = sector/8 (the seam quad spans u ∈ [7/8, 1]), v = (lat/90 + 1)/2.
 @ public
-fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
+fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ none {
     if radius ≤ 0.0 then return null
     const f32 diagonal ← radius * 0.70710678
     const list<f32> ring_x ← [radius, diagonal, 0.0, -diagonal, -radius, -diagonal, 0.0, diagonal, radius]
@@ -132,7 +132,7 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ null {
 
 # A closed cylinder with side rings and cap centers.
 @ public
-fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
+fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ none {
     if radius ≤ 0.0 or height ≤ 0.0 then return null
     const f32 half_height ← height * 0.5
     const f32 diagonal ← radius * 0.70710678
@@ -201,7 +201,7 @@ fn cylinder_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
 
 # A cone with a circular base, cap center, and apex.
 @ public
-fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
+fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ none {
     if radius ≤ 0.0 or height ≤ 0.0 then return null
     const f32 half_height ← height * 0.5
     const f32 diagonal ← radius * 0.70710678
@@ -256,7 +256,7 @@ fn cone_geometry(f32 radius, f32 height) → data.BufferGeometry ∪ null {
 
 # A torus represented by the fixed ring/tube tessellation used by this leaf.
 @ public
-fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null {
+fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ none {
     if (radius ≤ 0.0 or tube_radius ≤ 0.0) or tube_radius ≥ radius then return null
     const f32 diagonal ← 0.70710678
     const list<f32> ring_cos ← [1.0, diagonal, 0.0, -diagonal, -1.0, -diagonal, 0.0, diagonal, 1.0]
@@ -297,7 +297,7 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ null 
 
 # A six-sided box with one independently shaded face set per side.
 @ public
-fn box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ null {
+fn box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ none {
     if (width ≤ 0.0 or height ≤ 0.0) or depth ≤ 0.0 then return null
     const f32 x ← width * 0.5
     const f32 y ← height * 0.5
@@ -307,7 +307,7 @@ fn box_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ nu
 
 # A line-list box useful for debug views and early host bring-up.
 @ public
-fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ null {
+fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry ∪ none {
     if (width ≤ 0.0 or height ≤ 0.0) or depth ≤ 0.0 then return null
     const f32 x ← width * 0.5
     const f32 y ← height * 0.5
@@ -320,9 +320,9 @@ fn box_wire_geometry(f32 width, f32 height, f32 depth) → data.BufferGeometry �
 }
 
 @ public
-fn box_wire_draw_batch_facts(f32 width, f32 height, f32 depth, int instance_count) → batch.LineGeometryDrawBatchFacts ∪ null {
-    const data.BufferGeometry ∪ null geometry_result ← box_wire_geometry(width, height, depth)
-    if geometry_result is null then return null
+fn box_wire_draw_batch_facts(f32 width, f32 height, f32 depth, int instance_count) → batch.LineGeometryDrawBatchFacts ∪ none {
+    const data.BufferGeometry ∪ none geometry_result ← box_wire_geometry(width, height, depth)
+    if geometry_result is none then return null
     const data.BufferGeometry geom ← geometry_result
     return geom.line_draw_batch_facts(instance_count)
 }

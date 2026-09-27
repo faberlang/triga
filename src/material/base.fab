@@ -41,7 +41,7 @@ class Material {
         return self.side ≡ (2 ↦ int<u32>)
     }
 
-    fn side_code() → int ∪ null {
+    fn side_code() → int ∪ none {
         if not self.valid() then return null
         return self.side ↦ int
     }
@@ -58,7 +58,7 @@ class Material {
         return self.depth_write
     }
 
-    fn pipeline_facts() → MaterialPipelineFacts ∪ null {
+    fn pipeline_facts() → MaterialPipelineFacts ∪ none {
         if not self.valid() then return null
         return MaterialPipelineFacts {side_code = self.side ↦ int, depth_test_enabled = self.depth_test, depth_write_enabled = self.depth_write, transparent = self.transparent, alpha = self.opacity, alpha_test = self.alpha_test}
     }

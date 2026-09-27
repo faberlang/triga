@@ -44,7 +44,7 @@ class SceneNode {
     var math.Matrix4 world_matrix
     var bool world_dirty
 
-    fn mesh_geometry() → resource.ResourceHandle ∪ null {
+    fn mesh_geometry() → resource.ResourceHandle ∪ none {
         match self.kind {
             case SceneMesh const geometry, material {
                 return geometry
@@ -61,7 +61,7 @@ class SceneNode {
         }
     }
 
-    fn mesh_material() → resource.ResourceHandle ∪ null {
+    fn mesh_material() → resource.ResourceHandle ∪ none {
         match self.kind {
             case SceneMesh const geometry, material {
                 return material
@@ -111,7 +111,7 @@ class SceneStore {
         return slot.alive and slot.generation ≡ handle.generation
     }
 
-    fn take(ref SceneHandle handle) → SceneNode ∪ null {
+    fn take(ref SceneHandle handle) → SceneNode ∪ none {
         if not self.contains(handle) then return null
         return self.slots[handle.index].node
     }
@@ -120,25 +120,25 @@ class SceneStore {
         if not self.contains(child) then return false
         if not self.contains(parent) then return false
         if self.would_cycle(child, parent) then return false
-        const SceneNode ∪ null child_result ← self.take(child)
-        const SceneNode ∪ null parent_result ← self.take(parent)
-        if child_result is null then return false
-        if parent_result is null then return false
+        const SceneNode ∪ none child_result ← self.take(child)
+        const SceneNode ∪ none parent_result ← self.take(parent)
+        if child_result is none then return false
+        if parent_result is none then return false
         const SceneNode child_node ← child_result
         const SceneNode parent_node ← parent_result
-        if child_node.parent not is null {
-            const SceneHandle ∪ null existing_parent_opt ← parent_handle(child_node.parent)
-            if existing_parent_opt is null then return false
+        if child_node.parent not is none {
+            const SceneHandle ∪ none existing_parent_opt ← parent_handle(child_node.parent)
+            if existing_parent_opt is none then return false
             const SceneHandle existing_parent ← existing_parent_opt
             if scene_handle_equals(existing_parent, parent) then return false
         }
         # Remove child from old parent's children list if it had one
-        if child_node.parent not is null {
-            const SceneHandle ∪ null old_parent_opt ← parent_handle(child_node.parent)
-            if old_parent_opt is null then return false
+        if child_node.parent not is none {
+            const SceneHandle ∪ none old_parent_opt ← parent_handle(child_node.parent)
+            if old_parent_opt is none then return false
             const SceneHandle old_parent ← old_parent_opt
-            const SceneNode ∪ null old_parent_result ← self.take(old_parent)
-            if old_parent_result is null then return false
+            const SceneNode ∪ none old_parent_result ← self.take(old_parent)
+            if old_parent_result is none then return false
             const SceneNode old_node ← old_parent_result
             self.replace(old_parent, self.without_children(old_node, child))
         }
@@ -158,15 +158,15 @@ class SceneStore {
 
     fn detach(ref SceneHandle child) → bool {
         if not self.contains(child) then return false
-        const SceneNode ∪ null child_result ← self.take(child)
-        if child_result is null then return false
+        const SceneNode ∪ none child_result ← self.take(child)
+        if child_result is none then return false
         const SceneNode child_node ← child_result
-        if child_node.parent is null then return false
-        const SceneHandle ∪ null parent_opt ← parent_handle(child_node.parent)
-        if parent_opt is null then return false
+        if child_node.parent is none then return false
+        const SceneHandle ∪ none parent_opt ← parent_handle(child_node.parent)
+        if parent_opt is none then return false
         const SceneHandle parent_value ← parent_opt
-        const SceneNode ∪ null parent_result ← self.take(parent_value)
-        if parent_result is null then return false
+        const SceneNode ∪ none parent_result ← self.take(parent_value)
+        if parent_result is none then return false
         const SceneNode parent_node ← parent_result
         const _ detached_child ← SceneNode {name = child_node.name, kind = child_node.kind, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
         self.replace(parent_value, self.without_children(parent_node, child))
@@ -177,11 +177,11 @@ class SceneStore {
 
     fn remove(ref SceneHandle handle) → bool {
         if not self.contains(handle) then return false
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return false
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return false
         const SceneNode node ← node_result
         if node.children.length() ≻ 0 then return false
-        if node.parent not is null {
+        if node.parent not is none {
             const bool detached ← self.detach(handle)
             if not detached then return false
         }
@@ -190,13 +190,13 @@ class SceneStore {
         return true
     }
 
-    fn find(string name) → SceneHandle ∪ null {
-        const SceneTraversal ∪ null result ← self.traverse_preorder(SceneHandle {index = 0, generation = 0}, empty, self.slots.length())
-        if result is null then return null
+    fn find(string name) → SceneHandle ∪ none {
+        const SceneTraversal ∪ none result ← self.traverse_preorder(SceneHandle {index = 0, generation = 0}, empty, self.slots.length())
+        if result is none then return null
         const SceneTraversal traversal ← result
         for from traversal.handles const handle {
-            const SceneNode ∪ null node_result ← self.take(handle)
-            if node_result is null then return null
+            const SceneNode ∪ none node_result ← self.take(handle)
+            if node_result is none then return null
             const SceneNode node ← node_result
             if node.name ≡ name then return handle
         }
@@ -204,8 +204,8 @@ class SceneStore {
     }
 
     fn set_visible(ref SceneHandle handle, bool value) → bool {
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return false
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return false
         const SceneNode node ← node_result
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = value, local_matrix = node.local_matrix, world_matrix = node.world_matrix, world_dirty = node.world_dirty})
         return true
@@ -213,17 +213,17 @@ class SceneStore {
 
     fn set_local_matrix(ref SceneHandle handle, ref math.Matrix4 matrix) → bool {
         if matrix.elements.length() ≠ 16 then return false
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return false
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return false
         const SceneNode node ← node_result
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = node.visible, local_matrix = matrix, world_matrix = node.world_matrix, world_dirty = true})
         self.mark_world_dirty(handle)
         return true
     }
 
-    fn mesh_world_matrix(ref SceneHandle handle) → math.Matrix4 ∪ null {
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return null
+    fn mesh_world_matrix(ref SceneHandle handle) → math.Matrix4 ∪ none {
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         match node.kind {
             case SceneMesh const geometry, material {
@@ -245,13 +245,13 @@ class SceneStore {
         var SceneHandle cursor ← handle
         var int remaining ← self.slots.length() + 1
         while remaining ≻ 0 {
-            const SceneNode ∪ null current_result ← self.take(cursor)
-            if current_result is null then return false
+            const SceneNode ∪ none current_result ← self.take(cursor)
+            if current_result is none then return false
             const SceneNode current_node ← current_result
             if not current_node.visible then return false
-            if current_node.parent is null then return true
-            const SceneHandle ∪ null parent_opt ← parent_handle(current_node.parent)
-            if parent_opt is null then return true
+            if current_node.parent is none then return true
+            const SceneHandle ∪ none parent_opt ← parent_handle(current_node.parent)
+            if parent_opt is none then return true
             const SceneHandle parent ← parent_opt
             cursor ← parent
             remaining ← remaining - 1
@@ -260,10 +260,10 @@ class SceneStore {
     }
 
     fn refresh_world(ref SceneHandle root) → bool {
-        const SceneNode ∪ null root_result ← self.take(root)
-        if root_result is null then return false
+        const SceneNode ∪ none root_result ← self.take(root)
+        if root_result is none then return false
         const SceneNode root_node ← root_result
-        if root_node.parent not is null then return false
+        if root_node.parent not is none then return false
         self.refresh_world_node(root, math.matrix4_identity())
         return true
     }
@@ -295,29 +295,29 @@ class SceneStore {
     # Until then, treat this block as generated code — change the template, not
     # one copy. See also DEFER-121 (sub-module split gated on Faber module system).
 
-    fn traverse_preorder(ref SceneHandle handle, list<SceneHandle> handles, int remaining) → SceneTraversal ∪ null {
+    fn traverse_preorder(ref SceneHandle handle, list<SceneHandle> handles, int remaining) → SceneTraversal ∪ none {
         if remaining ≡ 0 then return null
         if self.traversal_contains(handles, handle) then return null
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return null
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         var list<SceneHandle> updated_handles ← handles
         updated_handles.append(handle)
         var SceneTraversal traversal ← SceneTraversal {handles = updated_handles, remaining = remaining - 1}
         for from node.children const child_handle {
-            const SceneTraversal ∪ null current ← self.traverse_preorder(child_handle, traversal.handles, traversal.remaining)
-            if current is null then return null
+            const SceneTraversal ∪ none current ← self.traverse_preorder(child_handle, traversal.handles, traversal.remaining)
+            if current is none then return null
             const SceneTraversal current_value ← current
             traversal ← SceneTraversal {handles = current_value.handles, remaining = current_value.remaining}
         }
         return traversal
     }
 
-    fn traverse_visible_preorder(ref SceneHandle handle, list<SceneHandle> handles, int remaining, bool parent_visible) → SceneTraversal ∪ null {
+    fn traverse_visible_preorder(ref SceneHandle handle, list<SceneHandle> handles, int remaining, bool parent_visible) → SceneTraversal ∪ none {
         if remaining ≡ 0 then return null
         if self.traversal_contains(handles, handle) then return null
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return null
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         const bool effectively_visible ← parent_visible and node.visible
         var list<SceneHandle> updated_handles ← handles
@@ -326,19 +326,19 @@ class SceneStore {
         }
         var SceneTraversal traversal ← SceneTraversal {handles = updated_handles, remaining = remaining - 1}
         for from node.children const child_handle {
-            const SceneTraversal ∪ null current ← self.traverse_visible_preorder(child_handle, traversal.handles, traversal.remaining, effectively_visible)
-            if current is null then return null
+            const SceneTraversal ∪ none current ← self.traverse_visible_preorder(child_handle, traversal.handles, traversal.remaining, effectively_visible)
+            if current is none then return null
             const SceneTraversal current_value ← current
             traversal ← SceneTraversal {handles = current_value.handles, remaining = current_value.remaining}
         }
         return traversal
     }
 
-    fn traverse_visible_mesh_preorder(ref SceneHandle handle, list<SceneHandle> handles, int remaining, bool parent_visible) → SceneTraversal ∪ null {
+    fn traverse_visible_mesh_preorder(ref SceneHandle handle, list<SceneHandle> handles, int remaining, bool parent_visible) → SceneTraversal ∪ none {
         if remaining ≡ 0 then return null
         if self.traversal_contains(handles, handle) then return null
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return null
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         const bool effectively_visible ← parent_visible and node.visible
         var list<SceneHandle> updated_handles ← handles
@@ -357,19 +357,19 @@ class SceneStore {
         }
         var SceneTraversal traversal ← SceneTraversal {handles = updated_handles, remaining = remaining - 1}
         for from node.children const child_handle {
-            const SceneTraversal ∪ null current ← self.traverse_visible_mesh_preorder(child_handle, traversal.handles, traversal.remaining, effectively_visible)
-            if current is null then return null
+            const SceneTraversal ∪ none current ← self.traverse_visible_mesh_preorder(child_handle, traversal.handles, traversal.remaining, effectively_visible)
+            if current is none then return null
             const SceneTraversal current_value ← current
             traversal ← SceneTraversal {handles = current_value.handles, remaining = current_value.remaining}
         }
         return traversal
     }
 
-    fn traverse_visible_mesh_resources_preorder(ref SceneHandle handle, list<SceneMeshResources> resources, list<SceneHandle> seen, int remaining, bool parent_visible) → SceneMeshResourceTraversal ∪ null {
+    fn traverse_visible_mesh_resources_preorder(ref SceneHandle handle, list<SceneMeshResources> resources, list<SceneHandle> seen, int remaining, bool parent_visible) → SceneMeshResourceTraversal ∪ none {
         if remaining ≡ 0 then return null
         if self.traversal_contains(seen, handle) then return null
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return null
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         const bool effectively_visible ← parent_visible and node.visible
         var list<SceneHandle> updated_seen ← seen
@@ -390,8 +390,8 @@ class SceneStore {
         }
         var SceneMeshResourceTraversal traversal ← SceneMeshResourceTraversal {resources = updated_resources, remaining = remaining - 1}
         for from node.children const child_handle {
-            const SceneMeshResourceTraversal ∪ null current ← self.traverse_visible_mesh_resources_preorder(child_handle, traversal.resources, updated_seen, traversal.remaining, effectively_visible)
-            if current is null then return null
+            const SceneMeshResourceTraversal ∪ none current ← self.traverse_visible_mesh_resources_preorder(child_handle, traversal.resources, updated_seen, traversal.remaining, effectively_visible)
+            if current is none then return null
             const SceneMeshResourceTraversal current_value ← current
             traversal ← SceneMeshResourceTraversal {resources = current_value.resources, remaining = current_value.remaining}
             updated_seen.append(SceneHandle {index = child_handle.index, generation = child_handle.generation})
@@ -399,11 +399,11 @@ class SceneStore {
         return traversal
     }
 
-    fn visible_mesh_resource_handles_preorder(ref SceneHandle handle, list<resource.ResourceHandle> handles, list<SceneHandle> seen, int remaining, bool parent_visible, bool geometry_handles) → resource.ResourceHandleTraversal ∪ null {
+    fn visible_mesh_resource_handles_preorder(ref SceneHandle handle, list<resource.ResourceHandle> handles, list<SceneHandle> seen, int remaining, bool parent_visible, bool geometry_handles) → resource.ResourceHandleTraversal ∪ none {
         if remaining ≡ 0 then return null
         if self.traversal_contains(seen, handle) then return null
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return null
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         const bool effectively_visible ← parent_visible and node.visible
         var list<SceneHandle> updated_seen ← seen
@@ -429,8 +429,8 @@ class SceneStore {
         }
         var resource.ResourceHandleTraversal traversal ← resource.ResourceHandleTraversal {handles = updated_handles, remaining = remaining - 1}
         for from node.children const child_handle {
-            const resource.ResourceHandleTraversal ∪ null current ← self.visible_mesh_resource_handles_preorder(child_handle, traversal.handles, updated_seen, traversal.remaining, effectively_visible, geometry_handles)
-            if current is null then return null
+            const resource.ResourceHandleTraversal ∪ none current ← self.visible_mesh_resource_handles_preorder(child_handle, traversal.handles, updated_seen, traversal.remaining, effectively_visible, geometry_handles)
+            if current is none then return null
             const resource.ResourceHandleTraversal current_value ← current
             traversal ← resource.ResourceHandleTraversal {handles = current_value.handles, remaining = current_value.remaining}
             updated_seen.append(SceneHandle {index = child_handle.index, generation = child_handle.generation})
@@ -459,12 +459,12 @@ class SceneStore {
         var int remaining ← self.slots.length() + 1
         while remaining ≻ 0 {
             if scene_handle_equals(cursor, child) then return true
-            const SceneNode ∪ null current ← self.take(cursor)
-            if current is null then return false
+            const SceneNode ∪ none current ← self.take(cursor)
+            if current is none then return false
             const SceneNode current_node ← current
-            if current_node.parent is null then return false
-            const SceneHandle ∪ null parent_opt ← parent_handle(current_node.parent)
-            if parent_opt is null then return false
+            if current_node.parent is none then return false
+            const SceneHandle ∪ none parent_opt ← parent_handle(current_node.parent)
+            if parent_opt is none then return false
             const SceneHandle current_parent ← parent_opt
             cursor ← current_parent
             remaining ← remaining - 1
@@ -473,8 +473,8 @@ class SceneStore {
     }
 
     fn mark_world_dirty(ref SceneHandle handle) → bool {
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return false
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return false
         const SceneNode node ← node_result
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = node.world_matrix, world_dirty = true})
         for from node.children const child_handle {
@@ -484,8 +484,8 @@ class SceneStore {
     }
 
     fn refresh_world_node(ref SceneHandle handle, ref math.Matrix4 parent_world) → bool {
-        const SceneNode ∪ null node_result ← self.take(handle)
-        if node_result is null then return false
+        const SceneNode ∪ none node_result ← self.take(handle)
+        if node_result is none then return false
         const SceneNode node ← node_result
         const math.Matrix4 world ← parent_world.multiply(node.local_matrix)
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = world, world_dirty = false})
@@ -495,23 +495,23 @@ class SceneStore {
         return true
     }
 
-    fn traverse(ref SceneHandle root) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null traversal ← self.traverse_preorder(root, empty, self.slots.length())
-        if traversal is null then return null
+    fn traverse(ref SceneHandle root) → list<SceneHandle> ∪ none {
+        const SceneTraversal ∪ none traversal ← self.traverse_preorder(root, empty, self.slots.length())
+        if traversal is none then return null
         const SceneTraversal traversal_value ← traversal
         return traversal_value.handles
     }
 
-    fn traverse_visible(ref SceneHandle root) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null traversal ← self.traverse_visible_preorder(root, empty, self.slots.length(), true)
-        if traversal is null then return null
+    fn traverse_visible(ref SceneHandle root) → list<SceneHandle> ∪ none {
+        const SceneTraversal ∪ none traversal ← self.traverse_visible_preorder(root, empty, self.slots.length(), true)
+        if traversal is none then return null
         const SceneTraversal traversal_value ← traversal
         return traversal_value.handles
     }
 
-    fn traverse_visible_mesh(ref SceneHandle root) → list<SceneHandle> ∪ null {
-        const SceneTraversal ∪ null traversal ← self.traverse_visible_mesh_preorder(root, empty, self.slots.length(), true)
-        if traversal is null then return null
+    fn traverse_visible_mesh(ref SceneHandle root) → list<SceneHandle> ∪ none {
+        const SceneTraversal ∪ none traversal ← self.traverse_visible_mesh_preorder(root, empty, self.slots.length(), true)
+        if traversal is none then return null
         const SceneTraversal traversal_value ← traversal
         return traversal_value.handles
     }
@@ -621,24 +621,24 @@ class VisibleMeshes {
 # transforms. Keeping this as one query avoids making callers repeat the scene
 # walk and gives the host a coherent snapshot of the visible set.
 @ public
-fn visible_meshes(ref SceneStore store, ref SceneHandle root, ref math.Matrix4 view_projection) → VisibleMeshes ∪ null {
+fn visible_meshes(ref SceneStore store, ref SceneHandle root, ref math.Matrix4 view_projection) → VisibleMeshes ∪ none {
     if not view_projection.valid() then return null
     # Single traversal: collect all visible mesh data at once
-    const SceneTraversal ∪ null handles_result ← store.traverse_visible_mesh_preorder(root, empty, store.slots.length(), true)
-    if handles_result is null then return null
+    const SceneTraversal ∪ none handles_result ← store.traverse_visible_mesh_preorder(root, empty, store.slots.length(), true)
+    if handles_result is none then return null
     const SceneTraversal traversal ← handles_result
     var VisibleMeshes meshes ← VisibleMeshes {handles = empty, geometry_resources = empty, material_resources = empty, payloads = empty}
     for from traversal.handles const handle {
-        const SceneNode ∪ null node_result ← store.take(handle)
-        if node_result is null then return null
+        const SceneNode ∪ none node_result ← store.take(handle)
+        if node_result is none then return null
         const SceneNode node ← node_result
         meshes.handles.append(handle)
         match node.kind {
             case SceneMesh const geometry, material {
                 meshes.geometry_resources.append(geometry)
                 meshes.material_resources.append(material)
-                const math.TransformPayload ∪ null payload ← math.transform_payload(node.world_matrix, view_projection)
-                if payload is null then return null
+                const math.TransformPayload ∪ none payload ← math.transform_payload(node.world_matrix, view_projection)
+                if payload is none then return null
                 meshes.payloads.append(payload)
             }
             case SceneGroup {
@@ -688,8 +688,8 @@ fn scene_light(string name) → SceneNode {
 
 # --- Free utilities on handles ----------------------------------------------
 
-fn parent_handle(SceneHandle ∪ null parent) → SceneHandle ∪ null {
-    if parent is null then return null
+fn parent_handle(SceneHandle ∪ none parent) → SceneHandle ∪ none {
+    if parent is none then return null
     const SceneHandle copy ← parent
     return copy
 }

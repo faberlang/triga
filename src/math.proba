@@ -97,30 +97,30 @@ describe "matrix and transform carriers" {
         const math.Matrix4 malformed ← math.Matrix4 {elements = [1.0]}
         const math.Matrix4 identity ← math.matrix4_identity()
         const math.Matrix4 translation ← math.matrix4_translation(math.vector3(1.0, 2.0, 3.0))
-        const math.Matrix4 ∪ null inverse_result ← translation.affine_inverse()
-        const math.Matrix4 ∪ null perspective_result ← math.matrix4_perspective(60.0, 1.0, 0.1, 100.0)
-        const math.Matrix4 ∪ null invalid_perspective ← math.matrix4_perspective(0.0, 1.0, 0.1, 100.0)
-        const math.Matrix4 ∪ null view_result ← math.matrix4_look_at(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
-        const math.Matrix4 ∪ null invalid_view ← math.matrix4_look_at(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+        const math.Matrix4 ∪ none inverse_result ← translation.affine_inverse()
+        const math.Matrix4 ∪ none perspective_result ← math.matrix4_perspective(60.0, 1.0, 0.1, 100.0)
+        const math.Matrix4 ∪ none invalid_perspective ← math.matrix4_perspective(0.0, 1.0, 0.1, 100.0)
+        const math.Matrix4 ∪ none view_result ← math.matrix4_look_at(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+        const math.Matrix4 ∪ none invalid_view ← math.matrix4_look_at(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
 
         assert malformed.valid() ≡ false
         assert identity.transpose().elements[0] ≡ (1.0 ∷ f32)
-        assert inverse_result not is null
-        assert perspective_result not is null
-        assert invalid_perspective is null
-        assert view_result not is null
-        assert invalid_view is null
+        assert inverse_result not is none
+        assert perspective_result not is none
+        assert invalid_perspective is none
+        assert view_result not is none
+        assert invalid_view is none
     }
 
     test "transform payload records model and view-projection facts" {
         const math.Matrix4 model ← math.matrix4_translation(math.vector3(1.0, 2.0, 3.0))
         const math.Matrix4 view_projection ← math.matrix4_scale(math.vector3(4.0, 5.0, 6.0))
-        const math.TransformPayload ∪ null payload_result ← math.transform_payload(model, view_projection)
+        const math.TransformPayload ∪ none payload_result ← math.transform_payload(model, view_projection)
         const math.Matrix4 malformed_matrix ← math.Matrix4 {elements = [1.0]}
-        const math.TransformPayload ∪ null invalid_payload ← math.transform_payload(malformed_matrix, view_projection)
+        const math.TransformPayload ∪ none invalid_payload ← math.transform_payload(malformed_matrix, view_projection)
 
-        assert payload_result not is null
-        assert invalid_payload is null
+        assert payload_result not is none
+        assert invalid_payload is none
 
         const math.TransformPayload payload ← math.TransformPayload {values = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 2.0, 3.0, 1.0, 4.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
         const int count ← payload.float_count() coalesce 0
@@ -135,12 +135,12 @@ describe "matrix and transform carriers" {
         assert model_translation ≡ (1.0 ∷ f32)
         assert view_zero ≡ (4.0 ∷ f32)
         assert view_last ≡ (1.0 ∷ f32)
-        assert payload.model_value(-1) is null
-        assert payload.view_projection_value(16) is null
+        assert payload.model_value(-1) is none
+        assert payload.view_projection_value(16) is none
 
         const math.TransformPayload malformed_payload ← math.TransformPayload {values = [1.0]}
-        assert malformed_payload.float_count() is null
-        assert malformed_payload.byte_count() is null
+        assert malformed_payload.float_count() is none
+        assert malformed_payload.byte_count() is none
     }
 }
 
@@ -163,20 +163,20 @@ describe "quaternion and euler rotation" {
         const math.Euler zero ← math.euler(0.0, 0.0, 0.0)
         const math.Euler other ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}
         const math.Euler unsupported ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "ZYX"}
-        const math.Quaternion ∪ null quaternion_result ← zero.to_quaternion()
-        const math.Quaternion ∪ null composed_result ← zero.compose(other)
-        const math.Euler ∪ null interpolated_result ← zero.lerp(other, 0.5)
-        const math.Quaternion ∪ null unsupported_quaternion ← unsupported.to_quaternion()
-        const math.Quaternion ∪ null unsupported_composition ← unsupported.compose(other)
-        const math.Euler ∪ null unsupported_interpolation ← unsupported.lerp(other, 0.5)
+        const math.Quaternion ∪ none quaternion_result ← zero.to_quaternion()
+        const math.Quaternion ∪ none composed_result ← zero.compose(other)
+        const math.Euler ∪ none interpolated_result ← zero.lerp(other, 0.5)
+        const math.Quaternion ∪ none unsupported_quaternion ← unsupported.to_quaternion()
+        const math.Quaternion ∪ none unsupported_composition ← unsupported.compose(other)
+        const math.Euler ∪ none unsupported_interpolation ← unsupported.lerp(other, 0.5)
 
         assert zero.order ≡ "XYZ"
-        assert quaternion_result not is null
-        assert composed_result not is null
-        assert interpolated_result not is null
-        assert unsupported_quaternion is null
-        assert unsupported_composition is null
-        assert unsupported_interpolation is null
+        assert quaternion_result not is none
+        assert composed_result not is none
+        assert interpolated_result not is none
+        assert unsupported_quaternion is none
+        assert unsupported_composition is none
+        assert unsupported_interpolation is none
     }
 }
 
@@ -228,17 +228,17 @@ describe "box, sphere, and plane volumes" {
         const math.Vector3 minimum ← math.vector3(0.0, 0.0, 0.0)
         const math.Vector3 maximum ← math.vector3(2.0, 2.0, 2.0)
         const math.Vector3 size ← math.vector3(2.0, 2.0, 2.0)
-        const math.Box3 ∪ null bounds_result ← math.box3_from_min_max(minimum, maximum)
-        const math.Box3 ∪ null sized_result ← math.box3_from_min_and_size(minimum, size)
-        const math.Box3 ∪ null centered_result ← math.box3_from_center_and_size(math.vector3(1.0, 1.0, 1.0), size)
-        const math.Box3 ∪ null invalid_bounds ← math.box3_from_min_max(maximum, minimum)
-        const math.Box3 ∪ null invalid_size ← math.box3_from_min_and_size(minimum, math.vector3(0.0, 1.0, 1.0))
+        const math.Box3 ∪ none bounds_result ← math.box3_from_min_max(minimum, maximum)
+        const math.Box3 ∪ none sized_result ← math.box3_from_min_and_size(minimum, size)
+        const math.Box3 ∪ none centered_result ← math.box3_from_center_and_size(math.vector3(1.0, 1.0, 1.0), size)
+        const math.Box3 ∪ none invalid_bounds ← math.box3_from_min_max(maximum, minimum)
+        const math.Box3 ∪ none invalid_size ← math.box3_from_min_and_size(minimum, math.vector3(0.0, 1.0, 1.0))
 
-        assert bounds_result not is null
-        assert sized_result not is null
-        assert centered_result not is null
-        assert invalid_bounds is null
-        assert invalid_size is null
+        assert bounds_result not is none
+        assert sized_result not is none
+        assert centered_result not is none
+        assert invalid_bounds is none
+        assert invalid_size is none
     }
 
     test "box containment and intersection preserve inclusive bounds" {
@@ -293,16 +293,16 @@ describe "box, sphere, and plane volumes" {
         const math.Sphere sphere ← math.Sphere {center = math.vector3(0.0, 0.0, 0.0), radius = 2.0}
         const math.Plane plane ← math.Plane {normal = math.vector3(0.0, 1.0, 0.0), constant = -2.0}
         const math.Box3 other ← math.Box3 {min = math.vector3(3.0, 3.0, 3.0), max = math.vector3(4.0, 4.0, 4.0)}
-        const math.Box3 ∪ null invalid_measure_box ← invalid_box.union(other)
-        const math.Vector3 ∪ null invalid_measure ← invalid_box.size()
-        const math.Vector3 ∪ null invalid_center ← invalid_box.center()
-        const math.Vector3 ∪ null invalid_overlap ← invalid_box.overlap(other)
+        const math.Box3 ∪ none invalid_measure_box ← invalid_box.union(other)
+        const math.Vector3 ∪ none invalid_measure ← invalid_box.size()
+        const math.Vector3 ∪ none invalid_center ← invalid_box.center()
+        const math.Vector3 ∪ none invalid_overlap ← invalid_box.overlap(other)
 
         assert invalid_box.valid() ≡ false
-        assert invalid_measure_box is null
-        assert invalid_measure is null
-        assert invalid_center is null
-        assert invalid_overlap is null
+        assert invalid_measure_box is none
+        assert invalid_measure is none
+        assert invalid_center is none
+        assert invalid_overlap is none
         assert sphere.contains(math.vector3((2.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32)))
         assert sphere.contains(math.vector3((3.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32))) ≡ false
         assert plane.distance(math.vector3((0.0 ∷ f32), (3.0 ∷ f32), (0.0 ∷ f32))) ≡ (1.0 ∷ f32)
@@ -314,9 +314,9 @@ describe "ray intersections and face-code facts" {
         const math.Box3 box ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
         const math.Ray ray ← math.Ray {origin = math.vector3(-2.0, 0.5, 0.5), direction = math.vector3(1.0, 0.0, 0.0)}
         const math.RayInterval interval ← math.RayInterval {minimum = 1.0, maximum = 2.0}
-        const math.RayBox3Hit ∪ null hit_result ← ray.box3_hit(box, 10.0)
-        const f32 ∪ null distance_result ← ray.intersects_box(box, 10.0)
-        const f32 ∪ null rejected_distance ← ray.intersects_box(box, -1.0)
+        const math.RayBox3Hit ∪ none hit_result ← ray.box3_hit(box, 10.0)
+        const f32 ∪ none distance_result ← ray.intersects_box(box, 10.0)
+        const f32 ∪ none rejected_distance ← ray.intersects_box(box, -1.0)
         const math.Vector3 point ← ray.point_at(2.0)
 
         const math.RayBox3Hit hit ← math.RayBox3Hit {distance = 2.0, point = point, normal = math.vector3(-1.0, 0.0, 0.0)}
@@ -324,17 +324,17 @@ describe "ray intersections and face-code facts" {
 
         assert interval.minimum ≡ (1.0 ∷ f32)
         assert point.x ≡ (0.0 ∷ f32)
-        assert distance_result not is null
-        assert rejected_distance is null
-        assert hit_result not is null
+        assert distance_result not is none
+        assert rejected_distance is none
+        assert hit_result not is none
         assert hit.distance ≡ (2.0 ∷ f32)
         assert hit.point.x ≡ (0.0 ∷ f32)
         assert hit.normal.x ≡ (-1.0 ∷ f32)
-        assert hit.hit_face_code() not is null
-        assert hit.hit_face_offset_x() not is null
-        assert hit.hit_face_offset_y() not is null
-        assert hit.hit_face_offset_z() not is null
-        assert hit.hit_face_facts() not is null
+        assert hit.hit_face_code() not is none
+        assert hit.hit_face_offset_x() not is none
+        assert hit.hit_face_offset_y() not is none
+        assert hit.hit_face_offset_z() not is none
+        assert hit.hit_face_facts() not is none
         assert facts.code ≡ 1
         assert facts.axis_code ≡ 1
         assert facts.opposite_code ≡ 2
@@ -352,20 +352,20 @@ describe "ray intersections and face-code facts" {
         const int x_offset ← math.face_code_x_offset(code) coalesce 0
         const int y_offset ← math.face_code_y_offset(code) coalesce 0
         const int z_offset ← math.face_code_z_offset(code) coalesce 0
-        const math.Vector3 ∪ null invalid_normal ← math.face_code_normal(0)
-        const math.FaceCodeFacts ∪ null invalid_facts ← math.face_code_facts(7)
+        const math.Vector3 ∪ none invalid_normal ← math.face_code_normal(0)
+        const math.FaceCodeFacts ∪ none invalid_facts ← math.face_code_facts(7)
 
         assert math.face_code_valid(1)
         assert math.face_code_valid(6)
         assert math.face_code_valid(0) ≡ false
-        assert math.face_code_axis_code(code) not is null
-        assert math.face_code_opposite(code) not is null
-        assert math.face_code_x_offset(code) not is null
-        assert math.face_code_y_offset(code) not is null
-        assert math.face_code_z_offset(code) not is null
-        assert math.face_code_normal(code) not is null
-        assert math.face_code_color(code) not is null
-        assert math.face_code_facts(code) not is null
+        assert math.face_code_axis_code(code) not is none
+        assert math.face_code_opposite(code) not is none
+        assert math.face_code_x_offset(code) not is none
+        assert math.face_code_y_offset(code) not is none
+        assert math.face_code_z_offset(code) not is none
+        assert math.face_code_normal(code) not is none
+        assert math.face_code_color(code) not is none
+        assert math.face_code_facts(code) not is none
         assert axis ≡ 3
         assert opposite ≡ 5
         assert x_offset ≡ 0
@@ -375,7 +375,7 @@ describe "ray intersections and face-code facts" {
         assert color.b ≡ (1.0 ∷ f32)
         assert facts.code ≡ 6
         assert facts.opposite_code ≡ 5
-        assert invalid_normal is null
-        assert invalid_facts is null
+        assert invalid_normal is none
+        assert invalid_facts is none
     }
 }

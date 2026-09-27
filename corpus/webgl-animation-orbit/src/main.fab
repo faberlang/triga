@@ -43,15 +43,15 @@ fn indices_textus(de list<u32> values) → string {
     return output
 }
 
-fn float_values(de attribute.BufferAttribute attr) → list<f32> ∪ null {
+fn float_values(de attribute.BufferAttribute attr) → list<f32> ∪ none {
     return attr.float32_values()
 }
 
-fn mesh_ex_geometry(string name, de data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → AnimatedMesh ∪ null {
+fn mesh_ex_geometry(string name, de data.BufferGeometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → AnimatedMesh ∪ none {
     if geom.attributes.length() ≺ 2 then return null
-    const list<f32> ∪ null pos_opt ← float_values(geom.attributes[0])
-    const list<f32> ∪ null nrm_opt ← float_values(geom.attributes[1])
-    if pos_opt is null or nrm_opt is null then return null
+    const list<f32> ∪ none pos_opt ← float_values(geom.attributes[0])
+    const list<f32> ∪ none nrm_opt ← float_values(geom.attributes[1])
+    if pos_opt is none or nrm_opt is none then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
     if pos.length() ≠ geom.vertex_count * 3 then return null
@@ -73,11 +73,11 @@ fn mesh_ex_geometry(string name, de data.BufferGeometry geom, f32 ox, f32 oy, f3
     return AnimatedMesh {name = name, vertex_count = geom.vertex_count, index_count = geom.indices.length(), vertex_payload = payload, index_payload = geom.indices}
 }
 
-fn add_mesh(list<AnimatedMesh> meshes, string name, data.BufferGeometry ∪ null geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<AnimatedMesh> {
-    if geom_opt is null then return meshes
+fn add_mesh(list<AnimatedMesh> meshes, string name, data.BufferGeometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<AnimatedMesh> {
+    if geom_opt is none then return meshes
     const data.BufferGeometry geom ← geom_opt
-    const AnimatedMesh ∪ null mesh_opt ← mesh_ex_geometry(name, geom, ox, oy, oz, r, g, b)
-    if mesh_opt is null then return meshes
+    const AnimatedMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom, ox, oy, oz, r, g, b)
+    if mesh_opt is none then return meshes
     meshes.append(mesh_opt)
     return meshes
 }
@@ -109,28 +109,28 @@ fn scene_geometry_blob(de list<AnimatedMesh> meshes) → string {
 
 fn model_matrix(f32 elapsed_seconds) → math.Matrix4 {
     const math.Euler rotation ← math.euler(elapsed_seconds * 0.55, elapsed_seconds * 0.9, 0.0)
-    const math.Quaternion ∪ null quaternion_result ← rotation.ad_quaternionem()
-    if quaternion_result is null then return math.matrix4_identitas()
+    const math.Quaternion ∪ none quaternion_result ← rotation.ad_quaternionem()
+    if quaternion_result is none then return math.matrix4_identitas()
     const math.Quaternion quaternion ← math.Quaternion {x = quaternion_result!.x, y = quaternion_result!.y, z = quaternion_result!.z, w = quaternion_result!.w}
     return math.matrix4_composita(math.vector3(0.0, 0.0, 0.0), quaternion, math.vector3(1.0, 1.0, 1.0))
 }
 
-fn view_projection(f32 camera_yaw_degrees, f32 aspect) → math.Matrix4 ∪ null {
+fn view_projection(f32 camera_yaw_degrees, f32 aspect) → math.Matrix4 ∪ none {
     const math.Vector3 target ← math.vector3(0.0, 0.0, 0.0)
     const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(camera_yaw_degrees, -22.0)
     const math.Vector3 eye ← target.subtracta(direction.multiplicata(13.0))
-    const math.Matrix4 ∪ null projection_result ← math.matrix4_perspectiva(45.0, aspect, 0.1, 200.0)
-    if projection_result is null then return null
-    const math.Matrix4 ∪ null view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
-    if view_result is null then return null
+    const math.Matrix4 ∪ none projection_result ← math.matrix4_perspectiva(45.0, aspect, 0.1, 200.0)
+    if projection_result is none then return null
+    const math.Matrix4 ∪ none view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
+    if view_result is none then return null
     const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
     const math.Matrix4 view ← math.Matrix4 {elements = view_result!.elements}
     return projection.multiplicata(view)
 }
 
-fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ null {
-    const math.Matrix4 ∪ null view_projection_result ← view_projection(-35.0 + elapsed_seconds * 10.0, aspect)
-    if view_projection_result is null then return null
+fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ none {
+    const math.Matrix4 ∪ none view_projection_result ← view_projection(-35.0 + elapsed_seconds * 10.0, aspect)
+    if view_projection_result is none then return null
     const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
     const math.Matrix4 model ← model_matrix(elapsed_seconds)
     return math.transform_payload(model, view_projection_matrix)
@@ -151,8 +151,8 @@ fn corpus_animation_orbit_controller(dom.Scope scope) → list<dom.Subscription>
     dom.attr_set(facts, "data-scene-geometry", scene_geometry_blob(meshes))
     dom.text_set(status, "animation-ready")
 
-    const math.TransformPayload ∪ null initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
-    if initial_payload is null {
+    const math.TransformPayload ∪ none initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
+    if initial_payload is none {
         dom.attr_set(facts, "data-transform-status", "invalid")
     }
     else {
@@ -162,8 +162,8 @@ fn corpus_animation_orbit_controller(dom.Scope scope) → list<dom.Subscription>
     const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
         const f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
-        const math.TransformPayload ∪ null payload ← transform_payload(elapsed_seconds, canvas_aspect)
-        if payload is null {
+        const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
+        if payload is none {
             dom.attr_set(facts, "data-transform-status", "invalid")
         }
         else {

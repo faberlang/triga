@@ -6,8 +6,8 @@ import from "triga:math" math
 
 describe "face quad builders" {
     test "negative X face publishes exact corners" {
-        const face.FaceQuad ∪ null quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
-        assert quad_result not is null
+        const face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
+        assert quad_result not is none
         const face.FaceQuad quad ← quad_result
         assert quad.a.x ≡ (10.0 ∷ f32)
         assert quad.a.y ≡ (20.0 ∷ f32)
@@ -18,20 +18,20 @@ describe "face quad builders" {
     }
 
     test "all face codes preserve their orientation and winding" {
-        const face.FaceQuad ∪ null positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
-        assert positive_x_result not is null
+        const face.FaceQuad ∪ none positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
+        assert positive_x_result not is none
         const face.FaceQuad positive_x ← positive_x_result
-        const face.FaceQuad ∪ null negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
-        assert negative_y_result not is null
+        const face.FaceQuad ∪ none negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
+        assert negative_y_result not is none
         const face.FaceQuad negative_y ← negative_y_result
-        const face.FaceQuad ∪ null positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
-        assert positive_y_result not is null
+        const face.FaceQuad ∪ none positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
+        assert positive_y_result not is none
         const face.FaceQuad positive_y ← positive_y_result
-        const face.FaceQuad ∪ null negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
-        assert negative_z_result not is null
+        const face.FaceQuad ∪ none negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
+        assert negative_z_result not is none
         const face.FaceQuad negative_z ← negative_z_result
-        const face.FaceQuad ∪ null positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
-        assert positive_z_result not is null
+        const face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
+        assert positive_z_result not is none
         const face.FaceQuad positive_z ← positive_z_result
         assert positive_x.a.x ≡ (5.0 ∷ f32)
         assert positive_x.a.z ≡ (7.0 ∷ f32)
@@ -47,17 +47,17 @@ describe "face quad builders" {
     }
 
     test "invalid codes and non-positive sizes return absence" {
-        assert face.face_code_unit_quad(0, 0.0, 0.0, 0.0, 1.0) is null
-        assert face.face_code_unit_quad(7, 0.0, 0.0, 0.0, 1.0) is null
-        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, 0.0) is null
-        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, -1.0) is null
-        assert face.face_code_colored_quad_mesh_append(empty, empty, empty, 9, 0.0, 0.0, 0.0, 1.0) is null
-        assert face.face_code_colored_quad_mesh_append([0.0], empty, empty, 1, 0.0, 0.0, 0.0, 1.0) is null
+        assert face.face_code_unit_quad(0, 0.0, 0.0, 0.0, 1.0) is none
+        assert face.face_code_unit_quad(7, 0.0, 0.0, 0.0, 1.0) is none
+        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, 0.0) is none
+        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, -1.0) is none
+        assert face.face_code_colored_quad_mesh_append(empty, empty, empty, 9, 0.0, 0.0, 0.0, 1.0) is none
+        assert face.face_code_colored_quad_mesh_append([0.0], empty, empty, 1, 0.0, 0.0, 0.0, 1.0) is none
     }
 
     test "colored face append publishes exact position color and index arrays" {
-        const data.ColoredQuadMesh ∪ null mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
-        assert mesh_result not is null
+        const data.ColoredQuadMesh ∪ none mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
+        assert mesh_result not is none
         const data.ColoredQuadMesh mesh ← mesh_result
         assert mesh.positions.length() ≡ 12
         assert mesh.colors.length() ≡ 12
@@ -78,6 +78,6 @@ describe "face quad builders" {
         assert mesh.indices[4] ≡ (2 ∷ int<u32>)
         assert mesh.indices[5] ≡ (3 ∷ int<u32>)
         assert (mesh.face_count() coalesce 0) ≡ 1
-        assert mesh.geometry() not is null
+        assert mesh.geometry() not is none
     }
 }

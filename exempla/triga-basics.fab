@@ -25,7 +25,7 @@ main {
     const _ invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
-    const base.MaterialPipelineFacts ∪ null base_pipeline_result ← base_material.pipeline_facts()
+    const base.MaterialPipelineFacts ∪ none base_pipeline_result ← base_material.pipeline_facts()
     print base_pipeline_result
 
     # Double-sided material
@@ -33,7 +33,7 @@ main {
 
     # MeshBasicMaterial
     const _ unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
-    const basic.MeshBasicMaterial ∪ null unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
+    const basic.MeshBasicMaterial ∪ none unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
     const _ unlit_value ← basic.MeshBasicMaterial {base = unlit!.base, color = unlit!.color}
     print unlit_value.color.g
 

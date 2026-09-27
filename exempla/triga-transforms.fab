@@ -17,11 +17,11 @@ main {
     print transformed.x
 
     # TransformPayload
-    const math.TransformPayload ∪ null packed_transform_result ← math.transform_payload(world, scale)
+    const math.TransformPayload ∪ none packed_transform_result ← math.transform_payload(world, scale)
     const _ packed_transform ← math.TransformPayload {values = packed_transform_result!.values}
 
     # Matrix4 inverse
-    const math.Matrix4 ∪ null inverse ← world.inversa_affinis()
+    const math.Matrix4 ∪ none inverse ← world.inversa_affinis()
     const _ inverse_value ← math.Matrix4 {elements = inverse!.elements}
     const math.Vector3 round_trip ← inverse_value.applica_punctum(transformed)
     print round_trip.x
@@ -35,7 +35,7 @@ main {
 
     # Euler operations
     const math.Euler zero_euler ← math.euler(0.0, 0.0, 0.0)
-    const math.Quaternion ∪ null zero_euler_quaternion ← zero_euler.ad_quaternionem()
+    const math.Quaternion ∪ none zero_euler_quaternion ← zero_euler.ad_quaternionem()
     print zero_euler_quaternion
 
     # Camera direction
@@ -51,9 +51,9 @@ main {
     const math.Box3 shifted_bounds ← bounds.translata(math.vector3(2.0, 0.0, 0.0))
 
     # Box3 construction variants
-    const math.Box3 ∪ null minmax_bounds ← math.box3_ex_minimo_et_maximo(math.vector3(-2.0, -3.0, -4.0), math.vector3(2.0, 3.0, 4.0))
+    const math.Box3 ∪ none minmax_bounds ← math.box3_ex_minimo_et_maximo(math.vector3(-2.0, -3.0, -4.0), math.vector3(2.0, 3.0, 4.0))
     print minmax_bounds
-    const math.Box3 ∪ null player_box ← math.box3_ex_minimo_et_mensura(math.vector3(-0.3, 0.0, -0.3), math.vector3(0.6, 1.8, 0.6))
+    const math.Box3 ∪ none player_box ← math.box3_ex_minimo_et_mensura(math.vector3(-0.3, 0.0, -0.3), math.vector3(0.6, 1.8, 0.6))
     print player_box
 
     # Sphere and Plane
@@ -64,7 +64,7 @@ main {
     const _ ray ← math.Ray {origin = math.vector3(0.0, 0.0, 0.0), direction = math.vector3(1.0, 0.0, 0.0)}
     const math.Vector3 ray_point ← ray.punctum(3.0)
     print ray_point.x
-    const math.RayBox3Hit ∪ null ray_box_hit ← ray.box3_hit(shifted_bounds, 6.0)
+    const math.RayBox3Hit ∪ none ray_box_hit ← ray.box3_hit(shifted_bounds, 6.0)
     const _ ray_box_hit_value ← math.RayBox3Hit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
 
     # Camera yaw-pitch facts

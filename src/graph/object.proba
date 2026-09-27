@@ -40,7 +40,7 @@ test "Scene preserves its Object3D base and optional background" {
     const graph_object.Scene scene ← graph_object.Scene {base = base, background = math.Color {r = 0.2, g = 0.4, b = 0.6}}
     const math.Color background ← scene.background coalesce math.Color {r = -1.0, g = -1.0, b = -1.0}
     assert scene.base.name ≡ "scene-root"
-    assert scene.background not is null
+    assert scene.background not is none
     assert background.r ≡ (0.2 ∷ f32)
     assert background.g ≡ (0.4 ∷ f32)
     assert background.b ≡ (0.6 ∷ f32)
@@ -48,5 +48,5 @@ test "Scene preserves its Object3D base and optional background" {
 
 test "Scene background is absent by default" {
     const graph_object.Scene scene ← graph_object.Scene {base = objectum("plain-scene")}
-    assert scene.background is null
+    assert scene.background is none
 }

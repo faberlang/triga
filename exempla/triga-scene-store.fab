@@ -30,9 +30,9 @@ main {
     const scene.SceneHandle child_handle ← store.insere(child_node)
 
     # Visibilia query (single traversal, multiple accessors)
-    const scene.VisibiliaRetium ∪ null visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
+    const scene.VisibiliaRetium ∪ none visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
     print visibilia
 
     # SceneNode mesh accessors
-    const scene.SceneNode ∪ null fetched ← store.cape(mesh_handle)
+    const scene.SceneNode ∪ none fetched ← store.cape(mesh_handle)
 }

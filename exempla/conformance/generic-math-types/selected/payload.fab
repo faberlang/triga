@@ -20,23 +20,23 @@ locale = "en"
 # `Matrix4.validum()` guard has no replacement here; nullable returns are
 # reserved for genuine domain failures only.
 
-fn payload_float_count(list<f32> values) → int ∪ null {
+fn payload_float_count(list<f32> values) → int ∪ none {
     if values.length() ≠ 32 then return null
     return values.length()
 }
 
-fn payload_byte_count(list<f32> values) → int ∪ null {
+fn payload_byte_count(list<f32> values) → int ∪ none {
     if values.length() ≠ 32 then return null
     return values.length() * 4
 }
 
-fn payload_model_value(list<f32> values, int index) → f32 ∪ null {
+fn payload_model_value(list<f32> values, int index) → f32 ∪ none {
     if values.length() ≠ 32 then return null
     if index ≺ 0 or index ≥ 16 then return null
     return values[index]
 }
 
-fn payload_view_projection_value(list<f32> values, int index) → f32 ∪ null {
+fn payload_view_projection_value(list<f32> values, int index) → f32 ∪ none {
     if values.length() ≠ 32 then return null
     if index ≺ 0 or index ≥ 16 then return null
     return values[index + 16]
@@ -116,9 +116,9 @@ main {
     # Accessor boundary: model and VP read through their own halves.
     assert (payload_model_value(values, 12) coalesce 0.0) ≡ two
     assert (payload_view_projection_value(values, 0) coalesce 0.0) ≡ two
-    assert payload_model_value(values, 16) is null
-    assert payload_view_projection_value(values, 16) is null
-    assert payload_model_value(values, -1) is null
+    assert payload_model_value(values, 16) is none
+    assert payload_view_projection_value(values, 16) is none
+    assert payload_model_value(values, -1) is none
 
     print values.length()
 }
