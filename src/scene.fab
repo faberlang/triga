@@ -12,8 +12,8 @@ import from "triga:resource" resource
 # mutable SceneNode reference.
 @ public
 class SceneHandle {
-    int index
-    int generation
+    var int index
+    var int generation
 }
 
 # SceneNodeKind keeps the heterogeneous scene payload explicit. Mesh nodes
@@ -35,14 +35,14 @@ union SceneNodeKind {
 # refreshes it before a render-facing query.
 @ public
 class SceneNode {
-    string name
-    SceneNodeKind kind
-    SceneHandle parent optional
-    list<SceneHandle> children
-    bool visible
-    math.Matrix4 local_matrix
-    math.Matrix4 world_matrix
-    bool world_dirty
+    var string name
+    var SceneNodeKind kind
+    var SceneHandle parent optional
+    var list<SceneHandle> children
+    var bool visible
+    var math.Matrix4 local_matrix
+    var math.Matrix4 world_matrix
+    var bool world_dirty
 
     fn mesh_geometry() → resource.ResourceHandle ∪ null {
         match self.kind {
@@ -83,9 +83,9 @@ class SceneNode {
 # leaves its slot behind so an old handle cannot silently refer to a new node.
 @ public
 class SceneSlot {
-    int generation
-    bool alive
-    SceneNode node
+    var int generation
+    var bool alive
+    var SceneNode node
 }
 
 # SceneStore owns mutation, hierarchy validation, world-transform refresh, and
@@ -93,7 +93,7 @@ class SceneSlot {
 # backend-agnostic source module, so callers bind it with `varia`.
 @ public
 class SceneStore {
-    list<SceneSlot> slots
+    var list<SceneSlot> slots
 
     # --- Mutation ------------------------------------------------------------
     # These methods reject stale handles, duplicate parents, and cycles while
@@ -522,58 +522,58 @@ class SceneStore {
 # the other genera are compact projections consumed by examples or hosts.
 @ public
 class SceneTraversal {
-    list<SceneHandle> handles
-    int remaining
+    var list<SceneHandle> handles
+    var int remaining
 }
 
 # SceneMeshResources associates a visible mesh node with the two logical
 # resources needed to draw it.
 @ public
 class SceneMeshResources {
-    SceneHandle node
-    resource.ResourceHandle geometry
-    resource.ResourceHandle material
+    var SceneHandle node
+    var resource.ResourceHandle geometry
+    var resource.ResourceHandle material
 }
 
 # SceneMeshTransformPayload pairs a mesh identity with the packed model/view
 # projection data described by `triga:math`.
 @ public
 class SceneMeshTransformPayload {
-    SceneHandle node
-    math.TransformPayload payload
+    var SceneHandle node
+    var math.TransformPayload payload
 }
 
 # SceneMeshDrawPacket is the source-side draw unit assembled by `visible_meshes`.
 # It contains identities and facts, not host GPU objects.
 @ public
 class SceneMeshDrawPacket {
-    SceneHandle node
-    resource.ResourceHandle geometry
-    resource.ResourceHandle material
-    math.TransformPayload transform
+    var SceneHandle node
+    var resource.ResourceHandle geometry
+    var resource.ResourceHandle material
+    var math.TransformPayload transform
 }
 
 # These two fact genera summarize the number of packets and resource identities
 # without forcing a consumer to inspect the full traversal payload.
 @ public
 class SceneVisibleMeshDrawBatchFacts {
-    int packet_count
-    int transform_payload_byte_count
+    var int packet_count
+    var int transform_payload_byte_count
 }
 
 @ public
 class SceneVisibleMeshResourceFacts {
-    int mesh_count
-    int resource_pair_count
-    int geometry_handle_count
-    int material_handle_count
+    var int mesh_count
+    var int resource_pair_count
+    var int geometry_handle_count
+    var int material_handle_count
 }
 
 # SceneMeshResourceTraversal is the resource-only traversal projection.
 @ public
 class SceneMeshResourceTraversal {
-    list<SceneMeshResources> resources
-    int remaining
+    var list<SceneMeshResources> resources
+    var int remaining
 }
 
 # VisibleMeshes is the deliberately small result of one visible-mesh walk.
@@ -581,10 +581,10 @@ class SceneMeshResourceTraversal {
 # explicit draw packets used by the next stage.
 @ public
 class VisibleMeshes {
-    list<SceneHandle> handles = empty
-    list<resource.ResourceHandle> geometry_resources = empty
-    list<resource.ResourceHandle> material_resources = empty
-    list<math.TransformPayload> payloads = empty
+    var list<SceneHandle> handles = empty
+    var list<resource.ResourceHandle> geometry_resources = empty
+    var list<resource.ResourceHandle> material_resources = empty
+    var list<math.TransformPayload> payloads = empty
 
     fn count() → int {
         return self.handles.length()

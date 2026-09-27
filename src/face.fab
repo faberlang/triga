@@ -14,10 +14,10 @@ import from "triga:geometry/data" data
 # code plus an origin/size into geometry-ready corners.
 @ public
 class FaceQuad {
-    math.Vector3 a
-    math.Vector3 b
-    math.Vector3 c
-    math.Vector3 d
+    var math.Vector3 a
+    var math.Vector3 b
+    var math.Vector3 c
+    var math.Vector3 d
 }
 
 # Build one oriented quad. Invalid face codes and non-positive sizes return

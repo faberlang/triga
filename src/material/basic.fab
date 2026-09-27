@@ -17,8 +17,8 @@ import from "triga:material/base" base
 # methods (api-shape-policy §1); basic_material is the free constructor.
 @ public
 class MeshBasicMaterial {
-    base.Material base
-    math.Color color
+    var base.Material base
+    var math.Color color
 
     fn valid() → bool {
         return self.base.valid() and self.color.valid()

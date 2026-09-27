@@ -42,13 +42,13 @@ union AttributeData {
 # count, and exactly component_width * element_count scalars.
 @ public
 class BufferAttribute {
-    string name
-    int shader_location
-    int component_width
-    int element_count
-    bool normalized
-    AttributeUsage usage
-    AttributeData data
+    var string name
+    var int shader_location
+    var int component_width
+    var int element_count
+    var bool normalized
+    var AttributeUsage usage
+    var AttributeData data
 
     # --- Format and host-layout projection ---
 

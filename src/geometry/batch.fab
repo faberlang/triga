@@ -15,8 +15,8 @@
 # draw command.
 @ public
 class DrawRange {
-    int start
-    int count
+    var int start
+    var int count
 }
 
 # The complete scalar fact set for one host draw. BufferGeometry fills this
@@ -24,12 +24,12 @@ class DrawRange {
 # element origin/count, instance count, and material selection.
 @ public
 class GeometryDrawCommand {
-    bool indexed
-    int element_count
-    int first_element
-    int base_vertex
-    int instance_count
-    int material_index
+    var bool indexed
+    var int element_count
+    var int first_element
+    var int base_vertex
+    var int instance_count
+    var int material_index
 }
 
 # One material-owned element range. Groups are CPU-side batching metadata;
@@ -37,9 +37,9 @@ class GeometryDrawCommand {
 # non-overlapping order before producing group commands.
 @ public
 class GeometryGroup {
-    int start
-    int count
-    int material_index
+    var int start
+    var int count
+    var int material_index
 }
 
 # Upload and draw facts for indexed geometry. The payload fields are byte
@@ -47,11 +47,11 @@ class GeometryGroup {
 # generated group commands.
 @ public
 class IndexedGeometryDrawBatchFacts {
-    int draw_count
-    int grouped_element_total
-    int vertex_payload_byte_count
-    int index_payload_byte_count
-    int total_payload_byte_count
+    var int draw_count
+    var int grouped_element_total
+    var int vertex_payload_byte_count
+    var int index_payload_byte_count
+    var int total_payload_byte_count
 }
 
 # Batch facts for line geometry. `line_count` records the number of line
@@ -59,12 +59,12 @@ class IndexedGeometryDrawBatchFacts {
 # payload-byte facts as the indexed batch shape.
 @ public
 class LineGeometryDrawBatchFacts {
-    int draw_count
-    int line_count
-    int grouped_element_total
-    int vertex_payload_byte_count
-    int index_payload_byte_count
-    int total_payload_byte_count
+    var int draw_count
+    var int line_count
+    var int grouped_element_total
+    var int vertex_payload_byte_count
+    var int index_payload_byte_count
+    var int total_payload_byte_count
 }
 
 # Exact CPU-side payload facts for the visible-face mesh shape used by the
@@ -73,14 +73,14 @@ class LineGeometryDrawBatchFacts {
 # helpers can describe the host upload without allocating a buffer.
 @ public
 class VisibleFaceMeshFacts {
-    int face_count
-    int vertex_count
-    int index_count
-    int triangle_count
-    int position_payload_byte_count
-    int color_payload_byte_count
-    int index_payload_byte_count
-    int total_payload_byte_count
+    var int face_count
+    var int vertex_count
+    var int index_count
+    var int triangle_count
+    var int position_payload_byte_count
+    var int color_payload_byte_count
+    var int index_payload_byte_count
+    var int total_payload_byte_count
 }
 
 # --- Scalar payload and mesh-shape helpers ---

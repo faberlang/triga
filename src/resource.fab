@@ -12,8 +12,8 @@
 # mistaken for the handle that named an earlier resource.
 @ public
 class ResourceHandle {
-    int index
-    int generation
+    var int index
+    var int generation
 
     fn equals(ref ResourceHandle other) → bool {
         return self.index ≡ other.index and self.generation ≡ other.generation
@@ -57,9 +57,9 @@ class ResourceHandle {
 # the next generation for the same logical index.
 @ public
 class ResourceTransition {
-    ResourceHandle previous
-    ResourceHandle current
-    bool changed
+    var ResourceHandle previous
+    var ResourceHandle current
+    var bool changed
 
     fn valid() → bool {
         if self.previous.index ≠ self.current.index then return false
@@ -72,11 +72,11 @@ class ResourceTransition {
 # removal. Nullable handles make the two one-sided states explicit.
 @ public
 class ResourceLifecycleTransition {
-    int logical_index
-    ResourceHandle previous optional
-    ResourceHandle current optional
-    bool changed
-    bool removed
+    var int logical_index
+    var ResourceHandle previous optional
+    var ResourceHandle current optional
+    var bool changed
+    var bool removed
 
     fn valid() → bool {
         if self.previous is null and self.current is null then return false
@@ -109,12 +109,12 @@ class ResourceLifecycleTransition {
 # uniqueness and generation checks.
 @ public
 class ResourceLifecycleBatchFacts {
-    int transition_count
-    int changed_count
-    int unchanged_count
-    int created_count
-    int removed_count
-    int live_count
+    var int transition_count
+    var int changed_count
+    var int unchanged_count
+    var int created_count
+    var int removed_count
+    var int live_count
 }
 
 # ResourceHandleTraversal is the bounded accumulator used by the scene-store
@@ -122,8 +122,8 @@ class ResourceLifecycleBatchFacts {
 # a malformed input would otherwise cycle.
 @ public
 class ResourceHandleTraversal {
-    list<ResourceHandle> handles
-    int remaining
+    var list<ResourceHandle> handles
+    var int remaining
 }
 
 # --- Replacement batch queries ----------------------------------------------

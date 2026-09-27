@@ -11,14 +11,14 @@ import from "triga:math" math
 # visible in the type itself.
 @ public
 class Object3D {
-    math.Vector3 position
-    math.Euler rotation
-    math.Quaternion quaternion
-    math.Vector3 scale
-    math.Matrix4 matrix
-    list<Object3D> children
-    bool visible = true
-    string name
+    var math.Vector3 position
+    var math.Euler rotation
+    var math.Quaternion quaternion
+    var math.Vector3 scale
+    var math.Matrix4 matrix
+    var list<Object3D> children
+    var bool visible = true
+    var string name
 }
 
 # Scene adds only an optional background color to the common Object3D shape.
@@ -26,6 +26,6 @@ class Object3D {
 # the lightweight value shape used by graph-facing APIs.
 @ public
 class Scene {
-    Object3D base
-    math.Color background optional
+    var Object3D base
+    var math.Color background optional
 }

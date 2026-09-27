@@ -27,7 +27,7 @@ import from "triga:material/lit" lit
 # while the host owns resource and draw submission.
 @ public
 class Mesh {
-    graph_object.Object3D base
-    data.BufferGeometry geometry
-    basic.MeshBasicMaterial ∪ lit.MeshPhongMaterial ∪ standard.MeshStandardMaterial material optional
+    var graph_object.Object3D base
+    var data.BufferGeometry geometry
+    var basic.MeshBasicMaterial ∪ lit.MeshPhongMaterial ∪ standard.MeshStandardMaterial material optional
 }

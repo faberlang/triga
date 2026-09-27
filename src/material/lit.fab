@@ -15,8 +15,8 @@ import from "triga:material/base" base
 # and host contracts.
 @ public
 class MeshPhongMaterial {
-    base.Material base
-    math.Color color
-    math.Color specular
-    f32 shininess = 30.0
+    var base.Material base
+    var math.Color color
+    var math.Color specular
+    var f32 shininess = 30.0
 }

@@ -16,14 +16,14 @@
 # Operations on a material value are receiver methods (api-shape-policy §1).
 @ public
 class Material {
-    string name
+    var string name
     # side: 0=FrontSide 1=BackSide 2=DoubleSide
-    int<u32> side = 0
-    bool transparent = false
-    f32 opacity = 1.0
-    bool depth_write = true
-    bool depth_test = true
-    f32 alpha_test = 0.0
+    var int<u32> side = 0
+    var bool transparent = false
+    var f32 opacity = 1.0
+    var bool depth_write = true
+    var bool depth_test = true
+    var f32 alpha_test = 0.0
 
     fn valid() → bool {
         if self.name ≡ "" then return false
@@ -69,24 +69,24 @@ class Material {
 # depth and alpha decisions without requiring consumers to inspect Material.
 @ public
 class MaterialPipelineFacts {
-    int side_code
-    bool depth_test_enabled
-    bool depth_write_enabled
-    bool transparent
-    f32 alpha
-    f32 alpha_test
+    var int side_code
+    var bool depth_test_enabled
+    var bool depth_write_enabled
+    var bool transparent
+    var f32 alpha
+    var f32 alpha_test
 }
 
 # TextureDescriptor is a THREE.Texture / THREE.DataTexture shape seed.
 # Relocates to material/texture.fab at H3; see header.
 @ public
 class TextureDescriptor {
-    int<u32> width
-    int<u32> height
+    var int<u32> width
+    var int<u32> height
     # Format string: e.g. "rgba8unorm", "depth32float"
-    string format
-    list<f32> data optional
-    bool generate_mipmaps = true
+    var string format
+    var list<f32> data optional
+    var bool generate_mipmaps = true
 }
 
 @ public

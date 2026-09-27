@@ -12,16 +12,16 @@ import from "triga:graph/object" object as graph_object
 # renderer turns them into bindings or shader inputs.
 @ public
 class Light {
-    graph_object.Object3D base
-    math.Color color
-    f32 intensity = 1.0
+    var graph_object.Object3D base
+    var math.Color color
+    var f32 intensity = 1.0
 }
 
 # AmbientLight contributes a light family with no direction or position of its
 # own. It keeps the common Object3D and Light data visible through `base`.
 @ public
 class AmbientLight {
-    Light base
+    var Light base
 }
 
 # DirectionalLight points at an explicit target position. Keeping the target in
@@ -29,8 +29,8 @@ class AmbientLight {
 # and host adapters.
 @ public
 class DirectionalLight {
-    Light base
-    math.Vector3 target_position
+    var Light base
+    var math.Vector3 target_position
 }
 
 # PointLight carries the distance and decay fields for the point-light path.
@@ -38,7 +38,7 @@ class DirectionalLight {
 # interpretation of cutoff and attenuation.
 @ public
 class PointLight {
-    Light base
-    f32 distance = 0.0
-    f32 decay = 2.0
+    var Light base
+    var f32 distance = 0.0
+    var f32 decay = 2.0
 }

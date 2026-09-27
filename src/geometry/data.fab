@@ -40,9 +40,9 @@ union PrimitiveTopology {
 # `geometry()` projection turns them into a validated BufferGeometry.
 @ public
 class ColoredQuadMesh {
-    list<f32> positions
-    list<f32> colors
-    list<u32> indices
+    var list<f32> positions
+    var list<f32> colors
+    var list<u32> indices
 
     fn face_count() → int ∪ null {
         if self.positions.length() ≠ self.colors.length() then return null
@@ -97,13 +97,13 @@ class ColoredQuadMesh {
 # host draw facts.
 @ public
 class BufferGeometry {
-    PrimitiveTopology topology
-    int vertex_count
-    list<attribute.BufferAttribute> attributes
-    bool indexed
-    list<u32> indices
-    batch.DrawRange draw_range
-    list<batch.GeometryGroup> groups
+    var PrimitiveTopology topology
+    var int vertex_count
+    var list<attribute.BufferAttribute> attributes
+    var bool indexed
+    var list<u32> indices
+    var batch.DrawRange draw_range
+    var list<batch.GeometryGroup> groups
 
     # --- Validation -----------------------------------------------------
     # Validation-sensitive projections below call `valid()` first. Invalid

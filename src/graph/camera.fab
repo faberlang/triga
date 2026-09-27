@@ -12,11 +12,11 @@ import from "triga:graph/object" object as graph_object
 # setup stays in ordinary Faber control flow.
 @ public
 class PerspectiveCamera {
-    graph_object.Object3D base
-    f32 fov = 50.0
-    f32 aspect = 1.0
-    f32 near = 0.1
-    f32 far = 2000.0
+    var graph_object.Object3D base
+    var f32 fov = 50.0
+    var f32 aspect = 1.0
+    var f32 near = 0.1
+    var f32 far = 2000.0
 
     fn projection() → math.Matrix4 ∪ null {
         return math.matrix4_perspective(self.fov, self.aspect, self.near, self.far)
@@ -54,14 +54,14 @@ class PerspectiveCamera {
 # scale and depth terms.
 @ public
 class PerspectiveCameraProjectionFacts {
-    f32 fov_y_degrees
-    f32 aspect
-    f32 near
-    f32 far
-    int projection_float_count
-    f32 x_scale
-    f32 y_scale
-    f32 depth_scale
+    var f32 fov_y_degrees
+    var f32 aspect
+    var f32 near
+    var f32 far
+    var int projection_float_count
+    var f32 x_scale
+    var f32 y_scale
+    var f32 depth_scale
 }
 
 # ViewProjectionFacts describes the combined projection × view result used by
@@ -69,11 +69,11 @@ class PerspectiveCameraProjectionFacts {
 # genus is for compact validation and reflection facts.
 @ public
 class ViewProjectionFacts {
-    int float_count
-    f32 x_scale
-    f32 y_scale
-    f32 depth_scale
-    f32 view_translation_z
+    var int float_count
+    var f32 x_scale
+    var f32 y_scale
+    var f32 depth_scale
+    var f32 view_translation_z
 }
 
 # OrthographicCamera reserves the same composed Object3D shape for the
@@ -81,11 +81,11 @@ class ViewProjectionFacts {
 # implementation can share the public graph contract.
 @ public
 class OrthographicCamera {
-    graph_object.Object3D base
-    f32 left
-    f32 right
-    f32 top
-    f32 bottom
-    f32 near = 0.1
-    f32 far = 2000.0
+    var graph_object.Object3D base
+    var f32 left
+    var f32 right
+    var f32 top
+    var f32 bottom
+    var f32 near = 0.1
+    var f32 far = 2000.0
 }

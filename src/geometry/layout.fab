@@ -51,12 +51,12 @@ union VertexStepMode {
 # the host should interpret the CPU-side attribute data.
 @ public
 class VertexAttributeLayout {
-    string source_name
-    int shader_location
-    VertexFormat vertex_format
-    int offset_bytes
-    int stride_bytes
-    VertexStepMode step_mode
+    var string source_name
+    var int shader_location
+    var VertexFormat vertex_format
+    var int offset_bytes
+    var int stride_bytes
+    var VertexStepMode step_mode
 }
 
 # --- Public variant constructors ---

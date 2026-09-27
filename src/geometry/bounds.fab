@@ -14,12 +14,12 @@
 # validates, while this leaf keeps the bounds shape independent of triga:math.
 @ public
 class BoundingBox {
-    f32 min_x
-    f32 min_y
-    f32 min_z
-    f32 max_x
-    f32 max_y
-    f32 max_z
+    var f32 min_x
+    var f32 min_y
+    var f32 min_z
+    var f32 max_x
+    var f32 max_y
+    var f32 max_z
 }
 
 # A center-and-radius result derived from validated geometry positions. The
@@ -27,8 +27,8 @@ class BoundingBox {
 # this leaf only carries the result and performs no separate validation.
 @ public
 class BoundingSphere {
-    f32 center_x
-    f32 center_y
-    f32 center_z
-    f32 radius
+    var f32 center_x
+    var f32 center_y
+    var f32 center_z
+    var f32 radius
 }

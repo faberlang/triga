@@ -24,17 +24,17 @@
 # Two-dimensional coordinates.
 @ public
 class Vector2 {
-    f32 x
-    f32 y
+    var f32 x
+    var f32 y
 }
 
 # Three-dimensional points and directions. Its guarded normalization and
 # projection methods return the zero vector for near-zero inputs.
 @ public
 class Vector3 {
-    f32 x
-    f32 y
-    f32 z
+    var f32 x
+    var f32 y
+    var f32 z
 
     fn add(ref Vector3 other) → Vector3 {
         return vector3(self.x + other.x, self.y + other.y, self.z + other.z)
@@ -87,16 +87,16 @@ class Vector3 {
 # Four-component data carrier for APIs that need an explicit w lane.
 @ public
 class Vector4 {
-    f32 x
-    f32 y
-    f32 z
-    f32 w
+    var f32 x
+    var f32 y
+    var f32 z
+    var f32 w
 }
 
 # A flat 3x3 element carrier. Matrix3 has no operations in this module yet.
 @ public
 class Matrix3 {
-    list<f32> elements
+    var list<f32> elements
 }
 
 # --- MATRICES ---
@@ -109,7 +109,7 @@ class Matrix3 {
 # near zero.
 @ public
 class Matrix4 {
-    list<f32> elements
+    var list<f32> elements
 
     fn valid() → bool {
         return self.elements.length() ≡ 16
@@ -215,7 +215,7 @@ class Matrix4 {
 #          transform_payload_byte_count(payload) returns 128.
 @ public
 class TransformPayload {
-    list<f32> values
+    var list<f32> values
 
     fn float_count() → int ∪ null {
         if self.values.length() ≠ 32 then return null
@@ -246,10 +246,10 @@ class TransformPayload {
 # lerp chooses the nearer sign before normalizing the result.
 @ public
 class Quaternion {
-    f32 x
-    f32 y
-    f32 z
-    f32 w
+    var f32 x
+    var f32 y
+    var f32 z
+    var f32 w
 
     fn multiply(ref Quaternion other) → Quaternion {
         return quaternion(((self.w * other.x + self.x * other.w) + self.y * other.z) - self.z * other.y, ((self.w * other.y - self.x * other.z) + self.y * other.w) + self.z * other.x, ((self.w * other.z + self.x * other.y) - self.y * other.x) + self.z * other.w, ((self.w * other.w - self.x * other.x) - self.y * other.y) - self.z * other.z)
@@ -282,9 +282,9 @@ class Quaternion {
 # exactly the normalized range 0.0 through 1.0 for each component.
 @ public
 class Color {
-    f32 r
-    f32 g
-    f32 b
+    var f32 r
+    var f32 g
+    var f32 b
 
     fn valid() → bool {
         if self.r ≺ 0.0 or self.r ≻ 1.0 then return false
@@ -304,10 +304,10 @@ class Color {
 # accepts only XYZ; its conversion path consumes x/y/z directly as radians.
 @ public
 class Euler {
-    f32 x
-    f32 y
-    f32 z
-    string order = "XYZ"
+    var f32 x
+    var f32 y
+    var f32 z
+    var string order = "XYZ"
 
     fn to_quaternion() → Quaternion ∪ null {
         if self.order ≠ "XYZ" then return null
@@ -345,8 +345,8 @@ class Euler {
 # valid is the min ≤ max invariant used by the nullable box helpers.
 @ public
 class Box3 {
-    Vector3 min
-    Vector3 max
+    var Vector3 min
+    var Vector3 max
 
     fn contains(ref Vector3 point) → bool {
         return ((((point.x ≥ self.min.x and point.x ≤ self.max.x) and point.y ≥ self.min.y) and point.y ≤ self.max.y) and point.z ≥ self.min.z) and point.z ≤ self.max.z
@@ -425,18 +425,18 @@ class Box3 {
 # available both as a Vector3 and as named scalar fields.
 @ public
 class Box3OverlapFacts {
-    Vector3 overlap
-    f32 x
-    f32 y
-    f32 z
+    var Vector3 overlap
+    var f32 x
+    var f32 y
+    var f32 z
 }
 
 # Sphere carrier with a center and radius. Point containment compares the
 # center-to-point distance directly with radius.
 @ public
 class Sphere {
-    Vector3 center
-    f32 radius
+    var Vector3 center
+    var f32 radius
 
     fn contains(ref Vector3 point) → bool {
         return self.center.distance(point) ≤ self.radius
@@ -447,8 +447,8 @@ class Sphere {
 # normal · point + constant.
 @ public
 class Plane {
-    Vector3 normal
-    f32 constant
+    var Vector3 normal
+    var f32 constant
 
     fn distance(ref Vector3 point) → f32 {
         return self.normal.dot(point) + self.constant
@@ -459,8 +459,8 @@ class Plane {
 # origin + direction × distance; box intersections return a bounded hit.
 @ public
 class Ray {
-    Vector3 origin
-    Vector3 direction
+    var Vector3 origin
+    var Vector3 direction
 
     fn point_at(f32 distance) → Vector3 {
         return self.origin.add(self.direction.scale(distance))
@@ -496,8 +496,8 @@ class Ray {
 # One axis' entry and exit values for the ray-box slab calculation.
 @ public
 class RayInterval {
-    f32 minimum
-    f32 maximum
+    var f32 minimum
+    var f32 maximum
 }
 
 # --- FACE CODES ---
@@ -506,14 +506,14 @@ class RayInterval {
 # matching axis, opposite face, signed offsets, normal, and display color.
 @ public
 class FaceCodeFacts {
-    int code
-    int axis_code
-    int opposite_code
-    int x_offset
-    int y_offset
-    int z_offset
-    Vector3 normal
-    Color color
+    var int code
+    var int axis_code
+    var int opposite_code
+    var int x_offset
+    var int y_offset
+    var int z_offset
+    var Vector3 normal
+    var Color color
 }
 
 
@@ -521,9 +521,9 @@ class FaceCodeFacts {
 # recover a face code and its complete FaceCodeFacts record.
 @ public
 class RayBox3Hit {
-    f32 distance
-    Vector3 point
-    Vector3 normal
+    var f32 distance
+    var Vector3 point
+    var Vector3 normal
 
     fn hit_face_code() → int ∪ null {
         if self.normal.x ≡ -1.0 ∷ f32 then return 1
@@ -568,13 +568,13 @@ class RayBox3Hit {
 # clamped pitch, normalized directions, and the derived ray together.
 @ public
 class CameraYawPitchFacts {
-    f32 yaw_degrees
-    f32 pitch_degrees
-    f32 clamped_pitch_degrees
-    Vector3 direction
-    Vector3 planar_forward
-    Vector3 planar_right
-    Ray ray
+    var f32 yaw_degrees
+    var f32 pitch_degrees
+    var f32 clamped_pitch_degrees
+    var Vector3 direction
+    var Vector3 planar_forward
+    var Vector3 planar_right
+    var Ray ray
 }
 
 
