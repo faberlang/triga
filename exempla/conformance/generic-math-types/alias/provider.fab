@@ -25,8 +25,8 @@ type Matrix<size R, size C> = matrix<f32, [R, C]>
 
 @ public
 class Box<size N> {
-    Vector<N> minima
-    Vector<N> maxima
+    var Vector<N> minima
+    var Vector<N> maxima
 }
 
 @ public

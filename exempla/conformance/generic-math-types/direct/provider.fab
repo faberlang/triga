@@ -14,8 +14,8 @@ locale = "en"
 
 @ public
 class Box<size N> {
-    vector<f32, N> minima
-    vector<f32, N> maxima
+    var vector<f32, N> minima
+    var vector<f32, N> maxima
 }
 
 @ public

@@ -5,25 +5,25 @@ import from "triga:graph/camera" camera
 
 @ public
 class CameraInput {
-    bool yaw_left = false
-    bool yaw_right = false
-    bool pitch_up = false
-    bool pitch_down = false
-    bool dolly_in = false
-    bool dolly_out = false
-    bool pan_left = false
-    bool pan_right = false
-    bool pan_forward = false
-    bool pan_back = false
+    var bool yaw_left = false
+    var bool yaw_right = false
+    var bool pitch_up = false
+    var bool pitch_down = false
+    var bool dolly_in = false
+    var bool dolly_out = false
+    var bool pan_left = false
+    var bool pan_right = false
+    var bool pan_forward = false
+    var bool pan_back = false
 }
 
 @ public
 class OrbitCamera {
-    math.Vector3 target
-    f32 yaw_degrees
-    f32 pitch_degrees
-    f32 distance
-    CameraInput input
+    var math.Vector3 target
+    var f32 yaw_degrees
+    var f32 pitch_degrees
+    var f32 distance
+    var CameraInput input
 }
 
 @ public

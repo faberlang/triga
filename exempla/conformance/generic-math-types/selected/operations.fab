@@ -310,10 +310,10 @@ fn scala_diagonals(vector<f32, 3> scale) → matrix<f32, [4, 4]> {
 # one affine matrix (the retired matrix4_composita shape).
 
 class Quaternion {
-    f32 x
-    f32 y
-    f32 z
-    f32 w
+    var f32 x
+    var f32 y
+    var f32 z
+    var f32 w
 }
 
 fn composita(vector<f32, 3> position, Quaternion rotation, vector<f32, 3> scale) → matrix<f32, [4, 4]> {
@@ -481,8 +481,8 @@ fn transposita(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> {
 # --- §2.4 Box<N>: generic nominal over two selected vectors ---------------
 
 class Box<size N> {
-    vector<f32, N> minima
-    vector<f32, N> maxima
+    var vector<f32, N> minima
+    var vector<f32, N> maxima
 
     # [R] receivers expressible dimension-neutrally today.
     fn mensura() → vector<f32, N> {

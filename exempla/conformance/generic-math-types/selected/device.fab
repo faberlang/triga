@@ -38,8 +38,8 @@ fn matrix_productum(matrix<f32, [4, 4]> a, matrix<f32, [4, 4]> b) → matrix<f32
 }
 
 class Box<size N> {
-    vector<f32, N> minima
-    vector<f32, N> maxima
+    var vector<f32, N> minima
+    var vector<f32, N> maxima
 }
 
 fn box_mensura<size N>(Box<N> b) → vector<f32, N> {
