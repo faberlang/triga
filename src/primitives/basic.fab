@@ -100,32 +100,40 @@ fn sphere_geometry(f32 radius) → data.BufferGeometry ∪ none {
     uvs.append(0.5)
     uvs.append(1.0)
     var list<u32> indices ← empty
-    # South cap: (south, ring0[j], ring0[j+1]) — outward winding (verified).
-    for range 0‥8 const j {
-        indices.append(27 ↦ int<u32>)
-        indices.append(j ↦ int<u32>)
-        indices.append((j + 1) ↦ int<u32>)
-    }
-    # Middle bands: quad (a, c, d) + (a, d, b) — outward winding (verified).
-    for range 0‥2 const band {
+    # Why: every index below is a small non-negative loop value, so the u32
+    # conversions cannot fail; the handler keeps the function's own invalid
+    # result (none) rather than an abort.
+    do {
+        # South cap: (south, ring0[j], ring0[j+1]) — outward winding (verified).
         for range 0‥8 const j {
-            const int a ← band * 9 + j
-            const int b ← band * 9 + j + 1
-            const int c ← (band + 1) * 9 + j
-            const int d ← (band + 1) * 9 + j + 1
-            indices.append(a ↦ int<u32>)
-            indices.append(c ↦ int<u32>)
-            indices.append(d ↦ int<u32>)
-            indices.append(a ↦ int<u32>)
-            indices.append(d ↦ int<u32>)
-            indices.append(b ↦ int<u32>)
+            indices.append(27 ↦ int<u32>)
+            indices.append(j ↦ int<u32>)
+            indices.append((j + 1) ↦ int<u32>)
+        }
+        # Middle bands: quad (a, c, d) + (a, d, b) — outward winding (verified).
+        for range 0‥2 const band {
+            for range 0‥8 const j {
+                const int a ← band * 9 + j
+                const int b ← band * 9 + j + 1
+                const int c ← (band + 1) * 9 + j
+                const int d ← (band + 1) * 9 + j + 1
+                indices.append(a ↦ int<u32>)
+                indices.append(c ↦ int<u32>)
+                indices.append(d ↦ int<u32>)
+                indices.append(a ↦ int<u32>)
+                indices.append(d ↦ int<u32>)
+                indices.append(b ↦ int<u32>)
+            }
+        }
+        # North cap: (north, ring2[j+1], ring2[j]) — outward winding (verified).
+        for range 0‥8 const j {
+            indices.append(28 ↦ int<u32>)
+            indices.append((19 + j) ↦ int<u32>)
+            indices.append((18 + j) ↦ int<u32>)
         }
     }
-    # North cap: (north, ring2[j+1], ring2[j]) — outward winding (verified).
-    for range 0‥8 const j {
-        indices.append(28 ↦ int<u32>)
-        indices.append((19 + j) ↦ int<u32>)
-        indices.append((18 + j) ↦ int<u32>)
+    catch err {
+        return null
     }
     return assemble_geometry(29, positions, normals, uvs, indices)
 }
@@ -280,17 +288,24 @@ fn torus_geometry(f32 radius, f32 tube_radius) → data.BufferGeometry ∪ none 
         }
     }
     var list<u32> indices ← empty
-    for range 0‥8 const ring {
-        for range 0‥4 const tube {
-            const int a ← ring * 5 + tube
-            const int b ← (ring + 1) * 5 + tube
-            indices.append(a ↦ int<u32>)
-            indices.append(b + 1 ↦ int<u32>)
-            indices.append(b ↦ int<u32>)
-            indices.append(a ↦ int<u32>)
-            indices.append(a + 1 ↦ int<u32>)
-            indices.append(b + 1 ↦ int<u32>)
+    # Why: ring and tube indices are small non-negative loop values, so the u32
+    # conversions cannot fail; the handler keeps the function's invalid result.
+    do {
+        for range 0‥8 const ring {
+            for range 0‥4 const tube {
+                const int a ← ring * 5 + tube
+                const int b ← (ring + 1) * 5 + tube
+                indices.append(a ↦ int<u32>)
+                indices.append(b + 1 ↦ int<u32>)
+                indices.append(b ↦ int<u32>)
+                indices.append(a ↦ int<u32>)
+                indices.append(a + 1 ↦ int<u32>)
+                indices.append(b + 1 ↦ int<u32>)
+            }
         }
+    }
+    catch err {
+        return null
     }
     return assemble_geometry(45, positions, normals, uvs, indices)
 }
