@@ -6,11 +6,11 @@ import from "triga:math" math
 import from "triga:primitives/basic" basic
 
 class AnimatedMesh {
-    string name
-    int vertex_count
-    int index_count
-    list<f32> vertex_payload
-    list<u32> index_payload
+    var string name
+    var int vertex_count
+    var int index_count
+    var list<f32> vertex_payload
+    var list<u32> index_payload
 }
 
 fn floats_textus(de list<f32> values) → string {

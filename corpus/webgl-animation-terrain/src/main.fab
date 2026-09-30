@@ -3,11 +3,11 @@ import from "tela:dom" dom
 import from "triga:math" math
 
 class TerrainMesh {
-    string name
-    int vertex_count
-    int index_count
-    list<f32> vertex_payload
-    list<u32> index_payload
+    var string name
+    var int vertex_count
+    var int index_count
+    var list<f32> vertex_payload
+    var list<u32> index_payload
 }
 
 static int GRID_SEGMENTS = 32
