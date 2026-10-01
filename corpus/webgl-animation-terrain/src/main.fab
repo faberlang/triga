@@ -10,8 +10,8 @@ class TerrainMesh {
     var list<u32> index_payload
 }
 
-static int GRID_SEGMENTS = 32
-static f32 GRID_EXTENT = 44.0
+const int GRID_SEGMENTS = 32
+const f32 GRID_EXTENT = 44.0
 
 fn floats_textus(de list<f32> values) → string {
     var string output ← ""

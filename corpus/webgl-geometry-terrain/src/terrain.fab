@@ -17,15 +17,15 @@ class TerrainMesh {
     var list<u32> index_payload
 }
 
-static int GRID_SEGMENTS = 48
+const int GRID_SEGMENTS = 48
 
-static f32 GRID_EXTENT = 80.0
+const f32 GRID_EXTENT = 80.0
 
-static f32 HEIGHT_BASE = 5.2
+const f32 HEIGHT_BASE = 5.2
 
-static f32 HEIGHT_RANGE = 10.5
+const f32 HEIGHT_RANGE = 10.5
 
-static f32 WATER_LEVEL = 0.0 - 1.3
+const f32 WATER_LEVEL = 0.0 - 1.3
 
 # --- Deterministic value noise --------------------------------------------
 
