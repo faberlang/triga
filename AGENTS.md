@@ -74,6 +74,16 @@ rungs here.
 ./scripta/check
 ```
 
+## Browser presenter
+
+The thin WebGPU presenter lives in `host/`. It is Triga-owned. Do not import
+`hosts/webgpu-browser`. Check and serve:
+
+```bash
+./scripta/host check
+./scripta/host serve
+```
+
 ## Releases
 
 Triga is a source library. There is no standalone artifact publish and no

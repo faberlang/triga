@@ -1,0 +1,75 @@
++++
+locale = "en"
++++
+
+# Triga presenter fixture. `basic.box` is the typed mesh. A
+# `PerspectiveCamera` plus identity model write the 32-float
+# `TransformPayload`. Empty `@ vertex` / `@ fragment` bodies keep the radix
+# graphics emit. `faber run` cannot dump Geometry or matrices yet — importing
+# `triga:geometry/data` or `triga:math` hits the named MIR vector-method residual.
+
+import from "triga:geometry/data" data
+
+import from "triga:primitives/basic" basic
+
+import from "triga:math" math
+
+import from "triga:graph/object" graph_object
+
+import from "triga:graph/camera" camera
+
+@ shader_contract "vertex_layout"
+fn vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {
+    return true
+}
+
+@ shader_contract "varying"
+fn varying_matches(string source_name, int shader_location, int format_code, int interpolation_code, int stage_io_role_code) → bool {
+    return true
+}
+
+@ shader_contract "fragment_output"
+fn fragment_output_matches(int location, int format_code, int stage_io_role_code) → bool {
+    return true
+}
+
+@ shader_contract "pipeline"
+fn pipeline_matches(int color_target_format_code, int depth_compare_code, int depth_write_enabled_code, int primitive_topology_code, int vertex_count) → bool {
+    return true
+}
+
+@ shader_contract "resource_binding"
+fn resource_binding_matches(int group, int binding, int kind_code, int role_code, int access_code, int element_count, int layout_code, string source_name, int stage_io_role_code) → bool {
+    return true
+}
+
+@ vertex { }
+fn presenter_vertex() → void {
+}
+
+@ fragment { }
+fn presenter_fragment() → void {
+}
+
+fn presenter_camera_object() → graph_object.Object {
+    return graph_object.Object {position = [1.8, 1.5, 2.6] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-camera"}
+}
+
+main {
+    const data.Geometry ∪ none box_result ← basic.box(1.0, 1.0, 1.0)
+    assert box_result not is none panic "presenter requires valid Triga box"
+
+    const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = presenter_camera_object(), fov = 42.0, aspect = 1.0, near = 0.1, far = 20.0}
+    const matrix<f32, [4, 4]> ∪ none view_proj_opt ← cam.view_projection([1.8, 1.5, 2.6] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    assert view_proj_opt not is none panic "presenter camera must form a view-projection"
+    const matrix<f32, [4, 4]> view_proj ← view_proj_opt
+    const math.TransformPayload transform ← math.transform_payload(math.matrix_identity(), view_proj)
+    assert transform.values.length() ≡ 32 panic "TransformPayload is 32 floats"
+
+    assert vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1) panic "position input layout"
+    assert vertex_layout_matches(0, 1, "color", 1, 3, 0, 12, 1, 2) panic "color input layout"
+    assert varying_matches("color", 0, 3, 1, 2) panic "vertex-to-fragment color varying"
+    assert fragment_output_matches(0, 4, 2) panic "fragment color output"
+    assert pipeline_matches(1, 1, 1, 1, 36) panic "first graphics pipeline"
+    assert resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3) panic "transform resource"
+}

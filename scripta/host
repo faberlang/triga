@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Triga presenter: emit the box fixture, write bins, admit, serve.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+HOST="$ROOT/host"
+PUBLIC="$HOST/public"
+GENERATED="$PUBLIC/generated"
+FIXTURE="$HOST/fixtures/box.fab"
+PORT="${TRIGA_HOST_PORT:-8788}"
+export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
+usage() {
+  cat >&2 <<'USAGE'
+usage: ./scripta/host <generate|check|serve>
+
+Commands:
+  generate  Emit WGSL + reflection from host/fixtures/box.fab, dump the mesh, write bins
+  check     Generate, then admit the graphics artifacts
+  serve     Generate, then serve host/public
+USAGE
+}
+
+resolve_faber() {
+  if [[ -z "${FABER_BIN:-}" ]]; then
+    if [[ -x "$FABER_LIBRARY_HOME/radix/target/release/faber" ]]; then
+      FABER_BIN="$FABER_LIBRARY_HOME/radix/target/release/faber"
+    elif [[ -x "$FABER_LIBRARY_HOME/radix/target/debug/faber" ]]; then
+      FABER_BIN="$FABER_LIBRARY_HOME/radix/target/debug/faber"
+    else
+      echo "scripta/host: missing faber binary" >&2
+      echo "  set FABER_BIN or build sibling radix/target/{release,debug}/faber" >&2
+      exit 1
+    fi
+  fi
+  if [[ ! -x "$FABER_BIN" ]]; then
+    echo "scripta/host: FABER_BIN is not executable: $FABER_BIN" >&2
+    exit 1
+  fi
+}
+
+emit_artifact() {
+  local err
+  err="$(mktemp)"
+  if ! "$FABER_BIN" "$@" 2>"$err"; then
+    cat "$err" >&2
+    rm -f "$err"
+    exit 1
+  fi
+  rm -f "$err"
+}
+
+generate() {
+  resolve_faber
+  mkdir -p "$GENERATED"
+  emit_artifact emit -t wgsl-text -o "$GENERATED/graphics.wgsl" "$FIXTURE"
+  emit_artifact emit --reflection -t wgsl-text -o "$GENERATED/graphics-reflection.json" "$FIXTURE"
+  python3 "$HOST/scripta/generate-payloads.py" "$GENERATED" "$ROOT/src/primitives/basic.fab"
+}
+
+check() {
+  generate
+  node "$PUBLIC/src/admission-check.mjs"
+}
+
+serve() {
+  generate
+  python3 - "$PUBLIC" "$PORT" <<'PY'
+import http.server
+import socketserver
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1]).resolve()
+port = int(sys.argv[2])
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=str(root), **kwargs)
+
+with socketserver.TCPServer(("127.0.0.1", port), Handler) as httpd:
+    print(f"triga host: http://127.0.0.1:{port}/", flush=True)
+    httpd.serve_forever()
+PY
+}
+
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 2
+fi
+
+case "$1" in
+  generate) generate ;;
+  check) check ;;
+  serve) serve ;;
+  *) usage; exit 2 ;;
+esac

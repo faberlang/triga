@@ -36,6 +36,7 @@ run_rung() {
 }
 
 run_rung structural check-source
+run_rung host-admission check-host
 run_rung structural check-compile
 run_rung executed-proba check-proba-coverage
 run_rung coverage-scorecard ../proof/coverage/test-check-scorecard

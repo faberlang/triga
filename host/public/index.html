@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Triga presenter</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section id="scene" class="scene" aria-label="Triga WebGPU canvas">
+        <canvas id="gpu-canvas"></canvas>
+      </section>
+      <aside class="panel" aria-label="Presenter status">
+        <h1>Triga presenter</h1>
+        <dl class="metrics">
+          <div>
+            <dt>Pipeline</dt>
+            <dd id="pipeline-name">--</dd>
+          </div>
+          <div>
+            <dt>Frames</dt>
+            <dd id="frame-count">--</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd id="status-value" data-state="pending">Loading</dd>
+          </div>
+        </dl>
+      </aside>
+    </main>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
