@@ -73,3 +73,16 @@ rungs here.
 ```bash
 ./scripta/check
 ```
+
+## Releases
+
+Triga is a source library. There is no standalone artifact publish and no
+GitHub release workflow. A version is a manifest pair plus an annotated tag.
+
+1. Bump `version` in `cista.toml` and `faber.toml` together.
+2. Single path-limited commit on `main`.
+3. `git tag -a vX.Y.Z` on that commit.
+4. Push of `main` and the tag is operator-gated.
+
+Consumers take the library from `FABER_LIBRARY_HOME` or a cista source
+install of that version. Do not invent a `triga-vX.Y.Z` artifact upload.
