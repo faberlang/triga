@@ -10,8 +10,9 @@ import from "triga:math" math
 
 import from "triga:material/base" base
 
-# PhongMaterial is the first lit-material shape. Lighting evaluation stays
-# with later shader and host contracts.
+# PhongMaterial is the first lit-material shape. The Triga presenter fixture
+# (`host/fixtures/scene.fab`) draws color/specular from the same module consts
+# that build this record; full `.power(shininess)` WGSL emit is still open.
 @ public
 class PhongMaterial {
     var base.Material base
