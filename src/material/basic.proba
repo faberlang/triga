@@ -33,7 +33,7 @@ test "basic material construction exposes color alpha and pipeline facts" {
 }
 
 test "basic material preserves a custom base policy" {
-    const base.Material policy ← base.Material {name = "basic-policy", side = 2 ∷ int<u32>, transparent = true, opacity = 0.6, depth_write = false, depth_test = false, alpha_test = 0.5}
+    const base.Material policy ← base.Material {name = "basic-policy", side = 2 ∷ u32, transparent = true, opacity = 0.6, depth_write = false, depth_test = false, alpha_test = 0.5}
     const basic.UnlitMaterial material ← basic.UnlitMaterial {base = policy, color = math.Color {r = 1.0, g = 0.5, b = 0.0}}
     const base.MaterialPipelineFacts ∪ none facts_result ← material.pipeline_facts()
 

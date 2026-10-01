@@ -735,12 +735,12 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> ind
     # A base index that does not fit u32 is an invalid mesh, reported the same
     # way as the other invalid inputs above.
     do {
-        next_indices.append(vertex_base ↦ int<u32>)
-        next_indices.append(vertex_base + 1 ↦ int<u32>)
-        next_indices.append(vertex_base + 2 ↦ int<u32>)
-        next_indices.append(vertex_base ↦ int<u32>)
-        next_indices.append(vertex_base + 2 ↦ int<u32>)
-        next_indices.append(vertex_base + 3 ↦ int<u32>)
+        next_indices.append(vertex_base ↦ u32)
+        next_indices.append(vertex_base + 1 ↦ u32)
+        next_indices.append(vertex_base + 2 ↦ u32)
+        next_indices.append(vertex_base ↦ u32)
+        next_indices.append(vertex_base + 2 ↦ u32)
+        next_indices.append(vertex_base + 3 ↦ u32)
     }
     catch err {
         return null

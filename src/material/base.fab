@@ -18,7 +18,7 @@
 class Material {
     var string name
     # side: 0=FrontSide 1=BackSide 2=DoubleSide
-    var int<u32> side = 0
+    var u32 side = 0
     var bool transparent = false
     var f32 opacity = 1.0
     var bool depth_write = true
@@ -38,7 +38,7 @@ class Material {
     }
 
     fn is_double_sided() → bool {
-        return self.side ≡ (2 ↦ int<u32>)
+        return self.side ≡ (2 ↦ u32)
     }
 
     fn side_code() → int ∪ none {
@@ -81,8 +81,8 @@ class MaterialPipelineFacts {
 # Relocates to material/texture.fab at H3; see header.
 @ public
 class TextureDescriptor {
-    var int<u32> width
-    var int<u32> height
+    var u32 width
+    var u32 height
     # Format string: e.g. "rgba8unorm", "depth32float"
     var string format
     var list<f32> data optional

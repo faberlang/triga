@@ -71,12 +71,12 @@ describe "face quad builders" {
         assert mesh.colors[0] ≡ (0.4 ∷ f32)
         assert mesh.colors[1] ≡ (0.4 ∷ f32)
         assert mesh.colors[2] ≡ (1.0 ∷ f32)
-        assert mesh.indices[0] ≡ (0 ∷ int<u32>)
-        assert mesh.indices[1] ≡ (1 ∷ int<u32>)
-        assert mesh.indices[2] ≡ (2 ∷ int<u32>)
-        assert mesh.indices[3] ≡ (0 ∷ int<u32>)
-        assert mesh.indices[4] ≡ (2 ∷ int<u32>)
-        assert mesh.indices[5] ≡ (3 ∷ int<u32>)
+        assert mesh.indices[0] ≡ (0 ∷ u32)
+        assert mesh.indices[1] ≡ (1 ∷ u32)
+        assert mesh.indices[2] ≡ (2 ∷ u32)
+        assert mesh.indices[3] ≡ (0 ∷ u32)
+        assert mesh.indices[4] ≡ (2 ∷ u32)
+        assert mesh.indices[5] ≡ (3 ∷ u32)
         assert (mesh.face_count() coalesce 0) ≡ 1
         assert mesh.geometry() not is none
     }

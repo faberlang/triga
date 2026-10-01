@@ -75,10 +75,10 @@ fn terrain_mesh() → TerrainMesh {
     while index_row < GRID_SEGMENTS {
         var int index_column ← 0
         while index_column < GRID_SEGMENTS {
-            const int<u32> a ← (index_row * vertices_per_row + index_column) ↦ int<u32>
-            const int<u32> b ← (index_row * vertices_per_row + index_column + 1) ↦ int<u32>
-            const int<u32> c ← ((index_row + 1) * vertices_per_row + index_column) ↦ int<u32>
-            const int<u32> d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ int<u32>
+            const u32 a ← (index_row * vertices_per_row + index_column) ↦ u32
+            const u32 b ← (index_row * vertices_per_row + index_column + 1) ↦ u32
+            const u32 c ← ((index_row + 1) * vertices_per_row + index_column) ↦ u32
+            const u32 d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ u32
             indices.append(a)
             indices.append(c)
             indices.append(b)

@@ -113,7 +113,7 @@ describe "Mesh public facts and missing components" {
         const data.Geometry invalid_geometry ← invalid_geometryum()
         const math.Color invalid_color ← math.Color {r = 1.1, g = 0.5, b = 0.5}
         const basic.UnlitMaterial ∪ none rejected_material ← basic.basic_material("invalid-color", invalid_color)
-        const basic.UnlitMaterial invalid_material ← basic.UnlitMaterial {base = base.Material {name = "invalid-material", side = 0 ∷ int<u32>, opacity = 1.2}, color = math.Color {r = 0.5, g = 0.5, b = 0.5}}
+        const basic.UnlitMaterial invalid_material ← basic.UnlitMaterial {base = base.Material {name = "invalid-material", side = 0 ∷ u32, opacity = 1.2}, color = math.Color {r = 0.5, g = 0.5, b = 0.5}}
         const mesh.Mesh value ← mesh.Mesh {base = objectum("invalid-components"), geometry = invalid_geometry, material = invalid_material}
 
         assert rejected_material is none
