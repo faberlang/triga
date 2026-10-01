@@ -9,13 +9,13 @@
 # the enums and consumers build layout values through them.
 #
 # PrimitiveTopology stays in geometry/data so the topology discerne sites on
-# BufferGeometry remain same-module (see data.fab).
+# Geometry remain same-module (see data.fab).
 #
 # Zero imports; self-contained.
 
 # The compact set of scalar formats understood by a vertex input. The suffix
 # is the component width, so the enum carries the same 1-to-4 shape used by
-# BufferAttribute validation and stride calculation.
+# Attribute validation and stride calculation.
 #
 # TEMPORARY SHAPE (operator ruling 2026-08-21): the hardcoded-width variant
 # spellings (Float32x4, Uint32, …) mirror the closed host vocabulary
@@ -62,7 +62,7 @@ class VertexAttributeLayout {
 # --- Public variant constructors ---
 
 # These constructors keep enum variant creation in the declaring leaf. The
-# component-width helper expects the 1-to-4 width guaranteed by BufferAttribute
+# component-width helper expects the 1-to-4 width guaranteed by Attribute
 # validation and selects the float32 or uint32 family with `is_float32`.
 
 @ public

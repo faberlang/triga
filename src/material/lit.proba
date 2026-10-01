@@ -1,5 +1,5 @@
 # Co-located package tests for material/lit.fab.
-# MeshPhongMaterial is a carrier; base pipeline facts remain the validated
+# PhongMaterial is a carrier; base pipeline facts remain the validated
 # projection authority and no lighting evaluation is claimed here.
 import from "triga:material/lit" lit
 import from "triga:material/base" base
@@ -9,7 +9,7 @@ test "Phong material preserves lit carrier fields and base pipeline facts" {
     const base.Material policy ← base.Material {name = "phong", side = 1 ∷ int<u32>, transparent = true, opacity = 0.75, depth_write = false, depth_test = true, alpha_test = 0.2}
     const math.Color color ← math.Color {r = 0.3, g = 0.5, b = 0.7}
     const math.Color specular ← math.Color {r = 0.9, g = 0.8, b = 0.6}
-    const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = policy, color = color, specular = specular, shininess = 60.0}
+    const lit.PhongMaterial material ← lit.PhongMaterial {base = policy, color = color, specular = specular, shininess = 60.0}
     const base.MaterialPipelineFacts ∪ none facts_result ← material.base.pipeline_facts()
 
     assert material.base.name ≡ "phong"
@@ -32,7 +32,7 @@ test "Phong material preserves lit carrier fields and base pipeline facts" {
 }
 
 test "Phong defaults remain explicit carrier values" {
-    const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = base.material_from_name("phong-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+    const lit.PhongMaterial material ← lit.PhongMaterial {base = base.material_from_name("phong-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert material.shininess ≡ (30.0 ∷ f32)
     assert material.base.valid()
@@ -41,7 +41,7 @@ test "Phong defaults remain explicit carrier values" {
 
 test "Phong carrier exposes invalid base facts as unsupported" {
     const base.Material invalid_base ← base.Material {name = "invalid-phong", side = 0 ∷ int<u32>, opacity = 1.2}
-    const lit.MeshPhongMaterial material ← lit.MeshPhongMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+    const lit.PhongMaterial material ← lit.PhongMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, specular = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert material.base.valid() ≡ false
     assert material.base.pipeline_facts() is none

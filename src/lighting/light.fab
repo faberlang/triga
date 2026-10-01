@@ -1,7 +1,7 @@
 # Light family shape contracts (Light, AmbientLight, DirectionalLight, PointLight).
 #
 # Public import: import from "triga:lighting/light" lighting
-# Depends on: triga:math, triga:graph/object (Object3D base)
+# Depends on: triga:math, triga:graph/object (Object base)
 
 import from "triga:math" math
 
@@ -12,13 +12,13 @@ import from "triga:graph/object" object as graph_object
 # renderer turns them into bindings or shader inputs.
 @ public
 class Light {
-    var graph_object.Object3D base
+    var graph_object.Object base
     var math.Color color
     var f32 intensity = 1.0
 }
 
 # AmbientLight contributes a light family with no direction or position of its
-# own. It keeps the common Object3D and Light data visible through `base`.
+# own. It keeps the common Object and Light data visible through `base`.
 @ public
 class AmbientLight {
     var Light base
@@ -30,7 +30,7 @@ class AmbientLight {
 @ public
 class DirectionalLight {
     var Light base
-    var math.Vector3 target_position
+    var vector<f32, 3> target_position
 }
 
 # PointLight carries the distance and decay fields for the point-light path.

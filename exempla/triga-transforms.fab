@@ -3,81 +3,84 @@ term = "triga-transforms"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Triga Vector3 and Matrix4 transform-chain demonstration."
+summary = "Triga native-vector and native-matrix transform-chain demonstration."
 +++
 import from "triga:math" math
 
 main {
-    # Matrix4 transform chain: translate, scale, compose, apply
-    const math.Matrix4 translation ← math.matrix4_translatio(math.vector3(5.0, -2.0, 3.0))
-    const math.Matrix4 scale ← math.matrix4_scala(math.vector3(2.0, 3.0, 4.0))
-    const math.Matrix4 world ← translation.multiplicata(scale)
-    const math.Vector3 local ← math.vector3(1.0, 2.0, -1.0)
-    const math.Vector3 transformed ← world.applica_punctum(local)
-    print transformed.x
+    # Affine transform chain: translate, scale, compose, apply
+    const matrix<f32, [4, 4]> translation ← math.matrix_translation([5.0, -2.0, 3.0] ↦ vector<f32, 3>)
+    const matrix<f32, [4, 4]> scale ← math.matrix_scale([2.0, 3.0, 4.0] ↦ vector<f32, 3>)
+    const matrix<f32, [4, 4]> world ← translation · scale
+    const vector<f32, 3> local ← [1.0, 2.0, -1.0] ↦ vector<f32, 3>
+    const vector<f32, 3> transformed ← math.apply_point(world, local)
+    print math.x(transformed)
 
     # TransformPayload
-    const math.TransformPayload ∪ none packed_transform_result ← math.transform_payload(world, scale)
-    const _ packed_transform ← math.TransformPayload {values = packed_transform_result!.values}
+    const math.TransformPayload packed_transform ← math.transform_payload(world, scale)
+    print packed_transform.values[0]
 
-    # Matrix4 inverse
-    const math.Matrix4 ∪ none inverse ← world.inversa_affinis()
-    const _ inverse_value ← math.Matrix4 {elements = inverse!.elements}
-    const math.Vector3 round_trip ← inverse_value.applica_punctum(transformed)
-    print round_trip.x
+    # Affine inverse
+    const matrix<f32, [4, 4]> ∪ none inverse ← math.affine_inverse(world)
+    if inverse is none {
+        print 0.0
+    } else {
+        const vector<f32, 3> round_trip ← math.apply_point(inverse, transformed)
+        print math.x(round_trip)
+    }
 
     # Quaternion operations
     const math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
-    const math.Quaternion stable_rotation ← identity_rotation.interpolata(identity_rotation, 0.5)
-    const math.Quaternion normalized_rotation ← math.quaternion(0.0, 0.0, 0.0, 2.0).normata()
-    const math.Quaternion multiplied_rotation ← identity_rotation.multiplicata(normalized_rotation)
+    const math.Quaternion stable_rotation ← identity_rotation.lerp(identity_rotation, 0.5)
+    const math.Quaternion normalized_rotation ← math.quaternion(0.0, 0.0, 0.0, 2.0).normalized()
+    const math.Quaternion multiplied_rotation ← identity_rotation.multiply(normalized_rotation)
     print multiplied_rotation.w
 
     # Euler operations
     const math.Euler zero_euler ← math.euler(0.0, 0.0, 0.0)
-    const math.Quaternion ∪ none zero_euler_quaternion ← zero_euler.ad_quaternionem()
+    const math.Quaternion ∪ none zero_euler_quaternion ← zero_euler.to_quaternion()
     print zero_euler_quaternion
 
     # Camera direction
-    const math.Vector3 forward_zero ← math.camera_prorsum_planus_ex_yaw(0.0)
-    print forward_zero.z
-    const math.Vector3 right_zero ← math.camera_dextra_ex_yaw(0.0)
-    print right_zero.x
-    const math.Vector3 forward_turn ← math.camera_prorsum_planus_ex_yaw(90.0)
-    print forward_turn.x
+    const vector<f32, 3> forward_zero ← math.camera_planar_forward_from_yaw(0.0)
+    print math.z(forward_zero)
+    const vector<f32, 3> right_zero ← math.camera_right_from_yaw(0.0)
+    print math.x(right_zero)
+    const vector<f32, 3> forward_turn ← math.camera_planar_forward_from_yaw(90.0)
+    print math.x(forward_turn)
 
-    # Box3 operations
-    const _ bounds ← math.Box3 {min = math.vector3(-1.0, -1.0, -1.0), max = math.vector3(1.0, 1.0, 1.0)}
-    const math.Box3 shifted_bounds ← bounds.translata(math.vector3(2.0, 0.0, 0.0))
+    # Box operations
+    const math.Box<3> bounds ← math.Box<3> {minima = [-1.0, -1.0, -1.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+    const math.Box<3> shifted_bounds ← math.box_translated(bounds, [2.0, 0.0, 0.0] ↦ vector<f32, 3>)
 
-    # Box3 construction variants
-    const math.Box3 ∪ none minmax_bounds ← math.box3_ex_minimo_et_maximo(math.vector3(-2.0, -3.0, -4.0), math.vector3(2.0, 3.0, 4.0))
+    # Box construction variants
+    const math.Box<3> ∪ none minmax_bounds ← math.box_from_min_max([-2.0, -3.0, -4.0] ↦ vector<f32, 3>, [2.0, 3.0, 4.0] ↦ vector<f32, 3>)
     print minmax_bounds
-    const math.Box3 ∪ none player_box ← math.box3_ex_minimo_et_mensura(math.vector3(-0.3, 0.0, -0.3), math.vector3(0.6, 1.8, 0.6))
+    const math.Box<3> ∪ none player_box ← math.box_from_min_and_size([-0.3, 0.0, -0.3] ↦ vector<f32, 3>, [0.6, 1.8, 0.6] ↦ vector<f32, 3>)
     print player_box
 
     # Sphere and Plane
-    const _ sphere ← math.Sphere {center = math.vector3(0.0, 0.0, 0.0), radius = 2.0}
-    const _ plane ← math.Plane {normal = math.vector3(0.0, 1.0, 0.0), constant = -2.0}
+    const _ sphere ← math.Sphere {center = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, radius = 2.0}
+    const _ plane ← math.Plane {normal = [0.0, 1.0, 0.0] ↦ vector<f32, 3>, constant = -2.0}
 
     # Ray-Box intersection
-    const _ ray ← math.Ray {origin = math.vector3(0.0, 0.0, 0.0), direction = math.vector3(1.0, 0.0, 0.0)}
-    const math.Vector3 ray_point ← ray.punctum(3.0)
-    print ray_point.x
-    const math.RayBox3Hit ∪ none ray_box_hit ← ray.box3_hit(shifted_bounds, 6.0)
-    const _ ray_box_hit_value ← math.RayBox3Hit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
+    const _ ray ← math.Ray {origin = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+    const vector<f32, 3> ray_point ← ray.point_at(3.0)
+    print math.x(ray_point)
+    const math.RayBoxHit ∪ none ray_box_hit ← ray.box_hit(shifted_bounds, 6.0)
+    const _ ray_box_hit_value ← math.RayBoxHit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
 
     # Camera yaw-pitch facts
-    const math.CameraYawPitchFacts camera_facts ← math.camera_yaw_pitch_facts(math.vector3(2.0, 3.0, 4.0), 90.0, 100.0)
+    const math.CameraYawPitchFacts camera_facts ← math.camera_yaw_pitch_facts([2.0, 3.0, 4.0] ↦ vector<f32, 3>, 90.0, 100.0)
     print camera_facts.clamped_pitch_degrees
-    print camera_facts.direction.y
+    print math.y(camera_facts.direction)
 
     # Camera planar motion
-    const math.Vector3 forward_motion ← math.camera_motus_planus_ex_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
-    print forward_motion.z
+    const vector<f32, 3> forward_motion ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
+    print math.z(forward_motion)
 
     # Color interpolation and matrix extras
-    const _ midpoint_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}.interpolata(math.Color {r = 1.0, g = 0.5, b = 0.25}, 0.5)
+    const _ midpoint_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}.lerp(math.Color {r = 1.0, g = 0.5, b = 0.25}, 0.5)
     print midpoint_color.r
-    const math.Matrix4 transposed_translation ← translation.transposita()
+    const matrix<f32, [4, 4]> transposed_translation ← math.transpose(translation)
 }

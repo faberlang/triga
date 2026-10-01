@@ -1,6 +1,6 @@
 # Co-located package tests for renderable/mesh.fab.
 #
-# Mesh is a source-side composition carrier: Object3D + BufferGeometry + an
+# Mesh is a source-side composition carrier: Object + Geometry + an
 # optional union of the current material families. These cases cover valid
 # assembly, public component facts, missing/invalid rejection, and composition
 # edges. They do not claim resource allocation, shader compilation, or a host
@@ -18,29 +18,29 @@ import from "triga:material/basic" basic
 import from "triga:material/lit" lit
 import from "triga:material/standard" standard
 
-fn objectum(string name) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(1.0, 2.0, 3.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = empty, visible = true, name = name}
+fn objectum(string name) → graph_object.Object {
+    return graph_object.Object {position = [1.0, 2.0, 3.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
 }
 
-fn triangle_geometryum() → data.BufferGeometry {
+fn triangle_geometryum() → data.Geometry {
     return data.indexed_triangle_geometry(3, [attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])], [0, 1, 2], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 4}])
 }
 
-fn nonindexed_geometryum() → data.BufferGeometry {
+fn nonindexed_geometryum() → data.Geometry {
     return data.triangle_geometry(3, [attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
 }
 
-fn invalid_geometryum() → data.BufferGeometry {
+fn invalid_geometryum() → data.Geometry {
     return data.indexed_triangle_geometry(3, [attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])], [0, 1, 3], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
 }
 
 describe "Mesh valid composition" {
     test "Mesh composes graph geometry and a basic material" {
-        const graph_object.Object3D node ← objectum("triangle-node")
-        const data.BufferGeometry geometry ← triangle_geometryum()
+        const graph_object.Object node ← objectum("triangle-node")
+        const data.Geometry geometry ← triangle_geometryum()
         const math.Color color ← math.Color {r = 0.2, g = 0.4, b = 0.8}
-        const basic.MeshBasicMaterial ∪ none constructed ← basic.basic_material("basic", color)
-        const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = base.material_from_name("basic"), color = color}
+        const basic.UnlitMaterial ∪ none constructed ← basic.basic_material("basic", color)
+        const basic.UnlitMaterial material ← basic.UnlitMaterial {base = base.material_from_name("basic"), color = color}
         const base.MaterialPipelineFacts ∪ none material_facts ← material.pipeline_facts()
         const mesh.Mesh value ← mesh.Mesh {base = node, geometry = geometry, material = material}
 
@@ -51,7 +51,7 @@ describe "Mesh valid composition" {
         assert value.base.position.z ≡ (3.0 ∷ f32)
         assert value.base.visible
         assert value.base.children.length() ≡ 0
-        assert value.base.matrix.valid()
+        assert math.matrix_element(value.base.matrix, 0, 0) ≡ (1.0 ∷ f32)
         assert value.geometry.valid()
         assert value.geometry.indexed
         assert value.geometry.element_count() ≡ 3
@@ -76,10 +76,10 @@ describe "Mesh valid composition" {
     }
 
     test "Mesh accepts each supported material family without claiming a draw" {
-        const data.BufferGeometry geometry ← triangle_geometryum()
-        const basic.MeshBasicMaterial basic_material ← basic.MeshBasicMaterial {base = base.material_from_name("basic-family"), color = math.Color {r = 1.0, g = 0.0, b = 0.0}}
-        const lit.MeshPhongMaterial phong_material ← lit.MeshPhongMaterial {base = base.material_from_name("phong-family"), color = math.Color {r = 0.0, g = 1.0, b = 0.0}, specular = math.Color {r = 1.0, g = 1.0, b = 1.0}, shininess = 48.0}
-        const standard.MeshStandardMaterial standard_material ← standard.MeshStandardMaterial {base = base.material_from_name("standard-family"), color = math.Color {r = 0.0, g = 0.0, b = 1.0}, emissive = math.Color {r = 0.1, g = 0.2, b = 0.3}, roughness = 0.35, metalness = 0.8, emissive_intensity = 1.5}
+        const data.Geometry geometry ← triangle_geometryum()
+        const basic.UnlitMaterial basic_material ← basic.UnlitMaterial {base = base.material_from_name("basic-family"), color = math.Color {r = 1.0, g = 0.0, b = 0.0}}
+        const lit.PhongMaterial phong_material ← lit.PhongMaterial {base = base.material_from_name("phong-family"), color = math.Color {r = 0.0, g = 1.0, b = 0.0}, specular = math.Color {r = 1.0, g = 1.0, b = 1.0}, shininess = 48.0}
+        const standard.StandardMaterial standard_material ← standard.StandardMaterial {base = base.material_from_name("standard-family"), color = math.Color {r = 0.0, g = 0.0, b = 1.0}, emissive = math.Color {r = 0.1, g = 0.2, b = 0.3}, roughness = 0.35, metalness = 0.8, emissive_intensity = 1.5}
         const mesh.Mesh basic_mesh ← mesh.Mesh {base = objectum("basic-node"), geometry = geometry, material = basic_material}
         const mesh.Mesh phong_mesh ← mesh.Mesh {base = objectum("phong-node"), geometry = geometry, material = phong_material}
         const mesh.Mesh standard_mesh ← mesh.Mesh {base = objectum("standard-node"), geometry = geometry, material = standard_material}
@@ -99,7 +99,7 @@ describe "Mesh valid composition" {
 
 describe "Mesh public facts and missing components" {
     test "Mesh preserves the optional material boundary" {
-        const data.BufferGeometry geometry ← triangle_geometryum()
+        const data.Geometry geometry ← triangle_geometryum()
         const mesh.Mesh value ← mesh.Mesh {base = objectum("unshaded-node"), geometry = geometry}
 
         assert value.base.name ≡ "unshaded-node"
@@ -110,10 +110,10 @@ describe "Mesh public facts and missing components" {
     }
 
     test "Mesh exposes component facts while invalid geometry and material fail closed" {
-        const data.BufferGeometry invalid_geometry ← invalid_geometryum()
+        const data.Geometry invalid_geometry ← invalid_geometryum()
         const math.Color invalid_color ← math.Color {r = 1.1, g = 0.5, b = 0.5}
-        const basic.MeshBasicMaterial ∪ none rejected_material ← basic.basic_material("invalid-color", invalid_color)
-        const basic.MeshBasicMaterial invalid_material ← basic.MeshBasicMaterial {base = base.Material {name = "invalid-material", side = 0 ∷ int<u32>, opacity = 1.2}, color = math.Color {r = 0.5, g = 0.5, b = 0.5}}
+        const basic.UnlitMaterial ∪ none rejected_material ← basic.basic_material("invalid-color", invalid_color)
+        const basic.UnlitMaterial invalid_material ← basic.UnlitMaterial {base = base.Material {name = "invalid-material", side = 0 ∷ int<u32>, opacity = 1.2}, color = math.Color {r = 0.5, g = 0.5, b = 0.5}}
         const mesh.Mesh value ← mesh.Mesh {base = objectum("invalid-components"), geometry = invalid_geometry, material = invalid_material}
 
         assert rejected_material is none
@@ -131,9 +131,9 @@ describe "Mesh public facts and missing components" {
 
 describe "Mesh composition edges" {
     test "Mesh keeps graph hierarchy and visibility in the carrier" {
-        const graph_object.Object3D child ← objectum("child")
-        const graph_object.Object3D parent ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(2.0, 2.0, 2.0), matrix = math.matrix4_identity(), children = [child], visible = false, name = "parent"}
-        const data.BufferGeometry geometry ← triangle_geometryum()
+        const graph_object.Object child ← objectum("child")
+        const graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [2.0, 2.0, 2.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = [child], visible = false, name = "parent"}
+        const data.Geometry geometry ← triangle_geometryum()
         const mesh.Mesh value ← mesh.Mesh {base = parent, geometry = geometry}
 
         assert value.base.name ≡ "parent"
@@ -149,7 +149,7 @@ describe "Mesh composition edges" {
     }
 
     test "Mesh composes non-indexed geometry without a material" {
-        const data.BufferGeometry geometry ← nonindexed_geometryum()
+        const data.Geometry geometry ← nonindexed_geometryum()
         const mesh.Mesh value ← mesh.Mesh {base = objectum("nonindexed-node"), geometry = geometry}
 
         assert value.base.name ≡ "nonindexed-node"

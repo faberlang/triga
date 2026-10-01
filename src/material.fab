@@ -4,12 +4,12 @@
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:material/base       Material, MaterialPipelineFacts, TextureDescriptor (H3 seed), base helpers
-#   triga:material/basic      MeshBasicMaterial + helpers
-#   triga:material/lit        MeshPhongMaterial
-#   triga:material/standard   MeshStandardMaterial
+#   triga:material/basic      UnlitMaterial + helpers
+#   triga:material/lit        PhongMaterial
+#   triga:material/standard   StandardMaterial
 #
 # Mesh moved to triga:renderable/mesh (report §1.2); MeshGeometry was retired
-# into geometry/data's BufferGeometry (§1.4.3). texture/sampler leaves are
+# into geometry/data's Geometry (§1.4.3). texture/sampler leaves are
 # planned at H3 (report §1.3); the TextureDescriptor placeholder currently
 # lives in material/base.fab as the H3 seed.
 #

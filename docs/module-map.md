@@ -1,9 +1,7 @@
 # Triga module map
 
 **Status:** living map for the public `triga:*` surface  
-**Date:** 2026-08-21 (S1 splits landed 2026-08-02: graph, lighting, geometry,
-material, primitives, renderable; Stage-2 receiver-method migration landed
-2026-08-21)
+**Date:** 2026-09-30 (`faber-native-surface`: native math carriers + Layer B names)
 
 Triga is a multi-file Faber source library under `src/`. Each `.fab` file is a
 provider module path: `triga:<stem>` resolves to `src/<stem>.fab`.
@@ -30,22 +28,22 @@ not `triga:scene/resource`).
 
 | Import | File | Owns |
 | --- | --- | --- |
-| `triga:math` | `src/math.fab` | `Vector*`, `Matrix*`, `Quaternion`, `Euler`, `Color`, `Box3`, `Sphere`, `Plane`, `Ray`, transform payload, face-code tables, free math constructors |
+| `triga:math` | `src/math.fab` | `vector<f32, N>` / `matrix<f32, [R, C]>` helpers, `Box<N>`, `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`, `Ray`, transform payload, face-code tables |
 | `triga:graph` | `src/graph.fab` | Facade / map only (no genera) |
-| `triga:graph/object` | `src/graph/object.fab` | `Object3D`, `Scene` |
+| `triga:graph/object` | `src/graph/object.fab` | `Object`, `Scene` |
 | `triga:graph/camera` | `src/graph/camera.fab` | `PerspectiveCamera`, `OrthographicCamera`, `PerspectiveCameraProjectionFacts`, `ViewProjectionFacts` |
 | `triga:lighting` | `src/lighting.fab` | Facade / map only (planned leaves: model H3, shadow H4, environment H5) |
 | `triga:lighting/light` | `src/lighting/light.fab` | `Light`, `AmbientLight`, `DirectionalLight`, `PointLight` |
 | `triga:material` | `src/material.fab` | Facade for the material leaves; `Material` and material families live under `material/{base,basic,lit,standard}` |
 | `triga:face` | `src/face.fab` | `FaceQuad` + unit/colored quad builders (depends on math + geometry/data) |
 | `triga:geometry` | `src/geometry.fab` | Facade / map only (no genera) |
-| `triga:geometry/data` | `src/geometry/data.fab` | `BufferGeometry` (+ methods incl. `index_format_code`), `PrimitiveTopology`, `ColoredQuadMesh`, free constructors |
-| `triga:geometry/attribute` | `src/geometry/attribute.fab` | `BufferAttribute`, `AttributeData`, `AttributeUsage`, `float32_attribute` |
+| `triga:geometry/data` | `src/geometry/data.fab` | `Geometry` (+ methods incl. `index_format_code`), `PrimitiveTopology`, `ColoredQuadMesh`, free constructors |
+| `triga:geometry/attribute` | `src/geometry/attribute.fab` | `Attribute`, `AttributeData`, `AttributeUsage`, `float32_attribute` |
 | `triga:geometry/layout` | `src/geometry/layout.fab` | `VertexAttributeLayout`, `VertexFormat`, `VertexStepMode`, layout code helpers |
-| `triga:geometry/bounds` | `src/geometry/bounds.fab` | `BoundingBox`, `BoundingSphere` (math `Box3`/`Sphere` stay in math) |
+| `triga:geometry/bounds` | `src/geometry/bounds.fab` | `BoundingBox`, `BoundingSphere` (math `Box<N>` / `Sphere` stay in math) |
 | `triga:geometry/batch` | `src/geometry/batch.fab` | `DrawRange`, `GeometryDrawCommand`, `GeometryGroup`, draw-batch facts |
 | `triga:primitives` | `src/primitives.fab` | Facade for deterministic generators in `primitives/basic`; procedural/terrain/voxel remain deferred |
-| `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visibilia` — **DS-D parked** on language gaps G2/G3 |
+| `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visible_meshes` — **DS-D parked** on language gaps G2/G3 |
 | `triga:resource` | `src/resource.fab` | `ResourceHandle` (+ transition/lifecycle receiver methods, batch queries) |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
 
@@ -140,7 +138,7 @@ below as it lands:
 | --- | --- | --- |
 | `scene` | `node`, `store`, `query` | pure relocation, unchanged interface names; nested-package tooling check (DEFER-121) is a precondition |
 | `geometry` | `data`, `attribute`, `layout`, `bounds`, `batch` | preserves frozen ABI `_code` names verbatim; fixes the pre-existing `geometry_vertex_layout_matches` naming-lint failure |
-| `material` | `base`, `basic`, `lit`, `standard` | `Mesh` → `renderable/mesh`; `MeshGeometry` retired into `BufferGeometry` |
+| `material` | `base`, `basic`, `lit`, `standard` | `Mesh` → `renderable/mesh`; `MeshGeometry` retired into `Geometry` |
 | `renderable` | `mesh` | `Mesh` = graph + geometry + material |
 | `lighting` | `light` | light families move from `graph.fab`; `graph/light` dropped |
 | `primitives` | `basic` | `procedural`/`terrain`/`voxel` deferred |

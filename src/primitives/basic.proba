@@ -1,5 +1,5 @@
 # Co-located package tests for the deterministic primitive generators. Every
-# triangle generator is checked through its public BufferGeometry payload;
+# triangle generator is checked through its public Geometry payload;
 # the wire generator is checked through its public line topology and payload.
 # Expected floats are built from the published source constants so Faber
 # arithmetic matches the generator instead of a host-rounded decimal dump.
@@ -27,9 +27,9 @@ fn exact_u32_values(list<int<u32>> actual, list<int<u32>> expected) → bool {
     return true
 }
 
-fn primitive_geometry_matches(data.BufferGeometry ∪ none geometry, int vertex_count, list<f32> positions, list<f32> normals, list<f32> uvs, list<int<u32>> indices) → bool {
+fn primitive_geometry_matches(data.Geometry ∪ none geometry, int vertex_count, list<f32> positions, list<f32> normals, list<f32> uvs, list<int<u32>> indices) → bool {
     if geometry is none then return false
-    const data.BufferGeometry actual ← data.BufferGeometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
+    const data.Geometry actual ← data.Geometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
     if actual.valid() ≡ false then return false
     if actual.indexed ≡ false then return false
     if (actual.topology_code() coalesce 0) ≠ 1 then return false
@@ -54,9 +54,9 @@ fn primitive_geometry_matches(data.BufferGeometry ∪ none geometry, int vertex_
     return true
 }
 
-fn wire_geometry_matches(data.BufferGeometry ∪ none geometry, list<f32> positions, list<int<u32>> indices) → bool {
+fn wire_geometry_matches(data.Geometry ∪ none geometry, list<f32> positions, list<int<u32>> indices) → bool {
     if geometry is none then return false
-    const data.BufferGeometry actual ← data.BufferGeometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
+    const data.Geometry actual ← data.Geometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
     if actual.valid() ≡ false then return false
     if actual.indexed ≡ false then return false
     if (actual.topology_code() coalesce 0) ≠ 2 then return false
@@ -101,7 +101,7 @@ fn published_sqrt_f32(f32 value) → f32 {
 
 describe "primitive generator contracts" {
     test "plane publishes exact indexed payload and winding" {
-        const data.BufferGeometry ∪ none result ← basic.plane_geometry(4.0, 2.0)
+        const data.Geometry ∪ none result ← basic.plane(4.0, 2.0)
         const list<f32> positions ← [
             -2.0, -1.0, 0.0, 2.0, -1.0, 0.0, 2.0, 1.0, 0.0, -2.0, 1.0, 0.0
         ]
@@ -121,7 +121,7 @@ describe "primitive generator contracts" {
     test "circle publishes exact fan payload and winding" {
         const f32 d ← 0.70710678
         const f32 diag ← 2.0 * d
-        const data.BufferGeometry ∪ none result ← basic.circle_geometry(2.0)
+        const data.Geometry ∪ none result ← basic.circle(2.0)
         const list<f32> positions ← [
             0.0, 0.0, 0.0, 2.0, 0.0, 0.0, diag, diag, 0.0, 0.0, 2.0, 0.0,
             -diag, diag, 0.0, -2.0, 0.0, 0.0, -diag, -diag, 0.0, 0.0, -2.0, 0.0,
@@ -147,7 +147,7 @@ describe "primitive generator contracts" {
     test "sphere publishes exact rings poles smooth normals spherical UVs and winding" {
         const f32 d ← 0.70710678
         const f32 s ← d * d
-        const data.BufferGeometry ∪ none result ← basic.sphere_geometry(1.0)
+        const data.Geometry ∪ none result ← basic.sphere(1.0)
         const list<f32> positions ← [
             d, -d, 0.0, s, -d, s, 0.0, -d, d, -s, -d, s,
             -d, -d, 0.0, -s, -d, -s, 0.0, -d, -d, s, -d, -s,
@@ -187,7 +187,7 @@ describe "primitive generator contracts" {
         const f32 d ← 0.70710678
         const f32 cap_d ← (d + 1.0) * 0.5
         const f32 cap_n ← (-d + 1.0) * 0.5
-        const data.BufferGeometry ∪ none result ← basic.cylinder_geometry(1.0, 2.0)
+        const data.Geometry ∪ none result ← basic.cylinder(1.0, 2.0)
         const list<f32> positions ← [
             1.0, -1.0, 0.0, 1.0, 1.0, 0.0, d, -1.0, d, d, 1.0, d,
             0.0, -1.0, 1.0, 0.0, 1.0, 1.0, -d, -1.0, d, -d, 1.0, d,
@@ -244,7 +244,7 @@ describe "primitive generator contracts" {
         const f32 ny ← side_slope / side_scale
         const f32 inv ← 1.0 / side_scale
         const f32 ndiv ← d / side_scale
-        const data.BufferGeometry ∪ none result ← basic.cone_geometry(1.0, 2.0)
+        const data.Geometry ∪ none result ← basic.cone(1.0, 2.0)
         const list<f32> positions ← [
             1.0, -1.0, 0.0, 0.0, 1.0, 0.0, d, -1.0, d, 0.0, 1.0, 0.0,
             0.0, -1.0, 1.0, 0.0, 1.0, 0.0, -d, -1.0, d, 0.0, 1.0, 0.0,
@@ -284,7 +284,7 @@ describe "primitive generator contracts" {
         const f32 d ← 0.70710678
         const f32 d2 ← 2.0 * d
         const f32 d3 ← 3.0 * d
-        const data.BufferGeometry ∪ none result ← basic.torus_geometry(2.0, 1.0)
+        const data.Geometry ∪ none result ← basic.torus(2.0, 1.0)
         const list<f32> positions ← [
             3.0, 0.0, 0.0, 2.0, 1.0, 0.0, 1.0, 0.0, 0.0, 2.0, -1.0, 0.0,
             3.0, 0.0, 0.0, d3, 0.0, d3, d2, 1.0, d2, d, 0.0, d,
@@ -346,7 +346,7 @@ describe "primitive generator contracts" {
     }
 
     test "box publishes exact independently shaded faces and winding" {
-        const data.BufferGeometry ∪ none result ← basic.box_geometry(2.0, 4.0, 6.0)
+        const data.Geometry ∪ none result ← basic.box(2.0, 4.0, 6.0)
         const list<f32> positions ← [
             -1.0, -2.0, 3.0, 1.0, -2.0, 3.0, 1.0, 2.0, 3.0, -1.0, 2.0, 3.0,
             1.0, -2.0, -3.0, -1.0, -2.0, -3.0, -1.0, 2.0, -3.0, 1.0, 2.0, -3.0,
@@ -379,7 +379,7 @@ describe "primitive generator contracts" {
     }
 
     test "wire box publishes exact line payload and topology" {
-        const data.BufferGeometry ∪ none result ← basic.box_wire_geometry(2.0, 4.0, 6.0)
+        const data.Geometry ∪ none result ← basic.box_wire(2.0, 4.0, 6.0)
         const list<f32> positions ← [
             -1.0, -2.0, -3.0, 1.0, -2.0, -3.0, 1.0, 2.0, -3.0, -1.0, 2.0, -3.0,
             -1.0, -2.0, 3.0, 1.0, -2.0, 3.0, 1.0, 2.0, 3.0, -1.0, 2.0, 3.0
@@ -393,35 +393,35 @@ describe "primitive generator contracts" {
     }
 
     test "degenerate dimensions and unsupported torus inputs return null" {
-        assert basic.plane_geometry(0.0, 1.0) is none
-        assert basic.plane_geometry(1.0, 0.0) is none
-        assert basic.plane_geometry(-1.0, 1.0) is none
-        assert basic.circle_geometry(0.0) is none
-        assert basic.circle_geometry(-1.0) is none
-        assert basic.sphere_geometry(0.0) is none
-        assert basic.sphere_geometry(-1.0) is none
-        assert basic.cylinder_geometry(0.0, 1.0) is none
-        assert basic.cylinder_geometry(1.0, 0.0) is none
-        assert basic.cylinder_geometry(-1.0, 1.0) is none
-        assert basic.cylinder_geometry(1.0, -1.0) is none
-        assert basic.cone_geometry(0.0, 1.0) is none
-        assert basic.cone_geometry(1.0, 0.0) is none
-        assert basic.cone_geometry(-1.0, 1.0) is none
-        assert basic.cone_geometry(1.0, -1.0) is none
-        assert basic.torus_geometry(0.0, 1.0) is none
-        assert basic.torus_geometry(1.0, 0.0) is none
-        assert basic.torus_geometry(-1.0, 0.5) is none
-        assert basic.torus_geometry(1.0, -0.5) is none
-        assert basic.torus_geometry(1.0, 1.0) is none
-        assert basic.torus_geometry(1.0, 2.0) is none
-        assert basic.box_geometry(0.0, 1.0, 1.0) is none
-        assert basic.box_geometry(1.0, 0.0, 1.0) is none
-        assert basic.box_geometry(1.0, 1.0, 0.0) is none
-        assert basic.box_geometry(-1.0, 1.0, 1.0) is none
-        assert basic.box_wire_geometry(0.0, 1.0, 1.0) is none
-        assert basic.box_wire_geometry(1.0, 0.0, 1.0) is none
-        assert basic.box_wire_geometry(1.0, 1.0, 0.0) is none
-        assert basic.box_wire_geometry(-1.0, 1.0, 1.0) is none
+        assert basic.plane(0.0, 1.0) is none
+        assert basic.plane(1.0, 0.0) is none
+        assert basic.plane(-1.0, 1.0) is none
+        assert basic.circle(0.0) is none
+        assert basic.circle(-1.0) is none
+        assert basic.sphere(0.0) is none
+        assert basic.sphere(-1.0) is none
+        assert basic.cylinder(0.0, 1.0) is none
+        assert basic.cylinder(1.0, 0.0) is none
+        assert basic.cylinder(-1.0, 1.0) is none
+        assert basic.cylinder(1.0, -1.0) is none
+        assert basic.cone(0.0, 1.0) is none
+        assert basic.cone(1.0, 0.0) is none
+        assert basic.cone(-1.0, 1.0) is none
+        assert basic.cone(1.0, -1.0) is none
+        assert basic.torus(0.0, 1.0) is none
+        assert basic.torus(1.0, 0.0) is none
+        assert basic.torus(-1.0, 0.5) is none
+        assert basic.torus(1.0, -0.5) is none
+        assert basic.torus(1.0, 1.0) is none
+        assert basic.torus(1.0, 2.0) is none
+        assert basic.box(0.0, 1.0, 1.0) is none
+        assert basic.box(1.0, 0.0, 1.0) is none
+        assert basic.box(1.0, 1.0, 0.0) is none
+        assert basic.box(-1.0, 1.0, 1.0) is none
+        assert basic.box_wire(0.0, 1.0, 1.0) is none
+        assert basic.box_wire(1.0, 0.0, 1.0) is none
+        assert basic.box_wire(1.0, 1.0, 0.0) is none
+        assert basic.box_wire(-1.0, 1.0, 1.0) is none
         assert basic.box_wire_draw_batch_facts(1.0, 1.0, 1.0, 0) is none
         assert basic.box_wire_draw_batch_facts(0.0, 1.0, 1.0, 1) is none
     }

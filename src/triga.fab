@@ -6,16 +6,16 @@
 #
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:math            vectors, matrices, volumes, rays, transform payload
-#   triga:graph/object    Object3D, Scene
+#   triga:graph/object    Object, Scene
 #   triga:graph/camera    PerspectiveCamera, OrthographicCamera, projection facts
 #   triga:lighting/light  Light family (Light, AmbientLight, DirectionalLight, PointLight)
 #   triga:material/base   Material, MaterialPipelineFacts, TextureDescriptor (H3 seed)
-#   triga:material/basic  MeshBasicMaterial
-#   triga:material/lit    MeshPhongMaterial
-#   triga:material/standard MeshStandardMaterial
+#   triga:material/basic  UnlitMaterial
+#   triga:material/lit    PhongMaterial
+#   triga:material/standard StandardMaterial
 #   triga:renderable/mesh Mesh (graph + geometry + material composition)
 #   triga:face            voxel face-code helpers
-#   triga:geometry/data   BufferGeometry (plus attribute/layout/bounds/batch leaves)
+#   triga:geometry/data   Geometry (plus attribute/layout/bounds/batch leaves)
 #   triga:primitives/basic mesh generators (procedural/terrain/voxel planned)
 #   triga:scene           scene store + identity
 #   triga:resource        resource handle lifecycle free functions

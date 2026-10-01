@@ -6,12 +6,12 @@ import from "triga:lighting/light" light
 import from "triga:graph/object" graph_object
 import from "triga:math" math
 
-fn spawn_light(string name) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = empty, name = name}
+fn spawn_light(string name) → graph_object.Object {
+    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, name = name}
 }
 
-fn spawn_light_at(string name, f32 x, f32 y, f32 z) → graph_object.Object3D {
-    return graph_object.Object3D {position = math.vector3(x, y, z), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identity(), children = empty, name = name}
+fn spawn_light_at(string name, f32 x, f32 y, f32 z) → graph_object.Object {
+    return graph_object.Object {position = [x, y, z] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, name = name}
 }
 
 test "Light preserves color and default intensity as carrier facts" {
@@ -36,7 +36,7 @@ test "AmbientLight carries color and zero-intensity boundaries" {
 }
 
 test "DirectionalLight carries target position and full-intensity boundary" {
-    const math.Vector3 target ← math.vector3(-2.0, 0.0, 5.0)
+    const vector<f32, 3> target ← [-2.0, 0.0, 5.0] ↦ vector<f32, 3>
     const light.Light source ← light.Light {base = spawn_light("directional"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
     const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
@@ -45,36 +45,36 @@ test "DirectionalLight carries target position and full-intensity boundary" {
     assert directional.base.color.g ≡ (1.0 ∷ f32)
     assert directional.base.color.b ≡ (1.0 ∷ f32)
     assert directional.base.intensity ≡ (1.0 ∷ f32)
-    assert directional.target_position.x ≡ (-2.0 ∷ f32)
-    assert directional.target_position.y ≡ (0.0 ∷ f32)
-    assert directional.target_position.z ≡ (5.0 ∷ f32)
+    assert math.x(directional.target_position) ≡ (-2.0 ∷ f32)
+    assert math.y(directional.target_position) ≡ (0.0 ∷ f32)
+    assert math.z(directional.target_position) ≡ (5.0 ∷ f32)
 }
 
 test "DirectionalLight records position and target as direction carriers" {
-    const math.Vector3 target ← math.vector3(0.0, 0.0, 0.0)
+    const vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
     const light.Light source ← light.Light {base = spawn_light_at("from-above", 0.0, 4.0, 0.0), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
     const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
     assert directional.base.base.name ≡ "from-above"
-    assert directional.base.base.position.x ≡ (0.0 ∷ f32)
-    assert directional.base.base.position.y ≡ (4.0 ∷ f32)
-    assert directional.base.base.position.z ≡ (0.0 ∷ f32)
-    assert directional.target_position.x ≡ (0.0 ∷ f32)
-    assert directional.target_position.y ≡ (0.0 ∷ f32)
-    assert directional.target_position.z ≡ (0.0 ∷ f32)
+    assert math.x(directional.base.base.position) ≡ (0.0 ∷ f32)
+    assert math.y(directional.base.base.position) ≡ (4.0 ∷ f32)
+    assert math.z(directional.base.base.position) ≡ (0.0 ∷ f32)
+    assert math.x(directional.target_position) ≡ (0.0 ∷ f32)
+    assert math.y(directional.target_position) ≡ (0.0 ∷ f32)
+    assert math.z(directional.target_position) ≡ (0.0 ∷ f32)
 }
 
 test "DirectionalLight keeps a coincident target as a degenerate direction carrier" {
-    const math.Vector3 origin ← math.vector3(1.0, 2.0, 3.0)
+    const vector<f32, 3> origin ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
     const light.Light source ← light.Light {base = spawn_light_at("coincident", 1.0, 2.0, 3.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 0.0}
     const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = origin}
 
-    assert directional.base.base.position.x ≡ (1.0 ∷ f32)
-    assert directional.base.base.position.y ≡ (2.0 ∷ f32)
-    assert directional.base.base.position.z ≡ (3.0 ∷ f32)
-    assert directional.target_position.x ≡ (1.0 ∷ f32)
-    assert directional.target_position.y ≡ (2.0 ∷ f32)
-    assert directional.target_position.z ≡ (3.0 ∷ f32)
+    assert math.x(directional.base.base.position) ≡ (1.0 ∷ f32)
+    assert math.y(directional.base.base.position) ≡ (2.0 ∷ f32)
+    assert math.z(directional.base.base.position) ≡ (3.0 ∷ f32)
+    assert math.x(directional.target_position) ≡ (1.0 ∷ f32)
+    assert math.y(directional.target_position) ≡ (2.0 ∷ f32)
+    assert math.z(directional.target_position) ≡ (3.0 ∷ f32)
     assert directional.base.intensity ≡ (0.0 ∷ f32)
 }
 

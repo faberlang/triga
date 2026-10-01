@@ -1,4 +1,4 @@
-# Co-located package tests for BufferGeometry, ColoredQuadMesh, topology,
+# Co-located package tests for Geometry, ColoredQuadMesh, topology,
 # bounds, normals, UVs, layouts, draw commands, and malformed buffers.
 import from "triga:math" math
 
@@ -8,21 +8,21 @@ import from "triga:geometry/batch" batch
 import from "triga:geometry/bounds" bounds
 import from "triga:geometry/layout" layout
 
-fn quad_positions() → attribute.BufferAttribute {
+fn quad_positions() → attribute.Attribute {
     return attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 2.0, 0.0, 3.0, 2.0, 0.0, 2.0, 3.0, 0.0])
 }
 
-fn quad_colors() → attribute.BufferAttribute {
+fn quad_colors() → attribute.Attribute {
     return attribute.float32_attribute("color", 1, 3, 6, [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0])
 }
 
-fn quad_geometry() → data.BufferGeometry {
+fn quad_geometry() → data.Geometry {
     return data.indexed_triangle_geometry(6, [quad_positions(), quad_colors()], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 2}, batch.GeometryGroup {start = 3, count = 3, material_index = 7}])
 }
 
 describe "buffer geometry contracts" {
     test "indexed geometry publishes counts payloads and topology" {
-        const data.BufferGeometry geometry ← quad_geometry()
+        const data.Geometry geometry ← quad_geometry()
         const list<layout.VertexAttributeLayout> empty_layouts ← empty
         const list<layout.VertexAttributeLayout> layouts ← geometry.vertex_layouts() coalesce empty_layouts
         assert geometry.valid()
@@ -57,7 +57,7 @@ describe "buffer geometry contracts" {
     }
 
     test "indexed geometry publishes groups draw commands and batch facts" {
-        const data.BufferGeometry geometry ← quad_geometry()
+        const data.Geometry geometry ← quad_geometry()
         const batch.GeometryDrawCommand ∪ none draw ← geometry.draw_command(3)
         const batch.GeometryDrawCommand ∪ none group_draw ← geometry.group_draw_command(1, 4)
         const list<batch.GeometryDrawCommand> empty_commands ← empty
@@ -90,15 +90,15 @@ describe "buffer geometry contracts" {
     }
 
     test "bounds normals and planar UVs preserve exact geometry facts" {
-        const data.BufferGeometry geometry ← quad_geometry()
+        const data.Geometry geometry ← quad_geometry()
         const bounds.BoundingBox ∪ none box ← geometry.bounding_box()
         const bounds.BoundingSphere ∪ none sphere ← geometry.bounding_sphere()
         const bounds.BoundingBox ∪ none first_box ← geometry.group_bounding_box(0)
         const bounds.BoundingBox ∪ none second_box ← geometry.group_bounding_box(1)
         const bounds.BoundingSphere ∪ none first_sphere ← geometry.group_bounding_sphere(0)
         const bounds.BoundingSphere ∪ none second_sphere ← geometry.group_bounding_sphere(1)
-        const attribute.BufferAttribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
-        const attribute.BufferAttribute empty_uv ← attribute.float32_attribute("uv", 2, 2, 0, [])
+        const attribute.Attribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
+        const attribute.Attribute empty_uv ← attribute.float32_attribute("uv", 2, 2, 0, [])
         const list<f32> empty_values ← empty
         const list<f32> normal_values ← (geometry.vertex_normals() coalesce empty_normal).float32_values() coalesce empty_values
         const list<f32> uv_values ← (geometry.planar_uvs() coalesce empty_uv).float32_values() coalesce empty_values
@@ -130,8 +130,8 @@ describe "buffer geometry contracts" {
     }
 
     test "non-indexed triangles and indexed lines select their own facts" {
-        const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
-        const data.BufferGeometry triangles ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
+        const attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+        const data.Geometry triangles ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
         const batch.GeometryDrawCommand ∪ none triangle_draw ← triangles.draw_command(2)
         assert triangles.valid()
         assert not triangles.indexed
@@ -144,8 +144,8 @@ describe "buffer geometry contracts" {
         assert triangle_draw not is none
         assert triangle_draw!.indexed ≡ false
 
-        const attribute.BufferAttribute line_position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0])
-        const data.BufferGeometry lines ← data.line_geometry(4, [line_position], [0, 1, 2, 3], batch.DrawRange {start = 0, count = 4}, [batch.GeometryGroup {start = 0, count = 4, material_index = 4}])
+        const attribute.Attribute line_position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0])
+        const data.Geometry lines ← data.line_geometry(4, [line_position], [0, 1, 2, 3], batch.DrawRange {start = 0, count = 4}, [batch.GeometryGroup {start = 0, count = 4, material_index = 4}])
         const batch.LineGeometryDrawBatchFacts ∪ none line_facts ← lines.line_draw_batch_facts(2)
         assert lines.valid()
         assert (lines.line_count() coalesce 0) ≡ 2
@@ -162,17 +162,17 @@ describe "buffer geometry contracts" {
     }
 
     test "empty malformed and misaligned buffers are rejected" {
-        const attribute.BufferAttribute position ← quad_positions()
-        const attribute.BufferAttribute short_position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0])
-        const attribute.BufferAttribute duplicate_name ← attribute.float32_attribute("position", 2, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 2.0, 0.0, 3.0, 2.0, 0.0, 2.0, 3.0, 0.0])
-        const attribute.BufferAttribute duplicate_location ← attribute.float32_attribute("uv", 0, 2, 6, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        const data.BufferGeometry short_geometry ← data.indexed_triangle_geometry(6, [short_position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
-        const data.BufferGeometry bad_index ← data.indexed_triangle_geometry(6, [position], [0, 1, 6], batch.DrawRange {start = 0, count = 3}, empty)
-        const data.BufferGeometry empty_index ← data.indexed_triangle_geometry(6, [position], [], batch.DrawRange {start = 0, count = 0}, empty)
-        const data.BufferGeometry bad_range ← data.indexed_triangle_geometry(6, [position], [0, 1, 2], batch.DrawRange {start = 1, count = 2}, empty)
-        const data.BufferGeometry bad_groups ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 2, count = 3, material_index = 1}])
-        const data.BufferGeometry duplicate_names ← data.indexed_triangle_geometry(6, [position, duplicate_name], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
-        const data.BufferGeometry duplicate_locations ← data.indexed_triangle_geometry(6, [position, duplicate_location], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
+        const attribute.Attribute position ← quad_positions()
+        const attribute.Attribute short_position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0])
+        const attribute.Attribute duplicate_name ← attribute.float32_attribute("position", 2, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 2.0, 0.0, 3.0, 2.0, 0.0, 2.0, 3.0, 0.0])
+        const attribute.Attribute duplicate_location ← attribute.float32_attribute("uv", 0, 2, 6, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        const data.Geometry short_geometry ← data.indexed_triangle_geometry(6, [short_position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
+        const data.Geometry bad_index ← data.indexed_triangle_geometry(6, [position], [0, 1, 6], batch.DrawRange {start = 0, count = 3}, empty)
+        const data.Geometry empty_index ← data.indexed_triangle_geometry(6, [position], [], batch.DrawRange {start = 0, count = 0}, empty)
+        const data.Geometry bad_range ← data.indexed_triangle_geometry(6, [position], [0, 1, 2], batch.DrawRange {start = 1, count = 2}, empty)
+        const data.Geometry bad_groups ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 2, count = 3, material_index = 1}])
+        const data.Geometry duplicate_names ← data.indexed_triangle_geometry(6, [position, duplicate_name], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
+        const data.Geometry duplicate_locations ← data.indexed_triangle_geometry(6, [position, duplicate_location], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, empty)
         assert not short_geometry.valid()
         assert not bad_index.valid()
         assert not empty_index.valid()
@@ -187,12 +187,12 @@ describe "buffer geometry contracts" {
     }
 
     test "colored quad accumulation preserves exact topology and derived facts" {
-        const data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, math.vector3(0.0, 0.0, 0.0), math.vector3(2.0, 0.0, 0.0), math.vector3(2.0, 2.0, 0.0), math.vector3(0.0, 2.0, 0.0), math.Color {r = 0.2, g = 0.4, b = 0.6})
+        const data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [2.0, 0.0, 0.0] ↦ vector<f32, 3>, [2.0, 2.0, 0.0] ↦ vector<f32, 3>, [0.0, 2.0, 0.0] ↦ vector<f32, 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
         assert mesh_result not is none
         const data.ColoredQuadMesh mesh ← mesh_result
         const batch.VisibleFaceMeshFacts ∪ none mesh_facts ← mesh.facts()
-        const data.BufferGeometry ∪ none projected ← data.colored_indexed_geometry(4, mesh.positions, mesh.colors, mesh.indices)
-        const data.BufferGeometry geometry ← projected coalesce quad_geometry()
+        const data.Geometry ∪ none projected ← data.colored_indexed_geometry(4, mesh.positions, mesh.colors, mesh.indices)
+        const data.Geometry geometry ← projected coalesce quad_geometry()
         const batch.IndexedGeometryDrawBatchFacts ∪ none draw_facts ← geometry.indexed_draw_batch_facts(2)
         const bounds.BoundingBox ∪ none mesh_box ← geometry.bounding_box()
         const bounds.BoundingSphere ∪ none mesh_sphere ← geometry.bounding_sphere()
@@ -238,8 +238,8 @@ describe "buffer geometry contracts" {
         assert malformed_face.face_count() is none
         assert malformed_face.geometry() is none
 
-        const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 3, [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-        const data.BufferGeometry degenerate ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
+        const attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 3, [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        const data.Geometry degenerate ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
         assert degenerate.valid()
         assert degenerate.vertex_normals() is none
         assert degenerate.planar_uvs() is none

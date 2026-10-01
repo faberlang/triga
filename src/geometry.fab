@@ -3,8 +3,8 @@
 # Public import: import from "triga:geometry" geometry
 #
 # Prefer leaf modules (Norma style — one concern per import path):
-#   triga:geometry/data       BufferGeometry, ColoredQuadMesh, PrimitiveTopology, free constructors
-#   triga:geometry/attribute  BufferAttribute, AttributeData, AttributeUsage
+#   triga:geometry/data       Geometry, ColoredQuadMesh, PrimitiveTopology, free constructors
+#   triga:geometry/attribute  Attribute, AttributeData, AttributeUsage
 #   triga:geometry/layout     VertexAttributeLayout, VertexFormat, VertexStepMode, code helpers
 #   triga:geometry/bounds     BoundingBox, BoundingSphere
 #   triga:geometry/batch      DrawRange, GeometryDrawCommand, GeometryGroup, batch facts

@@ -8,11 +8,11 @@ import from "triga:math" math
 
 test "basic material construction exposes color alpha and pipeline facts" {
     const math.Color color ← math.Color {r = 0.2, g = 0.4, b = 0.8}
-    const basic.MeshBasicMaterial ∪ none result ← basic.basic_material("basic", color)
+    const basic.UnlitMaterial ∪ none result ← basic.basic_material("basic", color)
 
     assert result not is none
     if result not is none {
-        const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = result!.base, color = result!.color}
+        const basic.UnlitMaterial material ← basic.UnlitMaterial {base = result!.base, color = result!.color}
         const base.MaterialPipelineFacts ∪ none facts_result ← material.pipeline_facts()
 
         assert material.valid()
@@ -34,7 +34,7 @@ test "basic material construction exposes color alpha and pipeline facts" {
 
 test "basic material preserves a custom base policy" {
     const base.Material policy ← base.Material {name = "basic-policy", side = 2 ∷ int<u32>, transparent = true, opacity = 0.6, depth_write = false, depth_test = false, alpha_test = 0.5}
-    const basic.MeshBasicMaterial material ← basic.MeshBasicMaterial {base = policy, color = math.Color {r = 1.0, g = 0.5, b = 0.0}}
+    const basic.UnlitMaterial material ← basic.UnlitMaterial {base = policy, color = math.Color {r = 1.0, g = 0.5, b = 0.0}}
     const base.MaterialPipelineFacts ∪ none facts_result ← material.pipeline_facts()
 
     assert material.valid()
@@ -56,9 +56,9 @@ test "basic material preserves a custom base policy" {
 test "basic material rejects invalid names and colors" {
     const math.Color invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
     const math.Color valid_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}
-    const basic.MeshBasicMaterial ∪ none invalid_color_result ← basic.basic_material("invalid-color", invalid_color)
-    const basic.MeshBasicMaterial ∪ none invalid_name_result ← basic.basic_material("", valid_color)
-    const basic.MeshBasicMaterial invalid ← basic.MeshBasicMaterial {base = base.material_from_name("invalid"), color = invalid_color}
+    const basic.UnlitMaterial ∪ none invalid_color_result ← basic.basic_material("invalid-color", invalid_color)
+    const basic.UnlitMaterial ∪ none invalid_name_result ← basic.basic_material("", valid_color)
+    const basic.UnlitMaterial invalid ← basic.UnlitMaterial {base = base.material_from_name("invalid"), color = invalid_color}
 
     assert invalid_color_result is none
     assert invalid_name_result is none

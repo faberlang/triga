@@ -6,10 +6,12 @@ optional Tugboat isolation. Do not stand up lanes unless the operator
 asked. Container law: [`../AGENTS.md`](../AGENTS.md).
 
 Triga is the public Faber source library for `triga:*` imports — geometry,
-scene graph, material, and GPU-facing type contracts modeled after three.js
-shapes. This repo owns `.fab` source under `src/`; Radix and `faber` consume it
-through `FABER_LIBRARY_HOME`, usually the parent `faberlang/` directory in local
-development.
+scene graph, material, and GPU-facing type contracts. It is a first-class
+Faber library: dimension lives in types (`vector<f32, N>`, `matrix<f32,
+[R, C]>`, `Box<N>`), not in identifiers, and three.js product names are not
+the public surface. This repo owns `.fab` source under `src/`; Radix and
+`faber` consume it through `FABER_LIBRARY_HOME`, usually the parent
+`faberlang/` directory in local development.
 
 Browser WebGPU runtime product code lives in sibling `hosts/webgpu-browser`,
 not here. Triga owns typed contracts and generators that feed that path.
@@ -20,12 +22,12 @@ One `.fab` file → one import path. Nested dirs for packages.
 
 | Import | Role |
 | --- | --- |
-| `triga:math` | Vectors, matrices, volumes, rays, face-code tables |
-| `triga:graph` | Object3D, cameras, lights |
+| `triga:math` | Native vectors/matrices, `Box<N>`, volumes, rays, face-code tables |
+| `triga:graph` | `Object`, cameras, lights |
 | `triga:material` | Material family facade and material leaves |
 | `triga:renderable/mesh` | Mesh composition (graph + geometry + material) |
 | `triga:face` | FaceQuad builders |
-| `triga:geometry` | BufferGeometry / vertex layout |
+| `triga:geometry` | `Geometry` / vertex layout |
 | `triga:primitives` | Mesh generators |
 | `triga:scene` | SceneStore / identity |
 | `triga:resource` | ResourceHandle lifecycle |
@@ -44,7 +46,7 @@ Full map: [`docs/module-map.md`](docs/module-map.md). API shape:
 browser-app package per demo, with shared WebGPU host assets under
 `corpus/_host/`. Details and per-demo commands: [`corpus/README.md`](corpus/README.md).
 Demos should exercise the public `triga:*` surface and feed gaps back into the
-library (example: `BufferAttribute.float32_values()`), not grow workarounds.
+library (example: `Attribute` float32 values), not grow workarounds.
 
 ## Rules
 

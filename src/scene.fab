@@ -40,8 +40,8 @@ class SceneNode {
     var SceneHandle parent optional
     var list<SceneHandle> children
     var bool visible
-    var math.Matrix4 local_matrix
-    var math.Matrix4 world_matrix
+    var matrix<f32, [4, 4]> local_matrix
+    var matrix<f32, [4, 4]> world_matrix
     var bool world_dirty
 
     fn mesh_geometry() → resource.ResourceHandle ∪ none {
@@ -211,8 +211,7 @@ class SceneStore {
         return true
     }
 
-    fn set_local_matrix(ref SceneHandle handle, ref math.Matrix4 matrix) → bool {
-        if matrix.elements.length() ≠ 16 then return false
+    fn set_local_matrix(ref SceneHandle handle, matrix<f32, [4, 4]> matrix) → bool {
         const SceneNode ∪ none node_result ← self.take(handle)
         if node_result is none then return false
         const SceneNode node ← node_result
@@ -221,7 +220,7 @@ class SceneStore {
         return true
     }
 
-    fn mesh_world_matrix(ref SceneHandle handle) → math.Matrix4 ∪ none {
+    fn mesh_world_matrix(ref SceneHandle handle) → matrix<f32, [4, 4]> ∪ none {
         const SceneNode ∪ none node_result ← self.take(handle)
         if node_result is none then return null
         const SceneNode node ← node_result
@@ -264,7 +263,7 @@ class SceneStore {
         if root_result is none then return false
         const SceneNode root_node ← root_result
         if root_node.parent not is none then return false
-        self.refresh_world_node(root, math.matrix4_identity())
+        self.refresh_world_node(root, math.matrix_identity())
         return true
     }
 
@@ -483,11 +482,11 @@ class SceneStore {
         return true
     }
 
-    fn refresh_world_node(ref SceneHandle handle, ref math.Matrix4 parent_world) → bool {
+    fn refresh_world_node(ref SceneHandle handle, matrix<f32, [4, 4]> parent_world) → bool {
         const SceneNode ∪ none node_result ← self.take(handle)
         if node_result is none then return false
         const SceneNode node ← node_result
-        const math.Matrix4 world ← parent_world.multiply(node.local_matrix)
+        const matrix<f32, [4, 4]> world ← parent_world · node.local_matrix
         self.replace(handle, SceneNode {name = node.name, kind = node.kind, parent = node.parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = world, world_dirty = false})
         for from node.children const child_handle {
             self.refresh_world_node(child_handle, world)
@@ -621,8 +620,7 @@ class VisibleMeshes {
 # transforms. Keeping this as one query avoids making callers repeat the scene
 # walk and gives the host a coherent snapshot of the visible set.
 @ public
-fn visible_meshes(ref SceneStore store, ref SceneHandle root, ref math.Matrix4 view_projection) → VisibleMeshes ∪ none {
-    if not view_projection.valid() then return null
+fn visible_meshes(ref SceneStore store, ref SceneHandle root, matrix<f32, [4, 4]> view_projection) → VisibleMeshes ∪ none {
     # Single traversal: collect all visible mesh data at once
     const SceneTraversal ∪ none handles_result ← store.traverse_visible_mesh_preorder(root, empty, store.slots.length(), true)
     if handles_result is none then return null
@@ -637,8 +635,7 @@ fn visible_meshes(ref SceneStore store, ref SceneHandle root, ref math.Matrix4 v
             case SceneMesh const geometry, material {
                 meshes.geometry_resources.append(geometry)
                 meshes.material_resources.append(material)
-                const math.TransformPayload ∪ none payload ← math.transform_payload(node.world_matrix, view_projection)
-                if payload is none then return null
+                const math.TransformPayload payload ← math.transform_payload(node.world_matrix, view_projection)
                 meshes.payloads.append(payload)
             }
             case SceneGroup {
@@ -663,7 +660,7 @@ fn scene_store() → SceneStore {
 
 @ public
 fn scene_node(string name, SceneNodeKind kind) → SceneNode {
-    return SceneNode {name = name, kind = kind, children = empty, visible = true, local_matrix = math.matrix4_identity(), world_matrix = math.matrix4_identity(), world_dirty = true}
+    return SceneNode {name = name, kind = kind, children = empty, visible = true, local_matrix = math.matrix_identity(), world_matrix = math.matrix_identity(), world_dirty = true}
 }
 
 @ public

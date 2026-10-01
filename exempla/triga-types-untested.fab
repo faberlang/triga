@@ -9,11 +9,11 @@ syntax = "importa ex \"triga:triga\" privata triga"
 # exempla/triga-types-untested — instantiation and field defaults for types
 # that previously had zero exempla coverage.
 #
-# Covers: Vector2, Vector4, Matrix3, Mesh, Scene, MeshStandardMaterial,
-# MeshPhongMaterial, OrthographicCamera, Object3D standalone.
+# Covers: native vector/matrix widths, Mesh, Scene, StandardMaterial,
+# PhongMaterial, OrthographicCamera, Object standalone.
 #
-# Mesh binds BufferGeometry (triga:geometry/data) since MeshGeometry was
-# retired (S0 §1.4.3); Mesh lives in triga:renderable/mesh.
+# Mesh binds Geometry (triga:geometry/data); Mesh lives in
+# triga:renderable/mesh.
 
 import from "triga:math" math
 
@@ -35,19 +35,24 @@ import from "triga:material/standard" standard
 import from "triga:material/lit" lit
 
 main {
-    # Vector2 construction
-    const _ vec2 ← math.Vector2 {x = 3.0, y = 4.0}
-    print vec2.x
+    # Width-2 construction
+    const vector<f32, 2> vec2 ← [3.0, 4.0] ↦ vector<f32, 2>
+    print vec2
 
-    # Vector4 construction
-    const _ vec4 ← math.Vector4 {x = 1.0, y = 2.0, z = 3.0, w = 4.0}
-    print vec4.w
+    # Width-4 construction
+    const vector<f32, 4> vec4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+    print vec4
 
-    # Matrix3 construction
-    const _ matrix3 ← math.Matrix3 {elements = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]}
+    # 3×3 identity via column outer products
+    const vector<f32, 3> e0 ← [1.0, 0.0, 0.0] ↦ vector<f32, 3>
+    const vector<f32, 3> e1 ← [0.0, 1.0, 0.0] ↦ vector<f32, 3>
+    const vector<f32, 3> e2 ← [0.0, 0.0, 1.0] ↦ vector<f32, 3>
+    const matrix<f32, [3, 3]> first ← e0 ⊗ e0
+    const matrix<f32, [3, 3]> second ← first.added(e1 ⊗ e1)
+    const matrix<f32, [3, 3]> matrix3 ← second.added(e2 ⊗ e2)
 
-    # Object3D standalone
-    const _ standalone ← graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = empty, visible = true, name = "standalone"}
+    # Object standalone
+    const _ standalone ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "standalone"}
     print standalone.visible
 
     # Scene with background color
@@ -59,20 +64,19 @@ main {
     print ortho.left
     print ortho.near
 
-    # Mesh with MeshStandardMaterial
+    # Mesh with StandardMaterial
     const _ white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
     const _ emissive ← math.Color {r = 0.0, g = 0.0, b = 0.0}
-    const _ pbr_material ← standard.MeshStandardMaterial {base = base.materia_ex_nomine("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0}
+    const _ pbr_material ← standard.StandardMaterial {base = base.material_from_name("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0}
 
-    # MeshGeometry retired (S0 §1.4.3): Mesh binds BufferGeometry
-    const list<attribute.BufferAttribute> empty_attributes ← empty
+    const list<attribute.Attribute> empty_attributes ← empty
     const _ empty_range ← batch.DrawRange {start = 0, count = 0}
-    const data.BufferGeometry empty_geometry ← data.triangle_geometry(0, empty_attributes, empty_range, empty)
+    const data.Geometry empty_geometry ← data.triangle_geometry(0, empty_attributes, empty_range, empty)
     const _ mesh ← mesh.Mesh {base = standalone, geometry = empty_geometry}
     print pbr_material.roughness
 
-    # MeshPhongMaterial
+    # PhongMaterial
     const _ spec ← math.Color {r = 0.2, g = 0.2, b = 0.2}
-    const _ phong ← lit.MeshPhongMaterial {base = base.materia_ex_nomine("phong"), color = white, specular = spec, shininess = 60.0}
+    const _ phong ← lit.PhongMaterial {base = base.material_from_name("phong"), color = white, specular = spec, shininess = 60.0}
     print phong.shininess
 }

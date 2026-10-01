@@ -19,7 +19,7 @@ class CameraInput {
 
 @ public
 class OrbitCamera {
-    var math.Vector3 target
+    var vector<f32, 3> target
     var f32 yaw_degrees
     var f32 pitch_degrees
     var f32 distance
@@ -28,7 +28,7 @@ class OrbitCamera {
 
 @ public
 fn spawn_camera() → OrbitCamera {
-    return OrbitCamera {target = math.vector3(0.0, 0.0, 0.0), yaw_degrees = -35.0 ∷ f32, pitch_degrees = -32.0 ∷ f32, distance = 110.0, input = CameraInput {}}
+    return OrbitCamera {target = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, yaw_degrees = -35.0 ∷ f32, pitch_degrees = -32.0 ∷ f32, distance = 110.0, input = CameraInput {}}
 }
 
 fn clamp_distance(f32 distance) → f32 {
@@ -95,23 +95,23 @@ fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
     const f32 pan_right_axis ← input_axis(camera.input.pan_left, camera.input.pan_right)
     const f32 pan_forward_axis ← input_axis(camera.input.pan_back, camera.input.pan_forward)
     const f32 next_yaw ← camera.yaw_degrees + (yaw_axis * 55.0) * safe_delta
-    const f32 next_pitch ← math.camera_pitch_coercita(camera.pitch_degrees + (pitch_axis * 38.0) * safe_delta)
+    const f32 next_pitch ← math.camera_pitch_clamped(camera.pitch_degrees + (pitch_axis * 38.0) * safe_delta)
     const f32 next_distance ← clamp_distance(camera.distance + (dolly_axis * 60.0) * safe_delta)
-    const math.Vector3 pan ← math.camera_motus_planus_ex_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
-    return OrbitCamera {target = camera.target.addita(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input}
+    const vector<f32, 3> pan ← math.camera_planar_motion_from_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
+    return OrbitCamera {target = camera.target.added(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input}
 }
 
-fn view_projection(ref OrbitCamera cam, f32 aspect) → math.Matrix4 ∪ none {
-    const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
-    const math.Vector3 eye ← cam.target.subtracta(direction.multiplicata(cam.distance))
-    const camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object3D {position = math.vector3(0.0, 0.0, 0.0), rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = math.vector3(1.0, 1.0, 1.0), matrix = math.matrix4_identitas(), children = vacua, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
-    return perspective.visus_projectio(eye, cam.target, math.vector3(0.0, 1.0, 0.0))
+fn view_projection(ref OrbitCamera cam, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
+    const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
+    const vector<f32, 3> offset ← math.scale3(direction, cam.distance)
+    const vector<f32, 3> eye ← cam.target.subtract(offset)
+    const camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
+    return perspective.view_projection(eye, cam.target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
 }
 
 @ public
 fn transform_payload(ref OrbitCamera cam, f32 aspect) → math.TransformPayload ∪ none {
-    const math.Matrix4 ∪ none view_projection_result ← view_projection(cam, aspect)
+    const matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(cam, aspect)
     if view_projection_result is none then return null
-    const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
-    return math.transform_payload(math.matrix4_identitas(), view_projection_matrix)
+    return math.transform_payload(math.matrix_identity(), view_projection_result)
 }

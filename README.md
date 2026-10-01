@@ -1,12 +1,13 @@
 # Triga — the Faber Graphics and Geometry Library
 
-**Triga** (Latin: "three-horse chariot"; a nod to three.js) is Faber's native
-library for geometry, scene graph, material, and rendering types — the data
-contract between compiled Faber output and the GPU runtime host.
+**Triga** (Latin: "three-horse chariot") is Faber's graphics and geometry
+library — the data contract between compiled Faber output and the GPU runtime
+host.
 
-Shapes are modeled closely after three.js abstractions for LLM familiarity and
-migration ease. Triga is *not* a binding to three.js — these are native Faber
-types that define the same structural domain.
+It is a first-class Faber library, not a three.js clone. Dimension lives in
+types (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`). Industry domain
+nouns stay (`Mesh`, `Ray`, `PerspectiveCamera`). three.js product names
+(`Object3D`, `BufferGeometry`, `MeshBasicMaterial`) do not.
 
 Triga is also meant to be read as a small, real Faber library. The source is
 organized into leaf modules, each file owns one import path, and the exempla
@@ -60,7 +61,7 @@ split the way it is.
 
 | Layer | State |
 | --- | --- |
-| Math / transforms | Stable native Faber (`Vector*`, `Matrix4`, quaternions, …) |
+| Math / transforms | Stable native Faber (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`, quaternions, …) |
 | Scene store | Stable handles, graph edits, world transforms; exempla green |
 | Buffer geometry | SoA attributes, draw batches, vertex-layout reflection |
 | Primitive generators | Deterministic plane/box/sphere/… mesh builders |
@@ -75,14 +76,14 @@ is to keep the typed contract honest and modular.
 
 | Category | Types | Module | Mirror |
 | -------- | ----- | ------ | ------ |
-| **Math** | `Vector2`…`Ray`, matrices, quaternions, face-code tables | `triga:math` | THREE.Vector2 etc. |
-| **Scene Graph** | `Object3D`, `Scene`, cameras | `triga:graph/{object,camera}` | THREE.Object3D etc. |
-| **Lighting** | `Light` family | `triga:lighting/light` | THREE.Light family |
-| **Geometry data** | `BufferGeometry`, `ColoredQuadMesh` | `triga:geometry/data` | THREE.BufferGeometry (field shape) |
-| **Geometry (GPU layout)** | `BufferAttribute`, vertex layouts, draw batches | `triga:geometry/{attribute,layout,batch}` | buffer / vertex layout |
-| **Primitives** | `plane_geometry`, `box_geometry`, … | `triga:primitives/basic` | THREE.*Geometry helpers |
-| **Materials** | `Material` family | `triga:material/{base,basic,lit,standard}` | THREE.Material family |
-| **Renderable** | `Mesh` | `triga:renderable/mesh` | THREE.Mesh composition |
+| **Math** | `vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`, `Ray`, quaternions, face-code tables | `triga:math` | language carriers + Triga domain genera |
+| **Scene Graph** | `Object`, `Scene`, cameras | `triga:graph/{object,camera}` | industry cameras; no `Object3D` |
+| **Lighting** | `Light` family | `triga:lighting/light` | industry light nouns |
+| **Geometry data** | `Geometry`, `ColoredQuadMesh` | `triga:geometry/data` | SoA mesh contract |
+| **Geometry (GPU layout)** | `Attribute`, vertex layouts, draw batches | `triga:geometry/{attribute,layout,batch}` | buffer / vertex layout |
+| **Primitives** | `plane`, `box`, `sphere`, … | `triga:primitives/basic` | constructors returning `Geometry` |
+| **Materials** | `Material`, `UnlitMaterial`, `PhongMaterial`, `StandardMaterial` | `triga:material/{base,basic,lit,standard}` | lighting-model nouns; no `Mesh*Material` |
+| **Renderable** | `Mesh` | `triga:renderable/mesh` | `Object` + `Geometry` + material |
 | **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | stable identity graph |
 | **Resources** | `ResourceHandle` (transition/lifecycle receiver methods + batch queries) | `triga:resource` | host resource identity |
 
@@ -126,11 +127,11 @@ faberlang/
   `list<f32>`, not interleaved arrays. This maps directly to WGSL storage
   buffers and GPU buffer uploads.
 - **Composition over inheritance**: `PerspectiveCamera.base` contains an
-  `Object3D` rather than using type inheritance. `MeshStandardMaterial.base`
+  `Object` rather than using type inheritance. `StandardMaterial.base`
   contains a `Material`.
-- **Three.js field alignment**: field names use Faber's snake_case convention
-  but the structural hierarchy mirrors three.js (Object3D → Mesh → Scene,
-  Material → MeshStandardMaterial, Camera → PerspectiveCamera).
+- **Typed contract, not a vendor mirror**: field names use Faber's snake_case.
+  Scene composition is `Object` → `Mesh` → `Scene`; materials compose through
+  `base`. That is Triga's shape, not three.js product taxonomy.
 - **Module seams**: Norma-style flat leaves — `math` / `graph` / `material` /
   `geometry` / `primitives` / `scene` / `resource` / `renderable`. Nested
   package dirs only when they hold 2–3+ modules (see `docs/module-map.md`).

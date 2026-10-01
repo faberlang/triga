@@ -10,7 +10,7 @@
 #
 # Zero imports.
 
-# Material is deliberately a small value contract (THREE.Material). The
+# Material is deliberately a small value contract. The
 # fields describe pipeline-relevant state; texture storage and host
 # allocation belong to later material leaves and the sibling renderer.
 # Operations on a material value are receiver methods (api-shape-policy §1).
@@ -77,7 +77,7 @@ class MaterialPipelineFacts {
     var f32 alpha_test
 }
 
-# TextureDescriptor is a THREE.Texture / THREE.DataTexture shape seed.
+# TextureDescriptor is a texture-shape seed.
 # Relocates to material/texture.fab at H3; see header.
 @ public
 class TextureDescriptor {

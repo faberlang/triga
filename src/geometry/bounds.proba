@@ -5,15 +5,15 @@ import from "triga:geometry/attribute" attribute
 import from "triga:geometry/batch" batch
 import from "triga:geometry/bounds" bounds
 
-fn segment_positions() → attribute.BufferAttribute {
+fn segment_positions() → attribute.Attribute {
     return attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0])
 }
 
 describe "geometry bounds" {
     test "bounding box and sphere publish exact enclosing records" {
-        const attribute.BufferAttribute position ← segment_positions()
-        const data.BufferGeometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
-        const data.BufferGeometry value ← data.BufferGeometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
+        const attribute.Attribute position ← segment_positions()
+        const data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
+        const data.Geometry value ← data.Geometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
         const bounds.BoundingBox ∪ none box ← value.bounding_box()
         const bounds.BoundingSphere ∪ none sphere ← value.bounding_sphere()
         assert value.valid()
@@ -32,8 +32,8 @@ describe "geometry bounds" {
     }
 
     test "group bounds select only the group element range" {
-        const attribute.BufferAttribute position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 10.0, 0.0, 12.0, 10.0, 0.0, 10.0, 12.0, 0.0])
-        const data.BufferGeometry geometry ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 3, count = 3, material_index = 1}])
+        const attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 10.0, 0.0, 12.0, 10.0, 0.0, 10.0, 12.0, 0.0])
+        const data.Geometry geometry ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 3, count = 3, material_index = 1}])
         const bounds.BoundingBox ∪ none box ← geometry.group_bounding_box(1)
         const bounds.BoundingSphere ∪ none sphere ← geometry.group_bounding_sphere(1)
         assert box not is none
@@ -48,16 +48,16 @@ describe "geometry bounds" {
     }
 
     test "empty and degenerate buffers do not publish bounds" {
-        const attribute.BufferAttribute empty_position ← attribute.float32_attribute("position", 0, 3, 1, [])
-        const data.BufferGeometry empty_geometry ← data.triangle_geometry(1, [empty_position], batch.DrawRange {start = 0, count = 0}, empty)
+        const attribute.Attribute empty_position ← attribute.float32_attribute("position", 0, 3, 1, [])
+        const data.Geometry empty_geometry ← data.triangle_geometry(1, [empty_position], batch.DrawRange {start = 0, count = 0}, empty)
         const bounds.BoundingBox ∪ none empty_box ← empty_geometry.bounding_box()
         const bounds.BoundingSphere ∪ none empty_sphere ← empty_geometry.bounding_sphere()
         assert not empty_geometry.valid()
         assert empty_box is none
         assert empty_sphere is none
 
-        const attribute.BufferAttribute point_position ← attribute.float32_attribute("position", 0, 3, 3, [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
-        const data.BufferGeometry degenerate ← data.triangle_geometry(3, [point_position], batch.DrawRange {start = 0, count = 3}, empty)
+        const attribute.Attribute point_position ← attribute.float32_attribute("position", 0, 3, 3, [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
+        const data.Geometry degenerate ← data.triangle_geometry(3, [point_position], batch.DrawRange {start = 0, count = 3}, empty)
         const bounds.BoundingBox ∪ none degenerate_box ← degenerate.bounding_box()
         const bounds.BoundingSphere ∪ none degenerate_sphere ← degenerate.bounding_sphere()
         assert degenerate.valid()

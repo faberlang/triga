@@ -307,7 +307,7 @@ fn scala_diagonals(vector<f32, 3> scale) → matrix<f32, [4, 4]> {
 }
 
 # [F] quaternion composition: position + normalized rotation + scale into
-# one affine matrix (the retired matrix4_composita shape).
+# one affine matrix (the retired numbered-compose helper shape).
 
 class Quaternion {
     var f32 x

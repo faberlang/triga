@@ -5,10 +5,9 @@
 # add the Latin surface projections for members whose canonical names became
 # English in the triga polish wave. La readers keep writing `math.normata`,
 # `scene.insere`, `base.materia_ex_nomine`, etc.; each row maps the la
-# spelling back to the English canonical. Rows cover every renamed exported
-# member of the public classes and free functions across the nine touched
-# leaf modules (math, scene, resource, geometry/data, geometry/attribute,
-# graph/camera, material/base, material/basic, and the scene facade types).
+# spelling back to the English canonical. Retired Vector3 / Matrix4 / Box3
+# / Buffer* / Mesh*Material owners are gone; math operations on language
+# carriers are free functions.
 #
 # Loaded from `<triga>/locale/la/pack.toml` by the library-fragment merge
 # when a `la` consumer imports `triga:*` modules.
@@ -17,137 +16,231 @@
 id = "la"
 schema_version = 1
 
-# --- triga:math — Vector3 ---------------------------------------------------
+# --- triga:math — language-carrier free functions -------------------------
 
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "add"
-surface = "addita"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "subtract"
-surface = "subtracta"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "scale"
-surface = "multiplicata"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "dot"
-surface = "productum"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "cross"
-surface = "transversum"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Vector3"
-kind = "method"
+kind = "function"
 canonical = "length"
 surface = "longitudo"
 
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "normalized"
-surface = "normata"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Vector3"
-kind = "method"
+kind = "function"
 canonical = "distance"
 surface = "distantia"
 
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "lerp"
+kind = "function"
+canonical = "normalized3"
+surface = "normata"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "lerp3"
 surface = "interpolata"
 
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Vector3"
-kind = "method"
-canonical = "project"
+kind = "function"
+canonical = "project3"
 surface = "projecta"
 
-# --- triga:math — Matrix4 ---------------------------------------------------
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "scale3"
+surface = "scala3"
 
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Matrix4"
-kind = "method"
-canonical = "valid"
-surface = "validum"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Matrix4"
-kind = "method"
-canonical = "affine_determinant"
-surface = "determinans_affinis"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Matrix4"
-kind = "method"
-canonical = "transpose"
-surface = "transposita"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Matrix4"
-kind = "method"
-canonical = "multiply"
-surface = "multiplicata"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Matrix4"
-kind = "method"
+kind = "function"
 canonical = "apply_point"
 surface = "applica_punctum"
 
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Matrix4"
-kind = "method"
+kind = "function"
 canonical = "affine_inverse"
 surface = "inversa_affinis"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "affine_determinant"
+surface = "determinans_affinis"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "transpose"
+surface = "transposita"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_identity"
+surface = "matrix_identitas"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_translation"
+surface = "matrix_translatio"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_scale"
+surface = "matrix_scala"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_compose"
+surface = "matrix_composita"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_perspective"
+surface = "matrix_perspectiva"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_look_at"
+surface = "matrix_conspectus"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_element"
+surface = "matrix_elementum"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "matrix_column"
+surface = "matrix_columna"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_valid"
+surface = "box_validum"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_contains"
+surface = "box_continet"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_intersects"
+surface = "box_intersecat"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_inflated"
+surface = "box_inflata"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_center"
+surface = "box_centrum"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_contains_box"
+surface = "box_continet_capsam"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_overlap"
+surface = "box_superpositio"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_overlap_facts"
+surface = "box_superpositio_facta"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_union"
+surface = "box_unio"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_size"
+surface = "box_mensura"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_translated"
+surface = "box_translata"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_from_min_max"
+surface = "box_ex_minimo_et_maximo"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_from_min_and_size"
+surface = "box_ex_minimo_et_mensura"
+
+[[library_members]]
+provider = "triga"
+module_path = ["math"]
+kind = "function"
+canonical = "box_from_center_and_size"
+surface = "box_ex_centro_et_mensura"
 
 # --- triga:math — Quaternion / Color / Euler --------------------------------
 
@@ -215,103 +308,7 @@ kind = "method"
 canonical = "lerp"
 surface = "interpolata"
 
-# --- triga:math — Box3 / Sphere / Plane / Ray -------------------------------
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "contains"
-surface = "continet"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "intersects"
-surface = "intersecat"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "inflated"
-surface = "inflata"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "inflate"
-surface = "infla"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "valid"
-surface = "validum"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "size"
-surface = "mensura"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "center"
-surface = "centrum"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "contains_box"
-surface = "continet_capsam"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "overlap"
-surface = "superpositio"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "overlap_facts"
-surface = "superpositio_facta"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "union"
-surface = "unio"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-owner = "Box3"
-kind = "method"
-canonical = "translated"
-surface = "translata"
+# --- triga:math — Sphere / Plane / Ray -----------------------------------
 
 [[library_members]]
 provider = "triga"
@@ -410,68 +407,14 @@ kind = "function"
 canonical = "camera_ray_from_yaw_pitch"
 surface = "camera_ray_ex_yaw_pitch"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "box3_from_min_max"
-surface = "box3_ex_minimo_et_maximo"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "box3_from_min_and_size"
-surface = "box3_ex_minimo_et_mensura"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "box3_from_center_and_size"
-surface = "box3_ex_centro_et_mensura"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix4_identity"
-surface = "matrix4_identitas"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix4_translation"
-surface = "matrix4_translatio"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix4_scale"
-surface = "matrix4_scala"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix4_compose"
-surface = "matrix4_composita"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix4_perspective"
-surface = "matrix4_perspectiva"
 
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix4_look_at"
-surface = "matrix4_conspectus"
 
 # --- triga:scene — types and methods ----------------------------------------
 
@@ -806,7 +749,7 @@ surface = "lifecycles_valida"
 [[library_members]]
 provider = "triga"
 module_path = ["geometry", "data"]
-owner = "BufferGeometry"
+owner = "Geometry"
 kind = "method"
 canonical = "valid"
 surface = "valida"
@@ -816,7 +759,7 @@ surface = "valida"
 [[library_members]]
 provider = "triga"
 module_path = ["geometry", "attribute"]
-owner = "BufferAttribute"
+owner = "Attribute"
 kind = "method"
 canonical = "valid"
 surface = "valida"
@@ -885,7 +828,7 @@ surface = "materia_ex_nomine"
 [[library_members]]
 provider = "triga"
 module_path = ["material", "basic"]
-owner = "MeshBasicMaterial"
+owner = "UnlitMaterial"
 kind = "method"
 canonical = "valid"
 surface = "valida"

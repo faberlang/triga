@@ -1,7 +1,7 @@
 # Voxel face quad construction helpers.
 #
 # Public import: import from "triga:face" face
-# Face-code tables (valid/normal/color/offsets) live in triga:math so RayBox3Hit
+# Face-code tables (valid/normal/color/offsets) live in triga:math so RayBoxHit
 # can call them without a math↔face import cycle.
 # Depends on: triga:math, triga:geometry/data
 
@@ -14,10 +14,10 @@ import from "triga:geometry/data" data
 # code plus an origin/size into geometry-ready corners.
 @ public
 class FaceQuad {
-    var math.Vector3 a
-    var math.Vector3 b
-    var math.Vector3 c
-    var math.Vector3 d
+    var vector<f32, 3> a
+    var vector<f32, 3> b
+    var vector<f32, 3> c
+    var vector<f32, 3> d
 }
 
 # Build one oriented quad. Invalid face codes and non-positive sizes return
@@ -31,22 +31,22 @@ fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪
     const f32 z1 ← z + size
     switch code {
         case 1 {
-            return FaceQuad {a = math.vector3(x, y, z), b = math.vector3(x, y, z1), c = math.vector3(x, y1, z1), d = math.vector3(x, y1, z)}
+            return FaceQuad {a = [x, y, z] ↦ vector<f32, 3>, b = [x, y, z1] ↦ vector<f32, 3>, c = [x, y1, z1] ↦ vector<f32, 3>, d = [x, y1, z] ↦ vector<f32, 3>}
         }
         case 2 {
-            return FaceQuad {a = math.vector3(x1, y, z1), b = math.vector3(x1, y, z), c = math.vector3(x1, y1, z), d = math.vector3(x1, y1, z1)}
+            return FaceQuad {a = [x1, y, z1] ↦ vector<f32, 3>, b = [x1, y, z] ↦ vector<f32, 3>, c = [x1, y1, z] ↦ vector<f32, 3>, d = [x1, y1, z1] ↦ vector<f32, 3>}
         }
         case 3 {
-            return FaceQuad {a = math.vector3(x, y, z), b = math.vector3(x1, y, z), c = math.vector3(x1, y, z1), d = math.vector3(x, y, z1)}
+            return FaceQuad {a = [x, y, z] ↦ vector<f32, 3>, b = [x1, y, z] ↦ vector<f32, 3>, c = [x1, y, z1] ↦ vector<f32, 3>, d = [x, y, z1] ↦ vector<f32, 3>}
         }
         case 4 {
-            return FaceQuad {a = math.vector3(x, y1, z1), b = math.vector3(x1, y1, z1), c = math.vector3(x1, y1, z), d = math.vector3(x, y1, z)}
+            return FaceQuad {a = [x, y1, z1] ↦ vector<f32, 3>, b = [x1, y1, z1] ↦ vector<f32, 3>, c = [x1, y1, z] ↦ vector<f32, 3>, d = [x, y1, z] ↦ vector<f32, 3>}
         }
         case 5 {
-            return FaceQuad {a = math.vector3(x1, y, z), b = math.vector3(x, y, z), c = math.vector3(x, y1, z), d = math.vector3(x1, y1, z)}
+            return FaceQuad {a = [x1, y, z] ↦ vector<f32, 3>, b = [x, y, z] ↦ vector<f32, 3>, c = [x, y1, z] ↦ vector<f32, 3>, d = [x1, y1, z] ↦ vector<f32, 3>}
         }
         case 6 {
-            return FaceQuad {a = math.vector3(x, y, z1), b = math.vector3(x1, y, z1), c = math.vector3(x1, y1, z1), d = math.vector3(x, y1, z1)}
+            return FaceQuad {a = [x, y, z1] ↦ vector<f32, 3>, b = [x1, y, z1] ↦ vector<f32, 3>, c = [x1, y1, z1] ↦ vector<f32, 3>, d = [x, y1, z1] ↦ vector<f32, 3>}
         }
         default {
             return null

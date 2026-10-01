@@ -1,6 +1,6 @@
 # GOAL: generic-math-types Stage 1 — Core Triga math surface delivery
 
-**Status**: planned — lowered 2026-09-16 against live baselines (triga `b85ac16`, radix `574526dfb`); 6 units, 4 dispatchable immediately, S1-T1 gated on S1-R1 plus the OQ-1 spelling confirmation
+**Status**: planned — absorbed 2026-09-30 as the Unit 2–3 worksheet of [`../faber-native-surface/GOAL.md`](../faber-native-surface/GOAL.md); do not dispatch from this document. Lowered 2026-09-16 against live baselines (triga `b85ac16`, radix `574526dfb`).
 **Created**: 2026-09-16
 **Campaign:** `generic-math-types` (Stage 1 of 5)
 **Source:** Mind task `3f8823c2`; [`CAMPAIGN.md`](CAMPAIGN.md) Stage 1 block; [`migration-map.md`](migration-map.md) (frozen 2026-08-25; spelling layer re-baselined per OQ-1 below)

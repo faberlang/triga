@@ -3,14 +3,14 @@
 # Public import: import from "triga:geometry/bounds" bounds
 #
 # Owns the geometry-side BoundingBox / BoundingSphere pair used by
-# BufferGeometry. math.Box3 / math.Sphere stay in triga:math — RayBox3Hit
+# Geometry. math.Box<N> / math.Sphere stay in triga:math — RayBoxHit
 # and the face-code tables depend on them — so this leaf is intentionally
 # the distinct geometry-side bounds family (report §1.4.2).
 #
 # Zero imports.
 
 # Axis-aligned bounds computed from geometry position data. This is a plain
-# CPU-side result record: BufferGeometry produces it only after its geometry
+# CPU-side result record: Geometry produces it only after its geometry
 # validates, while this leaf keeps the bounds shape independent of triga:math.
 @ public
 class BoundingBox {
@@ -23,7 +23,7 @@ class BoundingBox {
 }
 
 # A center-and-radius result derived from validated geometry positions. The
-# radius is the enclosing distance used by BufferGeometry's bounding query;
+# radius is the enclosing distance used by Geometry's bounding query;
 # this leaf only carries the result and performs no separate validation.
 @ public
 class BoundingSphere {

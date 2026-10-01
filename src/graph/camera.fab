@@ -12,40 +12,38 @@ import from "triga:graph/object" object as graph_object
 # setup stays in ordinary Faber control flow.
 @ public
 class PerspectiveCamera {
-    var graph_object.Object3D base
+    var graph_object.Object base
     var f32 fov = 50.0
     var f32 aspect = 1.0
     var f32 near = 0.1
     var f32 far = 2000.0
 
-    fn projection() → math.Matrix4 ∪ none {
-        return math.matrix4_perspective(self.fov, self.aspect, self.near, self.far)
+    fn projection() → matrix<f32, [4, 4]> ∪ none {
+        return math.matrix_perspective(self.fov, self.aspect, self.near, self.far)
     }
 
     fn projection_facts() → PerspectiveCameraProjectionFacts ∪ none {
-        const math.Matrix4 ∪ none projection_result ← self.projection()
+        const matrix<f32, [4, 4]> ∪ none projection_result ← self.projection()
         if projection_result is none then return null
-        const math.Matrix4 projection ← projection_result
-        if not projection.valid() then return null
-        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = projection.elements.length(), x_scale = projection.elements[0], y_scale = projection.elements[5], depth_scale = projection.elements[10]}
+        const matrix<f32, [4, 4]> projection ← projection_result
+        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = 16, x_scale = math.matrix_element(projection, 0, 0), y_scale = math.matrix_element(projection, 1, 1), depth_scale = math.matrix_element(projection, 2, 2)}
     }
 
-    fn view_projection(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → math.Matrix4 ∪ none {
-        const math.Matrix4 ∪ none projection_result ← self.projection()
+    fn view_projection(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → matrix<f32, [4, 4]> ∪ none {
+        const matrix<f32, [4, 4]> ∪ none projection_result ← self.projection()
         if projection_result is none then return null
-        const math.Matrix4 ∪ none view_result ← math.matrix4_look_at(eye, target, up)
+        const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, up)
         if view_result is none then return null
-        const math.Matrix4 projection ← projection_result
-        const math.Matrix4 view ← view_result
-        return projection.multiply(view)
+        const matrix<f32, [4, 4]> projection ← projection_result
+        const matrix<f32, [4, 4]> view ← view_result
+        return projection · view
     }
 
-    fn view_projection_facts(ref math.Vector3 eye, ref math.Vector3 target, ref math.Vector3 up) → ViewProjectionFacts ∪ none {
-        const math.Matrix4 ∪ none view_projection_result ← self.view_projection(eye, target, up)
+    fn view_projection_facts(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → ViewProjectionFacts ∪ none {
+        const matrix<f32, [4, 4]> ∪ none view_projection_result ← self.view_projection(eye, target, up)
         if view_projection_result is none then return null
-        const math.Matrix4 view_projection ← view_projection_result
-        if not view_projection.valid() then return null
-        return ViewProjectionFacts {float_count = view_projection.elements.length(), x_scale = view_projection.elements[0], y_scale = view_projection.elements[5], depth_scale = view_projection.elements[10], view_translation_z = view_projection.elements[14]}
+        const matrix<f32, [4, 4]> view_projection ← view_projection_result
+        return ViewProjectionFacts {float_count = 16, x_scale = math.matrix_element(view_projection, 0, 0), y_scale = math.matrix_element(view_projection, 1, 1), depth_scale = math.matrix_element(view_projection, 2, 2), view_translation_z = math.matrix_element(view_projection, 2, 3)}
     }
 }
 
@@ -76,12 +74,12 @@ class ViewProjectionFacts {
     var f32 view_translation_z
 }
 
-# OrthographicCamera reserves the same composed Object3D shape for the
+# OrthographicCamera reserves the same composed Object shape for the
 # orthographic projection family. Its fields are plain data so the projection
 # implementation can share the public graph contract.
 @ public
 class OrthographicCamera {
-    var graph_object.Object3D base
+    var graph_object.Object base
     var f32 left
     var f32 right
     var f32 top

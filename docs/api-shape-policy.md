@@ -1,133 +1,131 @@
 # Triga API Shape And Vocabulary Policy
 
-**Status:** accepted law — supersedes `api-vocabulary-proposal.md` (which retains
-proposal status for revision history)
-**Date:** 2026-07-27
+**Status:** accepted law — updated 2026-09-30 for `faber-native-surface`
+**Date:** 2026-09-30
+**Supersedes:** 2026-07-27 text that kept `Vector3` / Latin `en` stems / three.js product nouns
 
 ## Authority
 
 This document is the accepted policy for Triga's public API shape and
-vocabulary. It is grounded in `radix/docs/stdlib/morphologia.md` (Faber public
-API inflection rules) and the evidence gathered during the API rework clean
-break (goal: `docs/factory/api-shape-vocabulary/GOAL.md`).
+vocabulary. Identity law lives in
+[`docs/factory/faber-native-surface/GOAL.md`](factory/faber-native-surface/GOAL.md).
+Morphologia (`radix/docs/stdlib/morphologia.md`) still governs *receiver
+posture* on Triga-owned genera. It does not put dimension in identifiers and
+does not make three.js product names the public surface.
 
-## 1. Shape: Receiver Methods On Genera
+The `en` package surface is English. The `la` pack in `locale/la/pack.toml` is
+the Latin *reader* projection of those English canonicals, not a second public
+API.
+
+## 1. Shape: Receiver Methods On Triga Genera
 
 ### Rule
 
-All public operations that act on a genus instance are **receiver methods** on
-that genus. The receiver is implicit `ego`. The type prefix is dropped from the
-method name.
+All public operations that act on a Triga-owned genus instance are **receiver
+methods** on that genus. The type prefix is dropped from the method name.
 
-```fab
-genus Vector3 {
-    f32 x, f32 y, f32 z
-
-    functio addita(de Vector3 alter) → Vector3 { … }
-}
-```
+Language-owned carriers (`vector<f32, N>`, `matrix<f32, [R, C]>`) cannot grow
+Triga receivers. Use compiler glyphs and intrinsics (`·`, `×`, `.dot`,
+`.cross`, `.added`, `.subtract`, `.multiply`, `.normalize`, `.apply`). Triga
+free functions cover graphics-domain work the compiler does not own
+(perspective, look-at, affine inverse, ray–box, face codes, transform payload).
 
 ### Exceptions (stay as free functions)
 
-- **Constructors** — no receiver exists yet: `vector3(x, y, z)`,
-  `box3_ex_minimo_et_maximo(...)`, `matrix4_conspectus(...)`.
-- **Pure scalar helpers** — no genus receiver: `_radix_f32`,
-  `_sinus_f32`, `_cosinus_f32`, `radians_ex_gradibus`.
-- **Primitive generators** — build a new genus, no receiver:
-  `indexed_triangle_geometry(...)` on `triga:geometry`; shape builders such as
-  `sphere_geometry(...)` / `plane_geometry(...)` on `triga:primitives`.
+- **Constructors** — no receiver exists yet: `matrix_identity()`,
+  `box_from_min_max(...)`, `quaternion(...)`.
+- **Pure scalar helpers** — no genus receiver: `sqrt_f32`, `sin_f32`,
+  `cos_f32`, `radians_from_degrees`.
+- **Primitive generators** — build a new genus, no receiver: `plane(...)`,
+  `box(...)` on `triga:primitives/basic`.
+- **Lane and matrix cell reads** on language carriers: `x` / `y` / `z`,
+  `matrix_element`.
 
-### Imperativus vs Perfectum
+### Decision: Native Math Types (§ 1b)
 
-| Mode | Receiver | Returns | Use |
-|---|---|---|---|
-| **Perfectum** | `de ego` (default) | Copy or projection | Non-mutating operations |
-| **Imperativus** | `varia ego` | `vacuum` or status flag | In-place mutation |
+Triga does **not** own `Vector2`, `Vector3`, `Vector4`, `Matrix3`, or
+`Matrix4`. Callers use `vector<f32, N>` and `matrix<f32, [R, C]>` directly.
+`Box<N>` is the remaining Triga math nominal in that family, over two
+`vector<f32, N>` corners. `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`,
+`Ray`, and `TransformPayload` stay Triga genera and are retyped off the
+retired carriers. No `norma:vector` adoption. No numbered compatibility alias.
 
-### Decision: Own Math Types (§ 1b)
-
-Triga keeps `Vector2`, `Vector3`, `Vector4`, `Matrix3`, `Matrix4`, `Quaternion`
-as Triga-owned genera. No `norma:vector` adoption. One self-contained idiom; no
-dependency on Norma register-lane maturity.
+Construction: `[x, y, z] ↦ vector<f32, 3>`. Matrix builders are
+`matrix_identity`, `matrix_translation`, `matrix_scale`, `matrix_compose`,
+`matrix_perspective`, `matrix_look_at`.
 
 ### Decision: Scene Store Is Imperativus (§ 1c)
 
-The copy-out `SceneStore` pattern was an artifact of free-function shape, not
-deliberate persistence. Scene mutations are Imperativus on a `varia` receiver.
-`SceneInsert` genus deleted; `SceneStore.insere()` returns `SceneHandle` only.
+Scene mutations are Imperativus on a `var` receiver. `SceneStore.insert()`
+returns `SceneHandle` only.
 
-## 2. Vocabulary: Technical Latin
+## 2. Vocabulary
 
-### Carrier Nouns Kept As English
+### Carrier nouns
 
-Standard graphics/math terms stay as-is where the standard identity is the point:
+Industry-standard domain nouns stay. three.js *product* names do not.
 
-`Vector2`, `Vector3`, `Vector4`, `Matrix3`, `Matrix4`, `Quaternion`, `Euler`,
-`Box3`, `Sphere`, `Plane`, `Ray`, `f32`, `u32`, `UV`, `WGSL`, `WebGPU`,
-`vertex`, `fragment`, `shader`, `pipeline`, `yaw`, `pitch`, `BufferGeometry`,
-`BufferAttribute`.
+**Keep:** `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`, `Ray`, `Mesh`,
+`Material`, `Light`, `AmbientLight`, `DirectionalLight`, `PointLight`,
+`PerspectiveCamera`, `OrthographicCamera`, `Scene`, `f32`, `u32`, `UV`,
+`WGSL`, `WebGPU`, `vertex`, `fragment`, `shader`, `pipeline`, `yaw`, `pitch`.
 
-### Operation Stems Latinized
+**Language types (not Triga genera):** `vector<f32, N>`, `matrix<f32, [R, C]>`.
 
-| English | Latin stem | Applied to |
-|---|---|---|
-| `dot` | `productum` | Vector3, Vector4 dot product |
-| `cross` | `transversum` | Vector3 cross product |
-| `normalize` | `normata` | All normalize operations |
-| `valid` | `valida` / `validum` | Predicate adjectives |
-| `get` | `cape` | Retrieval |
-| `find` | `inveni` | Search |
-| `contains` | `continet` | Containment predicates |
-| `insert` | `insere` | Insertion |
-| `attach` | `adiunge` | Attachment |
-| `detach` | `seiunge` | Detachment |
-| `remove` | `detrahe` | Removal |
-| `set` | `pone` | Setting state |
-| `forward` | `prorsum` | Direction |
-| `right` | `dextra` | Direction |
-| `visible` | `visibile` / `visibilia` | Visibility |
-| `world` | `mundus` | World space |
-| `mesh` | `rete` | Mesh (internal names) |
+**Triga reshape:** `Box<N>` (was `Box3`).
 
-### Morphologia Compliance
+**Settled renames** (`faber-native-surface` OQ-1, 2026-09-30):
 
-- One stem per operation; conjugated form carries posture.
-- Imperativus for mutation (`varia` receiver); Perfectum for projections.
-- Real Latin forms, not invented endings.
-- No same-behavior aliases.
-- No English aliases for Latin names absent a real external contract.
+| Retired | Destination |
+| --- | --- |
+| `Object3D` | `Object` |
+| `BufferGeometry` | `Geometry` |
+| `BufferAttribute` | `Attribute` |
+| `MeshBasicMaterial` | `UnlitMaterial` |
+| `MeshPhongMaterial` | `PhongMaterial` |
+| `MeshStandardMaterial` | `StandardMaterial` |
+| `plane_geometry` … `box_wire_geometry` | `plane`, `circle`, `sphere`, `cylinder`, `cone`, `torus`, `box`, `box_wire` |
+
+Import paths (`triga:material/basic`, `triga:geometry/data`, …) stay in this
+goal. No compatibility alias for a retired name.
+
+`en` operation stems are English (`add`, `dot`, `cross`, `normalized`,
+`contains`, `insert`). Do not Latinize the `en` surface. Latin spellings belong
+in the `la` pack only.
 
 ## 3. Frozen ABI Seam
 
 Fact-genus field names and numeric codes consumed by
-`radix/crates/radix-mir/src/abi.rs` are **exempt** from vocabulary changes until
-a lockstep radix change is planned:
+`radix/crates/radix-mir/src/abi.rs` / shader_contract are **exempt** from
+vocabulary changes until a lockstep radix change is planned:
 
 `format_code`, `step_mode_code`, `offset_bytes`, `stride_bytes`, `source_name`,
-`primitive_topology_code`, `color_target_format_code`, and any field ending in
-`_code` on a fact genus.
+`primitive_topology_code`, `color_target_format_code`, `side_code`, and any
+field ending in `_code` on a fact genus.
 
-The `VertexFormat` variant spellings themselves (`Float32x4`, `Uint32`, …) are
-**temporary, not canonical** (operator ruling 2026-08-21): they mirror the
-closed host vocabulary because component width is a runtime value Faber
-generics cannot parameterize today. When the bounded-buffers
-value-parameterized family ships, convert the union to proper generics; the
-integer codes above are frozen ABI and outlive the spelling change.
+`TransformPayload` remains 32 `f32` / 128 bytes, model then view-projection,
+column-major.
+
+The `VertexFormat` variant spellings (`Float32x4`, `Uint32`, …) are
+**temporary, not canonical** (operator ruling 2026-08-21). When the
+bounded-buffers value-parameterized family ships, convert this union to
+proper generics. The integer format codes are frozen ABI and outlive the
+spelling change.
 
 ## 4. Layer Patterns
 
 ### Projection Families → Query Genus
 
 When N functions project different facts from the same traversal, collapse into
-one query genus with accessors. Example: 14 `scene_visible_*` functions →
-`VisibiliaRetium` with `.numerus()`, `.geometriae()`, `.materiae()`, `.octeta()`,
-`.ductus()`.
+one query genus with accessors.
 
 ### Nullable Re-Validation → Construction Invariant
 
-When accessors return `∪ nihil` only to re-check an invariant already held at
+When accessors return `∪ none` only to re-check an invariant already held at
 construction, hold the invariant at construction and make accessors total.
-Genuine absence (e.g., non-overlap) stays nullable.
+Genuine absence (e.g., non-overlap) stays nullable. `matrix<f32, [4, 4]>`
+makes the 16-lane condition a type invariant; do not reintroduce
+`Matrix4.valid()`.
 
 ## 5. Naming Lint
 
@@ -135,49 +133,24 @@ Genuine absence (e.g., non-overlap) stays nullable.
 - No line-start `//` comments.
 - No retired `@ externa`/`@ subsidia` annotations.
 - No retired optional genus field syntax.
-- No public `functio`/`fn` whose name is a live genus prefix plus `_`.
+- No public `fn` whose name is a live genus prefix plus `_`.
   The script derives the genus set from every `class Name` declaration in
-  `src/**/*.fab` (PascalCase → snake_case, plus each underscore-boundary
-  family stem) so a new genus cannot stay invisible. The selected-vocabulary
-  list (`vector3_*`, `box3_*`, `matrix4_*`, `camera_*`, `scene_*`,
-  `geometry_*`, `transform_payload_*`) is retired.
+  `src/**/*.fab`.
 
-  Existing exemptions stay free functions. They are anchored to `(` so
-  `scene_mesh(` is exempt and `scene_mesh_geometry(` is not:
-  - constructors: `vector2(`, `vector3(`, `vector4(`, `box3_ex_*`,
-    `matrix3_`/`matrix4_` `identitas`/`translatio`/`scala`/`composita`/
-    `perspectiva`/`conspectus`, `scene_store(`, `scene_node(`, `scene_group(`,
+  Exemptions stay free functions, anchored to `(`:
+  - constructors: `box_from_*`, `matrix_identity` / `matrix_translation` /
+    `matrix_scale` / `matrix_compose` / `matrix_perspective` /
+    `matrix_look_at`, `scene_store(`, `scene_node(`, `scene_group(`,
     `scene_mesh(`, `scene_camera(`, `scene_light(`, `scene_handle_equals(`
-  - primitive generators: `plane_geometry`, `sphere_geometry`,
-    `colored_quad_mesh_append`
-  - camera scalar helpers: `camera_pitch_coercita`, `camera_directio_ex`,
-    `camera_prorsum`, `camera_dextra`, `camera_motus`, `camera_ray_ex`,
-    `camera_yaw_pitch`
-  - compiler-contract adapter: `geometry_vertex_layout_matches` — its
-    standalone signature is the canonical `@ shader_contract "vertex_layout"`
-    bridge and is not a receiver operation. Same status for the other
-    `shader_contract.fab` role adapters `vertex_layout_matches` and
-    `resource_binding_matches` (Stage 2 recording).
-  - Stage 2 additions (2026-08-21): face-code table helpers `face_code_*`
-    (int-code tables and the `FaceCodeFacts`/`FaceQuad` constructors — no
-    genus receiver exists), `transform_payload` (two-matrix constructor),
-    `visible_face_*` (scalar byte-count helpers on an int face count),
-    BufferGeometry constructors `indexed_triangle_geometry` / `line_geometry`
-    / `colored_indexed_geometry` (§1 primitive-generator exception), and the
-    declaring-leaf enum constructors `vertex_format_from_component_width` /
-    `vertex_step_mode_vertex_step` (variants are only constructible in the
-    declaring leaf).
-
-  Stage 2 receiver-method migration (2026-08-21) moved the instance
-  operations home: `Material.*` (valida, double_sided, est_double_sided,
-  side_code, depth_*, pipeline_facts), `MeshBasicMaterial.*` (valida,
-  color_r/g/b, alpha, pipeline_facts — constructor renamed
-  `basic_material`), `Color.valida`/`Color.interpolata`,
-  `ResourceHandle.{equals,next,transition_*,lifecycle_*}`,
-  `ResourceTransition.valida`, `ResourceLifecycleTransition.valida`. The
-  batch list queries (no single receiver) stayed free under `transition_*` /
-  `lifecycle_*` names.
-
-  Live `resource_*`, `material_*`, and `mesh_basic_material_*` free-function
-  families are lint failures until Stage 2 migrates them to receiver methods.
-  Do not add exemptions that hide those families.
+  - primitive generators: `plane(`, `circle(`, `sphere(`, `cylinder(`,
+    `cone(`, `torus(`, `box(`, `box_wire(`, `colored_quad_mesh_append`
+  - camera scalar helpers: `camera_*`
+  - compiler-contract adapter: `geometry_vertex_layout_matches` and the
+    `shader_contract.fab` role adapters
+  - face-code table helpers `face_code_*`
+  - `transform_payload`
+  - `visible_face_*`
+  - Geometry constructors `indexed_triangle_geometry` / `line_geometry` /
+    `colored_indexed_geometry` / `triangle_geometry`
+  - declaring-leaf enum constructors `vertex_format_from_component_width` /
+    `vertex_step_mode_vertex_step`

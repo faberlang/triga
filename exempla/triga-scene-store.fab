@@ -23,16 +23,16 @@ main {
     # Scene construction and insertion (Imperativus — requires varia)
     var scene.SceneStore store ← scene.scene_store()
     const scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
-    const scene.SceneHandle mesh_handle ← store.insere(mesh_node)
+    const scene.SceneHandle mesh_handle ← store.insert(mesh_node)
 
     # Hierarchy: insert a child mesh
     const scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
-    const scene.SceneHandle child_handle ← store.insere(child_node)
+    const scene.SceneHandle child_handle ← store.insert(child_node)
 
-    # Visibilia query (single traversal, multiple accessors)
-    const scene.VisibiliaRetium ∪ none visibilia ← scene.visibilia(store, mesh_handle, math.matrix4_identitas())
+    # Visible-meshes query (single traversal, multiple accessors)
+    const scene.VisibleMeshes ∪ none visibilia ← scene.visible_meshes(store, mesh_handle, math.matrix_identity())
     print visibilia
 
     # SceneNode mesh accessors
-    const scene.SceneNode ∪ none fetched ← store.cape(mesh_handle)
+    const scene.SceneNode ∪ none fetched ← store.take(mesh_handle)
 }

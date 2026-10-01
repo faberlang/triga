@@ -47,8 +47,8 @@ main {
 
     # Goal 01 material
     const _ goal_color ← math.Color {r = 1.0, g = 0.2, b = 0.2}
-    const basic.MeshBasicMaterial ∪ none goal_material_result ← basic.basic_material("goal-material", goal_color)
-    const _ goal_material ← basic.MeshBasicMaterial {base = goal_material_result!.base, color = goal_material_result!.color}
+    const basic.UnlitMaterial ∪ none goal_material_result ← basic.basic_material("goal-material", goal_color)
+    const _ goal_material ← basic.UnlitMaterial {base = goal_material_result!.base, color = goal_material_result!.color}
     const base.MaterialPipelineFacts ∪ none goal_pipeline_result ← goal_material.pipeline_facts()
     const _ goal_pipeline ← base.MaterialPipelineFacts {side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test}
     print goal_pipeline.depth_test_enabled

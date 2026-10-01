@@ -1,110 +1,104 @@
 # Co-located package coverage for the public math carrier and constructor surface.
-# The package test path discovers this source beside ./math.fab.
 import from "./math" math
 
 describe "vector carriers and arithmetic" {
-    test "constructors expose exact vector fields and arithmetic" {
-        const math.Vector2 point2 ← math.Vector2 {x = 1.0, y = 2.0}
-        const math.Vector4 point4 ← math.Vector4 {x = 1.0, y = 2.0, z = 3.0, w = 4.0}
-        assert point2.x ≡ (1.0 ∷ f32)
-        assert point2.y ≡ (2.0 ∷ f32)
-        assert point4.w ≡ (4.0 ∷ f32)
+    test "constructors expose exact vector lanes and arithmetic" {
+        const vector<f32, 2> point2 ← [1.0, 2.0] ↦ vector<f32, 2>
+        const vector<f32, 4> point4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+        assert point2.dot([1.0, 0.0] ↦ vector<f32, 2>) ≡ (1.0 ∷ f32)
+        assert point4.dot([0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>) ≡ (4.0 ∷ f32)
 
-        const math.Vector3 a ← math.vector3(1.0, 2.0, 3.0)
-        const math.Vector3 b ← math.vector3(4.0, 5.0, 6.0)
-        const math.Vector3 added ← a.add(b)
-        const math.Vector3 subtracted ← b.subtract(a)
-        const math.Vector3 scaled ← a.scale(2.0)
-        const math.Vector3 crossed ← a.cross(b)
-        const math.Vector3 halfway ← a.lerp(b, 0.5)
-        const math.Vector3 projection ← a.project(math.vector3(1.0, 0.0, 0.0))
+        const vector<f32, 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+        const vector<f32, 3> b ← [4.0, 5.0, 6.0] ↦ vector<f32, 3>
+        const vector<f32, 3> added ← a.added(b)
+        const vector<f32, 3> subtracted ← b.subtract(a)
+        const vector<f32, 3> scaled ← math.scale3(a, 2.0)
+        const vector<f32, 3> crossed ← a.cross(b)
+        const vector<f32, 3> halfway ← math.lerp3(a, b, 0.5)
+        const vector<f32, 3> projection ← math.project3(a, [1.0, 0.0, 0.0] ↦ vector<f32, 3>)
 
-        assert added.x ≡ (5.0 ∷ f32)
-        assert added.y ≡ (7.0 ∷ f32)
-        assert added.z ≡ (9.0 ∷ f32)
-        assert subtracted.x ≡ (3.0 ∷ f32)
-        assert subtracted.y ≡ (3.0 ∷ f32)
-        assert subtracted.z ≡ (3.0 ∷ f32)
-        assert scaled.x ≡ (2.0 ∷ f32)
-        assert scaled.y ≡ (4.0 ∷ f32)
-        assert scaled.z ≡ (6.0 ∷ f32)
+        assert math.x(added) ≡ (5.0 ∷ f32)
+        assert math.y(added) ≡ (7.0 ∷ f32)
+        assert math.z(added) ≡ (9.0 ∷ f32)
+        assert math.x(subtracted) ≡ (3.0 ∷ f32)
+        assert math.y(subtracted) ≡ (3.0 ∷ f32)
+        assert math.z(subtracted) ≡ (3.0 ∷ f32)
+        assert math.x(scaled) ≡ (2.0 ∷ f32)
+        assert math.y(scaled) ≡ (4.0 ∷ f32)
+        assert math.z(scaled) ≡ (6.0 ∷ f32)
         assert a.dot(b) ≡ (32.0 ∷ f32)
-        assert crossed.x ≡ (-3.0 ∷ f32)
-        assert crossed.y ≡ (6.0 ∷ f32)
-        assert crossed.z ≡ (-3.0 ∷ f32)
-        assert a.length() > (3.7 ∷ f32)
-        assert a.distance(b) > (5.1 ∷ f32)
-        assert halfway.x ≡ (2.5 ∷ f32)
-        assert halfway.y ≡ (3.5 ∷ f32)
-        assert halfway.z ≡ (4.5 ∷ f32)
-        assert projection.x ≡ (1.0 ∷ f32)
-        assert projection.y ≡ (0.0 ∷ f32)
-        assert projection.z ≡ (0.0 ∷ f32)
+        assert math.x(crossed) ≡ (-3.0 ∷ f32)
+        assert math.y(crossed) ≡ (6.0 ∷ f32)
+        assert math.z(crossed) ≡ (-3.0 ∷ f32)
+        assert math.length(a) > (3.7 ∷ f32)
+        assert math.distance(a, b) > (5.1 ∷ f32)
+        assert math.x(halfway) ≡ (2.5 ∷ f32)
+        assert math.y(halfway) ≡ (3.5 ∷ f32)
+        assert math.z(halfway) ≡ (4.5 ∷ f32)
+        assert math.x(projection) ≡ (1.0 ∷ f32)
+        assert math.y(projection) ≡ (0.0 ∷ f32)
+        assert math.z(projection) ≡ (0.0 ∷ f32)
     }
 
     test "normalization and projection have zero-vector boundaries" {
-        const math.Vector3 normalized ← math.vector3(0.0, 0.0, 3.0).normalized()
-        const math.Vector3 zero ← math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 zero_normalized ← zero.normalized()
-        const math.Vector3 zero_projection ← math.vector3(1.0, 2.0, 3.0).project(zero)
+        const vector<f32, 3> normalized ← math.normalized3([0.0, 0.0, 3.0] ↦ vector<f32, 3>)
+        const vector<f32, 3> zero ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+        const vector<f32, 3> zero_normalized ← math.normalized3(zero)
+        const vector<f32, 3> zero_projection ← math.project3([1.0, 2.0, 3.0] ↦ vector<f32, 3>, zero)
 
-        assert normalized.z > (0.99 ∷ f32)
-        assert zero_normalized.x ≡ (0.0 ∷ f32)
-        assert zero_normalized.y ≡ (0.0 ∷ f32)
-        assert zero_normalized.z ≡ (0.0 ∷ f32)
-        assert zero_projection.x ≡ (0.0 ∷ f32)
-        assert zero_projection.y ≡ (0.0 ∷ f32)
-        assert zero_projection.z ≡ (0.0 ∷ f32)
+        assert math.z(normalized) > (0.99 ∷ f32)
+        assert math.x(zero_normalized) ≡ (0.0 ∷ f32)
+        assert math.y(zero_normalized) ≡ (0.0 ∷ f32)
+        assert math.z(zero_normalized) ≡ (0.0 ∷ f32)
+        assert math.x(zero_projection) ≡ (0.0 ∷ f32)
+        assert math.y(zero_projection) ≡ (0.0 ∷ f32)
+        assert math.z(zero_projection) ≡ (0.0 ∷ f32)
     }
 }
 
 describe "matrix and transform carriers" {
     test "matrix builders and operations preserve column-major facts" {
-        const math.Matrix3 matrix3 ← math.Matrix3 {elements = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]}
-        const math.Matrix4 identity ← math.matrix4_identity()
-        const math.Vector3 offset ← math.vector3(5.0, -2.0, 3.0)
-        const math.Vector3 scale_vector ← math.vector3(2.0, 3.0, 4.0)
-        const math.Matrix4 translation ← math.matrix4_translation(offset)
-        const math.Matrix4 scale ← math.matrix4_scale(scale_vector)
-        const math.Matrix4 world ← translation.multiply(scale)
-        const math.Vector3 transformed ← world.apply_point(math.vector3(1.0, 2.0, -1.0))
-        const math.Matrix4 transposed ← translation.transpose()
+        const matrix<f32, [3, 3]> matrix3 ← ([1.0, 0.0, 0.0] ↦ vector<f32, 3>) ⊗ ([1.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        const matrix<f32, [4, 4]> identity ← math.matrix_identity()
+        const vector<f32, 3> offset ← [5.0, -2.0, 3.0] ↦ vector<f32, 3>
+        const vector<f32, 3> scale_vector ← [2.0, 3.0, 4.0] ↦ vector<f32, 3>
+        const matrix<f32, [4, 4]> translation ← math.matrix_translation(offset)
+        const matrix<f32, [4, 4]> scale ← math.matrix_scale(scale_vector)
+        const matrix<f32, [4, 4]> world ← translation · scale
+        const vector<f32, 3> transformed ← math.apply_point(world, [1.0, 2.0, -1.0] ↦ vector<f32, 3>)
+        const matrix<f32, [4, 4]> transposed ← math.transpose(translation)
         const math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
-        const math.Matrix4 composed ← math.matrix4_compose(offset, identity_rotation, scale_vector)
+        const matrix<f32, [4, 4]> composed ← math.matrix_compose(offset, identity_rotation, scale_vector)
 
-        assert matrix3.elements.length() ≡ 9
-        assert identity.valid()
-        assert identity.elements.length() ≡ 16
-        assert identity.affine_determinant() ≡ (1.0 ∷ f32)
-        assert translation.elements[12] ≡ (5.0 ∷ f32)
-        assert translation.elements[13] ≡ (-2.0 ∷ f32)
-        assert translation.elements[14] ≡ (3.0 ∷ f32)
-        assert scale.elements[0] ≡ (2.0 ∷ f32)
-        assert scale.elements[5] ≡ (3.0 ∷ f32)
-        assert scale.elements[10] ≡ (4.0 ∷ f32)
-        assert world.valid()
-        assert transformed.x ≡ (7.0 ∷ f32)
-        assert transformed.y ≡ (4.0 ∷ f32)
-        assert transformed.z ≡ (-1.0 ∷ f32)
-        assert transposed.elements[3] ≡ (5.0 ∷ f32)
-        assert composed.elements[0] ≡ (2.0 ∷ f32)
-        assert composed.elements[5] ≡ (3.0 ∷ f32)
-        assert composed.elements[10] ≡ (4.0 ∷ f32)
-        assert composed.elements[12] ≡ (5.0 ∷ f32)
+        const matrix<f32, [3, 3]> doubled ← matrix3.added(matrix3)
+        assert doubled.subtract(matrix3) ≡ matrix3
+        assert math.affine_determinant(identity) ≡ (1.0 ∷ f32)
+        assert math.matrix_element(translation, 0, 3) ≡ (5.0 ∷ f32)
+        assert math.matrix_element(translation, 1, 3) ≡ (-2.0 ∷ f32)
+        assert math.matrix_element(translation, 2, 3) ≡ (3.0 ∷ f32)
+        assert math.matrix_element(scale, 0, 0) ≡ (2.0 ∷ f32)
+        assert math.matrix_element(scale, 1, 1) ≡ (3.0 ∷ f32)
+        assert math.matrix_element(scale, 2, 2) ≡ (4.0 ∷ f32)
+        assert math.x(transformed) ≡ (7.0 ∷ f32)
+        assert math.y(transformed) ≡ (4.0 ∷ f32)
+        assert math.z(transformed) ≡ (-1.0 ∷ f32)
+        assert math.matrix_element(transposed, 3, 0) ≡ (5.0 ∷ f32)
+        assert math.matrix_element(composed, 0, 0) ≡ (2.0 ∷ f32)
+        assert math.matrix_element(composed, 1, 1) ≡ (3.0 ∷ f32)
+        assert math.matrix_element(composed, 2, 2) ≡ (4.0 ∷ f32)
+        assert math.matrix_element(composed, 0, 3) ≡ (5.0 ∷ f32)
     }
 
-    test "matrix shape and projection boundaries are explicit" {
-        const math.Matrix4 malformed ← math.Matrix4 {elements = [1.0]}
-        const math.Matrix4 identity ← math.matrix4_identity()
-        const math.Matrix4 translation ← math.matrix4_translation(math.vector3(1.0, 2.0, 3.0))
-        const math.Matrix4 ∪ none inverse_result ← translation.affine_inverse()
-        const math.Matrix4 ∪ none perspective_result ← math.matrix4_perspective(60.0, 1.0, 0.1, 100.0)
-        const math.Matrix4 ∪ none invalid_perspective ← math.matrix4_perspective(0.0, 1.0, 0.1, 100.0)
-        const math.Matrix4 ∪ none view_result ← math.matrix4_look_at(math.vector3(0.0, 0.0, 5.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
-        const math.Matrix4 ∪ none invalid_view ← math.matrix4_look_at(math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 0.0, 0.0), math.vector3(0.0, 1.0, 0.0))
+    test "matrix projection boundaries are explicit" {
+        const matrix<f32, [4, 4]> identity ← math.matrix_identity()
+        const matrix<f32, [4, 4]> translation ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, 3>)
+        const matrix<f32, [4, 4]> ∪ none inverse_result ← math.affine_inverse(translation)
+        const matrix<f32, [4, 4]> ∪ none perspective_result ← math.matrix_perspective(60.0, 1.0, 0.1, 100.0)
+        const matrix<f32, [4, 4]> ∪ none invalid_perspective ← math.matrix_perspective(0.0, 1.0, 0.1, 100.0)
+        const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+        const matrix<f32, [4, 4]> ∪ none invalid_view ← math.matrix_look_at([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
 
-        assert malformed.valid() ≡ false
-        assert identity.transpose().elements[0] ≡ (1.0 ∷ f32)
+        assert math.matrix_element(math.transpose(identity), 0, 0) ≡ (1.0 ∷ f32)
         assert inverse_result not is none
         assert perspective_result not is none
         assert invalid_perspective is none
@@ -113,14 +107,12 @@ describe "matrix and transform carriers" {
     }
 
     test "transform payload records model and view-projection facts" {
-        const math.Matrix4 model ← math.matrix4_translation(math.vector3(1.0, 2.0, 3.0))
-        const math.Matrix4 view_projection ← math.matrix4_scale(math.vector3(4.0, 5.0, 6.0))
-        const math.TransformPayload ∪ none payload_result ← math.transform_payload(model, view_projection)
-        const math.Matrix4 malformed_matrix ← math.Matrix4 {elements = [1.0]}
-        const math.TransformPayload ∪ none invalid_payload ← math.transform_payload(malformed_matrix, view_projection)
+        const matrix<f32, [4, 4]> model ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, 3>)
+        const matrix<f32, [4, 4]> view_projection ← math.matrix_scale([4.0, 5.0, 6.0] ↦ vector<f32, 3>)
+        const math.TransformPayload payload_result ← math.transform_payload(model, view_projection)
 
-        assert payload_result not is none
-        assert invalid_payload is none
+        assert payload_result.float_count() coalesce 0 ≡ 32
+        assert payload_result.byte_count() coalesce 0 ≡ 128
 
         const math.TransformPayload payload ← math.TransformPayload {values = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 2.0, 3.0, 1.0, 4.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
         const int count ← payload.float_count() coalesce 0
@@ -196,43 +188,43 @@ describe "color, angle, and camera contracts" {
     }
 
     test "camera helpers clamp pitch and return coherent carriers" {
-        const math.Vector3 origin ← math.vector3(2.0, 3.0, 4.0)
-        const math.Vector3 direction ← math.camera_direction_from_yaw_pitch(0.0, 100.0)
-        const math.Vector3 planar_forward ← math.camera_planar_forward_from_yaw(0.0)
-        const math.Vector3 planar_right ← math.camera_right_from_yaw(0.0)
-        const math.Vector3 stopped ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 0.0, 1.0)
-        const math.Vector3 moved ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
+        const vector<f32, 3> origin ← [2.0, 3.0, 4.0] ↦ vector<f32, 3>
+        const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(0.0, 100.0)
+        const vector<f32, 3> planar_forward ← math.camera_planar_forward_from_yaw(0.0)
+        const vector<f32, 3> planar_right ← math.camera_right_from_yaw(0.0)
+        const vector<f32, 3> stopped ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 0.0, 1.0)
+        const vector<f32, 3> moved ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
         const math.Ray camera_ray ← math.camera_ray_from_yaw_pitch(origin, 90.0, 0.0)
         const math.CameraYawPitchFacts facts ← math.camera_yaw_pitch_facts(origin, 90.0, 100.0)
 
         assert math.radians_from_degrees((0.0 ∷ f32)) ≡ (0.0 ∷ f32)
         assert math.camera_pitch_clamped((100.0 ∷ f32)) ≡ (89.0 ∷ f32)
         assert math.camera_pitch_clamped((-100.0 ∷ f32)) ≡ (-89.0 ∷ f32)
-        assert direction.y > (0.99 ∷ f32)
-        assert planar_forward.z ≡ (-1.0 ∷ f32)
-        assert planar_right.x ≡ (1.0 ∷ f32)
-        assert stopped.x ≡ (0.0 ∷ f32)
-        assert stopped.y ≡ (0.0 ∷ f32)
-        assert stopped.z ≡ (0.0 ∷ f32)
-        assert moved.z < (0.0 ∷ f32)
-        assert camera_ray.origin.x ≡ (2.0 ∷ f32)
+        assert math.y(direction) > (0.99 ∷ f32)
+        assert math.z(planar_forward) ≡ (-1.0 ∷ f32)
+        assert math.x(planar_right) ≡ (1.0 ∷ f32)
+        assert math.x(stopped) ≡ (0.0 ∷ f32)
+        assert math.y(stopped) ≡ (0.0 ∷ f32)
+        assert math.z(stopped) ≡ (0.0 ∷ f32)
+        assert math.z(moved) < (0.0 ∷ f32)
+        assert math.x(camera_ray.origin) ≡ (2.0 ∷ f32)
         assert facts.yaw_degrees ≡ (90.0 ∷ f32)
         assert facts.pitch_degrees ≡ (100.0 ∷ f32)
         assert facts.clamped_pitch_degrees ≡ (89.0 ∷ f32)
-        assert facts.ray.origin.z ≡ (4.0 ∷ f32)
+        assert math.z(facts.ray.origin) ≡ (4.0 ∷ f32)
     }
 }
 
 describe "box, sphere, and plane volumes" {
     test "box constructors accept valid bounds and reject reversed or non-positive size" {
-        const math.Vector3 minimum ← math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 maximum ← math.vector3(2.0, 2.0, 2.0)
-        const math.Vector3 size ← math.vector3(2.0, 2.0, 2.0)
-        const math.Box3 ∪ none bounds_result ← math.box3_from_min_max(minimum, maximum)
-        const math.Box3 ∪ none sized_result ← math.box3_from_min_and_size(minimum, size)
-        const math.Box3 ∪ none centered_result ← math.box3_from_center_and_size(math.vector3(1.0, 1.0, 1.0), size)
-        const math.Box3 ∪ none invalid_bounds ← math.box3_from_min_max(maximum, minimum)
-        const math.Box3 ∪ none invalid_size ← math.box3_from_min_and_size(minimum, math.vector3(0.0, 1.0, 1.0))
+        const vector<f32, 3> minimum ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+        const vector<f32, 3> maximum ← [2.0, 2.0, 2.0] ↦ vector<f32, 3>
+        const vector<f32, 3> size ← [2.0, 2.0, 2.0] ↦ vector<f32, 3>
+        const math.Box<3> ∪ none bounds_result ← math.box_from_min_max(minimum, maximum)
+        const math.Box<3> ∪ none sized_result ← math.box_from_min_and_size(minimum, size)
+        const math.Box<3> ∪ none centered_result ← math.box_from_center_and_size([1.0, 1.0, 1.0] ↦ vector<f32, 3>, size)
+        const math.Box<3> ∪ none invalid_bounds ← math.box_from_min_max(maximum, minimum)
+        const math.Box<3> ∪ none invalid_size ← math.box_from_min_and_size(minimum, [0.0, 1.0, 1.0] ↦ vector<f32, 3>)
 
         assert bounds_result not is none
         assert sized_result not is none
@@ -242,94 +234,88 @@ describe "box, sphere, and plane volumes" {
     }
 
     test "box containment and intersection preserve inclusive bounds" {
-        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Box3 sized ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Box3 centered ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
-        const math.Box3 disjoint_box ← math.Box3 {min = math.vector3(3.0, 3.0, 3.0), max = math.vector3(4.0, 4.0, 4.0)}
+        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        const math.Box<3> centered ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        const math.Box<3> overlap_box ← math.Box {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
+        const math.Box<3> disjoint_box ← math.Box {minima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>, maxima = [4.0, 4.0, 4.0] ↦ vector<f32, 3>}
 
-        assert bounds.valid()
-        assert bounds.contains(math.vector3((2.0 ∷ f32), (2.0 ∷ f32), (2.0 ∷ f32)))
-        assert bounds.contains_box(centered)
-        assert bounds.intersects(overlap_box)
-        assert bounds.intersects(disjoint_box) ≡ false
-        assert sized.max.x ≡ (2.0 ∷ f32)
-        assert centered.min.x ≡ (0.0 ∷ f32)
+        assert math.box_valid(bounds)
+        assert math.box_contains(bounds, [2.0, 2.0, 2.0] ↦ vector<f32, 3>)
+        assert math.box_contains_box(bounds, centered)
+        assert math.box_intersects(bounds, overlap_box)
+        assert math.box_intersects(bounds, disjoint_box) ≡ false
+        assert math.x(bounds.maxima) ≡ (2.0 ∷ f32)
+        assert math.x(centered.minima) ≡ (0.0 ∷ f32)
     }
 
-    test "box inflation mutates or copies by the published contract" {
-        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Box3 expanded ← bounds.inflated(1.0)
-        var math.Box3 mutable_bounds ← bounds
-        mutable_bounds.inflate(1.0)
-        assert expanded.min.x ≡ (-1.0 ∷ f32)
-        assert mutable_bounds.min.x ≡ (-1.0 ∷ f32)
+    test "box inflation copies by the published contract" {
+        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        const math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
+        assert math.x(expanded.minima) ≡ (-1.0 ∷ f32)
     }
 
     test "box measure and center match the published corners" {
-        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Vector3 measure ← bounds.size() coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Vector3 center ← bounds.center() coalesce math.vector3(0.0, 0.0, 0.0)
-        assert measure.x ≡ (2.0 ∷ f32)
-        assert center.x ≡ (1.0 ∷ f32)
+        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        const vector<f32, 3> measure ← math.box_size(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        const vector<f32, 3> center ← math.box_center(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        assert math.x(measure) ≡ (2.0 ∷ f32)
+        assert math.x(center) ≡ (1.0 ∷ f32)
     }
 
     test "box overlap union and translation preserve bound facts" {
-        const math.Box3 bounds ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(2.0, 2.0, 2.0)}
-        const math.Box3 overlap_box ← math.Box3 {min = math.vector3(1.0, 1.0, 1.0), max = math.vector3(3.0, 3.0, 3.0)}
-        const math.Vector3 overlap ← bounds.overlap(overlap_box) coalesce math.vector3(0.0, 0.0, 0.0)
-        const math.Box3OverlapFacts facts ← bounds.overlap_facts(overlap_box) coalesce math.Box3OverlapFacts {overlap = math.vector3(0.0, 0.0, 0.0), x = 0.0, y = 0.0, z = 0.0}
-        const math.Box3 unioned ← bounds.union(overlap_box) coalesce bounds
-        const math.Box3 translated ← bounds.translated(math.vector3(2.0, 0.0, 0.0))
-        assert overlap.x ≡ (1.0 ∷ f32)
-        assert facts.overlap.y ≡ (1.0 ∷ f32)
+        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        const math.Box<3> overlap_box ← math.Box {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
+        const vector<f32, 3> overlap ← math.box_overlap(bounds, overlap_box) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        const math.BoxOverlapFacts facts ← math.box_overlap_facts(bounds, overlap_box) coalesce math.BoxOverlapFacts {overlap = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, x = 0.0, y = 0.0, z = 0.0}
+        const math.Box<3> unioned ← math.box_union(bounds, overlap_box) coalesce bounds
+        const math.Box<3> translated ← math.box_translated(bounds, [2.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        assert math.x(overlap) ≡ (1.0 ∷ f32)
+        assert math.y(facts.overlap) ≡ (1.0 ∷ f32)
         assert facts.x ≡ (1.0 ∷ f32)
-        assert unioned.max.z ≡ (3.0 ∷ f32)
-        assert translated.min.x ≡ (2.0 ∷ f32)
+        assert math.z(unioned.maxima) ≡ (3.0 ∷ f32)
+        assert math.x(translated.minima) ≡ (2.0 ∷ f32)
     }
 
     test "invalid boxes and primitive volumes reject or preserve boundaries" {
-        const math.Box3 invalid_box ← math.Box3 {min = math.vector3(2.0, 2.0, 2.0), max = math.vector3(1.0, 1.0, 1.0)}
-        const math.Sphere sphere ← math.Sphere {center = math.vector3(0.0, 0.0, 0.0), radius = 2.0}
-        const math.Plane plane ← math.Plane {normal = math.vector3(0.0, 1.0, 0.0), constant = -2.0}
-        const math.Box3 other ← math.Box3 {min = math.vector3(3.0, 3.0, 3.0), max = math.vector3(4.0, 4.0, 4.0)}
-        const math.Box3 ∪ none invalid_measure_box ← invalid_box.union(other)
-        const math.Vector3 ∪ none invalid_measure ← invalid_box.size()
-        const math.Vector3 ∪ none invalid_center ← invalid_box.center()
-        const math.Vector3 ∪ none invalid_overlap ← invalid_box.overlap(other)
+        const math.Box<3> invalid_box ← math.Box {minima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+        const math.Sphere sphere ← math.Sphere {center = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, radius = 2.0}
+        const math.Plane plane ← math.Plane {normal = [0.0, 1.0, 0.0] ↦ vector<f32, 3>, constant = -2.0}
+        const math.Box<3> other ← math.Box {minima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>, maxima = [4.0, 4.0, 4.0] ↦ vector<f32, 3>}
+        const math.Box<3> ∪ none invalid_measure_box ← math.box_union(invalid_box, other)
+        const vector<f32, 3> ∪ none invalid_center ← math.box_center(invalid_box)
+        const vector<f32, 3> ∪ none invalid_overlap ← math.box_overlap(invalid_box, other)
 
-        assert invalid_box.valid() ≡ false
+        assert math.box_valid(invalid_box) ≡ false
         assert invalid_measure_box is none
-        assert invalid_measure is none
         assert invalid_center is none
         assert invalid_overlap is none
-        assert sphere.contains(math.vector3((2.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32)))
-        assert sphere.contains(math.vector3((3.0 ∷ f32), (0.0 ∷ f32), (0.0 ∷ f32))) ≡ false
-        assert plane.distance(math.vector3((0.0 ∷ f32), (3.0 ∷ f32), (0.0 ∷ f32))) ≡ (1.0 ∷ f32)
+        assert sphere.contains([2.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        assert sphere.contains([3.0, 0.0, 0.0] ↦ vector<f32, 3>) ≡ false
+        assert plane.distance([0.0, 3.0, 0.0] ↦ vector<f32, 3>) ≡ (1.0 ∷ f32)
     }
 }
 
 describe "ray intersections and face-code facts" {
     test "ray-box hits expose distance, normal, and face records" {
-        const math.Box3 box ← math.Box3 {min = math.vector3(0.0, 0.0, 0.0), max = math.vector3(1.0, 1.0, 1.0)}
-        const math.Ray ray ← math.Ray {origin = math.vector3(-2.0, 0.5, 0.5), direction = math.vector3(1.0, 0.0, 0.0)}
+        const math.Box<3> box ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+        const math.Ray ray ← math.Ray {origin = [-2.0, 0.5, 0.5] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
         const math.RayInterval interval ← math.RayInterval {minimum = 1.0, maximum = 2.0}
-        const math.RayBox3Hit ∪ none hit_result ← ray.box3_hit(box, 10.0)
+        const math.RayBoxHit ∪ none hit_result ← ray.box_hit(box, 10.0)
         const f32 ∪ none distance_result ← ray.intersects_box(box, 10.0)
         const f32 ∪ none rejected_distance ← ray.intersects_box(box, -1.0)
-        const math.Vector3 point ← ray.point_at(2.0)
+        const vector<f32, 3> point ← ray.point_at(2.0)
 
-        const math.RayBox3Hit hit ← math.RayBox3Hit {distance = 2.0, point = point, normal = math.vector3(-1.0, 0.0, 0.0)}
-        const math.FaceCodeFacts facts ← math.FaceCodeFacts {code = 1, axis_code = 1, opposite_code = 2, x_offset = -1, y_offset = 0, z_offset = 0, normal = math.vector3(-1.0, 0.0, 0.0), color = math.Color {r = 0.8, g = 0.1, b = 0.1}}
+        const math.RayBoxHit hit ← math.RayBoxHit {distance = 2.0, point = point, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+        const math.FaceCodeFacts facts ← math.FaceCodeFacts {code = 1, axis_code = 1, opposite_code = 2, x_offset = -1, y_offset = 0, z_offset = 0, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, 3>, color = math.Color {r = 0.8, g = 0.1, b = 0.1}}
 
         assert interval.minimum ≡ (1.0 ∷ f32)
-        assert point.x ≡ (0.0 ∷ f32)
+        assert math.x(point) ≡ (0.0 ∷ f32)
         assert distance_result not is none
         assert rejected_distance is none
         assert hit_result not is none
         assert hit.distance ≡ (2.0 ∷ f32)
-        assert hit.point.x ≡ (0.0 ∷ f32)
-        assert hit.normal.x ≡ (-1.0 ∷ f32)
+        assert math.x(hit.point) ≡ (0.0 ∷ f32)
+        assert math.x(hit.normal) ≡ (-1.0 ∷ f32)
         assert hit.hit_face_code() not is none
         assert hit.hit_face_offset_x() not is none
         assert hit.hit_face_offset_y() not is none
@@ -338,21 +324,21 @@ describe "ray intersections and face-code facts" {
         assert facts.code ≡ 1
         assert facts.axis_code ≡ 1
         assert facts.opposite_code ≡ 2
-        assert facts.normal.x ≡ (-1.0 ∷ f32)
+        assert math.x(facts.normal) ≡ (-1.0 ∷ f32)
         assert facts.color.r ≡ (0.8 ∷ f32)
     }
 
     test "face-code helpers cover all six faces and invalid codes" {
         const int code ← 6
-        const math.Vector3 normal ← math.face_code_normal(code) coalesce math.vector3(0.0, 0.0, 0.0)
+        const vector<f32, 3> normal ← math.face_code_normal(code) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
         const math.Color color ← math.face_code_color(code) coalesce math.Color {r = 0.0, g = 0.0, b = 0.0}
-        const math.FaceCodeFacts facts ← math.face_code_facts(code) coalesce math.FaceCodeFacts {code = 0, axis_code = 0, opposite_code = 0, x_offset = 0, y_offset = 0, z_offset = 0, normal = math.vector3(0.0, 0.0, 0.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+        const math.FaceCodeFacts facts ← math.face_code_facts(code) coalesce math.FaceCodeFacts {code = 0, axis_code = 0, opposite_code = 0, x_offset = 0, y_offset = 0, z_offset = 0, normal = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, color = math.Color {r = 0.0, g = 0.0, b = 0.0}}
         const int axis ← math.face_code_axis_code(code) coalesce 0
         const int opposite ← math.face_code_opposite(code) coalesce 0
         const int x_offset ← math.face_code_x_offset(code) coalesce 0
         const int y_offset ← math.face_code_y_offset(code) coalesce 0
         const int z_offset ← math.face_code_z_offset(code) coalesce 0
-        const math.Vector3 ∪ none invalid_normal ← math.face_code_normal(0)
+        const vector<f32, 3> ∪ none invalid_normal ← math.face_code_normal(0)
         const math.FaceCodeFacts ∪ none invalid_facts ← math.face_code_facts(7)
 
         assert math.face_code_valid(1)
@@ -371,7 +357,7 @@ describe "ray intersections and face-code facts" {
         assert x_offset ≡ 0
         assert y_offset ≡ 0
         assert z_offset ≡ 1
-        assert normal.z ≡ (1.0 ∷ f32)
+        assert math.z(normal) ≡ (1.0 ∷ f32)
         assert color.b ≡ (1.0 ∷ f32)
         assert facts.code ≡ 6
         assert facts.opposite_code ≡ 5

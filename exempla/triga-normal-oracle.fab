@@ -47,36 +47,36 @@ fn near_zero(f32 value) → bool {
 
 # The interleaved scalar at a vertex (position/normal attributes are
 # component_width × vertex_index).
-fn position_at(list<f32> scalars, int vertex_index) → math.Vector3 {
+fn position_at(list<f32> scalars, int vertex_index) → vector<f32, 3> {
     const int i ← vertex_index * 3
-    return math.vector3(scalars[i], scalars[i + 1], scalars[i + 2])
+    return [scalars[i], scalars[i + 1], scalars[i + 2]] ↦ vector<f32, 3>
 }
 
 # The triangle's geometric normal (cross product of two edges).
-fn triangle_normal(math.Vector3 a, math.Vector3 b, math.Vector3 c) → math.Vector3 {
-    const math.Vector3 ab ← b.subtracta(a)
-    const math.Vector3 ac ← c.subtracta(a)
-    return ab.transversum(ac)
+fn triangle_normal(vector<f32, 3> a, vector<f32, 3> b, vector<f32, 3> c) → vector<f32, 3> {
+    const vector<f32, 3> ab ← b.subtract(a)
+    const vector<f32, 3> ac ← c.subtract(a)
+    return ab.cross(ac)
 }
 
 # True when the given normal is perpendicular to all three triangle edges.
-fn edges_perpendicular_to(math.Vector3 normal, math.Vector3 a, math.Vector3 b, math.Vector3 c) → bool {
-    if near_zero(normal.productum(b.subtracta(a))) ≡ false then return false
-    if near_zero(normal.productum(c.subtracta(b))) ≡ false then return false
-    if near_zero(normal.productum(a.subtracta(c))) ≡ false then return false
+fn edges_perpendicular_to(vector<f32, 3> normal, vector<f32, 3> a, vector<f32, 3> b, vector<f32, 3> c) → bool {
+    if near_zero(normal.dot(b.subtract(a))) ≡ false then return false
+    if near_zero(normal.dot(c.subtract(b))) ≡ false then return false
+    if near_zero(normal.dot(a.subtract(c))) ≡ false then return false
     return true
 }
 
 # The declared vertex normal (the "normal" attribute is interleaved scalars).
-fn declared_normal(list<f32> normals, int vertex_index) → math.Vector3 {
+fn declared_normal(list<f32> normals, int vertex_index) → vector<f32, 3> {
     return position_at(normals, vertex_index)
 }
 
 # The named float32 attribute payload (position/normal are Float32 streams).
-fn attribute_values(data.BufferGeometry geometry, string name) → list<f32> {
+fn attribute_values(data.Geometry geometry, string name) → list<f32> {
     var int i ← 0
     while i ≺ geometry.attributes.length() {
-        const attribute.BufferAttribute attr ← geometry.attributes[i]
+        const attribute.Attribute attr ← geometry.attributes[i]
         if attr.name ≡ name {
             const list<f32> ∪ none values ← attr.float32_values()
             if values not is none {
@@ -91,16 +91,16 @@ fn attribute_values(data.BufferGeometry geometry, string name) → list<f32> {
 
 # Dot-product invariant over a fan using the DECLARED cap normal: for the
 # planar cylinder caps the cap normal must be perpendicular to every edge.
-fn fan_declared_perpendicular(data.BufferGeometry geometry, list<f32> positions, list<f32> normals, int fan_start, int fan_count) → bool {
+fn fan_declared_perpendicular(data.Geometry geometry, list<f32> positions, list<f32> normals, int fan_start, int fan_count) → bool {
     var int t ← 0
     while t ≺ fan_count {
         const int ia ↤ geometry.indices[fan_start + t * 3]
         const int ib ↤ geometry.indices[fan_start + t * 3 + 1]
         const int ic ↤ geometry.indices[fan_start + t * 3 + 2]
-        const math.Vector3 a ← position_at(positions, ia)
-        const math.Vector3 b ← position_at(positions, ib)
-        const math.Vector3 c ← position_at(positions, ic)
-        const math.Vector3 normal ← declared_normal(normals, ia)
+        const vector<f32, 3> a ← position_at(positions, ia)
+        const vector<f32, 3> b ← position_at(positions, ib)
+        const vector<f32, 3> c ← position_at(positions, ic)
+        const vector<f32, 3> normal ← declared_normal(normals, ia)
         if edges_perpendicular_to(normal, a, b, c) ≡ false then return false
         t ← t + 1
     }
@@ -110,16 +110,16 @@ fn fan_declared_perpendicular(data.BufferGeometry geometry, list<f32> positions,
 # Dot-product invariant over a fan using each triangle's cross-product
 # normal: for the curved sphere poles every pole triangle is well-formed
 # (its normal is perpendicular to its edges — non-degenerate fan).
-fn fan_geometric_perpendicular(data.BufferGeometry geometry, list<f32> positions, int fan_start, int fan_count) → bool {
+fn fan_geometric_perpendicular(data.Geometry geometry, list<f32> positions, int fan_start, int fan_count) → bool {
     var int t ← 0
     while t ≺ fan_count {
         const int ia ↤ geometry.indices[fan_start + t * 3]
         const int ib ↤ geometry.indices[fan_start + t * 3 + 1]
         const int ic ↤ geometry.indices[fan_start + t * 3 + 2]
-        const math.Vector3 a ← position_at(positions, ia)
-        const math.Vector3 b ← position_at(positions, ib)
-        const math.Vector3 c ← position_at(positions, ic)
-        const math.Vector3 normal ← triangle_normal(a, b, c)
+        const vector<f32, 3> a ← position_at(positions, ia)
+        const vector<f32, 3> b ← position_at(positions, ib)
+        const vector<f32, 3> c ← position_at(positions, ic)
+        const vector<f32, 3> normal ← triangle_normal(a, b, c)
         if edges_perpendicular_to(normal, a, b, c) ≡ false then return false
         t ← t + 1
     }
@@ -129,18 +129,18 @@ fn fan_geometric_perpendicular(data.BufferGeometry geometry, list<f32> positions
 # Outward-orientation invariant over a fan: every triangle's cross-product
 # normal agrees with the declared vertex normal (dot > 0) — no inverted
 # triangles at the cap boundary.
-fn fan_oriented_outward(data.BufferGeometry geometry, list<f32> positions, list<f32> normals, int fan_start, int fan_count) → bool {
+fn fan_oriented_outward(data.Geometry geometry, list<f32> positions, list<f32> normals, int fan_start, int fan_count) → bool {
     var int t ← 0
     while t ≺ fan_count {
         const int ia ↤ geometry.indices[fan_start + t * 3]
         const int ib ↤ geometry.indices[fan_start + t * 3 + 1]
         const int ic ↤ geometry.indices[fan_start + t * 3 + 2]
-        const math.Vector3 a ← position_at(positions, ia)
-        const math.Vector3 b ← position_at(positions, ib)
-        const math.Vector3 c ← position_at(positions, ic)
-        const math.Vector3 geometric ← triangle_normal(a, b, c)
-        const math.Vector3 declared ← declared_normal(normals, ia)
-        if geometric.productum(declared) ≤ 0.0 then return false
+        const vector<f32, 3> a ← position_at(positions, ia)
+        const vector<f32, 3> b ← position_at(positions, ib)
+        const vector<f32, 3> c ← position_at(positions, ic)
+        const vector<f32, 3> geometric ← triangle_normal(a, b, c)
+        const vector<f32, 3> declared ← declared_normal(normals, ia)
+        if geometric.dot(declared) ≤ 0.0 then return false
         t ← t + 1
     }
     return true
@@ -152,7 +152,7 @@ main {
     # Closed cylinder (radius 1, height 2): 96 indices — 16 side quads
     # (elements 0..47), 8 bottom-cap fan triangles (48..71), 8 top-cap fan
     # triangles (72..95).
-    const data.BufferGeometry ∪ none cylinder_opt ← basic.cylinder_geometry(1.0, 2.0)
+    const data.Geometry ∪ none cylinder_opt ← basic.cylinder(1.0, 2.0)
     if cylinder_opt is none {
         print false
     } else {
@@ -172,7 +172,7 @@ main {
     # Sphere (radius 1): 144 indices — 8 south-pole fan triangles (0..23),
     # 32 middle-band triangles (24..119), 8 north-pole fan triangles
     # (120..143).
-    const data.BufferGeometry ∪ none sphere_opt ← basic.sphere_geometry(1.0)
+    const data.Geometry ∪ none sphere_opt ← basic.sphere(1.0)
     if sphere_opt is none {
         print false
     } else {

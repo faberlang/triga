@@ -9,7 +9,7 @@
 #
 # Zero imports.
 
-# A half-open draw selection in element space. BufferGeometry validates that
+# A half-open draw selection in element space. Geometry validates that
 # count is non-zero, that start + count stays within the available elements,
 # and that the range matches the active primitive topology before it becomes a
 # draw command.
@@ -19,7 +19,7 @@ class DrawRange {
     var int count
 }
 
-# The complete scalar fact set for one host draw. BufferGeometry fills this
+# The complete scalar fact set for one host draw. Geometry fills this
 # record from a validated draw range or group, preserving indexed mode,
 # element origin/count, instance count, and material selection.
 @ public
@@ -33,7 +33,7 @@ class GeometryDrawCommand {
 }
 
 # One material-owned element range. Groups are CPU-side batching metadata;
-# BufferGeometry requires non-empty, topology-aligned, in-bounds ranges in
+# Geometry requires non-empty, topology-aligned, in-bounds ranges in
 # non-overlapping order before producing group commands.
 @ public
 class GeometryGroup {

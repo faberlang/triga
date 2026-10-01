@@ -95,30 +95,28 @@ fn scene_geometry_blob(de WaterMesh mesh) → string {
     return "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
 }
 
-fn model_matrix(f32 elapsed_seconds) → math.Matrix4 {
+fn model_matrix(f32 elapsed_seconds) → matrix<f32, [4, 4]> {
     const math.Quaternion quaternion ← math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}
-    return math.matrix4_composita(math.vector3(elapsed_seconds * 0.35, 0.0, 0.0), quaternion, math.vector3(1.0, 1.0, 1.0))
+    return math.matrix_compose([elapsed_seconds * 0.35, 0.0, 0.0] ↦ vector<f32, 3>, quaternion, [1.0, 1.0, 1.0] ↦ vector<f32, 3>)
 }
 
-fn view_projection(f32 camera_yaw_degrees, f32 aspect) → math.Matrix4 ∪ none {
-    const math.Vector3 target ← math.vector3(0.0, 0.0, 0.0)
-    const math.Vector3 direction ← math.camera_directio_ex_yaw_pitch(camera_yaw_degrees, -28.0)
-    const math.Vector3 eye ← target.subtracta(direction.multiplicata(17.0))
-    const math.Matrix4 ∪ none projection_result ← math.matrix4_perspectiva(45.0, aspect, 0.1, 200.0)
+fn view_projection(f32 camera_yaw_degrees, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
+    const vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(camera_yaw_degrees, -28.0)
+    const vector<f32, 3> offset ← math.scale3(direction, 17.0)
+    const vector<f32, 3> eye ← target.subtract(offset)
+    const matrix<f32, [4, 4]> ∪ none projection_result ← math.matrix_perspective(45.0, aspect, 0.1, 200.0)
     if projection_result is none then return null
-    const math.Matrix4 ∪ none view_result ← math.matrix4_conspectus(eye, target, math.vector3(0.0, 1.0, 0.0))
+    const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
     if view_result is none then return null
-    const math.Matrix4 projection ← math.Matrix4 {elements = projection_result!.elements}
-    const math.Matrix4 view ← math.Matrix4 {elements = view_result!.elements}
-    return projection.multiplicata(view)
+    return projection_result · view_result
 }
 
 fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ none {
-    const math.Matrix4 ∪ none view_projection_result ← view_projection(-35.0 + elapsed_seconds * 5.0, aspect)
+    const matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(-35.0 + elapsed_seconds * 5.0, aspect)
     if view_projection_result is none then return null
-    const math.Matrix4 view_projection_matrix ← math.Matrix4 {elements = view_projection_result!.elements}
-    const math.Matrix4 model ← model_matrix(elapsed_seconds)
-    return math.transform_payload(model, view_projection_matrix)
+    const matrix<f32, [4, 4]> model ← model_matrix(elapsed_seconds)
+    return math.transform_payload(model, view_projection_result)
 }
 
 @ WebController { selector = "#triga-corpus-animation-water" }

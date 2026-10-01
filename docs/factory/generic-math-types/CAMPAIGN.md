@@ -1,7 +1,7 @@
 # Campaign: Parametric Math Types Clean Break
 
-**Status**: active — **STAGE 0 COMPLETE** (S0-T2 resumed 2026-08-25, task `f53e576b`, triga `5b11bf7`): representation SELECTED (direct native types at radix `24ec99d7e`), the three compiler-gap units landed (S0-G8 `0f7d26f5a` N1/N2, S0-G9 `a7d731ec0` N3, S0-G10 `4628590fd` N4/N5/N6), the five --selected checker invocations green modulo routed residuals (operations/payload/device-posture fully green; rust-compile PASS; TS2307 staging fixed runner-side; nullable rust list-index fixed radix `fbec200be`; TS coordinate emission ROUTED — three hir-ts defects, non-gating), and **migration-map.md FROZEN** (every retired declaration/method/helper/consumer family mapped to exact direct-native actions, no compatibility destinations, ordered Stage 1-5 graph, bounded grep oracle). Representation remains direct native types; Stage 1 is next per the frozen graph
-**Amended**: 2026-08-22 — language-base refresh (zombie-docs pass): spelling corrections plus the amendment section below; the shipped language moved under this campaign after 2026-08-13
+**Status**: active — **STAGE 0 COMPLETE**; Stages 1–5 product application absorbed 2026-09-30 by [`../faber-native-surface/GOAL.md`](../faber-native-surface/GOAL.md) — do not dispatch a Hand on `src/math.fab` from this campaign. Stage 0 record unchanged: representation SELECTED (direct native types at radix `24ec99d7e`), gap units S0-G8…G10 landed, **migration-map.md FROZEN**.
+**Amended**: 2026-09-30 — operator: faber-native-surface absorbs remaining product stages; this campaign stays the Stage 0 selection record. Prior: 2026-08-22 language-base refresh (zombie-docs pass).
 
 **Mode**: run
 
@@ -9,7 +9,7 @@
 
 **Affected repos**: `triga`, `radix`, `examples`, `faberlang.dev`
 
-**Selected next stage**: Stage 0 — delivery lowered; route [`delivery-stage0.md`](delivery-stage0.md) to Factory after the serial `S0-R0`/`S0-R1` Radix prerequisite gates
+**Selected next stage**: none from this campaign — remaining product stages execute under [`../faber-native-surface/GOAL.md`](../faber-native-surface/GOAL.md)
 
 **Decision authority**: operator direction on 2026-08-13
 

@@ -17,24 +17,24 @@ import from "triga:primitives/basic" basic
 
 main {
     # Indexed triangle geometry
-    const attribute.BufferAttribute positions ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
-    const data.BufferGeometry triangle ← data.indexed_triangle_geometry(3, [positions], [0, 1, 2], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
+    const attribute.Attribute positions ← attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+    const data.Geometry triangle ← data.indexed_triangle_geometry(3, [positions], [0, 1, 2], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
 
     # ColoredQuadMesh accumulation
-    const data.ColoredQuadMesh ∪ none first_quad_result ← data.colored_quad_mesh_append(empty, empty, empty, math.vector3(0.0, 0.0, 0.0), math.vector3(1.0, 0.0, 0.0), math.vector3(1.0, 1.0, 0.0), math.vector3(0.0, 1.0, 0.0), math.Color {r = 0.2, g = 0.4, b = 0.6})
+    const data.ColoredQuadMesh ∪ none first_quad_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [1.0, 0.0, 0.0] ↦ vector<f32, 3>, [1.0, 1.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
     assert first_quad_result not is none
     const data.ColoredQuadMesh first_quad ← first_quad_result
-    const data.ColoredQuadMesh ∪ none two_quads ← data.colored_quad_mesh_append(first_quad.positions, first_quad.colors, first_quad.indices, math.vector3(2.0, 0.0, 0.0), math.vector3(3.0, 0.0, 0.0), math.vector3(3.0, 1.0, 0.0), math.vector3(2.0, 1.0, 0.0), math.Color {r = 0.7, g = 0.8, b = 0.9})
+    const data.ColoredQuadMesh ∪ none two_quads ← data.colored_quad_mesh_append(first_quad.positions, first_quad.colors, first_quad.indices, [2.0, 0.0, 0.0] ↦ vector<f32, 3>, [3.0, 0.0, 0.0] ↦ vector<f32, 3>, [3.0, 1.0, 0.0] ↦ vector<f32, 3>, [2.0, 1.0, 0.0] ↦ vector<f32, 3>, math.Color {r = 0.7, g = 0.8, b = 0.9})
     assert two_quads not is none
 
     # Split groups
-    const attribute.BufferAttribute split_positions ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0])
-    const data.BufferGeometry split_groups ← data.indexed_triangle_geometry(6, [split_positions], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 3, count = 3, material_index = 1}])
+    const attribute.Attribute split_positions ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 0.0, 0.0, 11.0, 0.0, 0.0, 10.0, 1.0, 0.0])
+    const data.Geometry split_groups ← data.indexed_triangle_geometry(6, [split_positions], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 3, count = 3, material_index = 1}])
 
     # Non-indexed geometry
-    const data.BufferGeometry nonindexed ← data.triangle_geometry(3, [positions], batch.DrawRange {start = 0, count = 3}, empty)
+    const data.Geometry nonindexed ← data.triangle_geometry(3, [positions], batch.DrawRange {start = 0, count = 3}, empty)
 
     # Wire box (line geometry)
-    const data.BufferGeometry ∪ none box_wire_result ← basic.box_wire_geometry(2.0, 4.0, 6.0)
-    const _ box_wire ← data.BufferGeometry {topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups}
+    const data.Geometry ∪ none box_wire_result ← basic.box_wire(2.0, 4.0, 6.0)
+    const _ box_wire ← data.Geometry {topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups}
 }

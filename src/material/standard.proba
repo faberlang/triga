@@ -1,5 +1,5 @@
 # Co-located package tests for material/standard.fab.
-# MeshStandardMaterial is a PBR-shaped source carrier; these cases verify its
+# StandardMaterial is a PBR-shaped source carrier; these cases verify its
 # fields and the validated base pipeline projection without claiming host PBR.
 import from "triga:material/standard" standard
 import from "triga:material/base" base
@@ -9,7 +9,7 @@ test "standard material preserves PBR carrier fields and pipeline facts" {
     const base.Material policy ← base.Material {name = "standard", side = 2 ∷ int<u32>, transparent = true, opacity = 0.65, depth_write = true, depth_test = false, alpha_test = 0.3}
     const math.Color color ← math.Color {r = 0.2, g = 0.3, b = 0.4}
     const math.Color emissive ← math.Color {r = 0.05, g = 0.1, b = 0.15}
-    const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = policy, color = color, roughness = 0.35, metalness = 0.8, emissive = emissive, emissive_intensity = 1.5}
+    const standard.StandardMaterial material ← standard.StandardMaterial {base = policy, color = color, roughness = 0.35, metalness = 0.8, emissive = emissive, emissive_intensity = 1.5}
     const base.MaterialPipelineFacts ∪ none facts_result ← material.base.pipeline_facts()
 
     assert material.base.name ≡ "standard"
@@ -34,7 +34,7 @@ test "standard material preserves PBR carrier fields and pipeline facts" {
 }
 
 test "standard defaults remain explicit carrier values" {
-    const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = base.material_from_name("standard-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+    const standard.StandardMaterial material ← standard.StandardMaterial {base = base.material_from_name("standard-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert material.roughness ≡ (1.0 ∷ f32)
     assert material.metalness ≡ (0.0 ∷ f32)
@@ -45,7 +45,7 @@ test "standard defaults remain explicit carrier values" {
 
 test "standard carrier exposes invalid base facts as unsupported" {
     const base.Material invalid_base ← base.Material {name = "invalid-standard", side = 0 ∷ int<u32>, alpha_test = -0.1}
-    const standard.MeshStandardMaterial material ← standard.MeshStandardMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+    const standard.StandardMaterial material ← standard.StandardMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
 
     assert material.base.valid() ≡ false
     assert material.base.pipeline_facts() is none

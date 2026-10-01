@@ -13,8 +13,8 @@ data into a graphics contract:
 
 1. [`triga-basics.fab`](triga-basics.fab) constructs vectors, matrices, and
    materials, then shows explicit validation and nullable construction.
-2. [`triga-transforms.fab`](triga-transforms.fab) exercises receiver methods
-   for transforms, quaternions, camera directions, bounds, and ray hits.
+2. [`triga-transforms.fab`](triga-transforms.fab) exercises native-vector
+   construction, matrix helpers, quaternions, camera directions, boxes, and ray hits.
 3. [`triga-geometry-attributes.fab`](triga-geometry-attributes.fab) constructs
    typed attributes and indexed/non-indexed geometry with draw ranges and
    groups, accumulates ColoredQuadMesh faces, and uses primitive generators.
@@ -31,7 +31,7 @@ contract conformance, and a three.js-shaped browser host demonstration.
 
 ```text
 exempla/
-  triga-basics.fab              # Vector3, Matrix4, and material basics
+  triga-basics.fab              # Native vectors, matrices, and material basics
   triga-geometry-attributes.fab # Typed attributes, indexed/non-indexed geometry, ColoredQuadMesh accumulation, primitive generators
   hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
@@ -44,7 +44,7 @@ exempla/
   triga-vertex-fragment-stub.fab # @vertex / @fragment annotation stubs
   triga-hello-voxel-shaders.fab  # @vertex + @fragment with layout + fragment facts
   triga-hello-voxel-pipeline.fab # Full Goal 01 pipeline facts
-  triga-box3-genus-spike.fab    # Box3 genus / method surface spike
+  triga-box3-genus-spike.fab    # Box free-function overlap oracle
   triga-normal-oracle.fab       # Surface-normal winding oracle: cylinder caps + sphere poles
   conformance/                  # Shader-contract conformance fixtures (WGSL/Naga lanes)
   threejs-host-demo/            # Browser fixture: Triga scene data via three.js
@@ -57,11 +57,11 @@ Language keyword exempla: sibling `examples/corpus/`.
 | Module | Typical exempla use |
 | --- | --- |
 | `triga:triga` | Math, materials, face codes |
-| `triga:geometry/data` | BufferGeometry constructors and geometry queries |
-| `triga:geometry/attribute` | BufferAttribute construction and payload queries |
+| `triga:geometry/data` | Geometry constructors and geometry queries |
+| `triga:geometry/attribute` | Attribute construction and payload queries |
 | `triga:geometry/layout` | Vertex format and step-mode facts |
 | `triga:geometry/batch` | Draw ranges, groups, and batch facts |
-| `triga:primitives/basic` | Mesh generators (`plane_geometry`, `box_wire_geometry`, …) |
+| `triga:primitives/basic` | Mesh generators (`plane`, `box_wire`, …) |
 | `triga:scene` | SceneStore / handles |
 
 Prefer the leaf that owns the type. The `triga:triga`, `triga:geometry`,

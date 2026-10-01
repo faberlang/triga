@@ -4,7 +4,7 @@
 # Depends on: triga:graph/object, triga:geometry/data,
 #             triga:material/{standard,basic,lit}
 #
-# Mesh is the primary renderable object (mirrors THREE.Mesh). It owns no
+# Mesh is the primary renderable object. It owns no
 # material-family type: the `material` field is a union of the three material
 # leaves' genera. Cross-module union CONSTRUCTION works (DS-A union probe,
 # 2026-08-01); union PATTERN-MATCHING (discerne/casu) does not — compiler
@@ -27,7 +27,7 @@ import from "triga:material/lit" lit
 # while the host owns resource and draw submission.
 @ public
 class Mesh {
-    var graph_object.Object3D base
-    var data.BufferGeometry geometry
-    var basic.MeshBasicMaterial ∪ lit.MeshPhongMaterial ∪ standard.MeshStandardMaterial material optional
+    var graph_object.Object base
+    var data.Geometry geometry
+    var basic.UnlitMaterial ∪ lit.PhongMaterial ∪ standard.StandardMaterial material optional
 }
