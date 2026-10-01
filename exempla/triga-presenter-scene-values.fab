@@ -1,0 +1,80 @@
++++
+locale = "en"
++++
+
+# Instructional mirror of host/fixtures/scene.fab value construction:
+# SceneStore (two translated meshes), AmbientLight, DirectionalLight,
+# PhongMaterial, PerspectiveCamera. No @shader stages and no Geometry dump —
+# those stay on the presenter path. Numbers here are scene parameters, not
+# library API.
+
+import from "triga:math" math
+
+import from "triga:graph/object" graph_object
+
+import from "triga:graph/camera" camera
+
+import from "triga:lighting/light" lighting
+
+import from "triga:material/base" material_base
+
+import from "triga:material/lit" lit
+
+import from "triga:scene" scene
+
+import from "triga:resource" resource
+
+fn camera_object() → graph_object.Object {
+    return graph_object.Object {position = [0.0, 1.8, 4.2] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-camera"}
+}
+
+fn sun_object() → graph_object.Object {
+    return graph_object.Object {position = [2.0, 4.0, 1.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-sun"}
+}
+
+fn ambient_object() → graph_object.Object {
+    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-ambient"}
+}
+
+main {
+    const resource.ResourceHandle geom ← resource.ResourceHandle {index = 0, generation = 0}
+    const resource.ResourceHandle mat ← resource.ResourceHandle {index = 0, generation = 0}
+
+    var scene.SceneStore store ← scene.scene_store()
+    const scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+    const scene.SceneHandle left ← store.insert(scene.scene_mesh("left", geom, mat))
+    const scene.SceneHandle right ← store.insert(scene.scene_mesh("right", geom, mat))
+    assert store.attach(left, root) panic "attach left"
+    assert store.attach(right, root) panic "attach right"
+    assert store.set_local_matrix(left, math.matrix_translation([-1.25, 0.0, 0.0] ↦ vector<f32, 3>)) panic "left translate"
+    assert store.set_local_matrix(right, math.matrix_translation([1.25, 0.0, 0.0] ↦ vector<f32, 3>)) panic "right translate"
+    assert store.refresh_world(root) panic "refresh world"
+
+    const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = camera_object(), fov = 42.0, aspect = 1.0, near = 0.1, far = 40.0}
+    const matrix<f32, [4, 4]> ∪ none view_proj_opt ← cam.view_projection([0.0, 1.8, 4.2] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    assert view_proj_opt not is none panic "view-projection"
+    const matrix<f32, [4, 4]> view_proj ← view_proj_opt
+
+    const scene.VisibleMeshes ∪ none visible_opt ← scene.visible_meshes(store, root, view_proj)
+    assert visible_opt not is none panic "visible_meshes"
+    const scene.VisibleMeshes visible ← visible_opt
+    assert visible.handles.length() ≡ 2 panic "two meshes"
+    assert visible.payloads.length() ≡ 2 panic "two TransformPayloads"
+    assert visible.payloads[0].values.length() ≡ 32 panic "left payload width"
+    assert visible.payloads[1].values.length() ≡ 32 panic "right payload width"
+
+    const lighting.AmbientLight ambient ← lighting.AmbientLight {base = lighting.Light {base = ambient_object(), color = math.Color {r = 1.0, g = 0.0, b = 1.0}, intensity = 0.55}}
+    assert ambient.base.base.name ≡ "presenter-ambient" panic "ambient name"
+    assert ambient.base.intensity ≡ (0.55 ∷ f32) panic "ambient intensity"
+
+    const lighting.DirectionalLight sun ← lighting.DirectionalLight {base = lighting.Light {base = sun_object(), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
+    assert sun.base.base.name ≡ "presenter-sun" panic "sun name"
+
+    const lit.PhongMaterial phong ← lit.PhongMaterial {base = material_base.material_from_name("phong"), color = math.Color {r = 0.15, g = 1.0, b = 1.0}, specular = math.Color {r = 1.0, g = 1.0, b = 1.0}, shininess = 32.0}
+    assert phong.color.g ≡ (1.0 ∷ f32) panic "phong tint"
+    assert phong.shininess ≡ (32.0 ∷ f32) panic "phong shininess"
+
+    print visible.handles.length()
+    print ambient.base.intensity
+    print phong.shininess
+}

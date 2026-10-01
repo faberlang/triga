@@ -100,3 +100,21 @@ test "PointLight defaults remain explicit carrier values" {
     assert point.distance ≡ (0.0 ∷ f32)
     assert point.decay ≡ (2.0 ∷ f32)
 }
+
+test "Presenter-shaped AmbientLight and DirectionalLight carriers" {
+    # Same abstract field shape as host/fixtures/scene.fab (scene params, not API).
+    const light.AmbientLight ambient ← light.AmbientLight {base = light.Light {base = spawn_light("presenter-ambient"), color = math.Color {r = 1.0, g = 0.0, b = 1.0}, intensity = 0.55}}
+    const light.DirectionalLight sun ← light.DirectionalLight {base = light.Light {base = spawn_light_at("presenter-sun", 2.0, 4.0, 1.0), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
+
+    assert ambient.base.base.name ≡ "presenter-ambient"
+    assert ambient.base.color.r ≡ (1.0 ∷ f32)
+    assert ambient.base.color.g ≡ (0.0 ∷ f32)
+    assert ambient.base.color.b ≡ (1.0 ∷ f32)
+    assert ambient.base.intensity ≡ (0.55 ∷ f32)
+    assert sun.base.base.name ≡ "presenter-sun"
+    assert sun.base.intensity ≡ (1.0 ∷ f32)
+    assert math.x(sun.base.base.position) ≡ (2.0 ∷ f32)
+    assert math.y(sun.base.base.position) ≡ (4.0 ∷ f32)
+    assert math.z(sun.base.base.position) ≡ (1.0 ∷ f32)
+    assert math.z(sun.target_position) ≡ (-1.0 ∷ f32)
+}

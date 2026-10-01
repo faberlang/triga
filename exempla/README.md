@@ -20,7 +20,10 @@ data into a graphics contract:
    groups, accumulates ColoredQuadMesh faces, and uses primitive generators.
 4. [`triga-scene-store.fab`](triga-scene-store.fab) moves from values to
    stable handles, parent/child relationships, and visible traversal.
-5. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) connects
+5. [`triga-presenter-scene-values.fab`](triga-presenter-scene-values.fab)
+   mirrors the thin presenter fixture: two SceneStore meshes, AmbientLight,
+   DirectionalLight, PhongMaterial, and a PerspectiveCamera (values only).
+6. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) connects
    geometry and transforms to explicit vertex, fragment, resource, and
    pipeline facts.
 
@@ -35,6 +38,7 @@ exempla/
   triga-geometry-attributes.fab # Typed attributes, indexed/non-indexed geometry, ColoredQuadMesh accumulation, primitive generators
   hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
+  triga-presenter-scene-values.fab # Presenter-shaped SceneStore + lights + Phong values
   triga-stage4-source-facts.fab # Stage 4 vertex-layout handoff (primitives.plane)
   triga-transforms.fab          # Vector, quaternion, and matrix operations
   triga-types-untested.fab      # Instantiation of previously untested genus types
