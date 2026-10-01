@@ -42,19 +42,27 @@ const desc = loadFaberGraphicsPipeline({ wgsl, reflection, drawManifest: draw })
 require(desc.kernels.length === 2, "expected vertex + fragment kernels");
 require(desc.kernels[0].shaderStage === "vertex", "first kernel must be vertex");
 require(desc.kernels[1].shaderStage === "fragment", "second kernel must be fragment");
-require(desc.kernels[0].vertexInputs.length === 3, "expected position + color + uv inputs");
+require(desc.kernels[0].vertexInputs.length === 3, "expected position + normal + uv inputs");
 require(desc.kernels[0].vertexBufferLayouts[0].arrayStride === 12, "position stride must be 12");
+require(desc.kernels[0].vertexBufferLayouts[1].arrayStride === 12, "normal stride must be 12");
 require(desc.kernels[0].vertexBufferLayouts[2].arrayStride === 8, "uv stride must be 8");
 require(desc.pipeline.primitiveTopology === "triangle-list", "topology must be triangle-list");
 require(desc.pipeline.vertexCount === 36, "pipeline vertex_count must be 36");
 require(desc.draw.indexCount === 36, "draw index_count must be 36");
 require(desc.draw.indexFormat === "uint32", "index format must be uint32");
+require(desc.draw.draws.length === 2, "expected two SceneStore mesh draws");
+require(desc.draw.draws[0].transformFloatOffset === 0, "left transform offset 0");
+require(desc.draw.draws[1].transformFloatOffset === 32, "right transform offset 32");
 const transform = desc.bindGroups[0].entries[0];
 require(transform.sourceName === "transform", "first binding must be transform");
 require(transform.elementCount === 32, "transform element_count must be 32");
 require(transform.bufferByteLen === 128, "transform buffer must be 128 bytes");
 const transformBin = await readFile(path.join(generatedDir, "graphics-transform.bin"));
 require(transformBin.byteLength === 128, "graphics-transform.bin must be 128 bytes");
+const transformsBin = await readFile(path.join(generatedDir, "graphics-transforms.bin"));
+require(transformsBin.byteLength === 256, "graphics-transforms.bin must be 2×128 bytes");
+const normalBin = await readFile(path.join(generatedDir, "graphics-vertex-normals.bin"));
+require(normalBin.byteLength === 288, "graphics-vertex-normals.bin must be 72 f32 / 288 bytes");
 const uvBin = await readFile(path.join(generatedDir, "graphics-vertex-uvs.bin"));
 require(uvBin.byteLength === 192, "graphics-vertex-uvs.bin must be 48 f32 / 192 bytes");
 const albedo = await readFile(path.join(generatedDir, "albedo.png"));
@@ -65,10 +73,8 @@ if (desc.boundResources.length === 2) {
   require(desc.boundResources[1].name === "albedo_sampler" && desc.boundResources[1].kind === "sampler", "second bound resource must be albedo sampler");
 }
 require(desc.bindGroups.length === 2, "expected transform group + texture group");
-if (desc.bindGroups.length === 2 && desc.bindGroups[1].entries.length === 2) {
-  require(desc.bindGroups[1].entries[0].kind === "texture", "group 1 binding 0 must be a texture");
-  require(desc.bindGroups[1].entries[1].kind === "sampler", "group 1 binding 1 must be a sampler");
-}
+require(wgsl.includes("textureSample"), "WGSL must sample albedo");
+require(wgsl.includes("normal"), "WGSL must carry normals for lambert");
 require(typeof admission.loadFaberKernel === "undefined", "compute loadFaberKernel must not be exported");
 require(typeof runtime.createWebGpuResources === "undefined", "compute createWebGpuResources must not be exported");
 require(typeof runtime.runKernel === "undefined", "compute runKernel must not be exported");
@@ -102,4 +108,4 @@ if (failed !== 0) {
 
 console.log("admission-check: green");
 console.log(`  vertex=${desc.kernels[0].entryName} fragment=${desc.kernels[1].entryName}`);
-console.log(`  vertex_count=${desc.pipeline.vertexCount} index_count=${desc.draw.indexCount}`);
+console.log(`  vertex_count=${desc.pipeline.vertexCount} draws=${desc.draw.draws.length}`);

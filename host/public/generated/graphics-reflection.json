@@ -5,7 +5,7 @@
     {
       "provenance": {
         "kind": "source-function",
-        "source_def": 4108
+        "source_def": 4111
       },
       "entry_name": "presenter_vertex",
       "shader_stage": "vertex",
@@ -39,7 +39,7 @@
           "stride_bytes": 12
         },
         {
-          "source_name": "color",
+          "source_name": "normal",
           "location": 1,
           "format": "float32x3",
           "step_mode": "vertex",
@@ -330,10 +330,10 @@
                   "shader_location": 1,
                   "format": "float32x3",
                   "offset": 0,
-                  "source_name": "color"
+                  "source_name": "normal"
                 }
               ],
-              "source_name": "color"
+              "source_name": "normal"
             },
             {
               "buffer_index": 2,
@@ -401,7 +401,7 @@
     {
       "provenance": {
         "kind": "source-function",
-        "source_def": 4109
+        "source_def": 4112
       },
       "entry_name": "presenter_fragment",
       "shader_stage": "fragment",

@@ -29,20 +29,22 @@ async function main() {
     wgslResponse,
     reflectionResponse,
     positionsResponse,
-    colorsResponse,
+    normalsResponse,
     uvsResponse,
     indicesResponse,
     transformResponse,
+    transformsResponse,
     albedoResponse,
     drawResponse,
   ] = await Promise.all([
     fetch("./generated/graphics.wgsl"),
     fetch("./generated/graphics-reflection.json"),
     fetch("./generated/graphics-vertex-positions.bin"),
-    fetch("./generated/graphics-vertex-colors.bin"),
+    fetch("./generated/graphics-vertex-normals.bin"),
     fetch("./generated/graphics-vertex-uvs.bin"),
     fetch("./generated/graphics-indices.bin"),
     fetch("./generated/graphics-transform.bin"),
+    fetch("./generated/graphics-transforms.bin"),
     fetch("./generated/albedo.png"),
     fetch("./generated/draw.json"),
   ]);
@@ -51,10 +53,11 @@ async function main() {
     ["wgsl", wgslResponse],
     ["reflection", reflectionResponse],
     ["positions", positionsResponse],
-    ["colors", colorsResponse],
+    ["normals", normalsResponse],
     ["uvs", uvsResponse],
     ["indices", indicesResponse],
     ["transform", transformResponse],
+    ["transforms", transformsResponse],
     ["albedo", albedoResponse],
     ["draw", drawResponse],
   ]) {
@@ -97,10 +100,19 @@ async function main() {
   sizeCanvas(canvas);
 
   const albedoBitmap = await createImageBitmap(await albedoResponse.blob());
+  const transformPackets = new Float32Array(await transformsResponse.arrayBuffer());
+  if (transformPackets.length < 64) {
+    throw new FaberKernelContractError(
+      "transforms",
+      `expected at least 64 floats (2 TransformPayloads), got ${transformPackets.length}`,
+      "artifact-fetch",
+    );
+  }
+
   const payloads = {
     vertexBuffers: [
       { slot: 0, data: await positionsResponse.arrayBuffer() },
-      { slot: 1, data: await colorsResponse.arrayBuffer() },
+      { slot: 1, data: await normalsResponse.arrayBuffer() },
       { slot: 2, data: await uvsResponse.arrayBuffer() },
     ],
     indexData: new Uint32Array(await indicesResponse.arrayBuffer()),
@@ -116,7 +128,7 @@ async function main() {
   const frameState = { submittedFrameCount: 0 };
 
   const draw = () => {
-    runGraphicsFrame(device, context, resources, descriptor, frameState);
+    runGraphicsFrame(device, context, resources, descriptor, frameState, { transformPackets });
     elements.frames.textContent = String(frameState.submittedFrameCount);
   };
 
@@ -135,6 +147,7 @@ async function main() {
     status: "ready",
     kind: "ok",
     submittedFrameCount: frameState.submittedFrameCount,
+    drawCount: descriptor.draw.draws?.length ?? 1,
     vertexCount: descriptor.pipeline.vertexCount,
     indexFormat: descriptor.draw.indexFormat,
     visibleCanvas: canvas.style.display !== "none" && canvas.width > 0 && canvas.height > 0,

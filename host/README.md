@@ -4,14 +4,16 @@ Thin browser WebGPU presenter for Triga. Admits radix `wgsl-text` reflection
 and draws to a visible canvas. It is not the compute-first WebGPU product.
 
 ```bash
-./scripta/host check    # emit host/fixtures/box.fab, write bins, admit
+./scripta/host check    # emit host/fixtures/scene.fab, write bins, admit
 ./scripta/host serve    # http://127.0.0.1:8788/
 ```
 
 `generate` runs `faber emit -t wgsl-text` and `--reflection` on
-`fixtures/box.fab`, writes vertex bins from `src/primitives/basic.fab`
-`box(1,1,1)`, and writes a 32-float / 128-byte `TransformPayload` from the
-fixture's `PerspectiveCamera` (same `matrix_look_at` / `matrix_perspective`
-formulas as `triga:math`). Color is remapped face normals. UVs come from
-`box()`. `albedo.png` is an 8×8 checkerboard the fragment samples. `faber
-run` cannot dump Geometry or matrices yet (MIR vector-method residual).
+`fixtures/scene.fab`, writes shared `box(1,1,1)` vertex bins (position,
+normal, uv), and writes two 32-float `TransformPayload`s for the SceneStore
+left/right mesh nodes (same camera / translation formulas as the fixture).
+`albedo.png` is an 8×8 checkerboard; the fragment lamberts it with a
+direction matching the fixture’s `DirectionalLight`. `faber run` cannot dump
+Geometry or matrices yet (MIR vector-method residual).
+
+The older single-mesh `fixtures/box.fab` remains as a smaller emit smoke.

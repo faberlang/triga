@@ -1,1 +1,1 @@
-{"index_format": "uint32", "instance_count": 1, "base_vertex": 0, "first_index": 0, "index_count": 36}
+{"index_format": "uint32", "instance_count": 1, "base_vertex": 0, "first_index": 0, "index_count": 36, "draws": [{"instance_count": 1, "base_vertex": 0, "first_index": 0, "index_count": 36, "transform_float_offset": 0}, {"instance_count": 1, "base_vertex": 0, "first_index": 0, "index_count": 36, "transform_float_offset": 32}]}

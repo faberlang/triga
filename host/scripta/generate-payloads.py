@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
-"""Write presenter bins from `triga:primitives/basic` `box(1,1,1)`.
+"""Write presenter bins for the SceneStore two-box fixture.
 
 `faber run` cannot import `triga:geometry/data` (MIR vector-method residual),
-so this evaluates the `box()` `assemble_geometry` lists from source. Colors
-are those face normals remapped from [-1, 1] to [0, 1]. UVs are the box()
-list (48 floats). Transform is the 32-float / 128-byte `TransformPayload`
-(identity model, PerspectiveCamera view-projection). `albedo.png` is an
-8×8 checkerboard for the bound sampler. Python evaluates the same
-`matrix_look_at` / `matrix_perspective` formulas as `triga:math`; `faber
-run` cannot import those modules yet.
+so this evaluates `box()` lists from source and the same camera / translation
+matrices as `host/fixtures/scene.fab`. Two TransformPayloads (left/right)
+match `visible_meshes` packet order after refresh_world.
 """
 
 from __future__ import annotations
@@ -68,6 +64,15 @@ def mat4_identity():
     ]
 
 
+def mat4_translation(offset):
+    return [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        offset[0], offset[1], offset[2], 1.0,
+    ]
+
+
 def mat4_mul(a, b):
     out = [0.0] * 16
     for col in range(4):
@@ -103,17 +108,39 @@ def mat4_perspective(fov_y_degrees, aspect, near, far):
     ]
 
 
-def generate_transform(output_dir: Path) -> None:
-    # Same camera as host/fixtures/box.fab: PerspectiveCamera fov 42,
-    # aspect 1, near 0.1, far 20, eye (1.8, 1.5, 2.6) looking at origin.
-    model = mat4_identity()
-    view = mat4_look_at((1.8, 1.5, 2.6), (0.0, 0.0, 0.0), (0.0, 1.0, 0.0))
-    projection = mat4_perspective(42.0, 1.0, 0.1, 20.0)
+def transform_payload(model, view_proj):
+    return model + view_proj
+
+
+def generate_transforms(output_dir: Path) -> list[dict]:
+    # Matches host/fixtures/scene.fab camera + left/right translations.
+    eye = (0.0, 1.8, 4.2)
+    view = mat4_look_at(eye, (0.0, 0.0, 0.0), (0.0, 1.0, 0.0))
+    projection = mat4_perspective(42.0, 1.0, 0.1, 40.0)
     view_proj = mat4_mul(projection, view)
-    values = model + view_proj
-    if len(values) != 32:
-        raise SystemExit(f"TransformPayload must be 32 floats, got {len(values)}")
-    write_f32_array(output_dir / "graphics-transform.bin", values)
+    left_model = mat4_translation((-1.25, 0.0, 0.0))
+    right_model = mat4_translation((1.25, 0.0, 0.0))
+    payloads = [
+        transform_payload(left_model, view_proj),
+        transform_payload(right_model, view_proj),
+    ]
+    flat: list[float] = []
+    draws = []
+    for index, values in enumerate(payloads):
+        if len(values) != 32:
+            raise SystemExit(f"TransformPayload must be 32 floats, got {len(values)}")
+        draws.append({
+            "instance_count": 1,
+            "base_vertex": 0,
+            "first_index": 0,
+            "index_count": 36,
+            "transform_float_offset": index * 32,
+        })
+        flat.extend(values)
+    write_f32_array(output_dir / "graphics-transforms.bin", flat)
+    # First payload also at the legacy single-buffer name for admission size checks.
+    write_f32_array(output_dir / "graphics-transform.bin", payloads[0])
+    return draws
 
 
 def eval_box_list(source: str, x: float, y: float, z: float):
@@ -130,23 +157,15 @@ def load_box_mesh(basic_fab: Path, width: float = 1.0, height: float = 1.0, dept
     positions = [float(value) for value in eval_box_list(match.group(1), x, y, z)]
     normals = [float(value) for value in eval_box_list(match.group(2), x, y, z)]
     indices = [int(value) for value in eval_box_list(match.group(4), x, y, z)]
-    if len(positions) != 72:
-        raise SystemExit(f"expected 72 position floats from box(), got {len(positions)}")
-    if len(normals) != 72:
-        raise SystemExit(f"expected 72 normal floats from box(), got {len(normals)}")
-    if len(indices) != 36:
-        raise SystemExit(f"expected 36 indices from box(), got {len(indices)}")
+    uvs = [float(value) for value in eval_box_list(match.group(3), x, y, z)]
+    if len(positions) != 72 or len(normals) != 72 or len(uvs) != 48 or len(indices) != 36:
+        raise SystemExit("unexpected box() list lengths")
     if positions[:3] != [-0.5, -0.5, 0.5]:
         raise SystemExit(f"unexpected box(1,1,1) first vertex: {positions[:3]}")
-    uvs = [float(value) for value in eval_box_list(match.group(3), x, y, z)]
-    if len(uvs) != 48:
-        raise SystemExit(f"expected 48 uv floats from box(), got {len(uvs)}")
-    colors = [(value + 1.0) * 0.5 for value in normals]
-    return positions, colors, uvs, indices
+    return positions, normals, uvs, indices
 
 
 def write_checkerboard_png(path: Path, size: int = 8, tile: int = 2) -> None:
-    """Write an 8-bit RGBA PNG. Stdlib only; no image library."""
     rows = bytearray()
     for y in range(size):
         rows.append(0)
@@ -175,13 +194,13 @@ def main() -> None:
     output_dir = Path(sys.argv[1])
     basic_fab = Path(sys.argv[2])
     output_dir.mkdir(parents=True, exist_ok=True)
-    positions, colors, uvs, indices = load_box_mesh(basic_fab)
+    positions, normals, uvs, indices = load_box_mesh(basic_fab)
+    draws = generate_transforms(output_dir)
 
     write_f32_array(output_dir / "graphics-vertex-positions.bin", positions)
-    write_f32_array(output_dir / "graphics-vertex-colors.bin", colors)
+    write_f32_array(output_dir / "graphics-vertex-normals.bin", normals)
     write_f32_array(output_dir / "graphics-vertex-uvs.bin", uvs)
     write_u32_array(output_dir / "graphics-indices.bin", indices)
-    generate_transform(output_dir)
     write_checkerboard_png(output_dir / "albedo.png")
     (output_dir / "draw.json").write_text(
         json.dumps({
@@ -190,17 +209,22 @@ def main() -> None:
             "base_vertex": 0,
             "first_index": 0,
             "index_count": 36,
+            "draws": draws,
         })
         + "\n"
     )
 
-    print(f"generated {output_dir / 'graphics-vertex-positions.bin'}")
-    print(f"generated {output_dir / 'graphics-vertex-colors.bin'}")
-    print(f"generated {output_dir / 'graphics-vertex-uvs.bin'}")
-    print(f"generated {output_dir / 'graphics-indices.bin'}")
-    print(f"generated {output_dir / 'graphics-transform.bin'}")
-    print(f"generated {output_dir / 'albedo.png'}")
-    print(f"generated {output_dir / 'draw.json'}")
+    for name in (
+        "graphics-vertex-positions.bin",
+        "graphics-vertex-normals.bin",
+        "graphics-vertex-uvs.bin",
+        "graphics-indices.bin",
+        "graphics-transform.bin",
+        "graphics-transforms.bin",
+        "albedo.png",
+        "draw.json",
+    ):
+        print(f"generated {output_dir / name}")
 
 
 if __name__ == "__main__":

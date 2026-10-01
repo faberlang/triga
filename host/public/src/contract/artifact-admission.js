@@ -681,27 +681,67 @@ function parseDrawManifest(manifest, pipelineVertexCount) {
   const indexFormat = expectString(obj.index_format, "drawManifest.index_format");
   expectOneOf(indexFormat, INDEX_FORMATS, "drawManifest.index_format");
 
-  const instanceCount = expectPositiveInteger(
-    obj.instance_count,
-    "drawManifest.instance_count",
-  );
-  const baseVertex = expectNonNegativeInteger(obj.base_vertex, "drawManifest.base_vertex");
-  const firstIndex = expectNonNegativeInteger(obj.first_index, "drawManifest.first_index");
-  const indexCount = expectPositiveInteger(obj.index_count, "drawManifest.index_count");
-
-  if (baseVertex >= pipelineVertexCount) {
-    throw new FaberKernelContractError(
-      "drawManifest.base_vertex",
-      `base_vertex ${baseVertex} must be less than pipeline vertex_count ${pipelineVertexCount}`,
+  const rawDraws = obj.draws;
+  const draws = [];
+  if (Array.isArray(rawDraws) && rawDraws.length > 0) {
+    for (let i = 0; i < rawDraws.length; i += 1) {
+      draws.push(parseDrawEntry(rawDraws[i], pipelineVertexCount, `drawManifest.draws[${i}]`));
+    }
+  } else {
+    draws.push(
+      parseDrawEntry(
+        {
+          instance_count: obj.instance_count,
+          base_vertex: obj.base_vertex,
+          first_index: obj.first_index,
+          index_count: obj.index_count,
+          transform_float_offset: 0,
+        },
+        pipelineVertexCount,
+        "drawManifest",
+      ),
     );
   }
 
+  const primary = draws[0];
   return Object.freeze({
     indexFormat,
+    instanceCount: primary.instanceCount,
+    baseVertex: primary.baseVertex,
+    firstIndex: primary.firstIndex,
+    indexCount: primary.indexCount,
+    draws: Object.freeze(draws),
+  });
+}
+
+function parseDrawEntry(entry, pipelineVertexCount, path) {
+  const obj = expectObject(entry, path);
+  const instanceCount = expectPositiveInteger(obj.instance_count, `${path}.instance_count`);
+  const baseVertex = expectNonNegativeInteger(obj.base_vertex, `${path}.base_vertex`);
+  const firstIndex = expectNonNegativeInteger(obj.first_index, `${path}.first_index`);
+  const indexCount = expectPositiveInteger(obj.index_count, `${path}.index_count`);
+  const transformFloatOffset = expectNonNegativeInteger(
+    obj.transform_float_offset ?? 0,
+    `${path}.transform_float_offset`,
+  );
+  if (baseVertex >= pipelineVertexCount) {
+    throw new FaberKernelContractError(
+      `${path}.base_vertex`,
+      `base_vertex ${baseVertex} must be less than pipeline vertex_count ${pipelineVertexCount}`,
+    );
+  }
+  if (transformFloatOffset % 32 !== 0) {
+    throw new FaberKernelContractError(
+      `${path}.transform_float_offset`,
+      `transform_float_offset ${transformFloatOffset} must be a multiple of 32`,
+    );
+  }
+  return Object.freeze({
     instanceCount,
     baseVertex,
     firstIndex,
     indexCount,
+    transformFloatOffset,
   });
 }
 

@@ -123,41 +123,74 @@ export function createGraphicsResources(device, descriptor, payloads, canvasCont
 export function runGraphicsFrame(device, context, resources, descriptor, frameState, options = {}) {
   const textureView = context.getCurrentTexture().createView();
   const clearValue = options.clearValue ?? { r: 0.12, g: 0.13, b: 0.15, a: 1.0 };
-
-  const commandEncoder = device.createCommandEncoder();
-  const renderPass = commandEncoder.beginRenderPass({
-    colorAttachments: [msaaColorAttachment(resources, textureView, clearValue, "clear")],
-    depthStencilAttachment: {
-      view: resources.depthTexture.createView(),
-      depthClearValue: 1.0,
-      depthLoadOp: "clear",
-      depthStoreOp: "store",
+  const draws = descriptor.draw.draws ?? [
+    {
+      firstIndex: descriptor.draw.firstIndex,
+      indexCount: descriptor.draw.indexCount,
+      instanceCount: descriptor.draw.instanceCount,
+      baseVertex: descriptor.draw.baseVertex,
+      transformFloatOffset: 0,
     },
-  });
+  ];
+  const transformBuffer = findStorageBuffer(resources, descriptor, "transform");
+  const transformPackets = options.transformPackets;
 
-  renderPass.setPipeline(resources.pipeline);
-  for (const vb of resources.vertexBuffers) {
-    renderPass.setVertexBuffer(vb.slot, vb.buffer);
-  }
-  renderPass.setIndexBuffer(resources.indexBuffer, descriptor.draw.indexFormat, 0);
-  for (const group of resources.bindGroups) {
-    renderPass.setBindGroup(group.bindGroupIndex, group.bindGroup);
-  }
+  for (let drawIndex = 0; drawIndex < draws.length; drawIndex += 1) {
+    const draw = draws[drawIndex];
+    if (draw.firstIndex + draw.indexCount > resources.indexCount) {
+      throw new FaberKernelContractError(
+        "drawManifest",
+        `first_index ${draw.firstIndex} + index_count ${draw.indexCount} exceeds buffer index count ${resources.indexCount}`,
+      );
+    }
+    if (transformBuffer && transformPackets) {
+      const floatOffset = draw.transformFloatOffset ?? 0;
+      if (floatOffset + 32 > transformPackets.length) {
+        throw new FaberKernelContractError(
+          "transformPackets",
+          `draw ${drawIndex} transform_float_offset ${floatOffset} exceeds packet length ${transformPackets.length}`,
+        );
+      }
+      device.queue.writeBuffer(
+        transformBuffer,
+        0,
+        transformPackets.buffer,
+        transformPackets.byteOffset + floatOffset * 4,
+        128,
+      );
+    }
 
-  const firstIndex = descriptor.draw.firstIndex;
-  const indexCount = descriptor.draw.indexCount;
-  const instanceCount = descriptor.draw.instanceCount;
-  const baseVertex = descriptor.draw.baseVertex;
-  if (firstIndex + indexCount > resources.indexCount) {
-    throw new FaberKernelContractError(
-      "drawManifest",
-      `first_index ${firstIndex} + index_count ${indexCount} exceeds buffer index count ${resources.indexCount}`,
+    const loadOp = drawIndex === 0 ? "clear" : "load";
+    const commandEncoder = device.createCommandEncoder();
+    const renderPass = commandEncoder.beginRenderPass({
+      colorAttachments: [msaaColorAttachment(resources, textureView, clearValue, loadOp)],
+      depthStencilAttachment: {
+        view: resources.depthTexture.createView(),
+        depthClearValue: 1.0,
+        depthLoadOp: loadOp,
+        depthStoreOp: "store",
+      },
+    });
+
+    renderPass.setPipeline(resources.pipeline);
+    for (const vb of resources.vertexBuffers) {
+      renderPass.setVertexBuffer(vb.slot, vb.buffer);
+    }
+    renderPass.setIndexBuffer(resources.indexBuffer, descriptor.draw.indexFormat, 0);
+    for (const group of resources.bindGroups) {
+      renderPass.setBindGroup(group.bindGroupIndex, group.bindGroup);
+    }
+    renderPass.drawIndexed(
+      draw.indexCount,
+      draw.instanceCount,
+      draw.firstIndex,
+      draw.baseVertex,
+      0,
     );
+    renderPass.end();
+    device.queue.submit([commandEncoder.finish()]);
   }
 
-  renderPass.drawIndexed(indexCount, instanceCount, firstIndex, baseVertex, 0);
-  renderPass.end();
-  device.queue.submit([commandEncoder.finish()]);
   frameState.submittedFrameCount = (frameState.submittedFrameCount ?? 0) + 1;
 }
 
@@ -189,6 +222,17 @@ export function onDeviceLost(device, callback) {
       }),
     );
   });
+}
+
+function findStorageBuffer(resources, descriptor, sourceName) {
+  for (const group of descriptor.bindGroups) {
+    for (const entry of group.entries) {
+      if (entry.sourceName === sourceName) {
+        return resources.storageBuffers.get(entry.resourceIndex)?.buffer ?? null;
+      }
+    }
+  }
+  return null;
 }
 
 function msaaColorAttachment(resources, canvasView, clearValue, loadOp) {

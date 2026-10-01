@@ -6,7 +6,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HOST="$ROOT/host"
 PUBLIC="$HOST/public"
 GENERATED="$PUBLIC/generated"
-FIXTURE="$HOST/fixtures/box.fab"
+FIXTURE="$HOST/fixtures/scene.fab"
 PORT="${TRIGA_HOST_PORT:-8788}"
 export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
 
@@ -15,7 +15,7 @@ usage() {
 usage: ./scripta/host <generate|check|serve>
 
 Commands:
-  generate  Emit WGSL + reflection from host/fixtures/box.fab, dump the mesh, write bins
+  generate  Emit WGSL + reflection from host/fixtures/scene.fab, dump the mesh, write bins
   check     Generate, then admit the graphics artifacts
   serve     Generate, then serve host/public
 USAGE
