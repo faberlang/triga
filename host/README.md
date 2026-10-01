@@ -12,5 +12,6 @@ and draws to a visible canvas. It is not the compute-first WebGPU product.
 `fixtures/box.fab`, writes vertex bins from `src/primitives/basic.fab`
 `box(1,1,1)`, and writes a 32-float / 128-byte `TransformPayload` from the
 fixture's `PerspectiveCamera` (same `matrix_look_at` / `matrix_perspective`
-formulas as `triga:math`). Color is remapped face normals. `faber run`
-cannot dump Geometry or matrices yet (MIR vector-method residual).
+formulas as `triga:math`). Color is remapped face normals. UVs come from
+`box()`. `albedo.png` is an 8×8 checkerboard the fragment samples. `faber
+run` cannot dump Geometry or matrices yet (MIR vector-method residual).

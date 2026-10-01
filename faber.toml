@@ -13,5 +13,9 @@ source = "src"
 kind = "lib"
 targets = ["rust", "ts"]
 
+# Faber emit -t wgsl-text reads this table from imported libraries.
+[target.wgsl-text]
+bindings = "bindings/wgsl.toml"
+
 [locale]
 locale = "en"

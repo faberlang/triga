@@ -4,9 +4,11 @@ locale = "en"
 
 # Triga presenter fixture. `basic.box` is the typed mesh. A
 # `PerspectiveCamera` plus identity model write the 32-float
-# `TransformPayload`. Empty `@ vertex` / `@ fragment` bodies keep the radix
-# graphics emit. `faber run` cannot dump Geometry or matrices yet — importing
-# `triga:geometry/data` or `triga:math` hits the named MIR vector-method residual.
+# `TransformPayload`. Empty `@ vertex` keeps the radix transform
+# template and passthroughs color + uv. The `@ fragment` body samples
+# a bound `Texture2D` / `Sampler`. `faber run` cannot dump Geometry or
+# matrices yet — importing `triga:geometry/data` or `triga:math` hits
+# the named MIR vector-method residual.
 
 import from "triga:geometry/data" data
 
@@ -17,6 +19,8 @@ import from "triga:math" math
 import from "triga:graph/object" graph_object
 
 import from "triga:graph/camera" camera
+
+import from "triga:shader" shader
 
 @ shader_contract "vertex_layout"
 fn vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {
@@ -43,12 +47,19 @@ fn resource_binding_matches(int group, int binding, int kind_code, int role_code
     return true
 }
 
+@ shader_contract "bound_resource_binding"
+fn bound_matches(int group, int binding, string source_name) → bool {
+    return true
+}
+
 @ vertex { }
 fn presenter_vertex() → void {
 }
 
 @ fragment { }
-fn presenter_fragment() → void {
+fn presenter_fragment(shader.Texture2D albedo, shader.Sampler albedo_sampler) → void {
+    const vector<f32, 4> sampled ← shader.sample(albedo, albedo_sampler, uv)
+    out_color ← sampled
 }
 
 fn presenter_camera_object() → graph_object.Object {
@@ -68,8 +79,12 @@ main {
 
     assert vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1) panic "position input layout"
     assert vertex_layout_matches(0, 1, "color", 1, 3, 0, 12, 1, 2) panic "color input layout"
+    assert vertex_layout_matches(0, 2, "uv", 2, 2, 0, 8, 1, 4) panic "uv input layout"
     assert varying_matches("color", 0, 3, 1, 2) panic "vertex-to-fragment color varying"
+    assert varying_matches("uv", 1, 2, 1, 4) panic "vertex-to-fragment uv varying"
     assert fragment_output_matches(0, 4, 2) panic "fragment color output"
     assert pipeline_matches(1, 1, 1, 1, 36) panic "first graphics pipeline"
     assert resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3) panic "transform resource"
+    assert bound_matches(1, 0, "albedo") panic "albedo texture at group 1 binding 0"
+    assert bound_matches(1, 1, "albedo_sampler") panic "albedo sampler at group 1 binding 1"
 }

@@ -42,8 +42,9 @@ const desc = loadFaberGraphicsPipeline({ wgsl, reflection, drawManifest: draw })
 require(desc.kernels.length === 2, "expected vertex + fragment kernels");
 require(desc.kernels[0].shaderStage === "vertex", "first kernel must be vertex");
 require(desc.kernels[1].shaderStage === "fragment", "second kernel must be fragment");
-require(desc.kernels[0].vertexInputs.length === 2, "expected position + color inputs");
+require(desc.kernels[0].vertexInputs.length === 3, "expected position + color + uv inputs");
 require(desc.kernels[0].vertexBufferLayouts[0].arrayStride === 12, "position stride must be 12");
+require(desc.kernels[0].vertexBufferLayouts[2].arrayStride === 8, "uv stride must be 8");
 require(desc.pipeline.primitiveTopology === "triangle-list", "topology must be triangle-list");
 require(desc.pipeline.vertexCount === 36, "pipeline vertex_count must be 36");
 require(desc.draw.indexCount === 36, "draw index_count must be 36");
@@ -54,6 +55,20 @@ require(transform.elementCount === 32, "transform element_count must be 32");
 require(transform.bufferByteLen === 128, "transform buffer must be 128 bytes");
 const transformBin = await readFile(path.join(generatedDir, "graphics-transform.bin"));
 require(transformBin.byteLength === 128, "graphics-transform.bin must be 128 bytes");
+const uvBin = await readFile(path.join(generatedDir, "graphics-vertex-uvs.bin"));
+require(uvBin.byteLength === 192, "graphics-vertex-uvs.bin must be 48 f32 / 192 bytes");
+const albedo = await readFile(path.join(generatedDir, "albedo.png"));
+require(albedo.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])), "albedo.png must be a PNG");
+require(desc.boundResources.length === 2, "expected albedo texture + sampler bound resources");
+if (desc.boundResources.length === 2) {
+  require(desc.boundResources[0].name === "albedo" && desc.boundResources[0].kind === "texture", "first bound resource must be albedo texture");
+  require(desc.boundResources[1].name === "albedo_sampler" && desc.boundResources[1].kind === "sampler", "second bound resource must be albedo sampler");
+}
+require(desc.bindGroups.length === 2, "expected transform group + texture group");
+if (desc.bindGroups.length === 2 && desc.bindGroups[1].entries.length === 2) {
+  require(desc.bindGroups[1].entries[0].kind === "texture", "group 1 binding 0 must be a texture");
+  require(desc.bindGroups[1].entries[1].kind === "sampler", "group 1 binding 1 must be a sampler");
+}
 require(typeof admission.loadFaberKernel === "undefined", "compute loadFaberKernel must not be exported");
 require(typeof runtime.createWebGpuResources === "undefined", "compute createWebGpuResources must not be exported");
 require(typeof runtime.runKernel === "undefined", "compute runKernel must not be exported");

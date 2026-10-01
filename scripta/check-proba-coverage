@@ -29,7 +29,7 @@ ROOT = Path(sys.argv[1]).resolve()
 SRC = ROOT / "src"
 SCORECARD = ROOT / "proof" / "coverage-scorecard.json"
 INVENTORY = ROOT / "proof" / "inventory" / "triga-inventory.json"
-EXPECTED_MODULE_COUNT = 26
+EXPECTED_MODULE_COUNT = 27
 EXPECTED_TIER = "executed-proba"
 
 CASE_RE = re.compile(r'^\s*test\s+"')

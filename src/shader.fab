@@ -1,0 +1,26 @@
+# Shader vocabulary Triga owns and Radix only spells.
+#
+# Public import: import from "triga:shader" shader
+#
+# Opaque resource types and bound functions. The WGSL spellings live in
+# bindings/wgsl.toml (`[target.wgsl-text]`). Radix emits the manifest text
+# and does not learn these names.
+
+# GPU-facing 2D texture handle. Not `TextureDescriptor` in material/base
+# (that is the CPU-side seed). Mapped to `texture_2d<f32>` in the WGSL
+# manifest.
+@ public
+class Texture2D {
+}
+
+# GPU-facing sampler handle. Mapped to `sampler` in the WGSL manifest.
+@ public
+class Sampler {
+}
+
+# Bound sampling function. The WGSL spelling is `textureSample`. Faber still
+# requires a return on a typed `fn`; this dummy is not the emit body.
+@ public
+fn sample(Texture2D texture, Sampler sampler, vector<f32, 2> uv) → vector<f32, 4> {
+    return [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+}

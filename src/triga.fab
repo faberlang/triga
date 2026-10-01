@@ -19,6 +19,7 @@
 #   triga:primitives/basic mesh generators (procedural/terrain/voxel planned)
 #   triga:scene           scene store + identity
 #   triga:resource        resource handle lifecycle free functions
+#   triga:shader          Texture2D, Sampler, bound sample (WGSL manifest)
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 

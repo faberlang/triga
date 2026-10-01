@@ -3,11 +3,13 @@
 struct PresenterVertexInput {
   @location(0) position: vec3<f32>,
   @location(1) color: vec3<f32>,
+  @location(2) uv: vec2<f32>,
 }
 
 struct PresenterVertexOutput {
   @builtin(position) position: vec4<f32>,
   @location(0) @interpolate(perspective) color: vec3<f32>,
+  @location(1) @interpolate(perspective) uv: vec2<f32>,
 }
 
 @vertex
@@ -27,11 +29,16 @@ fn presenter_vertex(input: PresenterVertexInput) -> PresenterVertexOutput {
   );
   out.position = view_proj * model * vec4<f32>(input.position, 1.0);
   out.color = input.color;
+  out.uv = input.uv;
   return out;
 }
 
+@group(1) @binding(0) var albedo: texture_2d<f32>;
+@group(1) @binding(1) var albedo_sampler: sampler;
+
 struct PresenterFragmentInput {
   @location(0) @interpolate(perspective) color: vec3<f32>,
+  @location(1) @interpolate(perspective) uv: vec2<f32>,
 }
 
 struct PresenterFragmentOutput {
@@ -41,7 +48,11 @@ struct PresenterFragmentOutput {
 @fragment
 fn presenter_fragment(input: PresenterFragmentInput) -> PresenterFragmentOutput {
   var out: PresenterFragmentOutput;
-  out.color = vec4<f32>(input.color, 1.0);
+  var sampled: vec4<f32>;
+  var tmp0: vec4<f32>;
+  tmp0 = textureSample(albedo, albedo_sampler, input.uv);
+  sampled = tmp0;
+  out.color = sampled;
   return out;
 }
 

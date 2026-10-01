@@ -1,0 +1,12 @@
+# Co-located coverage for the WGSL-bound shader vocabulary.
+# Construction only. Stage-body `sample` lives on the presenter fixture.
+import from "triga:shader" shader
+
+describe "shader resource types" {
+    test "Texture2D and Sampler are constructible opaque handles" {
+        const shader.Texture2D texture ← shader.Texture2D {}
+        const shader.Sampler sampler ← shader.Sampler {}
+        assert texture is shader.Texture2D
+        assert sampler is shader.Sampler
+    }
+}

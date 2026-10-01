@@ -47,9 +47,11 @@ export function createGraphicsResources(device, descriptor, payloads, canvasCont
 
   const shaderModule = device.createShaderModule({ code: descriptor.wgsl });
   const storageBuffers = createStorageBuffers(device, descriptor, payloads.storageData ?? {});
+  const textures = createBoundTextures(device, descriptor, payloads.textureImages ?? {});
+  const samplers = createBoundSamplers(device, descriptor);
   const bindGroupLayouts = createGraphicsBindGroupLayouts(device, descriptor);
   const pipelineLayout = createPipelineLayout(device, descriptor, bindGroupLayouts);
-  const bindGroups = createBindGroups(device, descriptor, bindGroupLayouts, storageBuffers);
+  const bindGroups = createBindGroups(device, descriptor, bindGroupLayouts, storageBuffers, textures, samplers);
   const vertexBuffers = createVertexBuffers(device, descriptor, payloads.vertexBuffers ?? []);
   const { indexBuffer, indexCount } = createIndexBuffer(device, descriptor, payloads.indexData);
   const depthTexture = createDepthTexture(
@@ -205,18 +207,40 @@ function msaaColorAttachment(resources, canvasView, clearValue, loadOp) {
 function createGraphicsBindGroupLayouts(device, descriptor) {
   const layouts = new Map();
   for (const layout of descriptor.bindGroupLayouts) {
-    const entries = layout.entries.map((entry) => ({
-      binding: entry.binding,
-      visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-      buffer: {
-        type: entry.bufferType,
-        hasDynamicOffset: false,
-        minBindingSize: entry.minBindingSize,
-      },
-    }));
+    const entries = layout.entries.map((entry) => layoutEntryForBinding(entry));
     layouts.set(layout.bindGroupIndex, device.createBindGroupLayout({ entries }));
   }
   return layouts;
+}
+
+function layoutEntryForBinding(entry) {
+  if (entry.kind === "texture") {
+    return {
+      binding: entry.binding,
+      visibility: GPUShaderStage.FRAGMENT,
+      texture: {
+        sampleType: "float",
+        viewDimension: "2d",
+        multisampled: false,
+      },
+    };
+  }
+  if (entry.kind === "sampler") {
+    return {
+      binding: entry.binding,
+      visibility: GPUShaderStage.FRAGMENT,
+      sampler: { type: "filtering" },
+    };
+  }
+  return {
+    binding: entry.binding,
+    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+    buffer: {
+      type: entry.bufferType,
+      hasDynamicOffset: false,
+      minBindingSize: entry.minBindingSize,
+    },
+  };
 }
 
 function createPipelineLayout(device, descriptor, bindGroupLayouts) {
@@ -230,31 +254,47 @@ function createPipelineLayout(device, descriptor, bindGroupLayouts) {
   return device.createPipelineLayout({ bindGroupLayouts: orderedLayouts });
 }
 
-function createBindGroups(device, descriptor, bindGroupLayouts, buffers) {
+function createBindGroups(device, descriptor, bindGroupLayouts, buffers, textures, samplers) {
   return descriptor.bindGroups.map((group) => {
     const layout = bindGroupLayouts.get(group.bindGroupIndex);
     if (!layout) {
       throw new FaberKernelContractError("bindGroupLayouts", `missing layout ${group.bindGroupIndex}`);
     }
-    const entries = group.entries.map((entry) => {
-      const resource = buffers.get(entry.resourceIndex);
-      if (!resource) {
-        throw new FaberKernelContractError("buffers", `missing resource ${entry.resourceIndex}`);
-      }
-      return {
-        binding: entry.binding,
-        resource: {
-          buffer: resource.buffer,
-          offset: entry.bufferByteOffset,
-          size: entry.bindingByteLen,
-        },
-      };
-    });
+    const entries = group.entries.map((entry) => bindGroupEntry(entry, buffers, textures, samplers));
     return Object.freeze({
       bindGroupIndex: group.bindGroupIndex,
       bindGroup: device.createBindGroup({ layout, entries }),
     });
   });
+}
+
+function bindGroupEntry(entry, buffers, textures, samplers) {
+  if (entry.kind === "texture") {
+    const texture = textures.get(entry.sourceName);
+    if (!texture) {
+      throw new FaberKernelContractError("payloads.textureImages", `missing texture ${entry.sourceName}`);
+    }
+    return { binding: entry.binding, resource: texture.createView() };
+  }
+  if (entry.kind === "sampler") {
+    const sampler = samplers.get(entry.sourceName);
+    if (!sampler) {
+      throw new FaberKernelContractError("samplers", `missing sampler ${entry.sourceName}`);
+    }
+    return { binding: entry.binding, resource: sampler };
+  }
+  const resource = buffers.get(entry.resourceIndex);
+  if (!resource) {
+    throw new FaberKernelContractError("buffers", `missing resource ${entry.resourceIndex}`);
+  }
+  return {
+    binding: entry.binding,
+    resource: {
+      buffer: resource.buffer,
+      offset: entry.bufferByteOffset,
+      size: entry.bindingByteLen,
+    },
+  };
 }
 
 function createVertexBuffers(device, descriptor, vertexPayloads) {
@@ -338,10 +378,60 @@ function createMsaaColorTexture(device, width, height, format, sampleCount) {
   });
 }
 
+function createBoundTextures(device, descriptor, textureImages) {
+  const textures = new Map();
+  for (const entry of descriptor.bindGroups.flatMap((group) => group.entries)) {
+    if (entry.kind !== "texture" || textures.has(entry.sourceName)) {
+      continue;
+    }
+    const image = textureImages[entry.sourceName];
+    if (!image || typeof image.width !== "number" || typeof image.height !== "number") {
+      throw new FaberKernelContractError(
+        `payloads.textureImages.${entry.sourceName}`,
+        "expected an image source with width and height",
+      );
+    }
+    const texture = device.createTexture({
+      size: { width: image.width, height: image.height },
+      format: "rgba8unorm",
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+    device.queue.copyExternalImageToTexture(
+      { source: image },
+      { texture },
+      { width: image.width, height: image.height },
+    );
+    textures.set(entry.sourceName, texture);
+  }
+  return textures;
+}
+
+function createBoundSamplers(device, descriptor) {
+  const samplers = new Map();
+  for (const entry of descriptor.bindGroups.flatMap((group) => group.entries)) {
+    if (entry.kind !== "sampler" || samplers.has(entry.sourceName)) {
+      continue;
+    }
+    samplers.set(
+      entry.sourceName,
+      device.createSampler({
+        magFilter: "nearest",
+        minFilter: "nearest",
+        addressModeU: "clamp-to-edge",
+        addressModeV: "clamp-to-edge",
+      }),
+    );
+  }
+  return samplers;
+}
+
 function createStorageBuffers(device, descriptor, storageData) {
   const buffers = new Map();
   for (const group of descriptor.bindGroups) {
     for (const entry of group.entries) {
+      if (entry.kind === "texture" || entry.kind === "sampler") {
+        continue;
+      }
       if (buffers.has(entry.resourceIndex)) {
         continue;
       }

@@ -14,6 +14,15 @@ const DEPTH_COMPARE_VALUES = [
   "greater", "not-equal", "greater-equal", "always",
 ];
 const INDEX_FORMATS = ["uint16", "uint32"];
+const BOUND_TYPE_KINDS = Object.freeze({
+  Texture2D: "texture",
+  Sampler: "sampler",
+});
+const WGSL_BOUND_SPELLINGS = Object.freeze({
+  "texture_2d<f32>": "Texture2D",
+  sampler: "Sampler",
+});
+const WGSL_BOUND_DECL = /@group\((\d+)\)\s*@binding\((\d+)\)\s*var\s+(\w+)\s*:\s*([^;<]+(?:<[^>]+>)?)\s*;/g;
 
 export class FaberKernelContractError extends Error {
   /**
@@ -362,6 +371,9 @@ export function loadFaberGraphicsPipeline({ wgsl, reflection, drawManifest }) {
   const fragmentLaunch = expectObject(fragmentKernel.launch, "fragment.launch");
   expectValue(fragmentLaunch.shader_stage, "fragment", "fragment.launch.shader_stage");
 
+  const boundResources = parseBoundResources(fragmentKernel, "fragment.bound_resources", wgsl);
+  const merged = mergeBoundResourceGroups(pipelineLayout, bindGroupLayouts, bindGroups, boundResources);
+
   return Object.freeze({
     wgsl: expectString(wgsl, "wgsl"),
     schemaVersion: document.schema_version,
@@ -379,9 +391,10 @@ export function loadFaberGraphicsPipeline({ wgsl, reflection, drawManifest }) {
       }),
     ]),
     pipeline,
-    pipelineLayout,
-    bindGroupLayouts,
-    bindGroups,
+    pipelineLayout: merged.pipelineLayout,
+    bindGroupLayouts: merged.bindGroupLayouts,
+    bindGroups: merged.bindGroups,
+    boundResources,
     draw,
     inputBindings: bindGroups.flatMap((group) =>
       group.entries.filter((entry) => entry.role === "input"),
@@ -390,6 +403,131 @@ export function loadFaberGraphicsPipeline({ wgsl, reflection, drawManifest }) {
       group.entries.filter((entry) => entry.role === "output"),
     ),
   });
+}
+
+function parseBoundResources(kernel, path, wgsl) {
+  const raw = kernel.bound_resources;
+  if (Array.isArray(raw) && raw.length > 0) {
+    return Object.freeze(
+      raw.map((entry, index) => parseBoundResourceEntry(entry, `${path}[${index}]`)),
+    );
+  }
+  return parseBoundResourcesFromWgsl(wgsl);
+}
+
+function parseBoundResourceEntry(entry, entryPath) {
+  const object = expectObject(entry, entryPath);
+  const boundType = expectString(object.bound_type, `${entryPath}.bound_type`);
+  const kind = BOUND_TYPE_KINDS[boundType];
+  if (!kind) {
+    throw new FaberKernelContractError(
+      `${entryPath}.bound_type`,
+      `unsupported Triga bound type ${boundType}`,
+    );
+  }
+  return Object.freeze({
+    group: expectNonNegativeInteger(object.group, `${entryPath}.group`),
+    binding: expectNonNegativeInteger(object.binding, `${entryPath}.binding`),
+    name: expectString(object.name, `${entryPath}.name`),
+    boundType,
+    kind,
+  });
+}
+
+function parseBoundResourcesFromWgsl(wgsl) {
+  const source = expectString(wgsl, "wgsl");
+  const found = [];
+  WGSL_BOUND_DECL.lastIndex = 0;
+  let match = WGSL_BOUND_DECL.exec(source);
+  while (match) {
+    const spelling = match[4].trim();
+    const boundType = WGSL_BOUND_SPELLINGS[spelling];
+    if (boundType) {
+      found.push(
+        Object.freeze({
+          group: Number(match[1]),
+          binding: Number(match[2]),
+          name: match[3],
+          boundType,
+          kind: BOUND_TYPE_KINDS[boundType],
+        }),
+      );
+    }
+    match = WGSL_BOUND_DECL.exec(source);
+  }
+  return Object.freeze(found);
+}
+
+function mergeBoundResourceGroups(pipelineLayout, bindGroupLayouts, bindGroups, boundResources) {
+  if (boundResources.length === 0) {
+    return { pipelineLayout, bindGroupLayouts, bindGroups };
+  }
+
+  const byGroup = new Map();
+  for (const resource of boundResources) {
+    const bucket = byGroup.get(resource.group) ?? [];
+    bucket.push(resource);
+    byGroup.set(resource.group, bucket);
+  }
+
+  const layoutIndexes = [...pipelineLayout.bindGroupLayoutIndexes];
+  const layouts = [...bindGroupLayouts];
+  const groups = [...bindGroups];
+
+  for (const [group, resources] of [...byGroup.entries()].sort((a, b) => a[0] - b[0])) {
+    if (layoutIndexes.includes(group)) {
+      throw new FaberKernelContractError(
+        "bound_resources",
+        `bound group ${group} collides with a storage-buffer bind group`,
+      );
+    }
+    layoutIndexes.push(group);
+    layouts.push(
+      Object.freeze({
+        bindGroupIndex: group,
+        group,
+        layoutEntryIndexes: resources.map((resource) => resource.binding),
+        entries: Object.freeze(
+          resources.map((resource) =>
+            Object.freeze({
+              binding: resource.binding,
+              bindingIndex: resource.binding,
+              resourceIndex: resource.binding,
+              layoutEntryIndex: resource.binding,
+              kind: resource.kind,
+              sourceName: resource.name,
+              visibility: "fragment",
+            }),
+          ),
+        ),
+      }),
+    );
+    groups.push(
+      Object.freeze({
+        bindGroupIndex: group,
+        group,
+        entryIndexes: resources.map((resource) => resource.binding),
+        entries: Object.freeze(
+          resources.map((resource) =>
+            Object.freeze({
+              binding: resource.binding,
+              bindingIndex: resource.binding,
+              resourceIndex: resource.binding,
+              kind: resource.kind,
+              sourceName: resource.name,
+              role: "input",
+            }),
+          ),
+        ),
+      }),
+    );
+  }
+
+  return {
+    pipelineLayout: Object.freeze({ bindGroupLayoutIndexes: Object.freeze(layoutIndexes) }),
+    bindGroupLayouts: Object.freeze(layouts),
+    bindGroups: Object.freeze(groups),
+  };
 }
 
 function parseVertexInputs(kernel) {

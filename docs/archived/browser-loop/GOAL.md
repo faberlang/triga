@@ -1,6 +1,6 @@
 # GOAL: Closed browser loop
 
-**Status**: active — Units 1–4 landed 2026-10-01 (R1–R3 visible); Unit 5 blocked on radix texture/sampler emit
+**Status**: done — R1–R4 closed 2026-10-01 (operator visual: red/yellow 4×4 checkerboard on each face); later rows deferred
 **Created**: 2026-10-01
 **Campaign:** —
 **Source:** operator request 2026-10-01 after Triga 0.3.0: continue the library as what a browser user actually needs, not more genera
@@ -70,11 +70,11 @@ This table is the remaining-work authority. Advance a cell only when the code is
 | R1 | Honest first draw of a Triga mesh on a Triga presenter | done |
 | R2 | Camera + `TransformPayload` as the live frame write | done |
 | R3 | Admitted shader uses unlit color | done |
-| R4 | One image on a mesh | pending |
-| later | SceneStore (or equivalent values) as presenter input | pending |
-| later | Directional light actually shades | pending |
-| later | glTF / model load | pending |
-| later | Repair the two broken corpus `scene.fab` files | pending |
+| R4 | One image on a mesh | done |
+| later | SceneStore (or equivalent values) as presenter input | deferred |
+| later | Directional light actually shades | deferred |
+| later | glTF / model load | deferred |
+| later | Repair the two broken corpus `scene.fab` files | deferred |
 
 ## Units (lowering sketch — refine via `$delivery`)
 
@@ -120,7 +120,7 @@ Browser GPU evidence is a **visible** canvas showing a Triga mesh. `submittedFra
 | 2 | done | — | `./scripta/host check` green; fixture `host/fixtures/box.fab` | `basic.box` mesh; bins from `box()` source (MIR run blocked) |
 | 3 | done | — | `./scripta/host check` green; transform 32 f32 / 128 B | `PerspectiveCamera` + `TransformPayload` in fixture; bins evaluate `triga:math` formulas |
 | 4 | done | — | Unit 2 vertex color through admitted unlit shader | no-op, as lowered |
-| 5 | pending | — | — | blocked: shader-contract resource kinds are storage-buffer + runtime-extent only |
+| 5 | done | — | `./scripta/host check` green; operator visual 2026-10-01 | red/yellow 4×4 checkerboard on each face of the box at `:8788` |
 
 ## Settled
 
@@ -144,4 +144,4 @@ Operator 2026-10-01, this session.
 
 4. **How much admission to copy.** Default: copy `loadFaberGraphicsPipeline` and the parsers it needs; do not copy `loadFaberKernel` or compute resource lifecycle. Rewrite only the page and the upload/draw.
 
-5. **Unit 5 texture seam.** Operator visual 2026-10-01: Unit 3 camera payload unchanged on screen. R4 is blocked until radix graphics emit can name a texture/sampler binding. Do not hand-write WGSL or admit a second pipeline dialect. `TextureDescriptor` is only a seed. A storage-buffer texel atlas is not a sampler.
+5. **Unit 5 texture seam.** Radix bound-type parameters, `uv`, and the WGSL `types` table landed. Fixture `box.fab` declares `Texture2D` / `Sampler` and calls `shader.sample`. Presenter admits the emitted WGSL bindings, uploads `albedo.png`, and binds UVs. The GPU sidecar still omits `bound_resources`; admission reads those declarations from WGSL until the sidecar copies the MIR field. `TextureDescriptor` stays a seed. A storage-buffer texel atlas is not a sampler.

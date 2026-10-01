@@ -25,24 +25,37 @@ main().catch((error) => {
 async function main() {
   setStatus("pending", "Loading");
 
-  const [wgslResponse, reflectionResponse, positionsResponse, colorsResponse, indicesResponse, transformResponse, drawResponse] =
-    await Promise.all([
-      fetch("./generated/graphics.wgsl"),
-      fetch("./generated/graphics-reflection.json"),
-      fetch("./generated/graphics-vertex-positions.bin"),
-      fetch("./generated/graphics-vertex-colors.bin"),
-      fetch("./generated/graphics-indices.bin"),
-      fetch("./generated/graphics-transform.bin"),
-      fetch("./generated/draw.json"),
-    ]);
+  const [
+    wgslResponse,
+    reflectionResponse,
+    positionsResponse,
+    colorsResponse,
+    uvsResponse,
+    indicesResponse,
+    transformResponse,
+    albedoResponse,
+    drawResponse,
+  ] = await Promise.all([
+    fetch("./generated/graphics.wgsl"),
+    fetch("./generated/graphics-reflection.json"),
+    fetch("./generated/graphics-vertex-positions.bin"),
+    fetch("./generated/graphics-vertex-colors.bin"),
+    fetch("./generated/graphics-vertex-uvs.bin"),
+    fetch("./generated/graphics-indices.bin"),
+    fetch("./generated/graphics-transform.bin"),
+    fetch("./generated/albedo.png"),
+    fetch("./generated/draw.json"),
+  ]);
 
   for (const [label, response] of [
     ["wgsl", wgslResponse],
     ["reflection", reflectionResponse],
     ["positions", positionsResponse],
     ["colors", colorsResponse],
+    ["uvs", uvsResponse],
     ["indices", indicesResponse],
     ["transform", transformResponse],
+    ["albedo", albedoResponse],
     ["draw", drawResponse],
   ]) {
     if (!response.ok) {
@@ -83,14 +96,19 @@ async function main() {
   });
   sizeCanvas(canvas);
 
+  const albedoBitmap = await createImageBitmap(await albedoResponse.blob());
   const payloads = {
     vertexBuffers: [
       { slot: 0, data: await positionsResponse.arrayBuffer() },
       { slot: 1, data: await colorsResponse.arrayBuffer() },
+      { slot: 2, data: await uvsResponse.arrayBuffer() },
     ],
     indexData: new Uint32Array(await indicesResponse.arrayBuffer()),
     storageData: {
       transform: new Float32Array(await transformResponse.arrayBuffer()),
+    },
+    textureImages: {
+      albedo: albedoBitmap,
     },
   };
 

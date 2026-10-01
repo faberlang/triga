@@ -1,6 +1,6 @@
 # Delivery: Closed browser loop — R1 presenter + first mesh
 
-**Status**: active — Units 1–4 landed; Unit 5 blocked on radix texture/sampler emit
+**Status**: done — R1–R4 closed 2026-10-01; later rows deferred
 **Goal:** [`GOAL.md`](GOAL.md)
 **Repos:** `triga` only
 **Release:** not-applicable (presenter bootstrap; no product tag)

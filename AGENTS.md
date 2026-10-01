@@ -31,6 +31,7 @@ One `.fab` file → one import path. Nested dirs for packages.
 | `triga:primitives` | Mesh generators |
 | `triga:scene` | SceneStore / identity |
 | `triga:resource` | ResourceHandle lifecycle |
+| `triga:shader` | Opaque `Texture2D` / `Sampler` and bound `sample` |
 | `triga:triga` | Facade map only (no genera) |
 
 Nested package dirs only with **≥2 modules** (prefer ≥3). A single nested file

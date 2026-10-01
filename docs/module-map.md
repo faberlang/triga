@@ -45,6 +45,7 @@ not `triga:scene/resource`).
 | `triga:primitives` | `src/primitives.fab` | Facade for deterministic generators in `primitives/basic`; procedural/terrain/voxel remain deferred |
 | `triga:scene` | `src/scene.fab` | `SceneStore`, `SceneHandle`, nodes, traversal, `visible_meshes` — **DS-D parked** on language gaps G2/G3 |
 | `triga:resource` | `src/resource.fab` | `ResourceHandle` (+ transition/lifecycle receiver methods, batch queries) |
+| `triga:shader` | `src/shader.fab` | Opaque `Texture2D` / `Sampler` and bound `sample` (WGSL spellings in `bindings/wgsl.toml`) |
 | `triga:triga` | `src/triga.fab` | Facade / map only (no genera) |
 
 ## Proba (test sources)

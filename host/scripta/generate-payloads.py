@@ -3,11 +3,12 @@
 
 `faber run` cannot import `triga:geometry/data` (MIR vector-method residual),
 so this evaluates the `box()` `assemble_geometry` lists from source. Colors
-are those face normals remapped from [-1, 1] to [0, 1]. Transform is the
-32-float / 128-byte `TransformPayload` (identity model, PerspectiveCamera
-view-projection). Python evaluates the same `matrix_look_at` /
-`matrix_perspective` formulas as `triga:math`; `faber run` cannot import
-those modules yet.
+are those face normals remapped from [-1, 1] to [0, 1]. UVs are the box()
+list (48 floats). Transform is the 32-float / 128-byte `TransformPayload`
+(identity model, PerspectiveCamera view-projection). `albedo.png` is an
+8×8 checkerboard for the bound sampler. Python evaluates the same
+`matrix_look_at` / `matrix_perspective` formulas as `triga:math`; `faber
+run` cannot import those modules yet.
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ import math
 import re
 import struct
 import sys
+import zlib
 from pathlib import Path
 
 BOX_ASSEMBLE = re.compile(
@@ -136,8 +138,33 @@ def load_box_mesh(basic_fab: Path, width: float = 1.0, height: float = 1.0, dept
         raise SystemExit(f"expected 36 indices from box(), got {len(indices)}")
     if positions[:3] != [-0.5, -0.5, 0.5]:
         raise SystemExit(f"unexpected box(1,1,1) first vertex: {positions[:3]}")
+    uvs = [float(value) for value in eval_box_list(match.group(3), x, y, z)]
+    if len(uvs) != 48:
+        raise SystemExit(f"expected 48 uv floats from box(), got {len(uvs)}")
     colors = [(value + 1.0) * 0.5 for value in normals]
-    return positions, colors, indices
+    return positions, colors, uvs, indices
+
+
+def write_checkerboard_png(path: Path, size: int = 8, tile: int = 2) -> None:
+    """Write an 8-bit RGBA PNG. Stdlib only; no image library."""
+    rows = bytearray()
+    for y in range(size):
+        rows.append(0)
+        for x in range(size):
+            on = ((x // tile) + (y // tile)) % 2 == 0
+            rows.extend((220, 40, 40, 255) if on else (240, 230, 80, 255))
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        crc = zlib.crc32(tag + data) & 0xFFFFFFFF
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", crc)
+
+    ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", ihdr)
+        + chunk(b"IDAT", zlib.compress(bytes(rows), 9))
+        + chunk(b"IEND", b"")
+    )
 
 
 def main() -> None:
@@ -148,12 +175,14 @@ def main() -> None:
     output_dir = Path(sys.argv[1])
     basic_fab = Path(sys.argv[2])
     output_dir.mkdir(parents=True, exist_ok=True)
-    positions, colors, indices = load_box_mesh(basic_fab)
+    positions, colors, uvs, indices = load_box_mesh(basic_fab)
 
     write_f32_array(output_dir / "graphics-vertex-positions.bin", positions)
     write_f32_array(output_dir / "graphics-vertex-colors.bin", colors)
+    write_f32_array(output_dir / "graphics-vertex-uvs.bin", uvs)
     write_u32_array(output_dir / "graphics-indices.bin", indices)
     generate_transform(output_dir)
+    write_checkerboard_png(output_dir / "albedo.png")
     (output_dir / "draw.json").write_text(
         json.dumps({
             "index_format": "uint32",
@@ -167,8 +196,10 @@ def main() -> None:
 
     print(f"generated {output_dir / 'graphics-vertex-positions.bin'}")
     print(f"generated {output_dir / 'graphics-vertex-colors.bin'}")
+    print(f"generated {output_dir / 'graphics-vertex-uvs.bin'}")
     print(f"generated {output_dir / 'graphics-indices.bin'}")
     print(f"generated {output_dir / 'graphics-transform.bin'}")
+    print(f"generated {output_dir / 'albedo.png'}")
     print(f"generated {output_dir / 'draw.json'}")
 
 
