@@ -18,7 +18,7 @@
 | `triga:material/lit` | `PhongMaterial` | drawn | Presenter fragment tints + specular from the same consts as the record (`.power` not WGSL-emittable yet) |
 | `triga:material/standard` | `StandardMaterial` | typed | Record |
 | `triga:material/base` | `TextureDescriptor` | typed | Seed; PNG path is presenter-side |
-| `triga:lighting/light` | `DirectionalLight`, `AmbientLight`, `PointLight` | drawn (dir+color+intensity) / typed | Ambient/Point still typed only |
+| `triga:lighting/light` | `DirectionalLight`, `AmbientLight`, `PointLight` | drawn (dir+ambient) / typed | Point still typed only; ambient magenta fill is the visual oracle |
 | `triga:shader` | `Texture2D`, `Sampler`, `sample` | drawn | Bound sample on the box |
 | `triga:shader_contract` | adapters | proba | Conformance exempla |
 | `triga:face` | `FaceQuad` | typed | |

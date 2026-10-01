@@ -2,10 +2,10 @@
 locale = "en"
 +++
 
-# Presenter fixture: SceneStore (two boxes) + DirectionalLight + PhongMaterial.
-# Module consts are the single source for record fields and the @fragment body
-# (authored GPU bodies cannot yet read arbitrary storage by name; `.power` is
-# not WGSL-emittable — specular uses diffuse⁴ as a stand-in for shininess).
+# Presenter fixture: SceneStore (two boxes) + AmbientLight + DirectionalLight
+# + PhongMaterial. Module consts are the single source for record fields and
+# the @fragment body (authored GPU bodies cannot yet read arbitrary storage by
+# name; `.power` is not WGSL-emittable — specular uses diffuse² as a stand-in).
 
 import from "triga:geometry/data" data
 
@@ -29,7 +29,13 @@ import from "triga:resource" resource
 
 import from "triga:shader" shader
 
-# Light: position (2,4,1), target (0,0,-1) → toward-light normalize(2,4,2).
+# AmbientLight — loud magenta fill so inward faces are obviously not black.
+const f32 AMB_R = 1.0
+const f32 AMB_G = 0.0
+const f32 AMB_B = 1.0
+const f32 AMB_INTENSITY = 0.55
+
+# DirectionalLight: position (2,4,1), target (0,0,-1) → toward-light normalize(2,4,2).
 const f32 LIGHT_DX = 0.4082
 const f32 LIGHT_DY = 0.8165
 const f32 LIGHT_DZ = 0.4082
@@ -86,16 +92,17 @@ fn presenter_vertex() → void {
 fn presenter_fragment(shader.Texture2D albedo, shader.Sampler albedo_sampler) → void {
     const vector<f32, 3> light_direction ↤ [LIGHT_DX, LIGHT_DY, LIGHT_DZ]
     const f32 ndotl ← (normal · light_direction).maximum(0.0)
-    const f32 lighting_term ← 0.12 + 0.88 * ndotl * LIGHT_INTENSITY
     const vector<f32, 4> sampled ← shader.sample(albedo, albedo_sampler, uv)
-    const vector<f32, 4> tint ↤ [MAT_R * LIGHT_R, MAT_G * LIGHT_G, MAT_B * LIGHT_B, 1.0]
-    const vector<f32, 4> lighting_vec ↤ [lighting_term, lighting_term, lighting_term, 1.0]
-    const vector<f32, 4> diffuse_lit ← sampled ⊙ tint ⊙ lighting_vec
+    const vector<f32, 4> mat_tint ↤ [MAT_R, MAT_G, MAT_B, 1.0]
+    const vector<f32, 4> ambient_vec ↤ [AMB_R * AMB_INTENSITY, AMB_G * AMB_INTENSITY, AMB_B * AMB_INTENSITY, 0.0]
+    const f32 dir_term ← ndotl * LIGHT_INTENSITY
+    const vector<f32, 4> dir_vec ↤ [dir_term * LIGHT_R, dir_term * LIGHT_G, dir_term * LIGHT_B, 1.0]
+    const vector<f32, 4> ambient_lit ← sampled ⊙ mat_tint ⊙ ambient_vec
+    const vector<f32, 4> diffuse_lit ← sampled ⊙ mat_tint ⊙ dir_vec
     # diffuse² stand-in until `.power` emits to WGSL (shininess stays on the record).
-    # Kept wide so lit faces show a clear white hotspot.
     const f32 spec ← ndotl * ndotl
     const vector<f32, 4> spec_term ↤ [SPEC_R * spec, SPEC_G * spec, SPEC_B * spec, 0.0]
-    out_color ← diffuse_lit + spec_term
+    out_color ← ambient_lit + diffuse_lit + spec_term
 }
 
 fn presenter_camera_object() → graph_object.Object {
@@ -104,6 +111,10 @@ fn presenter_camera_object() → graph_object.Object {
 
 fn presenter_light_object() → graph_object.Object {
     return graph_object.Object {position = [2.0, 4.0, 1.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-sun"}
+}
+
+fn presenter_ambient_object() → graph_object.Object {
+    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-ambient"}
 }
 
 main {
@@ -135,6 +146,12 @@ main {
     assert visible.payloads.length() ≡ 2 panic "two transform payloads"
     assert visible.payloads[0].values.length() ≡ 32 panic "left TransformPayload"
     assert visible.payloads[1].values.length() ≡ 32 panic "right TransformPayload"
+
+    const math.Color ambient_color ← math.Color {r = AMB_R, g = AMB_G, b = AMB_B}
+    const lighting.AmbientLight ambient ← lighting.AmbientLight {base = lighting.Light {base = presenter_ambient_object(), color = ambient_color, intensity = AMB_INTENSITY}}
+    assert ambient.base.base.name ≡ "presenter-ambient" panic "ambient object"
+    assert ambient.base.color.b ≡ AMB_B panic "ambient color"
+    assert ambient.base.intensity ≡ AMB_INTENSITY panic "ambient intensity"
 
     const math.Color light_color ← math.Color {r = LIGHT_R, g = LIGHT_G, b = LIGHT_B}
     const lighting.DirectionalLight sun ← lighting.DirectionalLight {base = lighting.Light {base = presenter_light_object(), color = light_color, intensity = LIGHT_INTENSITY}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
