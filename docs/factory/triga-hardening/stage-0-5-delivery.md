@@ -98,8 +98,8 @@ cd /Users/ianzepp/work/faberlang/triga
 
 The pre-repair implementation passed the raw CLI `PathBuf` from
 `radix/crates/faber/src/commands/test.rs` to
-`radix_package::analyze::analyze_package_for_tests`. The package analyzer's
-contract required absolute inputs. `radix-package::normalize_path` was lexical;
+`radix_program::analyze::analyze_package_for_tests`. The package analyzer's
+contract required absolute inputs. `radix_program::paths::normalize_path` was lexical;
 normalizing `.` removed the `CurDir` component and left an empty relative path,
 so discovery checked the wrong path and emitted the observed I/O error.
 
@@ -202,7 +202,7 @@ The live Radix/Faber source establishes these boundaries:
     use the linked validated-MIR API below.
   - `run_proba_on_validated_with_function_ids` executes package cases against
     linker-assigned function identities in one validated MIR image.
-- `radix/crates/radix-package/src/analyze.rs`
+- `radix/crates/radix-program/src/analyze.rs`
   - `analyze_package` excludes `.proba` sources.
   - `analyze_package_for_tests` includes `.proba` sources and accepts a
     `TestSourceFilter`.
@@ -304,7 +304,7 @@ scopes and must be dispatched in `radix/`.
   `analyze_package_for_tests`; single-file `.fab` / `.proba` behavior remains
   distinct.
 - **write_scope**: `radix/crates/faber/src/commands/test.rs`,
-  `radix/crates/radix-package/src/discovery.rs` or the owning path-normalization
+  `radix/crates/radix-program/src/discovery.rs` or the owning path-normalization
   seam, and focused package/test regression files under the corresponding
   crates.
 - **done_when**: from the Triga root, `faber test .` no longer emits
@@ -326,7 +326,7 @@ scopes and must be dispatched in `radix/`.
 > from an isolated proba MIR image and became available only at package-link
 > time. No fix confined to `crates/radix/src/mir/lower/*` could execute an
 > imported method. Re-scoped successor: **`rdx-s05-3`** (Vivi `b7934c6a`) —
-> link-path lowering in `crates/radix-package/src/mir/link.rs`
+> link-path lowering in `crates/radix-program/src/mir/link.rs`
 > (`link_library_method_targets`). Evidence memo: `5aa20bf8`.
 >
 > **Resolution 2026-08-17** — `e56d45f70` landed the link-path portion;
