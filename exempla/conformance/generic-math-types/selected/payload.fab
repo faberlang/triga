@@ -52,7 +52,7 @@ fn payload_view_projection_value(list<f32> values, int index) → f32 ∪ none {
 fn transform_payload(matrix<f32, [4, 4]> model, matrix<f32, [4, 4]> view_projection) → list<f32> {
     var list<f32> values ← empty
     var int i ← 0
-    while i < 32 {
+    while i ≺ 32 {
         values.append(0.0)
         i ← i + 1
     }
