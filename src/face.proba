@@ -9,12 +9,12 @@ describe "face quad builders" {
         const face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
         assert quad_result not is none
         const face.FaceQuad quad ← quad_result
-        assert quad.a.x ≡ (10.0 ∷ f32)
-        assert quad.a.y ≡ (20.0 ∷ f32)
-        assert quad.a.z ≡ (30.0 ∷ f32)
-        assert quad.b.z ≡ (32.0 ∷ f32)
-        assert quad.c.y ≡ (22.0 ∷ f32)
-        assert quad.d.x ≡ (10.0 ∷ f32)
+        assert math.x(quad.a) ≡ (10.0 ∷ f32)
+        assert math.y(quad.a) ≡ (20.0 ∷ f32)
+        assert math.z(quad.a) ≡ (30.0 ∷ f32)
+        assert math.z(quad.b) ≡ (32.0 ∷ f32)
+        assert math.y(quad.c) ≡ (22.0 ∷ f32)
+        assert math.x(quad.d) ≡ (10.0 ∷ f32)
     }
 
     test "all face codes preserve their orientation and winding" {
@@ -33,17 +33,17 @@ describe "face quad builders" {
         const face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
         assert positive_z_result not is none
         const face.FaceQuad positive_z ← positive_z_result
-        assert positive_x.a.x ≡ (5.0 ∷ f32)
-        assert positive_x.a.z ≡ (7.0 ∷ f32)
-        assert positive_x.d.z ≡ (7.0 ∷ f32)
-        assert negative_y.a.y ≡ (2.0 ∷ f32)
-        assert negative_y.b.x ≡ (5.0 ∷ f32)
-        assert positive_y.a.y ≡ (6.0 ∷ f32)
-        assert positive_y.c.z ≡ (3.0 ∷ f32)
-        assert negative_z.a.z ≡ (3.0 ∷ f32)
-        assert negative_z.b.x ≡ (1.0 ∷ f32)
-        assert positive_z.a.z ≡ (7.0 ∷ f32)
-        assert positive_z.c.y ≡ (6.0 ∷ f32)
+        assert math.x(positive_x.a) ≡ (5.0 ∷ f32)
+        assert math.z(positive_x.a) ≡ (7.0 ∷ f32)
+        assert math.z(positive_x.d) ≡ (7.0 ∷ f32)
+        assert math.y(negative_y.a) ≡ (2.0 ∷ f32)
+        assert math.x(negative_y.b) ≡ (5.0 ∷ f32)
+        assert math.y(positive_y.a) ≡ (6.0 ∷ f32)
+        assert math.z(positive_y.c) ≡ (3.0 ∷ f32)
+        assert math.z(negative_z.a) ≡ (3.0 ∷ f32)
+        assert math.x(negative_z.b) ≡ (1.0 ∷ f32)
+        assert math.z(positive_z.a) ≡ (7.0 ∷ f32)
+        assert math.y(positive_z.c) ≡ (6.0 ∷ f32)
     }
 
     test "invalid codes and non-positive sizes return absence" {

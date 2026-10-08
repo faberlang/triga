@@ -46,9 +46,9 @@ describe "Mesh valid composition" {
 
         assert constructed not is none
         assert value.base.name ≡ "triangle-node"
-        assert value.base.position.x ≡ (1.0 ∷ f32)
-        assert value.base.position.y ≡ (2.0 ∷ f32)
-        assert value.base.position.z ≡ (3.0 ∷ f32)
+        assert math.x(value.base.position) ≡ (1.0 ∷ f32)
+        assert math.y(value.base.position) ≡ (2.0 ∷ f32)
+        assert math.z(value.base.position) ≡ (3.0 ∷ f32)
         assert value.base.visible
         assert value.base.children.length() ≡ 0
         assert math.matrix_element(value.base.matrix, 0, 0) ≡ (1.0 ∷ f32)
@@ -138,9 +138,9 @@ describe "Mesh composition edges" {
 
         assert value.base.name ≡ "parent"
         assert value.base.visible ≡ false
-        assert value.base.scale.x ≡ (2.0 ∷ f32)
-        assert value.base.scale.y ≡ (2.0 ∷ f32)
-        assert value.base.scale.z ≡ (2.0 ∷ f32)
+        assert math.x(value.base.scale) ≡ (2.0 ∷ f32)
+        assert math.y(value.base.scale) ≡ (2.0 ∷ f32)
+        assert math.z(value.base.scale) ≡ (2.0 ∷ f32)
         assert value.base.children.length() ≡ 1
         assert value.base.children[0].name ≡ "child"
         assert value.base.children[0].visible
