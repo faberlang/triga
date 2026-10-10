@@ -62,7 +62,7 @@ class ResourceTransition {
     var bool changed
 
     fn valid() → bool {
-        if self.previous.index ≠ self.current.index then return false
+        if self.previous.index ≢ self.current.index then return false
         if self.changed then return self.current.generation ≡ self.previous.generation + 1
         return self.current.generation ≡ self.previous.generation
     }
@@ -82,11 +82,11 @@ class ResourceLifecycleTransition {
         if self.previous is none and self.current is none then return false
         if self.previous not is none {
             const ResourceHandle previous ← self.previous
-            if previous.index ≠ self.logical_index then return false
+            if previous.index ≢ self.logical_index then return false
         }
         if self.current not is none {
             const ResourceHandle current ← self.current
-            if current.index ≠ self.logical_index then return false
+            if current.index ≢ self.logical_index then return false
         }
         if self.removed then return (self.changed and self.previous not is none) and self.current is none
         if not self.changed {

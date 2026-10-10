@@ -21,23 +21,23 @@ locale = "en"
 # reserved for genuine domain failures only.
 
 fn payload_float_count(list<f32> values) → int ∪ none {
-    if values.length() ≠ 32 then return null
+    if values.length() ≢ 32 then return null
     return values.length()
 }
 
 fn payload_byte_count(list<f32> values) → int ∪ none {
-    if values.length() ≠ 32 then return null
+    if values.length() ≢ 32 then return null
     return values.length() * 4
 }
 
 fn payload_model_value(list<f32> values, int index) → f32 ∪ none {
-    if values.length() ≠ 32 then return null
+    if values.length() ≢ 32 then return null
     if index ≺ 0 or index ≥ 16 then return null
     return values[index]
 }
 
 fn payload_view_projection_value(list<f32> values, int index) → f32 ∪ none {
-    if values.length() ≠ 32 then return null
+    if values.length() ≢ 32 then return null
     if index ≺ 0 or index ≥ 16 then return null
     return values[index + 16]
 }

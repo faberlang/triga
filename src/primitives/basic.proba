@@ -8,20 +8,20 @@ import from "triga:geometry/data" data
 import from "triga:geometry/batch" batch
 
 fn exact_f32_values(list<f32> actual, list<f32> expected) → bool {
-    if actual.length() ≠ expected.length() then return false
+    if actual.length() ≢ expected.length() then return false
     var int i ← 0
     while i ≺ actual.length() {
-        if actual[i] ≠ expected[i] then return false
+        if actual[i] ≢ expected[i] then return false
         i ← i + 1
     }
     return true
 }
 
 fn exact_u32_values(list<u32> actual, list<u32> expected) → bool {
-    if actual.length() ≠ expected.length() then return false
+    if actual.length() ≢ expected.length() then return false
     var int i ← 0
     while i ≺ actual.length() {
-        if actual[i] ≠ expected[i] then return false
+        if actual[i] ≢ expected[i] then return false
         i ← i + 1
     }
     return true
@@ -32,15 +32,15 @@ fn primitive_geometry_matches(data.Geometry ∪ none geometry, int vertex_count,
     const data.Geometry actual ← data.Geometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
     if actual.valid() ≡ false then return false
     if actual.indexed ≡ false then return false
-    if (actual.topology_code() coalesce 0) ≠ 1 then return false
-    if actual.vertex_count ≠ vertex_count then return false
-    if actual.element_count() ≠ indices.length() then return false
-    if (actual.index_count() coalesce 0) ≠ indices.length() then return false
-    if (actual.group_count() coalesce 0) ≠ 1 then return false
-    if actual.attributes.length() ≠ 3 then return false
-    if actual.attributes[0].name ≠ "position" or actual.attributes[0].shader_location ≠ 0 or actual.attributes[0].component_width ≠ 3 or actual.attributes[0].element_count ≠ vertex_count then return false
-    if actual.attributes[1].name ≠ "normal" or actual.attributes[1].shader_location ≠ 1 or actual.attributes[1].component_width ≠ 3 or actual.attributes[1].element_count ≠ vertex_count then return false
-    if actual.attributes[2].name ≠ "uv" or actual.attributes[2].shader_location ≠ 2 or actual.attributes[2].component_width ≠ 2 or actual.attributes[2].element_count ≠ vertex_count then return false
+    if (actual.topology_code() coalesce 0) ≢ 1 then return false
+    if actual.vertex_count ≢ vertex_count then return false
+    if actual.element_count() ≢ indices.length() then return false
+    if (actual.index_count() coalesce 0) ≢ indices.length() then return false
+    if (actual.group_count() coalesce 0) ≢ 1 then return false
+    if actual.attributes.length() ≢ 3 then return false
+    if actual.attributes[0].name ≢ "position" or actual.attributes[0].shader_location ≢ 0 or actual.attributes[0].component_width ≢ 3 or actual.attributes[0].element_count ≢ vertex_count then return false
+    if actual.attributes[1].name ≢ "normal" or actual.attributes[1].shader_location ≢ 1 or actual.attributes[1].component_width ≢ 3 or actual.attributes[1].element_count ≢ vertex_count then return false
+    if actual.attributes[2].name ≢ "uv" or actual.attributes[2].shader_location ≢ 2 or actual.attributes[2].component_width ≢ 2 or actual.attributes[2].element_count ≢ vertex_count then return false
     const list<f32> empty_values ← empty
     const list<f32> actual_positions ← actual.attributes[0].float32_values() coalesce empty_values
     const list<f32> actual_normals ← actual.attributes[1].float32_values() coalesce empty_values
@@ -49,8 +49,8 @@ fn primitive_geometry_matches(data.Geometry ∪ none geometry, int vertex_count,
     if exact_f32_values(actual_normals, normals) ≡ false then return false
     if exact_f32_values(actual_uvs, uvs) ≡ false then return false
     if exact_u32_values(actual.indices, indices) ≡ false then return false
-    if actual.draw_range.start ≠ 0 or actual.draw_range.count ≠ indices.length() then return false
-    if actual.groups[0].start ≠ 0 or actual.groups[0].count ≠ indices.length() or actual.groups[0].material_index ≠ 0 then return false
+    if actual.draw_range.start ≢ 0 or actual.draw_range.count ≢ indices.length() then return false
+    if actual.groups[0].start ≢ 0 or actual.groups[0].count ≢ indices.length() or actual.groups[0].material_index ≢ 0 then return false
     return true
 }
 
@@ -59,19 +59,19 @@ fn wire_geometry_matches(data.Geometry ∪ none geometry, list<f32> positions, l
     const data.Geometry actual ← data.Geometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
     if actual.valid() ≡ false then return false
     if actual.indexed ≡ false then return false
-    if (actual.topology_code() coalesce 0) ≠ 2 then return false
-    if actual.vertex_count ≠ 8 then return false
-    if actual.element_count() ≠ indices.length() then return false
-    if (actual.index_count() coalesce 0) ≠ indices.length() then return false
-    if (actual.group_count() coalesce 0) ≠ 1 then return false
-    if actual.attributes.length() ≠ 1 then return false
-    if actual.attributes[0].name ≠ "position" or actual.attributes[0].shader_location ≠ 0 or actual.attributes[0].component_width ≠ 3 or actual.attributes[0].element_count ≠ 8 then return false
+    if (actual.topology_code() coalesce 0) ≢ 2 then return false
+    if actual.vertex_count ≢ 8 then return false
+    if actual.element_count() ≢ indices.length() then return false
+    if (actual.index_count() coalesce 0) ≢ indices.length() then return false
+    if (actual.group_count() coalesce 0) ≢ 1 then return false
+    if actual.attributes.length() ≢ 1 then return false
+    if actual.attributes[0].name ≢ "position" or actual.attributes[0].shader_location ≢ 0 or actual.attributes[0].component_width ≢ 3 or actual.attributes[0].element_count ≢ 8 then return false
     const list<f32> empty_values ← empty
     const list<f32> actual_positions ← actual.attributes[0].float32_values() coalesce empty_values
     if exact_f32_values(actual_positions, positions) ≡ false then return false
     if exact_u32_values(actual.indices, indices) ≡ false then return false
-    if actual.draw_range.start ≠ 0 or actual.draw_range.count ≠ indices.length() then return false
-    if actual.groups[0].start ≠ 0 or actual.groups[0].count ≠ indices.length() or actual.groups[0].material_index ≠ 0 then return false
+    if actual.draw_range.start ≢ 0 or actual.draw_range.count ≢ indices.length() then return false
+    if actual.groups[0].start ≢ 0 or actual.groups[0].count ≢ indices.length() or actual.groups[0].material_index ≢ 0 then return false
     return true
 }
 

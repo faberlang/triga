@@ -240,23 +240,23 @@ class TransformPayload {
     var list<f32> values
 
     fn float_count() → int ∪ none {
-        if self.values.length() ≠ 32 then return null
+        if self.values.length() ≢ 32 then return null
         return self.values.length()
     }
 
     fn byte_count() → int ∪ none {
-        if self.values.length() ≠ 32 then return null
+        if self.values.length() ≢ 32 then return null
         return self.values.length() * 4
     }
 
     fn model_value(int index) → f32 ∪ none {
-        if self.values.length() ≠ 32 then return null
+        if self.values.length() ≢ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
         return self.values[index]
     }
 
     fn view_projection_value(int index) → f32 ∪ none {
-        if self.values.length() ≠ 32 then return null
+        if self.values.length() ≢ 32 then return null
         if index ≺ 0 or index ≥ 16 then return null
         return self.values[index + 16]
     }
@@ -339,7 +339,7 @@ class Euler {
     var string order = "XYZ"
 
     fn to_quaternion() → Quaternion ∪ none {
-        if self.order ≠ "XYZ" then return null
+        if self.order ≢ "XYZ" then return null
         const f32 hx ← self.x * 0.5
         const f32 hy ← self.y * 0.5
         const f32 hz ← self.z * 0.5
@@ -365,8 +365,8 @@ class Euler {
     }
 
     fn lerp(ref Euler other, f32 ratio) → Euler ∪ none {
-        if self.order ≠ other.order then return null
-        if self.order ≠ "XYZ" then return null
+        if self.order ≢ other.order then return null
+        if self.order ≢ "XYZ" then return null
         return Euler {x = self.x + (other.x - self.x) * ratio, y = self.y + (other.y - self.y) * ratio, z = self.z + (other.z - self.z) * ratio, order = "XYZ"}
     }
 }

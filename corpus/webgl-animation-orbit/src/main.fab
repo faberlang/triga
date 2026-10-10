@@ -54,8 +54,8 @@ fn mesh_ex_geometry(string name, de data.Geometry geom, f32 ox, f32 oy, f32 oz, 
     if pos_opt is none or nrm_opt is none then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
-    if pos.length() ≠ geom.vertex_count * 3 then return null
-    if nrm.length() ≠ geom.vertex_count * 3 then return null
+    if pos.length() ≢ geom.vertex_count * 3 then return null
+    if nrm.length() ≢ geom.vertex_count * 3 then return null
     var list<f32> payload ← vacua
     var int v ← 0
     while v < geom.vertex_count {

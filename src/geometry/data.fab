@@ -45,19 +45,19 @@ class ColoredQuadMesh {
     var list<u32> indices
 
     fn face_count() → int ∪ none {
-        if self.positions.length() ≠ self.colors.length() then return null
-        if self.positions.length() % 12 ≠ 0 then return null
-        if self.indices.length() % 6 ≠ 0 then return null
+        if self.positions.length() ≢ self.colors.length() then return null
+        if self.positions.length() % 12 ≢ 0 then return null
+        if self.indices.length() % 6 ≢ 0 then return null
         const int count ← self.positions.length() / 12
         if count ≡ 0 then return null
-        if self.indices.length() ≠ count * 6 then return null
+        if self.indices.length() ≢ count * 6 then return null
         return count
     }
 
     fn geometry() → Geometry ∪ none {
-        if self.positions.length() ≠ self.colors.length() then return null
-        if self.positions.length() % 3 ≠ 0 then return null
-        if self.indices.length() % 3 ≠ 0 then return null
+        if self.positions.length() ≢ self.colors.length() then return null
+        if self.positions.length() % 3 ≢ 0 then return null
+        if self.indices.length() % 3 ≢ 0 then return null
         const int vertex_count ← self.positions.length() / 3
         return colored_indexed_geometry(vertex_count, self.positions, self.colors, self.indices)
     }
@@ -127,10 +127,10 @@ class Geometry {
         for range 0‥self.attributes.length() const i {
             const attribute.Attribute attr ← self.attributes[i]
             if not attr.valid() then return false
-            if attr.element_count ≠ self.vertex_count then return false
+            if attr.element_count ≢ self.vertex_count then return false
             if attr.name ≡ "position" {
                 has_position ← true
-                if attr.component_width ≠ 3 then return false
+                if attr.component_width ≢ 3 then return false
                 if attr.float32_values() is none then return false
             }
             for range 0‥i const j {
@@ -699,9 +699,9 @@ fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> col
 
 @ public
 fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, vector<f32, 3> a, vector<f32, 3> b, vector<f32, 3> c, vector<f32, 3> d, ref math.Color color) → ColoredQuadMesh ∪ none {
-    if positions.length() ≠ colors.length() then return null
-    if positions.length() % 3 ≠ 0 then return null
-    if indices.length() % 3 ≠ 0 then return null
+    if positions.length() ≢ colors.length() then return null
+    if positions.length() % 3 ≢ 0 then return null
+    if indices.length() % 3 ≢ 0 then return null
     var list<f32> next_positions ← empty
     for from positions const value {
         next_positions.append(value)
