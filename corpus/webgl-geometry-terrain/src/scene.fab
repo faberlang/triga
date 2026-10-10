@@ -6,6 +6,6 @@ class CorpusGeometryManifest {
 }
 
 @ public
-class_corpus_placeholder) → CorpusGeometryManifest {
+fn corpus_scene_geometry() → CorpusGeometryManifest {
     return CorpusGeometryManifest {objects = terrain.terrain_meshes()}
 }

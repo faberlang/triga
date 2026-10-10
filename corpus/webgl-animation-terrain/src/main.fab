@@ -13,10 +13,10 @@ class TerrainMesh {
 const int GRID_SEGMENTS = 32
 const f32 GRID_EXTENT = 44.0
 
-fn floats_textus(de list<f32> values) → string {
+fn floats_textus(ref list<f32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.length() {
+    while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
         }
@@ -28,10 +28,10 @@ fn floats_textus(de list<f32> values) → string {
     return output
 }
 
-fn indices_textus(de list<u32> values) → string {
+fn indices_textus(ref list<u32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.length() {
+    while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
         }
@@ -47,12 +47,12 @@ fn terrain_mesh() → TerrainMesh {
     const int vertices_per_row ← GRID_SEGMENTS + 1
     const f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
     const f32 half ← GRID_EXTENT * 0.5
-    var list<f32> payload ← vacua
+    var list<f32> payload ← empty
     var int row ← 0
-    while row < vertices_per_row {
+    while row ≺ vertices_per_row {
         const f32 z ← (0.0 - half) + (row ↦ f32) * cell
         var int column ← 0
-        while column < vertices_per_row {
+        while column ≺ vertices_per_row {
             const f32 x ← (0.0 - half) + (column ↦ f32) * cell
             # The shader owns height, normal, color, fog, and the terrain
             # layers. Keep a 36-byte host record with position first.
@@ -70,15 +70,15 @@ fn terrain_mesh() → TerrainMesh {
         row ← row + 1
     }
 
-    var list<u32> indices ← vacua
+    var list<u32> indices ← empty
     var int index_row ← 0
-    while index_row < GRID_SEGMENTS {
+    while index_row ≺ GRID_SEGMENTS {
         var int index_column ← 0
-        while index_column < GRID_SEGMENTS {
-            const u32 a ← (index_row * vertices_per_row + index_column) ↦ u32
-            const u32 b ← (index_row * vertices_per_row + index_column + 1) ↦ u32
-            const u32 c ← ((index_row + 1) * vertices_per_row + index_column) ↦ u32
-            const u32 d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ u32
+        while index_column ≺ GRID_SEGMENTS {
+            const u32 a ← (index_row * vertices_per_row + index_column) ↦ u32 ⊥ 0
+            const u32 b ← (index_row * vertices_per_row + index_column + 1) ↦ u32 ⊥ 0
+            const u32 c ← ((index_row + 1) * vertices_per_row + index_column) ↦ u32 ⊥ 0
+            const u32 d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ u32 ⊥ 0
             indices.append(a)
             indices.append(c)
             indices.append(b)
@@ -93,7 +93,7 @@ fn terrain_mesh() → TerrainMesh {
     return TerrainMesh {name = "procedural-terrain", vertex_count = vertices_per_row * vertices_per_row, index_count = indices.length(), vertex_payload = payload, index_payload = indices}
 }
 
-fn scene_geometry_blob(de TerrainMesh mesh) → string {
+fn scene_geometry_blob(ref TerrainMesh mesh) → string {
     return "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
 }
 
@@ -148,7 +148,7 @@ fn corpus_animation_terrain_controller(dom.Scope scope) → list<dom.Subscriptio
         dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
     }
 
-    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
+    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
         const f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
         const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)

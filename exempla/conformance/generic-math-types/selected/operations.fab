@@ -151,7 +151,9 @@ fn normata(vector<f32, 4> v) → vector<f32, 4> {
 }
 
 fn interpolata(vector<f32, 4> a, vector<f32, 4> b, f32 ratio) → vector<f32, 4> {
-    return a.added(b.subtract(a).multiply(uniform_4(ratio)))
+    const vector<f32, 4> difference ← b.subtract(a)
+    const vector<f32, 4> scaled ← difference.multiply(uniform_4(ratio))
+    return a.added(scaled)
 }
 
 fn projecta(vector<f32, 4> v, vector<f32, 4> axis) → vector<f32, 4> {
@@ -249,7 +251,13 @@ fn ex_columnis(vector<f32, 4> c0, vector<f32, 4> c1, vector<f32, 4> c2, vector<f
     const vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
     const vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
     const vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
-    return (c0 ⊗ e0).added(c1 ⊗ e1).added(c2 ⊗ e2).added(c3 ⊗ e3)
+    const matrix<f32, [4, 4]> m0 ← c0 ⊗ e0
+    const matrix<f32, [4, 4]> m1 ← c1 ⊗ e1
+    const matrix<f32, [4, 4]> m2 ← c2 ⊗ e2
+    const matrix<f32, [4, 4]> m3 ← c3 ⊗ e3
+    const matrix<f32, [4, 4]> m01 ← m0.added(m1)
+    const matrix<f32, [4, 4]> m012 ← m01.added(m2)
+    return m012.added(m3)
 }
 
 fn basis_4(int index) → vector<f32, 4> {
@@ -552,7 +560,8 @@ fn capsa_centrum(Box<3> capsam) → vector<f32, 3> {
     const f32 bz ← capsam.maxima.dot(e0_basis3(2))
     const vector<f32, 3> inferior ← [ax, ay, az] ↦ vector<f32, 3>
     const vector<f32, 3> superior ← [bx, by, bz] ↦ vector<f32, 3>
-    return inferior.added(superior).multiply(half)
+    const vector<f32, 3> sum ← inferior.added(superior)
+    return sum.multiply(half)
 }
 
 fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ none {
@@ -611,9 +620,9 @@ fn capsa_intersecat_radium(Box<3> capsam, vector<f32, 3> origin, vector<f32, 3> 
     if y_entry is none then return null
     const f32 ∪ none z_entry ← axis_interval(origin.dot(e0_basis3(2)), direction.dot(e0_basis3(2)), capsam.minima.dot(e0_basis3(2)), capsam.maxima.dot(e0_basis3(2)))
     if z_entry is none then return null
-    const f32 xe ← x_entry coalesce 0.0
-    const f32 ye ← y_entry coalesce 0.0
-    const f32 ze ← z_entry coalesce 0.0
+    const f32 xe ← x_entry
+    const f32 ye ← y_entry
+    const f32 ze ← z_entry
     var f32 entry ← xe
     if ye ≻ entry then entry ← ye
     if ze ≻ entry then entry ← ze

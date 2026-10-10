@@ -13,10 +13,10 @@ class AnimatedMesh {
     var list<u32> index_payload
 }
 
-fn floats_textus(de list<f32> values) → string {
+fn floats_textus(ref list<f32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.length() {
+    while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
         }
@@ -28,10 +28,10 @@ fn floats_textus(de list<f32> values) → string {
     return output
 }
 
-fn indices_textus(de list<u32> values) → string {
+fn indices_textus(ref list<u32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.length() {
+    while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
         }
@@ -43,22 +43,23 @@ fn indices_textus(de list<u32> values) → string {
     return output
 }
 
-fn float_values(de attribute.Attribute attr) → list<f32> ∪ none {
+fn float_values(ref attribute.Attribute attr) → list<f32> ∪ none {
     return attr.float32_values()
 }
 
-fn mesh_ex_geometry(string name, de data.Geometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → AnimatedMesh ∪ none {
+fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → AnimatedMesh ∪ none {
     if geom.attributes.length() ≺ 2 then return null
     const list<f32> ∪ none pos_opt ← float_values(geom.attributes[0])
     const list<f32> ∪ none nrm_opt ← float_values(geom.attributes[1])
-    if pos_opt is none or nrm_opt is none then return null
+    if pos_opt is none then return null
+    if nrm_opt is none then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
     if pos.length() ≢ geom.vertex_count * 3 then return null
     if nrm.length() ≢ geom.vertex_count * 3 then return null
-    var list<f32> payload ← vacua
+    var list<f32> payload ← empty
     var int v ← 0
-    while v < geom.vertex_count {
+    while v ≺ geom.vertex_count {
         payload.append(pos[v * 3] + ox)
         payload.append(pos[v * 3 + 1] + oy)
         payload.append(pos[v * 3 + 2] + oz)
@@ -73,7 +74,7 @@ fn mesh_ex_geometry(string name, de data.Geometry geom, f32 ox, f32 oy, f32 oz, 
     return AnimatedMesh {name = name, vertex_count = geom.vertex_count, index_count = geom.indices.length(), vertex_payload = payload, index_payload = geom.indices}
 }
 
-fn add_mesh(list<AnimatedMesh> meshes, string name, data.Geometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<AnimatedMesh> {
+fn add_mesh(mut list<AnimatedMesh> meshes, string name, data.Geometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<AnimatedMesh> {
     if geom_opt is none then return meshes
     const data.Geometry geom ← geom_opt
     const AnimatedMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom, ox, oy, oz, r, g, b)
@@ -83,17 +84,17 @@ fn add_mesh(list<AnimatedMesh> meshes, string name, data.Geometry ∪ none geom_
 }
 
 fn scene_meshes() → list<AnimatedMesh> {
-    var list<AnimatedMesh> meshes ← vacua
-    meshes ← add_mesh(meshes, "orbital-box", basic.box(1.8, 1.8, 1.8), -2.8 ∷ f32, 0.0, 0.0, 0.92, 0.46, 0.28)
-    meshes ← add_mesh(meshes, "orbital-torus", basic.torus(1.25, 0.34), 0.0, 0.0, 0.0, 0.28, 0.78, 0.92)
-    meshes ← add_mesh(meshes, "orbital-sphere", basic.sphere(1.25), 2.8 ∷ f32, 0.0, 0.0, 0.9, 0.82, 0.28)
+    var list<AnimatedMesh> meshes ← empty
+    meshes ← add_mesh(mut meshes, "orbital-box", basic.box(1.8, 1.8, 1.8), -2.8 ∷ f32, 0.0, 0.0, 0.92, 0.46, 0.28)
+    meshes ← add_mesh(mut meshes, "orbital-torus", basic.torus(1.25, 0.34), 0.0, 0.0, 0.0, 0.28, 0.78, 0.92)
+    meshes ← add_mesh(mut meshes, "orbital-sphere", basic.sphere(1.25), 2.8 ∷ f32, 0.0, 0.0, 0.9, 0.82, 0.28)
     return meshes
 }
 
-fn scene_geometry_blob(de list<AnimatedMesh> meshes) → string {
+fn scene_geometry_blob(ref list<AnimatedMesh> meshes) → string {
     var string output ← ""
     var int i ← 0
-    while i < meshes.length() {
+    while i ≺ meshes.length() {
         const AnimatedMesh mesh ← meshes[i]
         const string piece ← "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
         if i ≡ 0 {
@@ -157,7 +158,7 @@ fn corpus_animation_orbit_controller(dom.Scope scope) → list<dom.Subscription>
         dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
     }
 
-    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
+    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
         const f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
         const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)

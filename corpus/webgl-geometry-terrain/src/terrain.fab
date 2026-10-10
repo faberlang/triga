@@ -42,8 +42,8 @@ fn smoothstep(f32 t) → f32 {
 
 @ private { }
 fn value_noise(f32 x, f32 y) → f32 {
-    const int ix ↤ x
-    const int iy ↤ y
+    const int ix ← x ↦ int via Trunc ⊥ 0
+    const int iy ← y ↦ int via Trunc ⊥ 0
     const f32 sx ← smoothstep(x - (ix ↦ f32))
     const f32 sy ← smoothstep(y - (iy ↦ f32))
     const f32 v00 ← lattice_hash(ix, iy)
@@ -106,9 +106,9 @@ fn elevation_color(f32 height) → math.Color {
     const math.Color grass ← math.Color {r = 0.29, g = 0.49, b = 0.25}
     const math.Color rock ← math.Color {r = 0.45, g = 0.42, b = 0.4}
     const math.Color snow ← math.Color {r = 0.9, g = 0.92, b = 0.95}
-    if t ≺ 0.35 then return sand.interpolata(grass, t / 0.35)
-    if t ≺ 0.7 then return grass.interpolata(rock, (t - 0.35) / 0.35)
-    return rock.interpolata(snow, (t - 0.7) / 0.3)
+    if t ≺ 0.35 then return sand.lerp(grass, t / 0.35)
+    if t ≺ 0.7 then return grass.lerp(rock, (t - 0.35) / 0.35)
+    return rock.lerp(snow, (t - 0.7) / 0.3)
 }
 
 # --- Mesh generation --------------------------------------------------------
@@ -118,7 +118,7 @@ fn terrain_mesh() → TerrainMesh {
     const int verts_per_row ← GRID_SEGMENTS + 1
     const f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
     const f32 half ← GRID_EXTENT * 0.5
-    var list<f32> payload ← vacua
+    var list<f32> payload ← empty
     var int gz ← 0
     while gz ≺ verts_per_row {
         const f32 wz ← (0.0 - half) + (gz ↦ f32) * cell
@@ -150,15 +150,15 @@ fn terrain_mesh() → TerrainMesh {
         }
         gz ← gz + 1
     }
-    var list<u32> indices ← vacua
+    var list<u32> indices ← empty
     var int cz ← 0
     while cz ≺ GRID_SEGMENTS {
         var int cx ← 0
         while cx ≺ GRID_SEGMENTS {
-            const u32 a ← cz * verts_per_row + cx ↦ u32
-            const u32 b ← (cz * verts_per_row + cx) + 1 ↦ u32
-            const u32 c ← (cz + 1) * verts_per_row + cx ↦ u32
-            const u32 d ← ((cz + 1) * verts_per_row + cx) + 1 ↦ u32
+            const u32 a ← cz * verts_per_row + cx ↦ u32 ⊥ 0
+            const u32 b ← (cz * verts_per_row + cx) + 1 ↦ u32 ⊥ 0
+            const u32 c ← (cz + 1) * verts_per_row + cx ↦ u32 ⊥ 0
+            const u32 d ← ((cz + 1) * verts_per_row + cx) + 1 ↦ u32 ⊥ 0
             indices.append(a)
             indices.append(c)
             indices.append(b)
@@ -176,7 +176,7 @@ fn terrain_mesh() → TerrainMesh {
 fn water_mesh() → TerrainMesh {
     const f32 half ← GRID_EXTENT * 0.5
     const f32 level ← WATER_LEVEL
-    var list<f32> payload ← vacua
+    var list<f32> payload ← empty
 
     # Four corners, normal up, deep-water blue.
     const list<f32> corners ← [0.0 - half, level, 0.0 - half, half, level, 0.0 - half, half, level, half, 0.0 - half, level, half]
@@ -198,7 +198,7 @@ fn water_mesh() → TerrainMesh {
 
 @ public
 fn terrain_meshes() → list<TerrainMesh> {
-    var list<TerrainMesh> meshes ← vacua
+    var list<TerrainMesh> meshes ← empty
     meshes.append(terrain_mesh())
     meshes.append(water_mesh())
     return meshes

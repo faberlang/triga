@@ -26,12 +26,13 @@ fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz,
     if geom.attributes.length() ≺ 2 then return null
     const list<f32> ∪ none pos_opt ← geom.attributes[0].float32_values()
     const list<f32> ∪ none nrm_opt ← geom.attributes[1].float32_values()
-    if pos_opt is none or nrm_opt is none then return null
+    if pos_opt is none then return null
+    if nrm_opt is none then return null
     const list<f32> pos ← pos_opt
     const list<f32> nrm ← nrm_opt
     if pos.length() ≢ geom.vertex_count * 3 then return null
     if nrm.length() ≢ geom.vertex_count * 3 then return null
-    var list<f32> payload ← vacua
+    var list<f32> payload ← empty
     var int v ← 0
     while v ≺ geom.vertex_count {
         payload.append(pos[v * 3] + ox)
@@ -49,7 +50,7 @@ fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz,
 }
 
 @ private { }
-fn add_mesh(list<CorpusMesh> meshes, string name, data.Geometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<CorpusMesh> {
+fn add_mesh(mut list<CorpusMesh> meshes, string name, data.Geometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<CorpusMesh> {
     if geom_opt is none then return meshes
     const CorpusMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom_opt, ox, oy, oz, r, g, b)
     if mesh_opt is none then return meshes
@@ -62,18 +63,18 @@ fn add_mesh(list<CorpusMesh> meshes, string name, data.Geometry ∪ none geom_op
 # Grid layout mirroring the three.js geometries page: 4 columns × 2 rows.
 @ public
 fn geometry_showcase_meshes() → list<CorpusMesh> {
-    var list<CorpusMesh> meshes ← vacua
+    var list<CorpusMesh> meshes ← empty
 
     # Back row (z = -1.8).
-    meshes ← add_mesh(meshes, "plane", basic.plane(2.2, 2.2), -4.8 ∷ f32, 0.0, -1.8 ∷ f32, 0.9, 0.55, 0.45)
-    meshes ← add_mesh(meshes, "box", basic.box(1.5, 1.5, 1.5), -1.6 ∷ f32, 0.0, -1.8 ∷ f32, 0.45, 0.7, 0.9)
-    meshes ← add_mesh(meshes, "circle", basic.circle(1.1), 1.6, 0.0, -1.8 ∷ f32, 0.55, 0.85, 0.55)
-    meshes ← add_mesh(meshes, "sphere", basic.sphere(1.1), 4.8, 0.0, -1.8 ∷ f32, 0.9, 0.75, 0.4)
+    meshes ← add_mesh(mut meshes, "plane", basic.plane(2.2, 2.2), -4.8 ∷ f32, 0.0, -1.8 ∷ f32, 0.9, 0.55, 0.45)
+    meshes ← add_mesh(mut meshes, "box", basic.box(1.5, 1.5, 1.5), -1.6 ∷ f32, 0.0, -1.8 ∷ f32, 0.45, 0.7, 0.9)
+    meshes ← add_mesh(mut meshes, "circle", basic.circle(1.1), 1.6, 0.0, -1.8 ∷ f32, 0.55, 0.85, 0.55)
+    meshes ← add_mesh(mut meshes, "sphere", basic.sphere(1.1), 4.8, 0.0, -1.8 ∷ f32, 0.9, 0.75, 0.4)
 
     # Front row (z = +1.8).
-    meshes ← add_mesh(meshes, "cylinder", basic.cylinder(0.85, 1.8), -4.8 ∷ f32, 0.0, 1.8, 0.75, 0.55, 0.9)
-    meshes ← add_mesh(meshes, "cone", basic.cone(1.0, 1.8), -1.6 ∷ f32, 0.0, 1.8, 0.45, 0.85, 0.8)
-    meshes ← add_mesh(meshes, "torus", basic.torus(0.95, 0.35), 1.6, 0.0, 1.8, 0.9, 0.5, 0.65)
-    meshes ← add_mesh(meshes, "slab", basic.box(1.9, 0.6, 1.1), 4.8, 0.0, 1.8, 0.65, 0.65, 0.7)
+    meshes ← add_mesh(mut meshes, "cylinder", basic.cylinder(0.85, 1.8), -4.8 ∷ f32, 0.0, 1.8, 0.75, 0.55, 0.9)
+    meshes ← add_mesh(mut meshes, "cone", basic.cone(1.0, 1.8), -1.6 ∷ f32, 0.0, 1.8, 0.45, 0.85, 0.8)
+    meshes ← add_mesh(mut meshes, "torus", basic.torus(0.95, 0.35), 1.6, 0.0, 1.8, 0.9, 0.5, 0.65)
+    meshes ← add_mesh(mut meshes, "slab", basic.box(1.9, 0.6, 1.1), 4.8, 0.0, 1.8, 0.65, 0.65, 0.7)
     return meshes
 }

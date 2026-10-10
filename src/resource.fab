@@ -79,27 +79,23 @@ class ResourceLifecycleTransition {
     var bool removed
 
     fn valid() → bool {
-        if self.previous is none and self.current is none then return false
-        if self.previous not is none {
-            const ResourceHandle previous ← self.previous
+        const ResourceHandle ∪ none previous ← self.previous
+        const ResourceHandle ∪ none current ← self.current
+        if previous is none and current is none then return false
+        if previous not is none {
             if previous.index ≢ self.logical_index then return false
         }
-        if self.current not is none {
-            const ResourceHandle current ← self.current
+        if current not is none {
             if current.index ≢ self.logical_index then return false
         }
-        if self.removed then return (self.changed and self.previous not is none) and self.current is none
+        if self.removed then return (self.changed and previous not is none) and current is none
         if not self.changed {
-            if self.previous is none then return false
-            if self.current is none then return false
-            const ResourceHandle previous ← self.previous
-            const ResourceHandle current ← self.current
+            if previous is none then return false
+            if current is none then return false
             return previous.generation ≡ current.generation
         }
-        if self.previous is none then return self.current not is none
-        if self.current is none then return false
-        const ResourceHandle previous ← self.previous
-        const ResourceHandle current ← self.current
+        if previous is none then return current not is none
+        if current is none then return false
         return current.generation ≡ previous.generation + 1
     }
 }
@@ -408,9 +404,11 @@ fn lifecycle_changed_handles(ref list<ResourceLifecycleTransition> transitions) 
     if not lifecycles_valid(transitions) then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
-        if transition.changed and transition.current not is none {
-            const ResourceHandle current ← transition.current
-            handles.append(current)
+        if transition.changed {
+            const ResourceHandle ∪ none current ← transition.current
+            if current not is none {
+                handles.append(current)
+            }
         }
     }
     return handles
@@ -421,9 +419,11 @@ fn lifecycle_unchanged_handles(ref list<ResourceLifecycleTransition> transitions
     if not lifecycles_valid(transitions) then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
-        if not transition.changed and transition.current not is none {
-            const ResourceHandle current ← transition.current
-            handles.append(current)
+        if not transition.changed {
+            const ResourceHandle ∪ none current ← transition.current
+            if current not is none {
+                handles.append(current)
+            }
         }
     }
     return handles
@@ -434,9 +434,11 @@ fn lifecycle_removed_handles(ref list<ResourceLifecycleTransition> transitions) 
     if not lifecycles_valid(transitions) then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
-        if transition.removed and transition.previous not is none {
-            const ResourceHandle previous ← transition.previous
-            handles.append(previous)
+        if transition.removed {
+            const ResourceHandle ∪ none previous ← transition.previous
+            if previous not is none {
+                handles.append(previous)
+            }
         }
     }
     return handles
@@ -447,9 +449,11 @@ fn lifecycle_retired_handles(ref list<ResourceLifecycleTransition> transitions) 
     if not lifecycles_valid(transitions) then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
-        if transition.changed and transition.previous not is none {
-            const ResourceHandle previous ← transition.previous
-            handles.append(previous)
+        if transition.changed {
+            const ResourceHandle ∪ none previous ← transition.previous
+            if previous not is none {
+                handles.append(previous)
+            }
         }
     }
     return handles
@@ -460,8 +464,8 @@ fn lifecycle_current_handles(ref list<ResourceLifecycleTransition> transitions) 
     if not lifecycles_valid(transitions) then return null
     var list<ResourceHandle> handles ← empty
     for from transitions const transition {
-        if transition.current not is none {
-            const ResourceHandle current ← transition.current
+        const ResourceHandle ∪ none current ← transition.current
+        if current not is none {
             handles.append(current)
         }
     }

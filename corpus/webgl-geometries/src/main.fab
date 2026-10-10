@@ -1,88 +1,85 @@
-+++
-locale = "la"
-+++
-importa ex "tela:web" web
-importa ex "tela:dom" dom
-importa ex "./camera_controls" camera_controls
-importa ex "./scene" scene
-importa ex "./shapes" shapes
-importa ex "triga:math" math
+import from "tela:web" web
+import from "tela:dom" dom
+import from "./camera_controls" camera_controls
+import from "./scene" scene
+import from "./shapes" shapes
+import from "triga:math" math
 
-functio floats_textus(de lista<f32> values) → textus {
-    varia textus output ← ""
-    varia numerus i ← 0
-    dum i < values.length() {
-        si i ≡ 0 {
+fn floats_textus(ref list<f32> values) → string {
+    var string output ← ""
+    var int i ← 0
+    while i ≺ values.length() {
+        if i ≡ 0 {
             output ↤ values[i]
         }
-        secus {
-            output ← "§ §"(output, values[i] ↦ textus)
+        else {
+            output ← "§ §"(output, values[i] ↦ string)
         }
         i ← i + 1
     }
-    redde output
+    return output
 }
 
-functio indices_textus(de lista<u32> values) → textus {
-    varia textus output ← ""
-    varia numerus i ← 0
-    dum i < values.length() {
-        si i ≡ 0 {
+fn indices_textus(ref list<u32> values) → string {
+    var string output ← ""
+    var int i ← 0
+    while i ≺ values.length() {
+        if i ≡ 0 {
             output ↤ values[i]
         }
-        secus {
-            output ← "§ §"(output, values[i] ↦ textus)
+        else {
+            output ← "§ §"(output, values[i] ↦ string)
         }
         i ← i + 1
     }
-    redde output
+    return output
 }
 
-functio object_geometry_textus(de shapes.CorpusMesh obj) → textus {
-    redde "§;§;§;§;§;§"(obj.name, "static", obj.vertex_count ↦ textus, obj.index_count ↦ textus, floats_textus(obj.vertex_payload), indices_textus(obj.index_payload))
+fn object_geometry_textus(ref shapes.CorpusMesh obj) → string {
+    return "§;§;§;§;§;§"(obj.name, "static", obj.vertex_count ↦ string, obj.index_count ↦ string, floats_textus(obj.vertex_payload), indices_textus(obj.index_payload))
 }
 
-functio scene_geometry_blob(de scene.CorpusGeometryManifest manifest) → textus {
-    varia textus output ← ""
-    varia numerus i ← 0
-    dum i < manifest.objects.length() {
-        fixum textus piece ← object_geometry_textus((manifest.objects)[i])
-        si i ≡ 0 {
+fn scene_geometry_blob(ref scene.CorpusGeometryManifest manifest) → string {
+    var string output ← ""
+    var int i ← 0
+    while i ≺ manifest.objects.length() {
+        const string piece ← object_geometry_textus((manifest.objects)[i])
+        if i ≡ 0 {
             output ← piece
         }
-        secus {
+        else {
             output ← "§|§"(output, piece)
         }
         i ← i + 1
     }
-    redde output
+    return output
 }
 
-functio publish_scene_geometry(dom.Element facts_element) → vacuum {
-    fixum scene.CorpusGeometryManifest manifest ← scene.corpus_scene_geometry()
+fn publish_scene_geometry(dom.Element facts_element) → void {
+    const scene.CorpusGeometryManifest manifest ← scene.corpus_scene_geometry()
     dom.attr_set(facts_element, "data-scene-geometry", scene_geometry_blob(manifest))
-    dom.attr_set(facts_element, "data-scene-object-count", manifest.objects.length() ↦ textus)
+    dom.attr_set(facts_element, "data-scene-object-count", manifest.objects.length() ↦ string)
 }
 
-functio publish_transform(dom.Element facts_element, de camera_controls.OrbitCamera orbit, f32 aspect) → vacuum {
-    fixum math.TransformPayload ∪ nihil payload_result ← camera_controls.transform_payload(orbit, aspect)
-    si payload_result est nihil {
+fn publish_transform(dom.Element facts_element, ref camera_controls.OrbitCamera orbit, f32 aspect) → void {
+    const math.TransformPayload ∪ none payload_result ← camera_controls.transform_payload(orbit, aspect)
+    if payload_result is none {
         dom.attr_set(facts_element, "data-transform-status", "invalid")
-        redde
+        return
     }
     dom.attr_set(facts_element, "data-transform-status", "ready")
     dom.attr_set(facts_element, "data-transform-payload", floats_textus(payload_result!.values))
-    dom.attr_set(facts_element, "data-camera-yaw", orbit.yaw_degrees ↦ textus)
-    dom.attr_set(facts_element, "data-camera-pitch", orbit.pitch_degrees ↦ textus)
-    dom.attr_set(facts_element, "data-camera-distance", orbit.distance ↦ textus)
+    dom.attr_set(facts_element, "data-camera-yaw", orbit.yaw_degrees ↦ string)
+    dom.attr_set(facts_element, "data-camera-pitch", orbit.pitch_degrees ↦ string)
+    dom.attr_set(facts_element, "data-camera-distance", orbit.distance ↦ string)
 }
 
 @ WebController { selector = "#triga-corpus-geometries" }
-functio corpus_geometries_controller(dom.Scope scope) → lista<dom.Subscription> {
-    fixum dom.Element status ← dom.require(scope, ".corpus-status")
-    fixum dom.Element facts ← dom.require(scope, ".triga-facts")
-    varia camera_controls.OrbitCamera orbit ← camera_controls.spawn_camera()
-    fixum f32 canvas_aspect ← 960.0 / 540.0
+fn corpus_geometries_controller(dom.Scope scope) → list<dom.Subscription> {
+    const dom.Element status ← dom.require(scope, ".corpus-status")
+    const dom.Element facts ← dom.require(scope, ".triga-facts")
+    var camera_controls.OrbitCamera orbit ← camera_controls.spawn_camera()
+    const f32 canvas_aspect ← 960.0 / 540.0
 
     dom.attr_set(facts, "data-scene-name", "triga-corpus-webgl-geometries")
     dom.attr_set(facts, "data-render-status", "awaiting-host")
@@ -93,27 +90,27 @@ functio corpus_geometries_controller(dom.Scope scope) → lista<dom.Subscription
     publish_scene_geometry(facts)
     publish_transform(facts, orbit, canvas_aspect)
 
-    fixum dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → vacuum ∴ fac {
-        fixum f32 delta_seconds ← frame.delta_ms / 1000.0
+    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
+        const f32 delta_seconds ← frame.delta_ms / 1000.0
         orbit ← camera_controls.step_camera(orbit, delta_seconds)
         publish_transform(facts, orbit, canvas_aspect)
-        dom.attr_set(facts, "data-frame", frame.frame ↦ textus)
+        dom.attr_set(facts, "data-frame", frame.frame ↦ string)
     })
 
-    fixum dom.Subscription keydown_sub ← dom.on_keyboard(facts, "keydown", (dom.KeyboardState key) → vacuum ∴ fac {
-        orbit ← camera_controls.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera_controls.set_key_by_code(orbit.input, key.code, verum) }
+    const dom.Subscription keydown_sub ← dom.on_keyboard(facts, "keydown", (dom.KeyboardState key) → void ∴ do {
+        orbit ← camera_controls.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera_controls.set_key_by_code(orbit.input, key.code, true) }
         publish_transform(facts, orbit, canvas_aspect)
     })
 
-    fixum dom.Subscription keyup_sub ← dom.on_keyboard(facts, "keyup", (dom.KeyboardState key) → vacuum ∴ fac {
-        orbit ← camera_controls.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera_controls.set_key_by_code(orbit.input, key.code, falsum) }
+    const dom.Subscription keyup_sub ← dom.on_keyboard(facts, "keyup", (dom.KeyboardState key) → void ∴ do {
+        orbit ← camera_controls.OrbitCamera { target = orbit.target, yaw_degrees = orbit.yaw_degrees, pitch_degrees = orbit.pitch_degrees, distance = orbit.distance, input = camera_controls.set_key_by_code(orbit.input, key.code, false) }
         publish_transform(facts, orbit, canvas_aspect)
     })
 
-    fixum dom.Subscription resize_sub ← dom.on_resize((dom.ResizeState resize) → vacuum ∴ fac {
-        nota resize
+    const dom.Subscription resize_sub ← dom.on_resize((dom.ResizeState resize) → void ∴ do {
+        print resize
         publish_transform(facts, orbit, canvas_aspect)
     })
 
-    redde [frame_sub, keydown_sub, keyup_sub, resize_sub]
+    return [frame_sub, keydown_sub, keyup_sub, resize_sub]
 }

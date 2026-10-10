@@ -74,9 +74,19 @@ main {
     const vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
     const vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
     const vector<f32, 4> t ← [2.0, 3.0, 5.0, 1.0] ↦ vector<f32, 4>
-    const matrix<f32, [4, 4]> model ← (e0 ⊗ e0).added(e1 ⊗ e1).added(e2 ⊗ e2).added(t ⊗ e3)
+    const matrix<f32, [4, 4]> p00 ← e0 ⊗ e0
+    const matrix<f32, [4, 4]> p11 ← e1 ⊗ e1
+    const matrix<f32, [4, 4]> p22 ← e2 ⊗ e2
+    const matrix<f32, [4, 4]> p33 ← e3 ⊗ e3
+    const matrix<f32, [4, 4]> pt3 ← t ⊗ e3
+    const matrix<f32, [4, 4]> model_01 ← p00.added(p11)
+    const matrix<f32, [4, 4]> model_012 ← model_01.added(p22)
+    const matrix<f32, [4, 4]> model ← model_012.added(pt3)
     # View-projection: 2× identity — distinguishable from the model half.
-    const matrix<f32, [4, 4]> twice ← (e0 ⊗ e0).added(e1 ⊗ e1).added(e2 ⊗ e2).added(e3 ⊗ e3).added(e0 ⊗ e0).added(e1 ⊗ e1).added(e2 ⊗ e2).added(e3 ⊗ e3)
+    const matrix<f32, [4, 4]> identity_01 ← p00.added(p11)
+    const matrix<f32, [4, 4]> identity_012 ← identity_01.added(p22)
+    const matrix<f32, [4, 4]> identity ← identity_012.added(p33)
+    const matrix<f32, [4, 4]> twice ← identity.added(identity)
 
     const list<f32> values ← transform_payload(model, twice)
 

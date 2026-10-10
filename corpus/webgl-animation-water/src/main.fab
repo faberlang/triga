@@ -13,10 +13,10 @@ class WaterMesh {
 const int GRID_SEGMENTS = 24
 const f32 GRID_EXTENT = 24.0
 
-fn floats_textus(de list<f32> values) → string {
+fn floats_textus(ref list<f32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.length() {
+    while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
         }
@@ -28,10 +28,10 @@ fn floats_textus(de list<f32> values) → string {
     return output
 }
 
-fn indices_textus(de list<u32> values) → string {
+fn indices_textus(ref list<u32> values) → string {
     var string output ← ""
     var int i ← 0
-    while i < values.length() {
+    while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
         }
@@ -47,12 +47,12 @@ fn water_mesh() → WaterMesh {
     const int vertices_per_row ← GRID_SEGMENTS + 1
     const f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
     const f32 half ← GRID_EXTENT * 0.5
-    var list<f32> payload ← vacua
+    var list<f32> payload ← empty
     var int z ← 0
-    while z < vertices_per_row {
+    while z ≺ vertices_per_row {
         const f32 wz ← (0.0 - half) + (z ↦ f32) * cell
         var int x ← 0
-        while x < vertices_per_row {
+        while x ≺ vertices_per_row {
             const f32 wx ← (0.0 - half) + (x ↦ f32) * cell
             payload.append(wx)
             payload.append(0.0)
@@ -68,15 +68,15 @@ fn water_mesh() → WaterMesh {
         z ← z + 1
     }
 
-    var list<u32> indices ← vacua
+    var list<u32> indices ← empty
     var int row ← 0
-    while row < GRID_SEGMENTS {
+    while row ≺ GRID_SEGMENTS {
         var int column ← 0
-        while column < GRID_SEGMENTS {
-            const u32 a ← (row * vertices_per_row + column) ↦ u32
-            const u32 b ← (row * vertices_per_row + column + 1) ↦ u32
-            const u32 c ← ((row + 1) * vertices_per_row + column) ↦ u32
-            const u32 d ← ((row + 1) * vertices_per_row + column + 1) ↦ u32
+        while column ≺ GRID_SEGMENTS {
+            const u32 a ← (row * vertices_per_row + column) ↦ u32 ⊥ 0
+            const u32 b ← (row * vertices_per_row + column + 1) ↦ u32 ⊥ 0
+            const u32 c ← ((row + 1) * vertices_per_row + column) ↦ u32 ⊥ 0
+            const u32 d ← ((row + 1) * vertices_per_row + column + 1) ↦ u32 ⊥ 0
             indices.append(a)
             indices.append(c)
             indices.append(b)
@@ -91,7 +91,7 @@ fn water_mesh() → WaterMesh {
     return WaterMesh {name = "flowing-water", vertex_count = vertices_per_row * vertices_per_row, index_count = indices.length(), vertex_payload = payload, index_payload = indices}
 }
 
-fn scene_geometry_blob(de WaterMesh mesh) → string {
+fn scene_geometry_blob(ref WaterMesh mesh) → string {
     return "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
 }
 
@@ -143,7 +143,7 @@ fn corpus_animation_water_controller(dom.Scope scope) → list<dom.Subscription>
         dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
     }
 
-    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ fac {
+    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
         const f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
         const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
