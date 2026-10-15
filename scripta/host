@@ -53,8 +53,11 @@ emit_artifact() {
 generate() {
   resolve_faber
   mkdir -p "$GENERATED"
-  emit_artifact emit -t wgsl-text -o "$GENERATED/graphics.wgsl" "$FIXTURE"
-  emit_artifact emit --reflection -t wgsl-text -o "$GENERATED/graphics-reflection.json" "$FIXTURE"
+  # `faber` resolves providers through --library-home (or [paths] library_home
+  # in faber.toml); the retired FABER_LIBRARY_HOME env branch is not read, so
+  # the flag is passed explicitly here.
+  emit_artifact emit --library-home "$FABER_LIBRARY_HOME" -t wgsl-text -o "$GENERATED/graphics.wgsl" "$FIXTURE"
+  emit_artifact emit --library-home "$FABER_LIBRARY_HOME" --reflection -t wgsl-text -o "$GENERATED/graphics-reflection.json" "$FIXTURE"
   python3 "$HOST/scripta/generate-payloads.py" "$GENERATED" "$ROOT/src/primitives/basic.fab"
 }
 

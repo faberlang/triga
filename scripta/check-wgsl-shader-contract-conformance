@@ -150,7 +150,9 @@ emit_file() {
   local name="$1"
   local file="$2"
   local out
-  if ! out="$("$FABER_BIN" emit -t wgsl-text "$file" 2>"$TMPDIR_WORK/$name.err")"; then
+  # `faber emit` resolves providers through --library-home (the retired
+  # FABER_LIBRARY_HOME env branch is not read).
+  if ! out="$("$FABER_BIN" emit --library-home "$FABER_LIBRARY_HOME" -t wgsl-text "$file" 2>"$TMPDIR_WORK/$name.err")"; then
     echo "FAIL $name: faber emit -t wgsl-text failed" >&2
     sed -n 's/^/    /p' "$TMPDIR_WORK/$name.err" | head -20 >&2
     return 1
