@@ -119,15 +119,14 @@ echo "check-compile: checking scene-store exemplar through Faber provider path"
 # emitter E0308 regression (compiler-lane ledger E0308; owned by the 80
 # generated-Rust lane).
 #
-# BLOCKED (2026-10-15, radix 17cde13166): the un-targeted `faber build`
-# (portable default = HirFhir) now fails on this content with an issue-less
-# `error[PKG001]: <file>` + `fhir package build failed`, while `faber check`,
-# `-t fmir` and `-t ts` are green and a trivial file in the same package is
-# green. Filed to ../.vivi/open-questions/queue.md (lib-rest: triga FHIR
-# build). Until radix rules/fixes it, the scene-store acceptance is the
-# executed-lane package image (`-t fmir`), which is the same analyze + lower
-# surface the FHIR envelope wraps.
-echo "check-compile: building scene-store package image (executed-lane default; FHIR envelope blocked, see open question)"
+# CARVE-OUT: the un-targeted `faber build` (portable default = HirFhir) fails
+# on this content: the FHIR unit gate rejects a size-generic genus applied to a
+# size (`Box<3>`, `named_argument_arity`) and the build prints an issue-less
+# `error[PKG001]: <file>`. `faber check`, `-t fmir` and `-t ts` are green. The
+# default-target build waits on the radix fix; until then the scene-store
+# acceptance is the executed-lane package image (`-t fmir`), the same analyze +
+# lower surface the FHIR envelope wraps.
+echo "check-compile: building scene-store package image (executed-lane default; FHIR default build waits on the radix fix)"
 (cd "$ROOT" && "$FABER_BIN" build --library-home "$FABER_LIBRARY_HOME" -t fmir "$ROOT/exempla/triga-scene-store.fab")
 
 "$ROOT/scripta/check-transforms"
