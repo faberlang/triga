@@ -2,7 +2,7 @@ import from "./terrain" terrain
 
 @ public
 class CorpusGeometryManifest {
-    var list<terrain.TerrainMesh> objects
+    mut list<terrain.TerrainMesh> objects
 }
 
 @ public

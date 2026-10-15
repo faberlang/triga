@@ -121,7 +121,7 @@
 **Redundancy (High):**
 - The geometry unpack/repack pattern appears 6 times:
   ```faber
-  fixum geometry.BufferGeometry geometry ← geometry.BufferGeometry {
+  sit geometry.BufferGeometry geometry ← geometry.BufferGeometry {
       topology = result!.topology,
       vertex_count = result!.vertex_count,
       attributes = result!.attributes,

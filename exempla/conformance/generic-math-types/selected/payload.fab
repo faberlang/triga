@@ -50,17 +50,17 @@ fn payload_view_projection_value(list<f32> values, int index) → f32 ∪ none {
 # local (the S0-T2 routed note records the ref-parameter store block).
 
 fn transform_payload(matrix<f32, [4, 4]> model, matrix<f32, [4, 4]> view_projection) → list<f32> {
-    var list<f32> values ← empty
-    var int i ← 0
+    mut list<f32> values ← empty
+    mut int i ← 0
     while i ≺ 32 {
         values.append(0.0)
         i ← i + 1
     }
-    for from model at [r, c] const cell {
+    for from model at [r, c] let cell {
         values[c * 4 + r] ← cell
     }
-    const int vp_base ← 16
-    for from view_projection at [r, c] const cell {
+    let int vp_base ← 16
+    for from view_projection at [r, c] let cell {
         values[vp_base + c * 4 + r] ← cell
     }
     return values
@@ -69,41 +69,41 @@ fn transform_payload(matrix<f32, [4, 4]> model, matrix<f32, [4, 4]> view_project
 main {
     # Model: identity with translation (2, 3, 5) — built from basis outer
     # products exactly as the operations proof constructs matrices.
-    const vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    const vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    const vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    const vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
-    const vector<f32, 4> t ← [2.0, 3.0, 5.0, 1.0] ↦ vector<f32, 4>
-    const matrix<f32, [4, 4]> p00 ← e0 ⊗ e0
-    const matrix<f32, [4, 4]> p11 ← e1 ⊗ e1
-    const matrix<f32, [4, 4]> p22 ← e2 ⊗ e2
-    const matrix<f32, [4, 4]> p33 ← e3 ⊗ e3
-    const matrix<f32, [4, 4]> pt3 ← t ⊗ e3
-    const matrix<f32, [4, 4]> model_01 ← p00.added(p11)
-    const matrix<f32, [4, 4]> model_012 ← model_01.added(p22)
-    const matrix<f32, [4, 4]> model ← model_012.added(pt3)
+    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
+    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
+    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
+    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+    let vector<f32, 4> t ← [2.0, 3.0, 5.0, 1.0] ↦ vector<f32, 4>
+    let matrix<f32, [4, 4]> p00 ← e0 ⊗ e0
+    let matrix<f32, [4, 4]> p11 ← e1 ⊗ e1
+    let matrix<f32, [4, 4]> p22 ← e2 ⊗ e2
+    let matrix<f32, [4, 4]> p33 ← e3 ⊗ e3
+    let matrix<f32, [4, 4]> pt3 ← t ⊗ e3
+    let matrix<f32, [4, 4]> model_01 ← p00.added(p11)
+    let matrix<f32, [4, 4]> model_012 ← model_01.added(p22)
+    let matrix<f32, [4, 4]> model ← model_012.added(pt3)
     # View-projection: 2× identity — distinguishable from the model half.
-    const matrix<f32, [4, 4]> identity_01 ← p00.added(p11)
-    const matrix<f32, [4, 4]> identity_012 ← identity_01.added(p22)
-    const matrix<f32, [4, 4]> identity ← identity_012.added(p33)
-    const matrix<f32, [4, 4]> twice ← identity.added(identity)
+    let matrix<f32, [4, 4]> identity_01 ← p00.added(p11)
+    let matrix<f32, [4, 4]> identity_012 ← identity_01.added(p22)
+    let matrix<f32, [4, 4]> identity ← identity_012.added(p33)
+    let matrix<f32, [4, 4]> twice ← identity.added(identity)
 
-    const list<f32> values ← transform_payload(model, twice)
+    let list<f32> values ← transform_payload(model, twice)
 
     # Count/layout: 32 floats, 128 bytes.
-    const int thirty_two ← 32
-    const int one_hundred_twenty_eight ← 128
+    let int thirty_two ← 32
+    let int one_hundred_twenty_eight ← 128
     assert values.length() ≡ thirty_two
     assert (payload_float_count(values) coalesce 0) ≡ thirty_two
     assert (payload_byte_count(values) coalesce 0) ≡ one_hundred_twenty_eight
 
     # Column-major model: diagonal ones at 0/5/10, translation column at
     # 12/13/14, last row slot 15 = 1.
-    const f32 one ← 1.0
-    const f32 zero ← 0.0
-    const f32 two ← 2.0
-    const f32 three ← 3.0
-    const f32 five ← 5.0
+    let f32 one ← 1.0
+    let f32 zero ← 0.0
+    let f32 two ← 2.0
+    let f32 three ← 3.0
+    let f32 five ← 5.0
     assert values[0] ≡ one
     assert values[5] ≡ one
     assert values[10] ≡ one
@@ -115,7 +115,7 @@ main {
 
     # View-projection half: model-then-VP order puts the doubled diagonal
     # at floats 16+; column-major means 16/21/26/31 hold the diagonal.
-    const f32 four ← 4.0
+    let f32 four ← 4.0
     assert values[16] ≡ two
     assert values[21] ≡ two
     assert values[26] ≡ two

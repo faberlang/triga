@@ -3,19 +3,19 @@ import from "tela:dom" dom
 import from "triga:math" math
 
 class TerrainMesh {
-    var string name
-    var int vertex_count
-    var int index_count
-    var list<f32> vertex_payload
-    var list<u32> index_payload
+    mut string name
+    mut int vertex_count
+    mut int index_count
+    mut list<f32> vertex_payload
+    mut list<u32> index_payload
 }
 
 const int GRID_SEGMENTS = 32
 const f32 GRID_EXTENT = 44.0
 
 fn floats_textus(ref list<f32> values) → string {
-    var string output ← ""
-    var int i ← 0
+    mut string output ← ""
+    mut int i ← 0
     while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
@@ -29,8 +29,8 @@ fn floats_textus(ref list<f32> values) → string {
 }
 
 fn indices_textus(ref list<u32> values) → string {
-    var string output ← ""
-    var int i ← 0
+    mut string output ← ""
+    mut int i ← 0
     while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
@@ -44,16 +44,16 @@ fn indices_textus(ref list<u32> values) → string {
 }
 
 fn terrain_mesh() → TerrainMesh {
-    const int vertices_per_row ← GRID_SEGMENTS + 1
-    const f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
-    const f32 half ← GRID_EXTENT * 0.5
-    var list<f32> payload ← empty
-    var int row ← 0
+    let int vertices_per_row ← GRID_SEGMENTS + 1
+    let f32 cell ← GRID_EXTENT / (GRID_SEGMENTS ↦ f32)
+    let f32 half ← GRID_EXTENT * 0.5
+    mut list<f32> payload ← empty
+    mut int row ← 0
     while row ≺ vertices_per_row {
-        const f32 z ← (0.0 - half) + (row ↦ f32) * cell
-        var int column ← 0
+        let f32 z ← (0.0 - half) + (row ↦ f32) * cell
+        mut int column ← 0
         while column ≺ vertices_per_row {
-            const f32 x ← (0.0 - half) + (column ↦ f32) * cell
+            let f32 x ← (0.0 - half) + (column ↦ f32) * cell
             # The shader owns height, normal, color, fog, and the terrain
             # layers. Keep a 36-byte host record with position first.
             payload.append(x)
@@ -70,15 +70,15 @@ fn terrain_mesh() → TerrainMesh {
         row ← row + 1
     }
 
-    var list<u32> indices ← empty
-    var int index_row ← 0
+    mut list<u32> indices ← empty
+    mut int index_row ← 0
     while index_row ≺ GRID_SEGMENTS {
-        var int index_column ← 0
+        mut int index_column ← 0
         while index_column ≺ GRID_SEGMENTS {
-            const u32 a ← (index_row * vertices_per_row + index_column) ↦ u32 ⊥ 0
-            const u32 b ← (index_row * vertices_per_row + index_column + 1) ↦ u32 ⊥ 0
-            const u32 c ← ((index_row + 1) * vertices_per_row + index_column) ↦ u32 ⊥ 0
-            const u32 d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ u32 ⊥ 0
+            let u32 a ← (index_row * vertices_per_row + index_column) ↦ u32 ⊥ 0
+            let u32 b ← (index_row * vertices_per_row + index_column + 1) ↦ u32 ⊥ 0
+            let u32 c ← ((index_row + 1) * vertices_per_row + index_column) ↦ u32 ⊥ 0
+            let u32 d ← ((index_row + 1) * vertices_per_row + index_column + 1) ↦ u32 ⊥ 0
             indices.append(a)
             indices.append(c)
             indices.append(b)
@@ -98,37 +98,37 @@ fn scene_geometry_blob(ref TerrainMesh mesh) → string {
 }
 
 fn model_matrix(f32 elapsed_seconds) → matrix<f32, [4, 4]> {
-    const math.Quaternion quaternion ← math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}
+    let math.Quaternion quaternion ← math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}
     return math.matrix_compose([elapsed_seconds * 0.7, 0.0, 0.0] ↦ vector<f32, 3>, quaternion, [1.0, 1.0, 1.0] ↦ vector<f32, 3>)
 }
 
 fn view_projection(f32 elapsed_seconds, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
-    const vector<f32, 3> target ← [-8.0 + elapsed_seconds * 0.75, 1.0, 0.0] ↦ vector<f32, 3>
-    const f32 yaw ← -34.0 + elapsed_seconds * 3.4
-    const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(yaw, -30.0)
-    const vector<f32, 3> offset ← math.scale3(direction, 25.0)
-    const vector<f32, 3> eye ← target.subtracted(offset)
-    const matrix<f32, [4, 4]> ∪ none projection_result ← math.matrix_perspective(48.0, aspect, 0.1, 200.0)
+    let vector<f32, 3> target ← [-8.0 + elapsed_seconds * 0.75, 1.0, 0.0] ↦ vector<f32, 3>
+    let f32 yaw ← -34.0 + elapsed_seconds * 3.4
+    let vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(yaw, -30.0)
+    let vector<f32, 3> offset ← math.scale3(direction, 25.0)
+    let vector<f32, 3> eye ← target.subtracted(offset)
+    let matrix<f32, [4, 4]> ∪ none projection_result ← math.matrix_perspective(48.0, aspect, 0.1, 200.0)
     if projection_result is none then return null
-    const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
     if view_result is none then return null
     return projection_result · view_result
 }
 
 fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ none {
-    const matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(elapsed_seconds, aspect)
+    let matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(elapsed_seconds, aspect)
     if view_projection_result is none then return null
-    const matrix<f32, [4, 4]> model ← model_matrix(elapsed_seconds)
+    let matrix<f32, [4, 4]> model ← model_matrix(elapsed_seconds)
     return math.transform_payload(model, view_projection_result)
 }
 
 @ WebController { selector = "#triga-corpus-animation-terrain" }
 fn corpus_animation_terrain_controller(dom.Scope scope) → list<dom.Subscription> {
-    const dom.Element status ← dom.require(scope, ".corpus-status")
-    const dom.Element facts ← dom.require(scope, ".triga-facts")
-    const TerrainMesh mesh ← terrain_mesh()
-    var f32 elapsed_seconds ← 0.0
-    const f32 canvas_aspect ← 960.0 / 540.0
+    let dom.Element status ← dom.require(scope, ".corpus-status")
+    let dom.Element facts ← dom.require(scope, ".triga-facts")
+    let TerrainMesh mesh ← terrain_mesh()
+    mut f32 elapsed_seconds ← 0.0
+    let f32 canvas_aspect ← 960.0 / 540.0
 
     dom.attr_set(facts, "data-scene-name", "triga-corpus-webgl-animation-terrain")
     dom.attr_set(facts, "data-render-status", "awaiting-host")
@@ -139,7 +139,7 @@ fn corpus_animation_terrain_controller(dom.Scope scope) → list<dom.Subscriptio
     dom.attr_set(facts, "data-terrain-features", "fbm,ridges,terraces,slope-detail,height-fog")
     dom.text_set(status, "terrain-ready")
 
-    const math.TransformPayload ∪ none initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
+    let math.TransformPayload ∪ none initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
     if initial_payload is none {
         dom.attr_set(facts, "data-transform-status", "invalid")
     }
@@ -148,10 +148,10 @@ fn corpus_animation_terrain_controller(dom.Scope scope) → list<dom.Subscriptio
         dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
     }
 
-    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
-        const f32 delta_seconds ← frame.delta_ms / 1000.0
+    let dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
+        let f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
-        const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
+        let math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
         if payload is none {
             dom.attr_set(facts, "data-transform-status", "invalid")
         }

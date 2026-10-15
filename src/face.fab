@@ -14,10 +14,10 @@ import from "triga:geometry/data" data
 # code plus an origin/size into geometry-ready corners.
 @ public
 class FaceQuad {
-    var vector<f32, 3> a
-    var vector<f32, 3> b
-    var vector<f32, 3> c
-    var vector<f32, 3> d
+    mut vector<f32, 3> a
+    mut vector<f32, 3> b
+    mut vector<f32, 3> c
+    mut vector<f32, 3> d
 }
 
 # Build one oriented quad. Invalid face codes and non-positive sizes return
@@ -26,9 +26,9 @@ class FaceQuad {
 fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪ none {
     if not math.face_code_valid(code) then return null
     if size ≤ 0.0 then return null
-    const f32 x1 ← x + size
-    const f32 y1 ← y + size
-    const f32 z1 ← z + size
+    let f32 x1 ← x + size
+    let f32 y1 ← y + size
+    let f32 z1 ← z + size
     switch code {
         case 1 {
             return FaceQuad {a = [x, y, z] ↦ vector<f32, 3>, b = [x, y, z1] ↦ vector<f32, 3>, c = [x, y1, z1] ↦ vector<f32, 3>, d = [x, y1, z] ↦ vector<f32, 3>}
@@ -58,11 +58,11 @@ fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪
 # the accumulation shape used by the voxel exempla.
 @ public
 fn face_code_colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, int code, f32 x, f32 y, f32 z, f32 size) → data.ColoredQuadMesh ∪ none {
-    const FaceQuad ∪ none quad_result ← face_code_unit_quad(code, x, y, z, size)
+    let FaceQuad ∪ none quad_result ← face_code_unit_quad(code, x, y, z, size)
     if quad_result is none then return null
-    const FaceQuad quad ← quad_result
-    const math.Color ∪ none color_result ← math.face_code_color(code)
+    let FaceQuad quad ← quad_result
+    let math.Color ∪ none color_result ← math.face_code_color(code)
     if color_result is none then return null
-    const math.Color color ← color_result
+    let math.Color color ← color_result
     return data.colored_quad_mesh_append(positions, colors, indices, quad.a, quad.b, quad.c, quad.d, color)
 }

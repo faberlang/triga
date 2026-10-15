@@ -17,8 +17,8 @@ import from "triga:material/base" base
 # methods (api-shape-policy §1); basic_material is the free constructor.
 @ public
 class UnlitMaterial {
-    var base.Material base
-    var math.Color color
+    mut base.Material base
+    mut math.Color color
 
     fn valid() → bool {
         return self.base.valid() and self.color.valid()
@@ -52,7 +52,7 @@ class UnlitMaterial {
 
 @ public
 fn basic_material(string name, ref math.Color color) → UnlitMaterial ∪ none {
-    const base.Material base_material ← base.material_from_name(name)
+    let base.Material base_material ← base.material_from_name(name)
     if not base_material.valid() then return null
     # The ∪ null contract extends to the color: every accessor already
     # fails closed on an invalid color (valid), so the constructor must not

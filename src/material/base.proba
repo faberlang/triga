@@ -6,9 +6,9 @@
 import from "triga:material/base" base
 
 test "base material construction preserves defaults and pipeline facts" {
-    const base.Material material ← base.material_from_name("base")
-    const int side_code ← material.side_code() coalesce -1
-    const base.MaterialPipelineFacts ∪ none facts_result ← material.pipeline_facts()
+    let base.Material material ← base.material_from_name("base")
+    let int side_code ← material.side_code() coalesce -1
+    let base.MaterialPipelineFacts ∪ none facts_result ← material.pipeline_facts()
 
     assert material.name ≡ "base"
     assert material.side ≡ (0 ∷ u32)
@@ -34,10 +34,10 @@ test "base material construction preserves defaults and pipeline facts" {
 }
 
 test "side and depth policies project into validated facts" {
-    const base.Material policy ← base.Material {name = "policy", side = 1 ∷ u32, transparent = true, opacity = 0.4, depth_write = false, depth_test = true, alpha_test = 0.25}
-    const int side_code ← policy.side_code() coalesce -1
-    const base.MaterialPipelineFacts ∪ none facts_result ← policy.pipeline_facts()
-    const base.Material double_sided ← policy.double_sided()
+    let base.Material policy ← base.Material {name = "policy", side = 1 ∷ u32, transparent = true, opacity = 0.4, depth_write = false, depth_test = true, alpha_test = 0.25}
+    let int side_code ← policy.side_code() coalesce -1
+    let base.MaterialPipelineFacts ∪ none facts_result ← policy.pipeline_facts()
+    let base.Material double_sided ← policy.double_sided()
 
     assert policy.valid()
     assert side_code ≡ 1
@@ -66,12 +66,12 @@ test "side and depth policies project into validated facts" {
 }
 
 test "opacity alpha and unsupported side values fail closed" {
-    const base.Material empty_name ← base.Material {name = "", side = 0 ∷ u32, opacity = 1.0, alpha_test = 0.0}
-    const base.Material invalid_side ← base.Material {name = "invalid-side", side = 3 ∷ u32, opacity = 1.0, alpha_test = 0.0}
-    const base.Material opacity_low ← base.Material {name = "opacity-low", side = 0 ∷ u32, opacity = -0.01, alpha_test = 0.0}
-    const base.Material opacity_high ← base.Material {name = "opacity-high", side = 0 ∷ u32, opacity = 1.01, alpha_test = 0.0}
-    const base.Material alpha_low ← base.Material {name = "alpha-low", side = 0 ∷ u32, opacity = 1.0, alpha_test = -0.01}
-    const base.Material alpha_high ← base.Material {name = "alpha-high", side = 0 ∷ u32, opacity = 1.0, alpha_test = 1.01}
+    let base.Material empty_name ← base.Material {name = "", side = 0 ∷ u32, opacity = 1.0, alpha_test = 0.0}
+    let base.Material invalid_side ← base.Material {name = "invalid-side", side = 3 ∷ u32, opacity = 1.0, alpha_test = 0.0}
+    let base.Material opacity_low ← base.Material {name = "opacity-low", side = 0 ∷ u32, opacity = -0.01, alpha_test = 0.0}
+    let base.Material opacity_high ← base.Material {name = "opacity-high", side = 0 ∷ u32, opacity = 1.01, alpha_test = 0.0}
+    let base.Material alpha_low ← base.Material {name = "alpha-low", side = 0 ∷ u32, opacity = 1.0, alpha_test = -0.01}
+    let base.Material alpha_high ← base.Material {name = "alpha-high", side = 0 ∷ u32, opacity = 1.0, alpha_test = 1.01}
 
     assert empty_name.valid() ≡ false
     assert invalid_side.valid() ≡ false
@@ -88,7 +88,7 @@ test "opacity alpha and unsupported side values fail closed" {
 }
 
 test "texture descriptor preserves its placeholder shape" {
-    const base.TextureDescriptor descriptor ← base.TextureDescriptor {width = 4 ∷ u32, height = 2 ∷ u32, format = "rgba8unorm"}
+    let base.TextureDescriptor descriptor ← base.TextureDescriptor {width = 4 ∷ u32, height = 2 ∷ u32, format = "rgba8unorm"}
 
     assert descriptor.width ≡ (4 ∷ u32)
     assert descriptor.height ≡ (2 ∷ u32)

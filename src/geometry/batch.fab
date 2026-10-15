@@ -15,8 +15,8 @@
 # draw command.
 @ public
 class DrawRange {
-    var int start
-    var int count
+    mut int start
+    mut int count
 }
 
 # The complete scalar fact set for one host draw. Geometry fills this
@@ -24,12 +24,12 @@ class DrawRange {
 # element origin/count, instance count, and material selection.
 @ public
 class GeometryDrawCommand {
-    var bool indexed
-    var int element_count
-    var int first_element
-    var int base_vertex
-    var int instance_count
-    var int material_index
+    mut bool indexed
+    mut int element_count
+    mut int first_element
+    mut int base_vertex
+    mut int instance_count
+    mut int material_index
 }
 
 # One material-owned element range. Groups are CPU-side batching metadata;
@@ -37,9 +37,9 @@ class GeometryDrawCommand {
 # non-overlapping order before producing group commands.
 @ public
 class GeometryGroup {
-    var int start
-    var int count
-    var int material_index
+    mut int start
+    mut int count
+    mut int material_index
 }
 
 # Upload and draw facts for indexed geometry. The payload fields are byte
@@ -47,11 +47,11 @@ class GeometryGroup {
 # generated group commands.
 @ public
 class IndexedGeometryDrawBatchFacts {
-    var int draw_count
-    var int grouped_element_total
-    var int vertex_payload_byte_count
-    var int index_payload_byte_count
-    var int total_payload_byte_count
+    mut int draw_count
+    mut int grouped_element_total
+    mut int vertex_payload_byte_count
+    mut int index_payload_byte_count
+    mut int total_payload_byte_count
 }
 
 # Batch facts for line geometry. `line_count` records the number of line
@@ -59,12 +59,12 @@ class IndexedGeometryDrawBatchFacts {
 # payload-byte facts as the indexed batch shape.
 @ public
 class LineGeometryDrawBatchFacts {
-    var int draw_count
-    var int line_count
-    var int grouped_element_total
-    var int vertex_payload_byte_count
-    var int index_payload_byte_count
-    var int total_payload_byte_count
+    mut int draw_count
+    mut int line_count
+    mut int grouped_element_total
+    mut int vertex_payload_byte_count
+    mut int index_payload_byte_count
+    mut int total_payload_byte_count
 }
 
 # Exact CPU-side payload facts for the visible-face mesh shape used by the
@@ -73,14 +73,14 @@ class LineGeometryDrawBatchFacts {
 # helpers can describe the host upload without allocating a buffer.
 @ public
 class VisibleFaceMeshFacts {
-    var int face_count
-    var int vertex_count
-    var int index_count
-    var int triangle_count
-    var int position_payload_byte_count
-    var int color_payload_byte_count
-    var int index_payload_byte_count
-    var int total_payload_byte_count
+    mut int face_count
+    mut int vertex_count
+    mut int index_count
+    mut int triangle_count
+    mut int position_payload_byte_count
+    mut int color_payload_byte_count
+    mut int index_payload_byte_count
+    mut int total_payload_byte_count
 }
 
 # --- Scalar payload and mesh-shape helpers ---
@@ -108,64 +108,64 @@ fn visible_face_triangle_count(int face_count) → int ∪ none {
 
 @ public
 fn visible_face_position_payload_byte_count(int face_count) → int ∪ none {
-    const int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
+    let int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
     if vertex_count_result is none then return null
-    const int vertex_count ← vertex_count_result
+    let int vertex_count ← vertex_count_result
     return (vertex_count * 3) * 4
 }
 
 @ public
 fn visible_face_color_payload_byte_count(int face_count) → int ∪ none {
-    const int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
+    let int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
     if vertex_count_result is none then return null
-    const int vertex_count ← vertex_count_result
+    let int vertex_count ← vertex_count_result
     return (vertex_count * 3) * 4
 }
 
 @ public
 fn visible_face_index_payload_byte_count(int face_count) → int ∪ none {
-    const int ∪ none index_count_result ← visible_face_index_count(face_count)
+    let int ∪ none index_count_result ← visible_face_index_count(face_count)
     if index_count_result is none then return null
-    const int index_count ← index_count_result
+    let int index_count ← index_count_result
     return index_count * 4
 }
 
 @ public
 fn visible_face_payload_byte_count(int face_count) → int ∪ none {
-    const int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
+    let int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
     if position_bytes_result is none then return null
-    const int position_bytes ← position_bytes_result
-    const int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    let int position_bytes ← position_bytes_result
+    let int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
     if color_bytes_result is none then return null
-    const int color_bytes ← color_bytes_result
-    const int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    let int color_bytes ← color_bytes_result
+    let int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
     if index_bytes_result is none then return null
-    const int index_bytes ← index_bytes_result
+    let int index_bytes ← index_bytes_result
     return (position_bytes + color_bytes) + index_bytes
 }
 
 @ public
 fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ none {
-    const int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
+    let int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
     if vertex_count_result is none then return null
-    const int ∪ none index_count_result ← visible_face_index_count(face_count)
+    let int ∪ none index_count_result ← visible_face_index_count(face_count)
     if index_count_result is none then return null
-    const int ∪ none triangle_count_result ← visible_face_triangle_count(face_count)
+    let int ∪ none triangle_count_result ← visible_face_triangle_count(face_count)
     if triangle_count_result is none then return null
-    const int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
+    let int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
     if position_bytes_result is none then return null
-    const int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
+    let int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
     if color_bytes_result is none then return null
-    const int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
+    let int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
     if index_bytes_result is none then return null
-    const int ∪ none total_bytes_result ← visible_face_payload_byte_count(face_count)
+    let int ∪ none total_bytes_result ← visible_face_payload_byte_count(face_count)
     if total_bytes_result is none then return null
-    const int vertex_count ← vertex_count_result
-    const int index_count ← index_count_result
-    const int triangle_count ← triangle_count_result
-    const int position_bytes ← position_bytes_result
-    const int color_bytes ← color_bytes_result
-    const int index_bytes ← index_bytes_result
-    const int total_bytes ← total_bytes_result
+    let int vertex_count ← vertex_count_result
+    let int index_count ← index_count_result
+    let int triangle_count ← triangle_count_result
+    let int position_bytes ← position_bytes_result
+    let int color_bytes ← color_bytes_result
+    let int index_bytes ← index_bytes_result
+    let int total_bytes ← total_bytes_result
     return VisibleFaceMeshFacts {face_count = face_count, vertex_count = vertex_count, index_count = index_count, triangle_count = triangle_count, position_payload_byte_count = position_bytes, color_payload_byte_count = color_bytes, index_payload_byte_count = index_bytes, total_payload_byte_count = total_bytes}
 }

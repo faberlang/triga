@@ -5,25 +5,25 @@ import from "triga:graph/camera" camera
 
 @ public
 class CameraInput {
-    var bool yaw_left = false
-    var bool yaw_right = false
-    var bool pitch_up = false
-    var bool pitch_down = false
-    var bool dolly_in = false
-    var bool dolly_out = false
-    var bool pan_left = false
-    var bool pan_right = false
-    var bool pan_forward = false
-    var bool pan_back = false
+    mut bool yaw_left = false
+    mut bool yaw_right = false
+    mut bool pitch_up = false
+    mut bool pitch_down = false
+    mut bool dolly_in = false
+    mut bool dolly_out = false
+    mut bool pan_left = false
+    mut bool pan_right = false
+    mut bool pan_forward = false
+    mut bool pan_back = false
 }
 
 @ public
 class OrbitCamera {
-    var vector<f32, 3> target
-    var f32 yaw_degrees
-    var f32 pitch_degrees
-    var f32 distance
-    var CameraInput input
+    mut vector<f32, 3> target
+    mut f32 yaw_degrees
+    mut f32 pitch_degrees
+    mut f32 distance
+    mut CameraInput input
 }
 
 @ public
@@ -52,7 +52,7 @@ fn input_axis(bool negative, bool positive) → f32 {
 
 @ public
 fn set_key_by_code(ref CameraInput input, string code, bool pressed) → CameraInput {
-    var CameraInput next ← CameraInput {yaw_left = input.yaw_left, yaw_right = input.yaw_right, pitch_up = input.pitch_up, pitch_down = input.pitch_down, dolly_in = input.dolly_in, dolly_out = input.dolly_out, pan_left = input.pan_left, pan_right = input.pan_right, pan_forward = input.pan_forward, pan_back = input.pan_back}
+    mut CameraInput next ← CameraInput {yaw_left = input.yaw_left, yaw_right = input.yaw_right, pitch_up = input.pitch_up, pitch_down = input.pitch_down, dolly_in = input.dolly_in, dolly_out = input.dolly_out, pan_left = input.pan_left, pan_right = input.pan_right, pan_forward = input.pan_forward, pan_back = input.pan_back}
     if code ≡ "ArrowLeft" {
         next ← CameraInput {yaw_left = pressed, yaw_right = next.yaw_right, pitch_up = next.pitch_up, pitch_down = next.pitch_down, dolly_in = next.dolly_in, dolly_out = next.dolly_out, pan_left = next.pan_left, pan_right = next.pan_right, pan_forward = next.pan_forward, pan_back = next.pan_back}
     }
@@ -88,30 +88,30 @@ fn set_key_by_code(ref CameraInput input, string code, bool pressed) → CameraI
 
 @ public
 fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
-    const f32 safe_delta ← clamp_delta(delta_seconds)
-    const f32 yaw_axis ← input_axis(camera.input.yaw_left, camera.input.yaw_right)
-    const f32 pitch_axis ← input_axis(camera.input.pitch_down, camera.input.pitch_up)
-    const f32 dolly_axis ← input_axis(camera.input.dolly_in, camera.input.dolly_out)
-    const f32 pan_right_axis ← input_axis(camera.input.pan_left, camera.input.pan_right)
-    const f32 pan_forward_axis ← input_axis(camera.input.pan_back, camera.input.pan_forward)
-    const f32 next_yaw ← camera.yaw_degrees + (yaw_axis * 55.0) * safe_delta
-    const f32 next_pitch ← math.camera_pitch_clamped(camera.pitch_degrees + (pitch_axis * 38.0) * safe_delta)
-    const f32 next_distance ← clamp_distance(camera.distance + (dolly_axis * 60.0) * safe_delta)
-    const vector<f32, 3> pan ← math.camera_planar_motion_from_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
+    let f32 safe_delta ← clamp_delta(delta_seconds)
+    let f32 yaw_axis ← input_axis(camera.input.yaw_left, camera.input.yaw_right)
+    let f32 pitch_axis ← input_axis(camera.input.pitch_down, camera.input.pitch_up)
+    let f32 dolly_axis ← input_axis(camera.input.dolly_in, camera.input.dolly_out)
+    let f32 pan_right_axis ← input_axis(camera.input.pan_left, camera.input.pan_right)
+    let f32 pan_forward_axis ← input_axis(camera.input.pan_back, camera.input.pan_forward)
+    let f32 next_yaw ← camera.yaw_degrees + (yaw_axis * 55.0) * safe_delta
+    let f32 next_pitch ← math.camera_pitch_clamped(camera.pitch_degrees + (pitch_axis * 38.0) * safe_delta)
+    let f32 next_distance ← clamp_distance(camera.distance + (dolly_axis * 60.0) * safe_delta)
+    let vector<f32, 3> pan ← math.camera_planar_motion_from_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
     return OrbitCamera {target = camera.target.added(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input}
 }
 
 fn view_projection(ref OrbitCamera cam, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
-    const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
-    const vector<f32, 3> offset ← math.scale3(direction, cam.distance)
-    const vector<f32, 3> eye ← cam.target.subtracted(offset)
-    const camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
+    let vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
+    let vector<f32, 3> offset ← math.scale3(direction, cam.distance)
+    let vector<f32, 3> eye ← cam.target.subtracted(offset)
+    let camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
     return perspective.view_projection(eye, cam.target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
 }
 
 @ public
 fn transform_payload(ref OrbitCamera cam, f32 aspect) → math.TransformPayload ∪ none {
-    const matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(cam, aspect)
+    let matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(cam, aspect)
     if view_projection_result is none then return null
     return math.transform_payload(math.matrix_identity(), view_projection_result)
 }

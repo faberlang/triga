@@ -14,26 +14,26 @@ import from "triga:primitives/basic" basic
 
 @ public
 class CorpusMesh {
-    var string name
-    var int vertex_count
-    var int index_count
-    var list<f32> vertex_payload
-    var list<u32> index_payload
+    mut string name
+    mut int vertex_count
+    mut int index_count
+    mut list<f32> vertex_payload
+    mut list<u32> index_payload
 }
 
 @ private { }
 fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → CorpusMesh ∪ none {
     if geom.attributes.length() ≺ 2 then return null
-    const list<f32> ∪ none pos_opt ← geom.attributes[0].float32_values()
-    const list<f32> ∪ none nrm_opt ← geom.attributes[1].float32_values()
+    let list<f32> ∪ none pos_opt ← geom.attributes[0].float32_values()
+    let list<f32> ∪ none nrm_opt ← geom.attributes[1].float32_values()
     if pos_opt is none then return null
     if nrm_opt is none then return null
-    const list<f32> pos ← pos_opt
-    const list<f32> nrm ← nrm_opt
+    let list<f32> pos ← pos_opt
+    let list<f32> nrm ← nrm_opt
     if pos.length() ≢ geom.vertex_count * 3 then return null
     if nrm.length() ≢ geom.vertex_count * 3 then return null
-    var list<f32> payload ← empty
-    var int v ← 0
+    mut list<f32> payload ← empty
+    mut int v ← 0
     while v ≺ geom.vertex_count {
         payload.append(pos[v * 3] + ox)
         payload.append(pos[v * 3 + 1] + oy)
@@ -52,9 +52,9 @@ fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz,
 @ private { }
 fn add_mesh(mut list<CorpusMesh> meshes, string name, data.Geometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<CorpusMesh> {
     if geom_opt is none then return meshes
-    const CorpusMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom_opt, ox, oy, oz, r, g, b)
+    let CorpusMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom_opt, ox, oy, oz, r, g, b)
     if mesh_opt is none then return meshes
-    const CorpusMesh mesh ← mesh_opt
+    let CorpusMesh mesh ← mesh_opt
     if mesh.vertex_count ≡ 0 then return meshes
     meshes.append(mesh)
     return meshes
@@ -63,7 +63,7 @@ fn add_mesh(mut list<CorpusMesh> meshes, string name, data.Geometry ∪ none geo
 # Grid layout mirroring the three.js geometries page: 4 columns × 2 rows.
 @ public
 fn geometry_showcase_meshes() → list<CorpusMesh> {
-    var list<CorpusMesh> meshes ← empty
+    mut list<CorpusMesh> meshes ← empty
 
     # Back row (z = -1.8).
     meshes ← add_mesh(mut meshes, "plane", basic.plane(2.2, 2.2), -4.8 ∷ f32, 0.0, -1.8 ∷ f32, 0.9, 0.55, 0.45)

@@ -3,19 +3,19 @@ import from "./math" math
 
 describe "vector carriers and arithmetic" {
     test "constructors expose exact vector lanes and arithmetic" {
-        const vector<f32, 2> point2 ← [1.0, 2.0] ↦ vector<f32, 2>
-        const vector<f32, 4> point4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+        let vector<f32, 2> point2 ← [1.0, 2.0] ↦ vector<f32, 2>
+        let vector<f32, 4> point4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
         assert point2.dot([1.0, 0.0] ↦ vector<f32, 2>) ≡ (1.0 ∷ f32)
         assert point4.dot([0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>) ≡ (4.0 ∷ f32)
 
-        const vector<f32, 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
-        const vector<f32, 3> b ← [4.0, 5.0, 6.0] ↦ vector<f32, 3>
-        const vector<f32, 3> added ← a.added(b)
-        const vector<f32, 3> subtracted ← b.subtracted(a)
-        const vector<f32, 3> scaled ← math.scale3(a, 2.0)
-        const vector<f32, 3> crossed ← a.cross(b)
-        const vector<f32, 3> halfway ← math.lerp3(a, b, 0.5)
-        const vector<f32, 3> projection ← math.project3(a, [1.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let vector<f32, 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+        let vector<f32, 3> b ← [4.0, 5.0, 6.0] ↦ vector<f32, 3>
+        let vector<f32, 3> added ← a.added(b)
+        let vector<f32, 3> subtracted ← b.subtracted(a)
+        let vector<f32, 3> scaled ← math.scale3(a, 2.0)
+        let vector<f32, 3> crossed ← a.cross(b)
+        let vector<f32, 3> halfway ← math.lerp3(a, b, 0.5)
+        let vector<f32, 3> projection ← math.project3(a, [1.0, 0.0, 0.0] ↦ vector<f32, 3>)
 
         assert math.x(added) ≡ (5.0 ∷ f32)
         assert math.y(added) ≡ (7.0 ∷ f32)
@@ -41,10 +41,10 @@ describe "vector carriers and arithmetic" {
     }
 
     test "normalization and projection have zero-vector boundaries" {
-        const vector<f32, 3> normalized ← math.normalized3([0.0, 0.0, 3.0] ↦ vector<f32, 3>)
-        const vector<f32, 3> zero ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-        const vector<f32, 3> zero_normalized ← math.normalized3(zero)
-        const vector<f32, 3> zero_projection ← math.project3([1.0, 2.0, 3.0] ↦ vector<f32, 3>, zero)
+        let vector<f32, 3> normalized ← math.normalized3([0.0, 0.0, 3.0] ↦ vector<f32, 3>)
+        let vector<f32, 3> zero ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+        let vector<f32, 3> zero_normalized ← math.normalized3(zero)
+        let vector<f32, 3> zero_projection ← math.project3([1.0, 2.0, 3.0] ↦ vector<f32, 3>, zero)
 
         assert math.z(normalized) ≻ (0.99 ∷ f32)
         assert math.x(zero_normalized) ≡ (0.0 ∷ f32)
@@ -58,19 +58,19 @@ describe "vector carriers and arithmetic" {
 
 describe "matrix and transform carriers" {
     test "matrix builders and operations preserve column-major facts" {
-        const matrix<f32, [3, 3]> matrix3 ← ([1.0, 0.0, 0.0] ↦ vector<f32, 3>) ⊗ ([1.0, 0.0, 0.0] ↦ vector<f32, 3>)
-        const matrix<f32, [4, 4]> identity ← math.matrix_identity()
-        const vector<f32, 3> offset ← [5.0, -2.0, 3.0] ↦ vector<f32, 3>
-        const vector<f32, 3> scale_vector ← [2.0, 3.0, 4.0] ↦ vector<f32, 3>
-        const matrix<f32, [4, 4]> translation ← math.matrix_translation(offset)
-        const matrix<f32, [4, 4]> scale ← math.matrix_scale(scale_vector)
-        const matrix<f32, [4, 4]> world ← translation · scale
-        const vector<f32, 3> transformed ← math.apply_point(world, [1.0, 2.0, -1.0] ↦ vector<f32, 3>)
-        const matrix<f32, [4, 4]> transposed ← math.transpose(translation)
-        const math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
-        const matrix<f32, [4, 4]> composed ← math.matrix_compose(offset, identity_rotation, scale_vector)
+        let matrix<f32, [3, 3]> matrix3 ← ([1.0, 0.0, 0.0] ↦ vector<f32, 3>) ⊗ ([1.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let matrix<f32, [4, 4]> identity ← math.matrix_identity()
+        let vector<f32, 3> offset ← [5.0, -2.0, 3.0] ↦ vector<f32, 3>
+        let vector<f32, 3> scale_vector ← [2.0, 3.0, 4.0] ↦ vector<f32, 3>
+        let matrix<f32, [4, 4]> translation ← math.matrix_translation(offset)
+        let matrix<f32, [4, 4]> scale ← math.matrix_scale(scale_vector)
+        let matrix<f32, [4, 4]> world ← translation · scale
+        let vector<f32, 3> transformed ← math.apply_point(world, [1.0, 2.0, -1.0] ↦ vector<f32, 3>)
+        let matrix<f32, [4, 4]> transposed ← math.transpose(translation)
+        let math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
+        let matrix<f32, [4, 4]> composed ← math.matrix_compose(offset, identity_rotation, scale_vector)
 
-        const matrix<f32, [3, 3]> doubled ← matrix3.added(matrix3)
+        let matrix<f32, [3, 3]> doubled ← matrix3.added(matrix3)
         assert doubled.subtracted(matrix3) ≡ matrix3
         assert math.affine_determinant(identity) ≡ (1.0 ∷ f32)
         assert math.matrix_element(translation, 0, 3) ≡ (5.0 ∷ f32)
@@ -90,13 +90,13 @@ describe "matrix and transform carriers" {
     }
 
     test "matrix projection boundaries are explicit" {
-        const matrix<f32, [4, 4]> identity ← math.matrix_identity()
-        const matrix<f32, [4, 4]> translation ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, 3>)
-        const matrix<f32, [4, 4]> ∪ none inverse_result ← math.affine_inverse(translation)
-        const matrix<f32, [4, 4]> ∪ none perspective_result ← math.matrix_perspective(60.0, 1.0, 0.1, 100.0)
-        const matrix<f32, [4, 4]> ∪ none invalid_perspective ← math.matrix_perspective(0.0, 1.0, 0.1, 100.0)
-        const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
-        const matrix<f32, [4, 4]> ∪ none invalid_view ← math.matrix_look_at([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+        let matrix<f32, [4, 4]> identity ← math.matrix_identity()
+        let matrix<f32, [4, 4]> translation ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, 3>)
+        let matrix<f32, [4, 4]> ∪ none inverse_result ← math.affine_inverse(translation)
+        let matrix<f32, [4, 4]> ∪ none perspective_result ← math.matrix_perspective(60.0, 1.0, 0.1, 100.0)
+        let matrix<f32, [4, 4]> ∪ none invalid_perspective ← math.matrix_perspective(0.0, 1.0, 0.1, 100.0)
+        let matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+        let matrix<f32, [4, 4]> ∪ none invalid_view ← math.matrix_look_at([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
 
         assert math.matrix_element(math.transpose(identity), 0, 0) ≡ (1.0 ∷ f32)
         assert inverse_result not is none
@@ -107,20 +107,20 @@ describe "matrix and transform carriers" {
     }
 
     test "transform payload records model and view-projection facts" {
-        const matrix<f32, [4, 4]> model ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, 3>)
-        const matrix<f32, [4, 4]> view_projection ← math.matrix_scale([4.0, 5.0, 6.0] ↦ vector<f32, 3>)
-        const math.TransformPayload payload_result ← math.transform_payload(model, view_projection)
+        let matrix<f32, [4, 4]> model ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, 3>)
+        let matrix<f32, [4, 4]> view_projection ← math.matrix_scale([4.0, 5.0, 6.0] ↦ vector<f32, 3>)
+        let math.TransformPayload payload_result ← math.transform_payload(model, view_projection)
 
         assert payload_result.float_count() coalesce 0 ≡ 32
         assert payload_result.byte_count() coalesce 0 ≡ 128
 
-        const math.TransformPayload payload ← math.TransformPayload {values = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 2.0, 3.0, 1.0, 4.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
-        const int count ← payload.float_count() coalesce 0
-        const int bytes ← payload.byte_count() coalesce 0
-        const f32 model_zero ← payload.model_value(0) coalesce 0.0
-        const f32 model_translation ← payload.model_value(12) coalesce 0.0
-        const f32 view_zero ← payload.view_projection_value(0) coalesce 0.0
-        const f32 view_last ← payload.view_projection_value(15) coalesce 0.0
+        let math.TransformPayload payload ← math.TransformPayload {values = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 2.0, 3.0, 1.0, 4.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
+        let int count ← payload.float_count() coalesce 0
+        let int bytes ← payload.byte_count() coalesce 0
+        let f32 model_zero ← payload.model_value(0) coalesce 0.0
+        let f32 model_translation ← payload.model_value(12) coalesce 0.0
+        let f32 view_zero ← payload.view_projection_value(0) coalesce 0.0
+        let f32 view_last ← payload.view_projection_value(15) coalesce 0.0
         assert count ≡ 32
         assert bytes ≡ 128
         assert model_zero ≡ (1.0 ∷ f32)
@@ -130,7 +130,7 @@ describe "matrix and transform carriers" {
         assert payload.model_value(-1) is none
         assert payload.view_projection_value(16) is none
 
-        const math.TransformPayload malformed_payload ← math.TransformPayload {values = [1.0]}
+        let math.TransformPayload malformed_payload ← math.TransformPayload {values = [1.0]}
         assert malformed_payload.float_count() is none
         assert malformed_payload.byte_count() is none
     }
@@ -138,12 +138,12 @@ describe "matrix and transform carriers" {
 
 describe "quaternion and euler rotation" {
     test "quaternion constructors normalize, multiply, and interpolate" {
-        const math.Quaternion identity ← math.quaternion(0.0, 0.0, 0.0, 1.0)
-        const math.Quaternion doubled ← math.quaternion(0.0, 0.0, 0.0, 2.0)
-        const math.Quaternion normalized ← doubled.normalized()
-        const math.Quaternion zero_normalized ← math.quaternion(0.0, 0.0, 0.0, 0.0).normalized()
-        const math.Quaternion multiplied ← identity.multiply(normalized)
-        const math.Quaternion interpolated ← identity.lerp(identity, 0.5)
+        let math.Quaternion identity ← math.quaternion(0.0, 0.0, 0.0, 1.0)
+        let math.Quaternion doubled ← math.quaternion(0.0, 0.0, 0.0, 2.0)
+        let math.Quaternion normalized ← doubled.normalized()
+        let math.Quaternion zero_normalized ← math.quaternion(0.0, 0.0, 0.0, 0.0).normalized()
+        let math.Quaternion multiplied ← identity.multiply(normalized)
+        let math.Quaternion interpolated ← identity.lerp(identity, 0.5)
 
         assert normalized.w ≻ (0.99 ∷ f32)
         assert zero_normalized.w ≡ (1.0 ∷ f32)
@@ -152,15 +152,15 @@ describe "quaternion and euler rotation" {
     }
 
     test "euler values accept XYZ and reject unsupported orders" {
-        const math.Euler zero ← math.euler(0.0, 0.0, 0.0)
-        const math.Euler other ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}
-        const math.Euler unsupported ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "ZYX"}
-        const math.Quaternion ∪ none quaternion_result ← zero.to_quaternion()
-        const math.Quaternion ∪ none composed_result ← zero.compose(other)
-        const math.Euler ∪ none interpolated_result ← zero.lerp(other, 0.5)
-        const math.Quaternion ∪ none unsupported_quaternion ← unsupported.to_quaternion()
-        const math.Quaternion ∪ none unsupported_composition ← unsupported.compose(other)
-        const math.Euler ∪ none unsupported_interpolation ← unsupported.lerp(other, 0.5)
+        let math.Euler zero ← math.euler(0.0, 0.0, 0.0)
+        let math.Euler other ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}
+        let math.Euler unsupported ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "ZYX"}
+        let math.Quaternion ∪ none quaternion_result ← zero.to_quaternion()
+        let math.Quaternion ∪ none composed_result ← zero.compose(other)
+        let math.Euler ∪ none interpolated_result ← zero.lerp(other, 0.5)
+        let math.Quaternion ∪ none unsupported_quaternion ← unsupported.to_quaternion()
+        let math.Quaternion ∪ none unsupported_composition ← unsupported.compose(other)
+        let math.Euler ∪ none unsupported_interpolation ← unsupported.lerp(other, 0.5)
 
         assert zero.order ≡ "XYZ"
         assert quaternion_result not is none
@@ -174,10 +174,10 @@ describe "quaternion and euler rotation" {
 
 describe "color, angle, and camera contracts" {
     test "color validation and interpolation keep channel boundaries" {
-        const math.Color black ← math.Color {r = 0.0, g = 0.0, b = 0.0}
-        const math.Color white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
-        const math.Color midpoint ← black.lerp(white, 0.5)
-        const math.Color invalid ← math.Color {r = 1.1, g = 0.0, b = 0.0}
+        let math.Color black ← math.Color {r = 0.0, g = 0.0, b = 0.0}
+        let math.Color white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
+        let math.Color midpoint ← black.lerp(white, 0.5)
+        let math.Color invalid ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
         assert black.valid()
         assert white.valid()
@@ -188,14 +188,14 @@ describe "color, angle, and camera contracts" {
     }
 
     test "camera helpers clamp pitch and return coherent carriers" {
-        const vector<f32, 3> origin ← [2.0, 3.0, 4.0] ↦ vector<f32, 3>
-        const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(0.0, 100.0)
-        const vector<f32, 3> planar_forward ← math.camera_planar_forward_from_yaw(0.0)
-        const vector<f32, 3> planar_right ← math.camera_right_from_yaw(0.0)
-        const vector<f32, 3> stopped ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 0.0, 1.0)
-        const vector<f32, 3> moved ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
-        const math.Ray camera_ray ← math.camera_ray_from_yaw_pitch(origin, 90.0, 0.0)
-        const math.CameraYawPitchFacts facts ← math.camera_yaw_pitch_facts(origin, 90.0, 100.0)
+        let vector<f32, 3> origin ← [2.0, 3.0, 4.0] ↦ vector<f32, 3>
+        let vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(0.0, 100.0)
+        let vector<f32, 3> planar_forward ← math.camera_planar_forward_from_yaw(0.0)
+        let vector<f32, 3> planar_right ← math.camera_right_from_yaw(0.0)
+        let vector<f32, 3> stopped ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 0.0, 1.0)
+        let vector<f32, 3> moved ← math.camera_planar_motion_from_yaw(0.0, 1.0, 0.0, 4.0, 0.5)
+        let math.Ray camera_ray ← math.camera_ray_from_yaw_pitch(origin, 90.0, 0.0)
+        let math.CameraYawPitchFacts facts ← math.camera_yaw_pitch_facts(origin, 90.0, 100.0)
 
         assert math.radians_from_degrees((0.0 ∷ f32)) ≡ (0.0 ∷ f32)
         assert math.camera_pitch_clamped((100.0 ∷ f32)) ≡ (89.0 ∷ f32)
@@ -217,14 +217,14 @@ describe "color, angle, and camera contracts" {
 
 describe "box, sphere, and plane volumes" {
     test "box constructors accept valid bounds and reject reversed or non-positive size" {
-        const vector<f32, 3> minimum ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-        const vector<f32, 3> maximum ← [2.0, 2.0, 2.0] ↦ vector<f32, 3>
-        const vector<f32, 3> size ← [2.0, 2.0, 2.0] ↦ vector<f32, 3>
-        const math.Box<3> ∪ none bounds_result ← math.box_from_min_max(minimum, maximum)
-        const math.Box<3> ∪ none sized_result ← math.box_from_min_and_size(minimum, size)
-        const math.Box<3> ∪ none centered_result ← math.box_from_center_and_size([1.0, 1.0, 1.0] ↦ vector<f32, 3>, size)
-        const math.Box<3> ∪ none invalid_bounds ← math.box_from_min_max(maximum, minimum)
-        const math.Box<3> ∪ none invalid_size ← math.box_from_min_and_size(minimum, [0.0, 1.0, 1.0] ↦ vector<f32, 3>)
+        let vector<f32, 3> minimum ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+        let vector<f32, 3> maximum ← [2.0, 2.0, 2.0] ↦ vector<f32, 3>
+        let vector<f32, 3> size ← [2.0, 2.0, 2.0] ↦ vector<f32, 3>
+        let math.Box<3> ∪ none bounds_result ← math.box_from_min_max(minimum, maximum)
+        let math.Box<3> ∪ none sized_result ← math.box_from_min_and_size(minimum, size)
+        let math.Box<3> ∪ none centered_result ← math.box_from_center_and_size([1.0, 1.0, 1.0] ↦ vector<f32, 3>, size)
+        let math.Box<3> ∪ none invalid_bounds ← math.box_from_min_max(maximum, minimum)
+        let math.Box<3> ∪ none invalid_size ← math.box_from_min_and_size(minimum, [0.0, 1.0, 1.0] ↦ vector<f32, 3>)
 
         assert bounds_result not is none
         assert sized_result not is none
@@ -234,10 +234,10 @@ describe "box, sphere, and plane volumes" {
     }
 
     test "box containment and intersection preserve inclusive bounds" {
-        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
-        const math.Box<3> centered ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
-        const math.Box<3> overlap_box ← math.Box {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
-        const math.Box<3> disjoint_box ← math.Box {minima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>, maxima = [4.0, 4.0, 4.0] ↦ vector<f32, 3>}
+        let math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        let math.Box<3> centered ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        let math.Box<3> overlap_box ← math.Box {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
+        let math.Box<3> disjoint_box ← math.Box {minima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>, maxima = [4.0, 4.0, 4.0] ↦ vector<f32, 3>}
 
         assert math.box_valid(bounds)
         assert math.box_contains(bounds, [2.0, 2.0, 2.0] ↦ vector<f32, 3>)
@@ -249,26 +249,26 @@ describe "box, sphere, and plane volumes" {
     }
 
     test "box inflation copies by the published contract" {
-        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
-        const math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
+        let math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        let math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
         assert math.x(expanded.minima) ≡ (-1.0 ∷ f32)
     }
 
     test "box measure and center match the published corners" {
-        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
-        const vector<f32, 3> measure ← math.box_size(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
-        const vector<f32, 3> center ← math.box_center(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        let vector<f32, 3> measure ← math.box_size(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let vector<f32, 3> center ← math.box_center(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
         assert math.x(measure) ≡ (2.0 ∷ f32)
         assert math.x(center) ≡ (1.0 ∷ f32)
     }
 
     test "box overlap union and translation preserve bound facts" {
-        const math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
-        const math.Box<3> overlap_box ← math.Box {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
-        const vector<f32, 3> overlap ← math.box_overlap(bounds, overlap_box) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
-        const math.BoxOverlapFacts facts ← math.box_overlap_facts(bounds, overlap_box) coalesce math.BoxOverlapFacts {overlap = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, x = 0.0, y = 0.0, z = 0.0}
-        const math.Box<3> unioned ← math.box_union(bounds, overlap_box) coalesce bounds
-        const math.Box<3> translated ← math.box_translated(bounds, [2.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+        let math.Box<3> overlap_box ← math.Box {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
+        let vector<f32, 3> overlap ← math.box_overlap(bounds, overlap_box) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let math.BoxOverlapFacts facts ← math.box_overlap_facts(bounds, overlap_box) coalesce math.BoxOverlapFacts {overlap = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, x = 0.0, y = 0.0, z = 0.0}
+        let math.Box<3> unioned ← math.box_union(bounds, overlap_box) coalesce bounds
+        let math.Box<3> translated ← math.box_translated(bounds, [2.0, 0.0, 0.0] ↦ vector<f32, 3>)
         assert math.x(overlap) ≡ (1.0 ∷ f32)
         assert math.y(facts.overlap) ≡ (1.0 ∷ f32)
         assert facts.x ≡ (1.0 ∷ f32)
@@ -277,13 +277,13 @@ describe "box, sphere, and plane volumes" {
     }
 
     test "invalid boxes and primitive volumes reject or preserve boundaries" {
-        const math.Box<3> invalid_box ← math.Box {minima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
-        const math.Sphere sphere ← math.Sphere {center = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, radius = 2.0}
-        const math.Plane plane ← math.Plane {normal = [0.0, 1.0, 0.0] ↦ vector<f32, 3>, constant = -2.0}
-        const math.Box<3> other ← math.Box {minima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>, maxima = [4.0, 4.0, 4.0] ↦ vector<f32, 3>}
-        const math.Box<3> ∪ none invalid_measure_box ← math.box_union(invalid_box, other)
-        const vector<f32, 3> ∪ none invalid_center ← math.box_center(invalid_box)
-        const vector<f32, 3> ∪ none invalid_overlap ← math.box_overlap(invalid_box, other)
+        let math.Box<3> invalid_box ← math.Box {minima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+        let math.Sphere sphere ← math.Sphere {center = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, radius = 2.0}
+        let math.Plane plane ← math.Plane {normal = [0.0, 1.0, 0.0] ↦ vector<f32, 3>, constant = -2.0}
+        let math.Box<3> other ← math.Box {minima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>, maxima = [4.0, 4.0, 4.0] ↦ vector<f32, 3>}
+        let math.Box<3> ∪ none invalid_measure_box ← math.box_union(invalid_box, other)
+        let vector<f32, 3> ∪ none invalid_center ← math.box_center(invalid_box)
+        let vector<f32, 3> ∪ none invalid_overlap ← math.box_overlap(invalid_box, other)
 
         assert math.box_valid(invalid_box) ≡ false
         assert invalid_measure_box is none
@@ -297,16 +297,16 @@ describe "box, sphere, and plane volumes" {
 
 describe "ray intersections and face-code facts" {
     test "ray-box hits expose distance, normal, and face records" {
-        const math.Box<3> box ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
-        const math.Ray ray ← math.Ray {origin = [-2.0, 0.5, 0.5] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
-        const math.RayInterval interval ← math.RayInterval {minimum = 1.0, maximum = 2.0}
-        const math.RayBoxHit ∪ none hit_result ← ray.box_hit(box, 10.0)
-        const f32 ∪ none distance_result ← ray.intersects_box(box, 10.0)
-        const f32 ∪ none rejected_distance ← ray.intersects_box(box, -1.0)
-        const vector<f32, 3> point ← ray.point_at(2.0)
+        let math.Box<3> box ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+        let math.Ray ray ← math.Ray {origin = [-2.0, 0.5, 0.5] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+        let math.RayInterval interval ← math.RayInterval {minimum = 1.0, maximum = 2.0}
+        let math.RayBoxHit ∪ none hit_result ← ray.box_hit(box, 10.0)
+        let f32 ∪ none distance_result ← ray.intersects_box(box, 10.0)
+        let f32 ∪ none rejected_distance ← ray.intersects_box(box, -1.0)
+        let vector<f32, 3> point ← ray.point_at(2.0)
 
-        const math.RayBoxHit hit ← math.RayBoxHit {distance = 2.0, point = point, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, 3>}
-        const math.FaceCodeFacts facts ← math.FaceCodeFacts {code = 1, axis_code = 1, opposite_code = 2, x_offset = -1, y_offset = 0, z_offset = 0, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, 3>, color = math.Color {r = 0.8, g = 0.1, b = 0.1}}
+        let math.RayBoxHit hit ← math.RayBoxHit {distance = 2.0, point = point, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+        let math.FaceCodeFacts facts ← math.FaceCodeFacts {code = 1, axis_code = 1, opposite_code = 2, x_offset = -1, y_offset = 0, z_offset = 0, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, 3>, color = math.Color {r = 0.8, g = 0.1, b = 0.1}}
 
         assert interval.minimum ≡ (1.0 ∷ f32)
         assert math.x(point) ≡ (0.0 ∷ f32)
@@ -329,17 +329,17 @@ describe "ray intersections and face-code facts" {
     }
 
     test "face-code helpers cover all six faces and invalid codes" {
-        const int code ← 6
-        const vector<f32, 3> normal ← math.face_code_normal(code) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
-        const math.Color color ← math.face_code_color(code) coalesce math.Color {r = 0.0, g = 0.0, b = 0.0}
-        const math.FaceCodeFacts facts ← math.face_code_facts(code) coalesce math.FaceCodeFacts {code = 0, axis_code = 0, opposite_code = 0, x_offset = 0, y_offset = 0, z_offset = 0, normal = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, color = math.Color {r = 0.0, g = 0.0, b = 0.0}}
-        const int axis ← math.face_code_axis_code(code) coalesce 0
-        const int opposite ← math.face_code_opposite(code) coalesce 0
-        const int x_offset ← math.face_code_x_offset(code) coalesce 0
-        const int y_offset ← math.face_code_y_offset(code) coalesce 0
-        const int z_offset ← math.face_code_z_offset(code) coalesce 0
-        const vector<f32, 3> ∪ none invalid_normal ← math.face_code_normal(0)
-        const math.FaceCodeFacts ∪ none invalid_facts ← math.face_code_facts(7)
+        let int code ← 6
+        let vector<f32, 3> normal ← math.face_code_normal(code) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, 3>)
+        let math.Color color ← math.face_code_color(code) coalesce math.Color {r = 0.0, g = 0.0, b = 0.0}
+        let math.FaceCodeFacts facts ← math.face_code_facts(code) coalesce math.FaceCodeFacts {code = 0, axis_code = 0, opposite_code = 0, x_offset = 0, y_offset = 0, z_offset = 0, normal = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, color = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+        let int axis ← math.face_code_axis_code(code) coalesce 0
+        let int opposite ← math.face_code_opposite(code) coalesce 0
+        let int x_offset ← math.face_code_x_offset(code) coalesce 0
+        let int y_offset ← math.face_code_y_offset(code) coalesce 0
+        let int z_offset ← math.face_code_z_offset(code) coalesce 0
+        let vector<f32, 3> ∪ none invalid_normal ← math.face_code_normal(0)
+        let math.FaceCodeFacts ∪ none invalid_facts ← math.face_code_facts(7)
 
         assert math.face_code_valid(1)
         assert math.face_code_valid(6)

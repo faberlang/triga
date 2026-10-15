@@ -14,13 +14,13 @@ syntax = "importa ex \"triga:triga\" privata triga"
 import from "triga:math" math
 
 main {
-    const math.Box<3> bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
+    let math.Box<3> bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, 3>}
 
-    const math.Box<3> overlap_box ← math.Box<3> {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
+    let math.Box<3> overlap_box ← math.Box<3> {minima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, 3>}
 
-    const math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
+    let math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
 
-    var math.Box<3> mutable_bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+    mut math.Box<3> mutable_bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
     mutable_bounds ← math.box_inflated(mutable_bounds, 2.0)
 
     # --- z-separation runtime probe (the dee26f5 fix coverage) --
@@ -31,10 +31,10 @@ main {
     #   3. bounds vs overlap_box — overlapping on every axis -> true.
     #   4. bug_discriminator vs bug_low — z OVERLAPS while a y/z typo
     #      would false-positive -> true.
-    const math.Box<3> sep_corrected ← math.Box<3> {minima = [0.0, 0.0, 3.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 5.0] ↦ vector<f32, 3>}
-    const math.Box<3> small ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
-    const math.Box<3> bug_low ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 4.0, 1.0] ↦ vector<f32, 3>}
-    const math.Box<3> bug_discriminator ← math.Box<3> {minima = [0.0, 3.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 5.0, 4.0] ↦ vector<f32, 3>}
+    let math.Box<3> sep_corrected ← math.Box<3> {minima = [0.0, 0.0, 3.0] ↦ vector<f32, 3>, maxima = [2.0, 2.0, 5.0] ↦ vector<f32, 3>}
+    let math.Box<3> small ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+    let math.Box<3> bug_low ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, maxima = [1.0, 4.0, 1.0] ↦ vector<f32, 3>}
+    let math.Box<3> bug_discriminator ← math.Box<3> {minima = [0.0, 3.0, 0.0] ↦ vector<f32, 3>, maxima = [2.0, 5.0, 4.0] ↦ vector<f32, 3>}
 
     print math.box_intersects(sep_corrected, small)
     print math.box_intersects(bounds, sep_corrected)

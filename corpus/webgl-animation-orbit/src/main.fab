@@ -6,16 +6,16 @@ import from "triga:math" math
 import from "triga:primitives/basic" basic
 
 class AnimatedMesh {
-    var string name
-    var int vertex_count
-    var int index_count
-    var list<f32> vertex_payload
-    var list<u32> index_payload
+    mut string name
+    mut int vertex_count
+    mut int index_count
+    mut list<f32> vertex_payload
+    mut list<u32> index_payload
 }
 
 fn floats_textus(ref list<f32> values) → string {
-    var string output ← ""
-    var int i ← 0
+    mut string output ← ""
+    mut int i ← 0
     while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
@@ -29,8 +29,8 @@ fn floats_textus(ref list<f32> values) → string {
 }
 
 fn indices_textus(ref list<u32> values) → string {
-    var string output ← ""
-    var int i ← 0
+    mut string output ← ""
+    mut int i ← 0
     while i ≺ values.length() {
         if i ≡ 0 {
             output ↤ values[i]
@@ -49,16 +49,16 @@ fn float_values(ref attribute.Attribute attr) → list<f32> ∪ none {
 
 fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → AnimatedMesh ∪ none {
     if geom.attributes.length() ≺ 2 then return null
-    const list<f32> ∪ none pos_opt ← float_values(geom.attributes[0])
-    const list<f32> ∪ none nrm_opt ← float_values(geom.attributes[1])
+    let list<f32> ∪ none pos_opt ← float_values(geom.attributes[0])
+    let list<f32> ∪ none nrm_opt ← float_values(geom.attributes[1])
     if pos_opt is none then return null
     if nrm_opt is none then return null
-    const list<f32> pos ← pos_opt
-    const list<f32> nrm ← nrm_opt
+    let list<f32> pos ← pos_opt
+    let list<f32> nrm ← nrm_opt
     if pos.length() ≢ geom.vertex_count * 3 then return null
     if nrm.length() ≢ geom.vertex_count * 3 then return null
-    var list<f32> payload ← empty
-    var int v ← 0
+    mut list<f32> payload ← empty
+    mut int v ← 0
     while v ≺ geom.vertex_count {
         payload.append(pos[v * 3] + ox)
         payload.append(pos[v * 3 + 1] + oy)
@@ -76,15 +76,15 @@ fn mesh_ex_geometry(string name, ref data.Geometry geom, f32 ox, f32 oy, f32 oz,
 
 fn add_mesh(mut list<AnimatedMesh> meshes, string name, data.Geometry ∪ none geom_opt, f32 ox, f32 oy, f32 oz, f32 r, f32 g, f32 b) → list<AnimatedMesh> {
     if geom_opt is none then return meshes
-    const data.Geometry geom ← geom_opt
-    const AnimatedMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom, ox, oy, oz, r, g, b)
+    let data.Geometry geom ← geom_opt
+    let AnimatedMesh ∪ none mesh_opt ← mesh_ex_geometry(name, geom, ox, oy, oz, r, g, b)
     if mesh_opt is none then return meshes
     meshes.append(mesh_opt)
     return meshes
 }
 
 fn scene_meshes() → list<AnimatedMesh> {
-    var list<AnimatedMesh> meshes ← empty
+    mut list<AnimatedMesh> meshes ← empty
     meshes ← add_mesh(mut meshes, "orbital-box", basic.box(1.8, 1.8, 1.8), -2.8 ∷ f32, 0.0, 0.0, 0.92, 0.46, 0.28)
     meshes ← add_mesh(mut meshes, "orbital-torus", basic.torus(1.25, 0.34), 0.0, 0.0, 0.0, 0.28, 0.78, 0.92)
     meshes ← add_mesh(mut meshes, "orbital-sphere", basic.sphere(1.25), 2.8 ∷ f32, 0.0, 0.0, 0.9, 0.82, 0.28)
@@ -92,11 +92,11 @@ fn scene_meshes() → list<AnimatedMesh> {
 }
 
 fn scene_geometry_blob(ref list<AnimatedMesh> meshes) → string {
-    var string output ← ""
-    var int i ← 0
+    mut string output ← ""
+    mut int i ← 0
     while i ≺ meshes.length() {
-        const AnimatedMesh mesh ← meshes[i]
-        const string piece ← "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
+        let AnimatedMesh mesh ← meshes[i]
+        let string piece ← "§;§;§;§;§;§"(mesh.name, "static", mesh.vertex_count ↦ string, mesh.index_count ↦ string, floats_textus(mesh.vertex_payload), indices_textus(mesh.index_payload))
         if i ≡ 0 {
             output ← piece
         }
@@ -109,39 +109,39 @@ fn scene_geometry_blob(ref list<AnimatedMesh> meshes) → string {
 }
 
 fn model_matrix(f32 elapsed_seconds) → matrix<f32, [4, 4]> {
-    const math.Euler rotation ← math.euler(elapsed_seconds * 0.55, elapsed_seconds * 0.9, 0.0)
-    const math.Quaternion ∪ none quaternion_result ← rotation.to_quaternion()
+    let math.Euler rotation ← math.euler(elapsed_seconds * 0.55, elapsed_seconds * 0.9, 0.0)
+    let math.Quaternion ∪ none quaternion_result ← rotation.to_quaternion()
     if quaternion_result is none then return math.matrix_identity()
-    const math.Quaternion quaternion ← math.Quaternion {x = quaternion_result!.x, y = quaternion_result!.y, z = quaternion_result!.z, w = quaternion_result!.w}
+    let math.Quaternion quaternion ← math.Quaternion {x = quaternion_result!.x, y = quaternion_result!.y, z = quaternion_result!.z, w = quaternion_result!.w}
     return math.matrix_compose([0.0, 0.0, 0.0] ↦ vector<f32, 3>, quaternion, [1.0, 1.0, 1.0] ↦ vector<f32, 3>)
 }
 
 fn view_projection(f32 camera_yaw_degrees, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
-    const vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-    const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(camera_yaw_degrees, -22.0)
-    const vector<f32, 3> offset ← math.scale3(direction, 13.0)
-    const vector<f32, 3> eye ← target.subtracted(offset)
-    const matrix<f32, [4, 4]> ∪ none projection_result ← math.matrix_perspective(45.0, aspect, 0.1, 200.0)
+    let vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    let vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(camera_yaw_degrees, -22.0)
+    let vector<f32, 3> offset ← math.scale3(direction, 13.0)
+    let vector<f32, 3> eye ← target.subtracted(offset)
+    let matrix<f32, [4, 4]> ∪ none projection_result ← math.matrix_perspective(45.0, aspect, 0.1, 200.0)
     if projection_result is none then return null
-    const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
     if view_result is none then return null
     return projection_result · view_result
 }
 
 fn transform_payload(f32 elapsed_seconds, f32 aspect) → math.TransformPayload ∪ none {
-    const matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(-35.0 + elapsed_seconds * 10.0, aspect)
+    let matrix<f32, [4, 4]> ∪ none view_projection_result ← view_projection(-35.0 + elapsed_seconds * 10.0, aspect)
     if view_projection_result is none then return null
-    const matrix<f32, [4, 4]> model ← model_matrix(elapsed_seconds)
+    let matrix<f32, [4, 4]> model ← model_matrix(elapsed_seconds)
     return math.transform_payload(model, view_projection_result)
 }
 
 @ WebController { selector = "#triga-corpus-animation-orbit" }
 fn corpus_animation_orbit_controller(dom.Scope scope) → list<dom.Subscription> {
-    const dom.Element status ← dom.require(scope, ".corpus-status")
-    const dom.Element facts ← dom.require(scope, ".triga-facts")
-    const list<AnimatedMesh> meshes ← scene_meshes()
-    var f32 elapsed_seconds ← 0.0
-    const f32 canvas_aspect ← 960.0 / 540.0
+    let dom.Element status ← dom.require(scope, ".corpus-status")
+    let dom.Element facts ← dom.require(scope, ".triga-facts")
+    let list<AnimatedMesh> meshes ← scene_meshes()
+    mut f32 elapsed_seconds ← 0.0
+    let f32 canvas_aspect ← 960.0 / 540.0
 
     dom.attr_set(facts, "data-scene-name", "triga-corpus-webgl-animation-orbit")
     dom.attr_set(facts, "data-render-status", "awaiting-host")
@@ -150,7 +150,7 @@ fn corpus_animation_orbit_controller(dom.Scope scope) → list<dom.Subscription>
     dom.attr_set(facts, "data-scene-geometry", scene_geometry_blob(meshes))
     dom.text_set(status, "animation-ready")
 
-    const math.TransformPayload ∪ none initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
+    let math.TransformPayload ∪ none initial_payload ← transform_payload(elapsed_seconds, canvas_aspect)
     if initial_payload is none {
         dom.attr_set(facts, "data-transform-status", "invalid")
     }
@@ -158,10 +158,10 @@ fn corpus_animation_orbit_controller(dom.Scope scope) → list<dom.Subscription>
         dom.attr_set(facts, "data-transform-payload", floats_textus(initial_payload!.values))
     }
 
-    const dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
-        const f32 delta_seconds ← frame.delta_ms / 1000.0
+    let dom.Subscription frame_sub ← dom.on_frame((dom.FrameState frame) → void ∴ do {
+        let f32 delta_seconds ← frame.delta_ms / 1000.0
         elapsed_seconds ← elapsed_seconds + delta_seconds
-        const math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
+        let math.TransformPayload ∪ none payload ← transform_payload(elapsed_seconds, canvas_aspect)
         if payload is none {
             dom.attr_set(facts, "data-transform-status", "invalid")
         }

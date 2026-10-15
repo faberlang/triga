@@ -3,7 +3,7 @@ import from "triga:geometry/layout" layout
 
 describe "vertex layout contracts" {
     test "format constructors cover float and uint widths" {
-        const layout.VertexAttributeLayout float_one ← layout.VertexAttributeLayout {
+        let layout.VertexAttributeLayout float_one ← layout.VertexAttributeLayout {
             source_name = "weight",
             shader_location = 3,
             vertex_format = layout.vertex_format_from_component_width(1, true),
@@ -11,7 +11,7 @@ describe "vertex layout contracts" {
             stride_bytes = 4,
             step_mode = layout.vertex_step_mode_vertex_step()
         }
-        const layout.VertexAttributeLayout float_four ← layout.VertexAttributeLayout {
+        let layout.VertexAttributeLayout float_four ← layout.VertexAttributeLayout {
             source_name = "tangent",
             shader_location = 4,
             vertex_format = layout.vertex_format_from_component_width(4, true),
@@ -19,7 +19,7 @@ describe "vertex layout contracts" {
             stride_bytes = 16,
             step_mode = layout.vertex_step_mode_vertex_step()
         }
-        const layout.VertexAttributeLayout uint_two ← layout.VertexAttributeLayout {
+        let layout.VertexAttributeLayout uint_two ← layout.VertexAttributeLayout {
             source_name = "joint",
             shader_location = 5,
             vertex_format = layout.vertex_format_from_component_width(2, false),
@@ -27,7 +27,7 @@ describe "vertex layout contracts" {
             stride_bytes = 8,
             step_mode = layout.vertex_step_mode_vertex_step()
         }
-        const layout.VertexAttributeLayout uint_three ← layout.VertexAttributeLayout {
+        let layout.VertexAttributeLayout uint_three ← layout.VertexAttributeLayout {
             source_name = "index",
             shader_location = 6,
             vertex_format = layout.vertex_format_from_component_width(3, false),
@@ -43,7 +43,7 @@ describe "vertex layout contracts" {
     }
 
     test "vertex step constructor produces a usable layout" {
-        const layout.VertexAttributeLayout value ← layout.VertexAttributeLayout {
+        let layout.VertexAttributeLayout value ← layout.VertexAttributeLayout {
             source_name = "position",
             shader_location = 0,
             vertex_format = layout.vertex_format_from_component_width(3, true),

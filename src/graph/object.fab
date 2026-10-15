@@ -11,14 +11,14 @@ import from "triga:math" math
 # visible in the type itself.
 @ public
 class Object {
-    var vector<f32, 3> position
-    var math.Euler rotation
-    var math.Quaternion quaternion
-    var vector<f32, 3> scale
-    var matrix<f32, [4, 4]> matrix
-    var list<Object> children
-    var bool visible = true
-    var string name
+    mut vector<f32, 3> position
+    mut math.Euler rotation
+    mut math.Quaternion quaternion
+    mut vector<f32, 3> scale
+    mut matrix<f32, [4, 4]> matrix
+    mut list<Object> children
+    mut bool visible = true
+    mut string name
 }
 
 # Scene adds only an optional background color to the common Object shape.
@@ -26,6 +26,6 @@ class Object {
 # the lightweight value shape used by graph-facing APIs.
 @ public
 class Scene {
-    var Object base
-    var math.Color background optional
+    mut Object base
+    mut math.Color background optional
 }

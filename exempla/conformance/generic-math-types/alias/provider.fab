@@ -25,8 +25,8 @@ type Matrix<size R, size C> = matrix<f32, [R, C]>
 
 @ public
 class Box<size N> {
-    var Vector<N> minima
-    var Vector<N> maxima
+    mut Vector<N> minima
+    mut Vector<N> maxima
 }
 
 @ public
@@ -46,7 +46,7 @@ fn cross(Vector<3> a, Vector<3> b) → Vector<3> {
 
 @ public
 fn lane(Vector<3> a) → f32 {
-    const Vector<3> swapped ← a.swizzle("zyx")
+    let Vector<3> swapped ← a.swizzle("zyx")
     return swapped.dot(a)
 }
 
@@ -65,18 +65,18 @@ fn box_minima<size N>(Box<N> b) → Vector<N> {
 # and concrete-shape matrix multiplication.
 
 fn same_file() → f32 {
-    const Vector<2> a2 ← [1.0, 2.0] ↦ Vector<2>
-    const Vector<2> b2 ← [2.0, 4.0] ↦ Vector<2>
-    const Vector<3> a3 ← [1.0, 2.0, 3.0] ↦ Vector<3>
-    const Vector<3> b3 ← [2.0, 4.0, 6.0] ↦ Vector<3>
-    const Vector<4> a4 ← [1.0, 2.0, 3.0, 4.0] ↦ Vector<4>
-    const Vector<4> b4 ← [2.0, 4.0, 6.0, 8.0] ↦ Vector<4>
-    const Vector<2> s2 ← add(a2, b2)
-    const Vector<3> s3 ← add(a3, b3)
-    const Vector<4> s4 ← add(a4, b4)
-    const Vector<3> x3 ← cross(a3, b3)
-    const Matrix<3, 2> outer ← a3 ⊗ b2
-    const Matrix<2, 3> inner ← b2 ⊗ a3
-    const Matrix<3, 3> product ← outer · inner
+    let Vector<2> a2 ← [1.0, 2.0] ↦ Vector<2>
+    let Vector<2> b2 ← [2.0, 4.0] ↦ Vector<2>
+    let Vector<3> a3 ← [1.0, 2.0, 3.0] ↦ Vector<3>
+    let Vector<3> b3 ← [2.0, 4.0, 6.0] ↦ Vector<3>
+    let Vector<4> a4 ← [1.0, 2.0, 3.0, 4.0] ↦ Vector<4>
+    let Vector<4> b4 ← [2.0, 4.0, 6.0, 8.0] ↦ Vector<4>
+    let Vector<2> s2 ← add(a2, b2)
+    let Vector<3> s3 ← add(a3, b3)
+    let Vector<4> s4 ← add(a4, b4)
+    let Vector<3> x3 ← cross(a3, b3)
+    let Matrix<3, 2> outer ← a3 ⊗ b2
+    let Matrix<2, 3> inner ← b2 ⊗ a3
+    let Matrix<3, 3> product ← outer · inner
     return ((s2.dot(b2) + s3.dot(b3)) + s4.dot(b4)) + (x3.dot(a3) + lane(a3))
 }

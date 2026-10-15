@@ -37,16 +37,16 @@ fn fragment_output_matches(int location, int format_code, int stage_io_role_code
 
 @ fragment { }
 fn hello_voxel_fragment() → void {
-    const vector<f32, 3> light_direction ↤ [0.0, 0.0, 1.0]
-    const f32 diffuse ← (normal · light_direction).maximum(0.0)
-    const f32 lighting ← 0.2 + 0.8 * diffuse
-    const vector<f32, 3> lighting_vec ↤ [lighting, lighting, lighting]
-    const vector<f32, 3> lit_color ← color ⊙ lighting_vec
+    let vector<f32, 3> light_direction ↤ [0.0, 0.0, 1.0]
+    let f32 diffuse ← (normal · light_direction).maximum(0.0)
+    let f32 lighting ← 0.2 + 0.8 * diffuse
+    let vector<f32, 3> lighting_vec ↤ [lighting, lighting, lighting]
+    let vector<f32, 3> lit_color ← color ⊙ lighting_vec
     out_color ← lit_color
 }
 
 main {
-    const data.Geometry ∪ none plane ← basic.plane(2.0, 2.0)
+    let data.Geometry ∪ none plane ← basic.plane(2.0, 2.0)
     assert plane not is none panic "conformance requires valid plane geometry"
     assert vertex_layout_matches(0, 0, "normal", 0, 3, 0, 12, 1, 4) panic "normal input layout (stage-io role: other)"
     assert vertex_layout_matches(0, 1, "color", 1, 3, 0, 12, 1, 2) panic "color input layout (stage-io role: color)"

@@ -14,8 +14,8 @@ locale = "en"
 
 @ public
 class Box<size N> {
-    var vector<f32, N> minima
-    var vector<f32, N> maxima
+    mut vector<f32, N> minima
+    mut vector<f32, N> maxima
 }
 
 @ public
@@ -35,7 +35,7 @@ fn cross(vector<f32, 3> a, vector<f32, 3> b) → vector<f32, 3> {
 
 @ public
 fn lane(vector<f32, 3> a) → f32 {
-    const vector<f32, 3> swapped ← a.swizzle("zyx")
+    let vector<f32, 3> swapped ← a.swizzle("zyx")
     return swapped.dot(a)
 }
 
@@ -54,18 +54,18 @@ fn box_minima<size N>(Box<N> b) → vector<f32, N> {
 # and concrete-shape matrix multiplication.
 
 fn same_file() → f32 {
-    const vector<f32, 2> a2 ← [1.0, 2.0] ↦ vector<f32, 2>
-    const vector<f32, 2> b2 ← [2.0, 4.0] ↦ vector<f32, 2>
-    const vector<f32, 3> a3 ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
-    const vector<f32, 3> b3 ← [2.0, 4.0, 6.0] ↦ vector<f32, 3>
-    const vector<f32, 4> a4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
-    const vector<f32, 4> b4 ← [2.0, 4.0, 6.0, 8.0] ↦ vector<f32, 4>
-    const vector<f32, 2> s2 ← add(a2, b2)
-    const vector<f32, 3> s3 ← add(a3, b3)
-    const vector<f32, 4> s4 ← add(a4, b4)
-    const vector<f32, 3> x3 ← cross(a3, b3)
-    const matrix<f32, [3, 2]> outer ← a3 ⊗ b2
-    const matrix<f32, [2, 3]> inner ← b2 ⊗ a3
-    const matrix<f32, [3, 3]> product ← outer · inner
+    let vector<f32, 2> a2 ← [1.0, 2.0] ↦ vector<f32, 2>
+    let vector<f32, 2> b2 ← [2.0, 4.0] ↦ vector<f32, 2>
+    let vector<f32, 3> a3 ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    let vector<f32, 3> b3 ← [2.0, 4.0, 6.0] ↦ vector<f32, 3>
+    let vector<f32, 4> a4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+    let vector<f32, 4> b4 ← [2.0, 4.0, 6.0, 8.0] ↦ vector<f32, 4>
+    let vector<f32, 2> s2 ← add(a2, b2)
+    let vector<f32, 3> s3 ← add(a3, b3)
+    let vector<f32, 4> s4 ← add(a4, b4)
+    let vector<f32, 3> x3 ← cross(a3, b3)
+    let matrix<f32, [3, 2]> outer ← a3 ⊗ b2
+    let matrix<f32, [2, 3]> inner ← b2 ⊗ a3
+    let matrix<f32, [3, 3]> product ← outer · inner
     return ((s2.dot(b2) + s3.dot(b3)) + s4.dot(b4)) + (x3.dot(a3) + lane(a3))
 }

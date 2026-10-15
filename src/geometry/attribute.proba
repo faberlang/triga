@@ -6,9 +6,9 @@ import from "triga:geometry/layout" layout
 
 describe "buffer attribute contracts" {
     test "float32 attribute exposes scalar facts and exact values" {
-        const attribute.Attribute value ← attribute.float32_attribute("position", 0, 3, 2, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-        const list<f32> empty_values ← empty
-        const list<f32> values ← value.float32_values() coalesce empty_values
+        let attribute.Attribute value ← attribute.float32_attribute("position", 0, 3, 2, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+        let list<f32> empty_values ← empty
+        let list<f32> values ← value.float32_values() coalesce empty_values
         assert value.valid()
         assert value.name ≡ "position"
         assert value.shader_location ≡ 0
@@ -22,8 +22,8 @@ describe "buffer attribute contracts" {
         assert values.length() ≡ 6
         assert values[0] ≡ (1.0 ∷ f32)
         assert values[5] ≡ (6.0 ∷ f32)
-        const layout.VertexAttributeLayout ∪ none projected ← value.vertex_layout()
-        const layout.VertexAttributeLayout empty_layout ← layout.VertexAttributeLayout {
+        let layout.VertexAttributeLayout ∪ none projected ← value.vertex_layout()
+        let layout.VertexAttributeLayout empty_layout ← layout.VertexAttributeLayout {
             source_name = "",
             shader_location = 0,
             vertex_format = layout.vertex_format_from_component_width(3, true),
@@ -31,7 +31,7 @@ describe "buffer attribute contracts" {
             stride_bytes = 0,
             step_mode = layout.vertex_step_mode_vertex_step()
         }
-        const layout.VertexAttributeLayout lay ← projected coalesce empty_layout
+        let layout.VertexAttributeLayout lay ← projected coalesce empty_layout
         assert projected not is none
         assert lay.source_name ≡ "position"
         assert lay.shader_location ≡ 0
@@ -42,10 +42,10 @@ describe "buffer attribute contracts" {
     }
 
     test "wrong scalar lengths remain invalid" {
-        const attribute.Attribute valid ← attribute.float32_attribute("normal", 1, 3, 1, [0.0, 0.0, 1.0])
-        const attribute.Attribute invalid ← attribute.float32_attribute("normal", 1, 3, 1, [0.0, 0.0])
-        const list<f32> empty_values ← empty
-        const list<f32> short_values ← invalid.float32_values() coalesce empty_values
+        let attribute.Attribute valid ← attribute.float32_attribute("normal", 1, 3, 1, [0.0, 0.0, 1.0])
+        let attribute.Attribute invalid ← attribute.float32_attribute("normal", 1, 3, 1, [0.0, 0.0])
+        let list<f32> empty_values ← empty
+        let list<f32> short_values ← invalid.float32_values() coalesce empty_values
         assert valid.valid()
         assert not invalid.valid()
         assert invalid.float32_values() not is none
@@ -54,13 +54,13 @@ describe "buffer attribute contracts" {
     }
 
     test "empty and malformed metadata are rejected" {
-        const attribute.Attribute empty_name ← attribute.float32_attribute("", 0, 3, 1, [0.0, 0.0, 0.0])
-        const attribute.Attribute zero_width ← attribute.float32_attribute("position", 0, 0, 1, [])
-        const attribute.Attribute wide ← attribute.float32_attribute("position", 0, 5, 1, [0.0, 0.0, 0.0, 0.0, 0.0])
-        const attribute.Attribute zero_elements ← attribute.float32_attribute("position", 0, 3, 0, [])
-        const attribute.Attribute short_payload ← attribute.float32_attribute("position", 0, 3, 2, [0.0, 0.0, 0.0])
-        const list<f32> empty_values ← empty
-        const list<f32> short_values ← short_payload.float32_values() coalesce empty_values
+        let attribute.Attribute empty_name ← attribute.float32_attribute("", 0, 3, 1, [0.0, 0.0, 0.0])
+        let attribute.Attribute zero_width ← attribute.float32_attribute("position", 0, 0, 1, [])
+        let attribute.Attribute wide ← attribute.float32_attribute("position", 0, 5, 1, [0.0, 0.0, 0.0, 0.0, 0.0])
+        let attribute.Attribute zero_elements ← attribute.float32_attribute("position", 0, 3, 0, [])
+        let attribute.Attribute short_payload ← attribute.float32_attribute("position", 0, 3, 2, [0.0, 0.0, 0.0])
+        let list<f32> empty_values ← empty
+        let list<f32> short_values ← short_payload.float32_values() coalesce empty_values
         assert not empty_name.valid()
         assert not zero_width.valid()
         assert not wide.valid()

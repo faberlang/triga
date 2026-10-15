@@ -12,7 +12,7 @@ fn objectum(string name) → graph_object.Object {
 }
 
 test "Object preserves identity and default node state" {
-    const graph_object.Object node ← objectum("root")
+    let graph_object.Object node ← objectum("root")
     assert node.name ≡ "root"
     assert math.x(node.position) ≡ (1.0 ∷ f32)
     assert math.y(node.position) ≡ (2.0 ∷ f32)
@@ -26,8 +26,8 @@ test "Object preserves identity and default node state" {
 }
 
 test "Object child lists preserve parent and child defaults" {
-    const graph_object.Object child ← objectum("child")
-    const graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = [child], visible = true, name = "parent"}
+    let graph_object.Object child ← objectum("child")
+    let graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = [child], visible = true, name = "parent"}
     assert parent.name ≡ "parent"
     assert parent.children.length() ≡ 1
     assert parent.children[0].name ≡ "child"
@@ -36,9 +36,9 @@ test "Object child lists preserve parent and child defaults" {
 }
 
 test "Scene preserves its Object base and optional background" {
-    const graph_object.Object base ← objectum("scene-root")
-    const graph_object.Scene scene ← graph_object.Scene {base = base, background = math.Color {r = 0.2, g = 0.4, b = 0.6}}
-    const math.Color background ← scene.background coalesce math.Color {r = -1.0, g = -1.0, b = -1.0}
+    let graph_object.Object base ← objectum("scene-root")
+    let graph_object.Scene scene ← graph_object.Scene {base = base, background = math.Color {r = 0.2, g = 0.4, b = 0.6}}
+    let math.Color background ← scene.background coalesce math.Color {r = -1.0, g = -1.0, b = -1.0}
     assert scene.base.name ≡ "scene-root"
     assert scene.background not is none
     assert background.r ≡ (0.2 ∷ f32)
@@ -47,6 +47,6 @@ test "Scene preserves its Object base and optional background" {
 }
 
 test "Scene background is absent by default" {
-    const graph_object.Scene scene ← graph_object.Scene {base = objectum("plain-scene")}
+    let graph_object.Scene scene ← graph_object.Scene {base = objectum("plain-scene")}
     assert scene.background is none
 }

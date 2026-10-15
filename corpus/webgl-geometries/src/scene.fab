@@ -2,7 +2,7 @@ import from "./shapes" shapes
 
 @ public
 class CorpusGeometryManifest {
-    var list<shapes.CorpusMesh> objects
+    mut list<shapes.CorpusMesh> objects
 }
 
 @ public

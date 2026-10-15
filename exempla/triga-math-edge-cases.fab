@@ -13,31 +13,31 @@ import from "triga:graph/camera" camera
 
 main {
     # project3 with zero-length axis
-    const vector<f32, 3> projected_point ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
-    const vector<f32, 3> zero_axis ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-    const vector<f32, 3> projected ← math.project3(projected_point, zero_axis)
+    let vector<f32, 3> projected_point ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    let vector<f32, 3> zero_axis ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    let vector<f32, 3> projected ← math.project3(projected_point, zero_axis)
     print math.x(projected)
 
     # Quaternion normalized with all-zero quaternion
-    const math.Quaternion zero_q ← math.quaternion(0.0, 0.0, 0.0, 0.0)
-    const math.Quaternion normalized_zero_q ← zero_q.normalized()
+    let math.Quaternion zero_q ← math.quaternion(0.0, 0.0, 0.0, 0.0)
+    let math.Quaternion normalized_zero_q ← zero_q.normalized()
     print normalized_zero_q.w
 
     # normalized3 with all-zero input
-    const vector<f32, 3> all_zero ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-    const vector<f32, 3> zero_normalized ← math.normalized3(all_zero)
+    let vector<f32, 3> all_zero ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    let vector<f32, 3> zero_normalized ← math.normalized3(all_zero)
     print math.x(zero_normalized)
 
     # Color construction with out-of-range components
-    const f32 negative_value ← 0.0 - 0.1
-    const _ bad_g ← math.Color {r = 0.5, g = negative_value, b = 0.0}
-    const _ bad_r ← math.Color {r = negative_value, g = 0.5, b = 0.5}
+    let f32 negative_value ← 0.0 - 0.1
+    let bad_g ← math.Color {r = 0.5, g = negative_value, b = 0.0}
+    let bad_r ← math.Color {r = negative_value, g = 0.5, b = 0.5}
 
     # Ray and Box construction
-    const _ test_box ← math.Box<3> {minima = [-1.0, -1.0, -1.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
-    const _ ray ← math.Ray {origin = [-3.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+    let test_box ← math.Box<3> {minima = [-1.0, -1.0, -1.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+    let ray ← math.Ray {origin = [-3.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
 
     # PerspectiveCamera construction from an Object base
-    const _ cam_base ← graph_object.Object {position = [0.0, 0.0, 5.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "cam"}
-    const _ test_camera ← camera.PerspectiveCamera {base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0}
+    let cam_base ← graph_object.Object {position = [0.0, 0.0, 5.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "cam"}
+    let test_camera ← camera.PerspectiveCamera {base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0}
 }

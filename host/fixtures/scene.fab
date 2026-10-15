@@ -90,18 +90,18 @@ fn presenter_vertex() → void {
 
 @ fragment { }
 fn presenter_fragment(shader.Texture2D albedo, shader.Sampler albedo_sampler) → void {
-    const vector<f32, 3> light_direction ↤ [LIGHT_DX, LIGHT_DY, LIGHT_DZ]
-    const f32 ndotl ← (normal · light_direction).maximum(0.0)
-    const vector<f32, 4> sampled ← shader.sample(albedo, albedo_sampler, uv)
-    const vector<f32, 4> mat_tint ↤ [MAT_R, MAT_G, MAT_B, 1.0]
-    const vector<f32, 4> ambient_vec ↤ [AMB_R * AMB_INTENSITY, AMB_G * AMB_INTENSITY, AMB_B * AMB_INTENSITY, 0.0]
-    const f32 dir_term ← ndotl * LIGHT_INTENSITY
-    const vector<f32, 4> dir_vec ↤ [dir_term * LIGHT_R, dir_term * LIGHT_G, dir_term * LIGHT_B, 1.0]
-    const vector<f32, 4> ambient_lit ← sampled ⊙ mat_tint ⊙ ambient_vec
-    const vector<f32, 4> diffuse_lit ← sampled ⊙ mat_tint ⊙ dir_vec
+    let vector<f32, 3> light_direction ↤ [LIGHT_DX, LIGHT_DY, LIGHT_DZ]
+    let f32 ndotl ← (normal · light_direction).maximum(0.0)
+    let vector<f32, 4> sampled ← shader.sample(albedo, albedo_sampler, uv)
+    let vector<f32, 4> mat_tint ↤ [MAT_R, MAT_G, MAT_B, 1.0]
+    let vector<f32, 4> ambient_vec ↤ [AMB_R * AMB_INTENSITY, AMB_G * AMB_INTENSITY, AMB_B * AMB_INTENSITY, 0.0]
+    let f32 dir_term ← ndotl * LIGHT_INTENSITY
+    let vector<f32, 4> dir_vec ↤ [dir_term * LIGHT_R, dir_term * LIGHT_G, dir_term * LIGHT_B, 1.0]
+    let vector<f32, 4> ambient_lit ← sampled ⊙ mat_tint ⊙ ambient_vec
+    let vector<f32, 4> diffuse_lit ← sampled ⊙ mat_tint ⊙ dir_vec
     # diffuse² stand-in until `.power` emits to WGSL (shininess stays on the record).
-    const f32 spec ← ndotl * ndotl
-    const vector<f32, 4> spec_term ↤ [SPEC_R * spec, SPEC_G * spec, SPEC_B * spec, 0.0]
+    let f32 spec ← ndotl * ndotl
+    let vector<f32, 4> spec_term ↤ [SPEC_R * spec, SPEC_G * spec, SPEC_B * spec, 0.0]
     out_color ← ambient_lit + diffuse_lit + spec_term
 }
 
@@ -118,49 +118,49 @@ fn presenter_ambient_object() → graph_object.Object {
 }
 
 main {
-    const data.Geometry ∪ none box_result ← basic.box(1.0, 1.0, 1.0)
+    let data.Geometry ∪ none box_result ← basic.box(1.0, 1.0, 1.0)
     assert box_result not is none panic "presenter requires valid Triga box"
 
-    const resource.ResourceHandle geom ← resource.ResourceHandle {index = 0, generation = 0}
-    const resource.ResourceHandle mat ← resource.ResourceHandle {index = 0, generation = 0}
+    let resource.ResourceHandle geom ← resource.ResourceHandle {index = 0, generation = 0}
+    let resource.ResourceHandle mat ← resource.ResourceHandle {index = 0, generation = 0}
 
-    var scene.SceneStore store ← scene.scene_store()
-    const scene.SceneHandle root ← store.insert(scene.scene_group("root"))
-    const scene.SceneHandle left ← store.insert(scene.scene_mesh("left", geom, mat))
-    const scene.SceneHandle right ← store.insert(scene.scene_mesh("right", geom, mat))
+    mut scene.SceneStore store ← scene.scene_store()
+    let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+    let scene.SceneHandle left ← store.insert(scene.scene_mesh("left", geom, mat))
+    let scene.SceneHandle right ← store.insert(scene.scene_mesh("right", geom, mat))
     assert store.attach(left, root) panic "attach left"
     assert store.attach(right, root) panic "attach right"
     assert store.set_local_matrix(left, math.matrix_translation([-1.25, 0.0, 0.0] ↦ vector<f32, 3>)) panic "left translate"
     assert store.set_local_matrix(right, math.matrix_translation([1.25, 0.0, 0.0] ↦ vector<f32, 3>)) panic "right translate"
     assert store.refresh_world(root) panic "refresh world"
 
-    const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = presenter_camera_object(), fov = 42.0, aspect = 1.0, near = 0.1, far = 40.0}
-    const matrix<f32, [4, 4]> ∪ none view_proj_opt ← cam.view_projection([0.0, 1.8, 4.2] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = presenter_camera_object(), fov = 42.0, aspect = 1.0, near = 0.1, far = 40.0}
+    let matrix<f32, [4, 4]> ∪ none view_proj_opt ← cam.view_projection([0.0, 1.8, 4.2] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
     assert view_proj_opt not is none panic "presenter camera must form a view-projection"
-    const matrix<f32, [4, 4]> view_proj ← view_proj_opt
+    let matrix<f32, [4, 4]> view_proj ← view_proj_opt
 
-    const scene.VisibleMeshes ∪ none visible_opt ← scene.visible_meshes(store, root, view_proj)
+    let scene.VisibleMeshes ∪ none visible_opt ← scene.visible_meshes(store, root, view_proj)
     assert visible_opt not is none panic "visible_meshes"
-    const scene.VisibleMeshes visible ← visible_opt
+    let scene.VisibleMeshes visible ← visible_opt
     assert visible.handles.length() ≡ 2 panic "two visible meshes"
     assert visible.payloads.length() ≡ 2 panic "two transform payloads"
     assert visible.payloads[0].values.length() ≡ 32 panic "left TransformPayload"
     assert visible.payloads[1].values.length() ≡ 32 panic "right TransformPayload"
 
-    const math.Color ambient_color ← math.Color {r = AMB_R, g = AMB_G, b = AMB_B}
-    const lighting.AmbientLight ambient ← lighting.AmbientLight {base = lighting.Light {base = presenter_ambient_object(), color = ambient_color, intensity = AMB_INTENSITY}}
+    let math.Color ambient_color ← math.Color {r = AMB_R, g = AMB_G, b = AMB_B}
+    let lighting.AmbientLight ambient ← lighting.AmbientLight {base = lighting.Light {base = presenter_ambient_object(), color = ambient_color, intensity = AMB_INTENSITY}}
     assert ambient.base.base.name ≡ "presenter-ambient" panic "ambient object"
     assert ambient.base.color.b ≡ AMB_B panic "ambient color"
     assert ambient.base.intensity ≡ AMB_INTENSITY panic "ambient intensity"
 
-    const math.Color light_color ← math.Color {r = LIGHT_R, g = LIGHT_G, b = LIGHT_B}
-    const lighting.DirectionalLight sun ← lighting.DirectionalLight {base = lighting.Light {base = presenter_light_object(), color = light_color, intensity = LIGHT_INTENSITY}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
+    let math.Color light_color ← math.Color {r = LIGHT_R, g = LIGHT_G, b = LIGHT_B}
+    let lighting.DirectionalLight sun ← lighting.DirectionalLight {base = lighting.Light {base = presenter_light_object(), color = light_color, intensity = LIGHT_INTENSITY}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
     assert sun.base.base.name ≡ "presenter-sun" panic "sun object"
     assert sun.base.color.r ≡ LIGHT_R panic "sun color"
 
-    const math.Color phong_color ← math.Color {r = MAT_R, g = MAT_G, b = MAT_B}
-    const math.Color phong_specular ← math.Color {r = SPEC_R, g = SPEC_G, b = SPEC_B}
-    const lit.PhongMaterial phong ← lit.PhongMaterial {base = material_base.material_from_name("phong"), color = phong_color, specular = phong_specular, shininess = MAT_SHININESS}
+    let math.Color phong_color ← math.Color {r = MAT_R, g = MAT_G, b = MAT_B}
+    let math.Color phong_specular ← math.Color {r = SPEC_R, g = SPEC_G, b = SPEC_B}
+    let lit.PhongMaterial phong ← lit.PhongMaterial {base = material_base.material_from_name("phong"), color = phong_color, specular = phong_specular, shininess = MAT_SHININESS}
     assert phong.color.r ≡ MAT_R panic "phong color"
     assert phong.specular.g ≡ SPEC_G panic "phong specular"
     assert phong.shininess ≡ MAT_SHININESS panic "phong shininess"

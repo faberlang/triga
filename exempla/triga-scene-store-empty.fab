@@ -10,6 +10,6 @@ syntax = "importa ex \"triga:scene\" privata scene"
 import from "triga:scene" scene
 
 main {
-    const scene.SceneStore empty ← scene.scene_store()
-    const _ fresh_root ← scene.SceneHandle {index = 0, generation = 0}
+    let scene.SceneStore empty ← scene.scene_store()
+    let fresh_root ← scene.SceneHandle {index = 0, generation = 0}
 }

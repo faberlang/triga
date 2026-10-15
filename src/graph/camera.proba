@@ -23,17 +23,17 @@ fn empty_view_facts() → camera.ViewProjectionFacts {
 }
 
 test "PerspectiveCamera emits a valid projection and projection facts" {
-    const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("cam", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
-    const matrix<f32, [4, 4]> ∪ none projection_result ← cam.projection()
-    const matrix<f32, [4, 4]> projection ← projection_result coalesce math.matrix_identity()
+    let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("cam", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
+    let matrix<f32, [4, 4]> ∪ none projection_result ← cam.projection()
+    let matrix<f32, [4, 4]> projection ← projection_result coalesce math.matrix_identity()
     assert cam.base.name ≡ "cam"
     assert cam.fov ≡ (90.0 ∷ f32)
     assert cam.aspect ≡ (2.0 ∷ f32)
     assert projection_result not is none
     assert math.matrix_element(projection, 3, 2) ≡ (-1.0 ∷ f32)
 
-    const camera.PerspectiveCameraProjectionFacts ∪ none facts_result ← cam.projection_facts()
-    const camera.PerspectiveCameraProjectionFacts facts ← facts_result coalesce empty_projection_facts()
+    let camera.PerspectiveCameraProjectionFacts ∪ none facts_result ← cam.projection_facts()
+    let camera.PerspectiveCameraProjectionFacts facts ← facts_result coalesce empty_projection_facts()
     assert facts_result not is none
     assert facts.fov_y_degrees ≡ (90.0 ∷ f32)
     assert facts.aspect ≡ (2.0 ∷ f32)
@@ -46,14 +46,14 @@ test "PerspectiveCamera emits a valid projection and projection facts" {
 }
 
 test "PerspectiveCamera emits view-projection output and facts" {
-    const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("view-camera", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
-    const matrix<f32, [4, 4]> ∪ none view_projection_result ← cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
-    const matrix<f32, [4, 4]> view_projection ← view_projection_result coalesce math.matrix_identity()
+    let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("view-camera", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
+    let matrix<f32, [4, 4]> ∪ none view_projection_result ← cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let matrix<f32, [4, 4]> view_projection ← view_projection_result coalesce math.matrix_identity()
     assert view_projection_result not is none
     assert math.matrix_element(view_projection, 3, 2) ≡ (-1.0 ∷ f32)
 
-    const camera.ViewProjectionFacts ∪ none facts_result ← cam.view_projection_facts([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
-    const camera.ViewProjectionFacts facts ← facts_result coalesce empty_view_facts()
+    let camera.ViewProjectionFacts ∪ none facts_result ← cam.view_projection_facts([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let camera.ViewProjectionFacts facts ← facts_result coalesce empty_view_facts()
     assert facts_result not is none
     assert facts.float_count ≡ 16
     assert facts.x_scale.approximata(0.5, TOLERATIO)
@@ -63,7 +63,7 @@ test "PerspectiveCamera emits view-projection output and facts" {
 }
 
 test "OrthographicCamera preserves extents and camera defaults" {
-    const camera.OrthographicCamera orthographic ← camera.OrthographicCamera {base = base_camera("orthographic", 0.0), left = -10.0, right = 10.0, top = 8.0, bottom = -8.0, near = 0.1, far = 2000.0}
+    let camera.OrthographicCamera orthographic ← camera.OrthographicCamera {base = base_camera("orthographic", 0.0), left = -10.0, right = 10.0, top = 8.0, bottom = -8.0, near = 0.1, far = 2000.0}
     assert orthographic.base.name ≡ "orthographic"
     assert orthographic.base.visible
     assert orthographic.left ≡ (-10.0 ∷ f32)
@@ -75,10 +75,10 @@ test "OrthographicCamera preserves extents and camera defaults" {
 }
 
 test "PerspectiveCamera rejects invalid projection field ranges" {
-    const camera.PerspectiveCamera bad_fov ← camera.PerspectiveCamera {base = base_camera("bad-fov", 0.0), fov = 0.0, aspect = 1.0, near = 0.1, far = 100.0}
-    const camera.PerspectiveCamera bad_aspect ← camera.PerspectiveCamera {base = base_camera("bad-aspect", 0.0), fov = 50.0, aspect = 0.0, near = 0.1, far = 100.0}
-    const camera.PerspectiveCamera bad_near ← camera.PerspectiveCamera {base = base_camera("bad-near", 0.0), fov = 50.0, aspect = 1.0, near = 0.0, far = 100.0}
-    const camera.PerspectiveCamera bad_far ← camera.PerspectiveCamera {base = base_camera("bad-far", 0.0), fov = 50.0, aspect = 1.0, near = 100.0, far = 100.0}
+    let camera.PerspectiveCamera bad_fov ← camera.PerspectiveCamera {base = base_camera("bad-fov", 0.0), fov = 0.0, aspect = 1.0, near = 0.1, far = 100.0}
+    let camera.PerspectiveCamera bad_aspect ← camera.PerspectiveCamera {base = base_camera("bad-aspect", 0.0), fov = 50.0, aspect = 0.0, near = 0.1, far = 100.0}
+    let camera.PerspectiveCamera bad_near ← camera.PerspectiveCamera {base = base_camera("bad-near", 0.0), fov = 50.0, aspect = 1.0, near = 0.0, far = 100.0}
+    let camera.PerspectiveCamera bad_far ← camera.PerspectiveCamera {base = base_camera("bad-far", 0.0), fov = 50.0, aspect = 1.0, near = 100.0, far = 100.0}
     assert bad_fov.projection() is none
     assert bad_fov.projection_facts() is none
     assert bad_aspect.projection() is none
@@ -87,7 +87,7 @@ test "PerspectiveCamera rejects invalid projection field ranges" {
 }
 
 test "PerspectiveCamera rejects degenerate view inputs" {
-    const camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("degenerate-view", 5.0), fov = 50.0, aspect = 1.0, near = 0.1, far = 100.0}
+    let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("degenerate-view", 5.0), fov = 50.0, aspect = 1.0, near = 0.1, far = 100.0}
     assert cam.view_projection([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>) is none
     assert cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 1.0] ↦ vector<f32, 3>) is none
     assert cam.view_projection_facts([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>) is none

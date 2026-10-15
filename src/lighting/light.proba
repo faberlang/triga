@@ -15,7 +15,7 @@ fn spawn_light_at(string name, f32 x, f32 y, f32 z) → graph_object.Object {
 }
 
 test "Light preserves color and default intensity as carrier facts" {
-    const light.Light source ← light.Light {base = spawn_light("shared"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
+    let light.Light source ← light.Light {base = spawn_light("shared"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
 
     assert source.base.name ≡ "shared"
     assert source.color.r ≡ (0.0 ∷ f32)
@@ -25,8 +25,8 @@ test "Light preserves color and default intensity as carrier facts" {
 }
 
 test "AmbientLight carries color and zero-intensity boundaries" {
-    const light.Light source ← light.Light {base = spawn_light("ambient"), color = math.Color {r = 0.0, g = 0.5, b = 1.0}, intensity = 0.0}
-    const light.AmbientLight ambient ← light.AmbientLight {base = source}
+    let light.Light source ← light.Light {base = spawn_light("ambient"), color = math.Color {r = 0.0, g = 0.5, b = 1.0}, intensity = 0.0}
+    let light.AmbientLight ambient ← light.AmbientLight {base = source}
 
     assert ambient.base.base.name ≡ "ambient"
     assert ambient.base.color.r ≡ (0.0 ∷ f32)
@@ -36,9 +36,9 @@ test "AmbientLight carries color and zero-intensity boundaries" {
 }
 
 test "DirectionalLight carries target position and full-intensity boundary" {
-    const vector<f32, 3> target ← [-2.0, 0.0, 5.0] ↦ vector<f32, 3>
-    const light.Light source ← light.Light {base = spawn_light("directional"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
-    const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
+    let vector<f32, 3> target ← [-2.0, 0.0, 5.0] ↦ vector<f32, 3>
+    let light.Light source ← light.Light {base = spawn_light("directional"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
+    let light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
     assert directional.base.base.name ≡ "directional"
     assert directional.base.color.r ≡ (1.0 ∷ f32)
@@ -51,9 +51,9 @@ test "DirectionalLight carries target position and full-intensity boundary" {
 }
 
 test "DirectionalLight records position and target as direction carriers" {
-    const vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-    const light.Light source ← light.Light {base = spawn_light_at("from-above", 0.0, 4.0, 0.0), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
-    const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
+    let vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    let light.Light source ← light.Light {base = spawn_light_at("from-above", 0.0, 4.0, 0.0), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
+    let light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
     assert directional.base.base.name ≡ "from-above"
     assert math.x(directional.base.base.position) ≡ (0.0 ∷ f32)
@@ -65,9 +65,9 @@ test "DirectionalLight records position and target as direction carriers" {
 }
 
 test "DirectionalLight keeps a coincident target as a degenerate direction carrier" {
-    const vector<f32, 3> origin ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
-    const light.Light source ← light.Light {base = spawn_light_at("coincident", 1.0, 2.0, 3.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 0.0}
-    const light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = origin}
+    let vector<f32, 3> origin ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    let light.Light source ← light.Light {base = spawn_light_at("coincident", 1.0, 2.0, 3.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 0.0}
+    let light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = origin}
 
     assert math.x(directional.base.base.position) ≡ (1.0 ∷ f32)
     assert math.y(directional.base.base.position) ≡ (2.0 ∷ f32)
@@ -79,8 +79,8 @@ test "DirectionalLight keeps a coincident target as a degenerate direction carri
 }
 
 test "PointLight preserves distance and decay carrier fields" {
-    const light.Light source ← light.Light {base = spawn_light("point"), color = math.Color {r = 0.25, g = 0.5, b = 0.75}, intensity = 2.0}
-    const light.PointLight point ← light.PointLight {base = source, distance = 25.0, decay = 0.0}
+    let light.Light source ← light.Light {base = spawn_light("point"), color = math.Color {r = 0.25, g = 0.5, b = 0.75}, intensity = 2.0}
+    let light.PointLight point ← light.PointLight {base = source, distance = 25.0, decay = 0.0}
 
     assert point.base.base.name ≡ "point"
     assert point.base.color.r ≡ (0.25 ∷ f32)
@@ -92,8 +92,8 @@ test "PointLight preserves distance and decay carrier fields" {
 }
 
 test "PointLight defaults remain explicit carrier values" {
-    const light.Light source ← light.Light {base = spawn_light("point-defaults"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
-    const light.PointLight point ← light.PointLight {base = source, distance = 0.0, decay = 2.0}
+    let light.Light source ← light.Light {base = spawn_light("point-defaults"), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 1.0}
+    let light.PointLight point ← light.PointLight {base = source, distance = 0.0, decay = 2.0}
 
     assert point.base.base.name ≡ "point-defaults"
     assert point.base.intensity ≡ (1.0 ∷ f32)
@@ -103,8 +103,8 @@ test "PointLight defaults remain explicit carrier values" {
 
 test "Presenter-shaped AmbientLight and DirectionalLight carriers" {
     # Same abstract field shape as host/fixtures/scene.fab (scene params, not API).
-    const light.AmbientLight ambient ← light.AmbientLight {base = light.Light {base = spawn_light("presenter-ambient"), color = math.Color {r = 1.0, g = 0.0, b = 1.0}, intensity = 0.55}}
-    const light.DirectionalLight sun ← light.DirectionalLight {base = light.Light {base = spawn_light_at("presenter-sun", 2.0, 4.0, 1.0), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
+    let light.AmbientLight ambient ← light.AmbientLight {base = light.Light {base = spawn_light("presenter-ambient"), color = math.Color {r = 1.0, g = 0.0, b = 1.0}, intensity = 0.55}}
+    let light.DirectionalLight sun ← light.DirectionalLight {base = light.Light {base = spawn_light_at("presenter-sun", 2.0, 4.0, 1.0), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
 
     assert ambient.base.base.name ≡ "presenter-ambient"
     assert ambient.base.color.r ≡ (1.0 ∷ f32)

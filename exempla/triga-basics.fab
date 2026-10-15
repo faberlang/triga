@@ -13,30 +13,30 @@ import from "triga:material/base" base
 import from "triga:material/basic" basic
 
 main {
-    const vector<f32, 3> origin ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-    const vector<f32, 3> offset ← [1.5, 2.5, 3.0] ↦ vector<f32, 3>
+    let vector<f32, 3> origin ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    let vector<f32, 3> offset ← [1.5, 2.5, 3.0] ↦ vector<f32, 3>
     print math.x(origin)
     print math.z(offset)
-    const matrix<f32, [4, 4]> matrix ← math.matrix_identity()
+    let matrix<f32, [4, 4]> matrix ← math.matrix_identity()
 
     # Material construction and validation
-    const base.Material base_material ← base.material_from_name("hello-voxel")
-    const _ valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
-    const _ invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
+    let base.Material base_material ← base.material_from_name("hello-voxel")
+    let valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
+    let invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
-    const base.MaterialPipelineFacts ∪ none base_pipeline_result ← base_material.pipeline_facts()
+    let base.MaterialPipelineFacts ∪ none base_pipeline_result ← base_material.pipeline_facts()
     print base_pipeline_result
 
     # Double-sided material
-    const base.Material double_sided ← base_material.double_sided()
+    let base.Material double_sided ← base_material.double_sided()
 
     # UnlitMaterial
-    const _ unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
-    const basic.UnlitMaterial ∪ none unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
-    const _ unlit_value ← basic.UnlitMaterial {base = unlit!.base, color = unlit!.color}
+    let unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
+    let basic.UnlitMaterial ∪ none unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
+    let unlit_value ← basic.UnlitMaterial {base = unlit!.base, color = unlit!.color}
     print unlit_value.color.g
 
     # Invalid material handling
-    const base.Material invalid ← base.material_from_name("")
+    let base.Material invalid ← base.material_from_name("")
 }

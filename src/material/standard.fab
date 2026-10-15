@@ -15,10 +15,10 @@ import from "triga:material/base" base
 # allocation belong to the future material/render seams.
 @ public
 class StandardMaterial {
-    var base.Material base
-    var math.Color color
-    var f32 roughness = 1.0
-    var f32 metalness = 0.0
-    var math.Color emissive
-    var f32 emissive_intensity = 0.0
+    mut base.Material base
+    mut math.Color color
+    mut f32 roughness = 1.0
+    mut f32 metalness = 0.0
+    mut math.Color emissive
+    mut f32 emissive_intensity = 0.0
 }

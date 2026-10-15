@@ -13,26 +13,26 @@ import from "triga:resource" resource
 
 main {
     # Resource handles
-    const _ geom_handle ← resource.ResourceHandle {index = 7, generation = 2}
-    const _ mat_handle ← resource.ResourceHandle {index = 3, generation = 1}
+    let geom_handle ← resource.ResourceHandle {index = 7, generation = 2}
+    let mat_handle ← resource.ResourceHandle {index = 3, generation = 1}
 
     # Resource transitions
-    const resource.ResourceTransition stable ← geom_handle.transition_unchanged()
-    const resource.ResourceTransition replaced ← mat_handle.transition_replaced()
+    let resource.ResourceTransition stable ← geom_handle.transition_unchanged()
+    let resource.ResourceTransition replaced ← mat_handle.transition_replaced()
 
     # Scene construction and insertion (Imperativus — requires varia)
-    var scene.SceneStore store ← scene.scene_store()
-    const scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
-    const scene.SceneHandle mesh_handle ← store.insert(mesh_node)
+    mut scene.SceneStore store ← scene.scene_store()
+    let scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
+    let scene.SceneHandle mesh_handle ← store.insert(mesh_node)
 
     # Hierarchy: insert a child mesh
-    const scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
-    const scene.SceneHandle child_handle ← store.insert(child_node)
+    let scene.SceneNode child_node ← scene.scene_mesh("child", geom_handle, mat_handle)
+    let scene.SceneHandle child_handle ← store.insert(child_node)
 
     # Visible-meshes query (single traversal, multiple accessors)
-    const scene.VisibleMeshes ∪ none visibilia ← scene.visible_meshes(store, mesh_handle, math.matrix_identity())
+    let scene.VisibleMeshes ∪ none visibilia ← scene.visible_meshes(store, mesh_handle, math.matrix_identity())
     print visibilia
 
     # SceneNode mesh accessors
-    const scene.SceneNode ∪ none fetched ← store.take(mesh_handle)
+    let scene.SceneNode ∪ none fetched ← store.take(mesh_handle)
 }

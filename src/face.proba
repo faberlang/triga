@@ -6,9 +6,9 @@ import from "triga:math" math
 
 describe "face quad builders" {
     test "negative X face publishes exact corners" {
-        const face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
+        let face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
         assert quad_result not is none
-        const face.FaceQuad quad ← quad_result
+        let face.FaceQuad quad ← quad_result
         assert math.x(quad.a) ≡ (10.0 ∷ f32)
         assert math.y(quad.a) ≡ (20.0 ∷ f32)
         assert math.z(quad.a) ≡ (30.0 ∷ f32)
@@ -18,21 +18,21 @@ describe "face quad builders" {
     }
 
     test "all face codes preserve their orientation and winding" {
-        const face.FaceQuad ∪ none positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
+        let face.FaceQuad ∪ none positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
         assert positive_x_result not is none
-        const face.FaceQuad positive_x ← positive_x_result
-        const face.FaceQuad ∪ none negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
+        let face.FaceQuad positive_x ← positive_x_result
+        let face.FaceQuad ∪ none negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
         assert negative_y_result not is none
-        const face.FaceQuad negative_y ← negative_y_result
-        const face.FaceQuad ∪ none positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
+        let face.FaceQuad negative_y ← negative_y_result
+        let face.FaceQuad ∪ none positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
         assert positive_y_result not is none
-        const face.FaceQuad positive_y ← positive_y_result
-        const face.FaceQuad ∪ none negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
+        let face.FaceQuad positive_y ← positive_y_result
+        let face.FaceQuad ∪ none negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
         assert negative_z_result not is none
-        const face.FaceQuad negative_z ← negative_z_result
-        const face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
+        let face.FaceQuad negative_z ← negative_z_result
+        let face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
         assert positive_z_result not is none
-        const face.FaceQuad positive_z ← positive_z_result
+        let face.FaceQuad positive_z ← positive_z_result
         assert math.x(positive_x.a) ≡ (5.0 ∷ f32)
         assert math.z(positive_x.a) ≡ (7.0 ∷ f32)
         assert math.z(positive_x.d) ≡ (7.0 ∷ f32)
@@ -56,9 +56,9 @@ describe "face quad builders" {
     }
 
     test "colored face append publishes exact position color and index arrays" {
-        const data.ColoredQuadMesh ∪ none mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
+        let data.ColoredQuadMesh ∪ none mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
         assert mesh_result not is none
-        const data.ColoredQuadMesh mesh ← mesh_result
+        let data.ColoredQuadMesh mesh ← mesh_result
         assert mesh.positions.length() ≡ 12
         assert mesh.colors.length() ≡ 12
         assert mesh.indices.length() ≡ 6

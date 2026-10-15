@@ -327,7 +327,7 @@ genus SceneStore {
     lista<SceneSlot> slots = vacua
 
     functio insere(SceneNode nodus) → SceneHandle {
-        fixum numerus index ← ego.slots.longitudo()
+        sit numerus index ← ego.slots.longitudo()
         ego.slots.appende(SceneSlot { generation = 0, alive = verum, node = nodus })
         redde SceneHandle { index = index, generation = 0 }
     }
@@ -647,28 +647,28 @@ Do not do these piecemeal. They are coherent only as one break:
 Current Drift City style:
 
 ```fab
-fixum triga.Vector3 forward ← triga.camera_forward_planus_ex_yaw(heading_degrees)
-fixum triga.Vector3 right ← triga.camera_right_ex_yaw(heading_degrees)
-fixum f32 forward_speed ← triga.vector3_dot(old_velocity, forward)
-fixum triga.Matrix4 model ← triga.matrix4_composita(position, rotation, scale)
+sit triga.Vector3 forward ← triga.camera_forward_planus_ex_yaw(heading_degrees)
+sit triga.Vector3 right ← triga.camera_right_ex_yaw(heading_degrees)
+sit f32 forward_speed ← triga.vector3_dot(old_velocity, forward)
+sit triga.Matrix4 model ← triga.matrix4_composita(position, rotation, scale)
 ```
 
 Vocabulary only (Axis 2 without Axis 1):
 
 ```fab
-fixum triga.Vector3 prorsum ← triga.camera_prorsum_planum_ex_yaw(heading_degrees)
-fixum triga.Vector3 dextra ← triga.camera_dextra_ex_yaw(heading_degrees)
-fixum f32 celeritas_prorsum ← triga.vector3_productum(old_velocity, prorsum)
-fixum triga.Matrix4 exemplar ← triga.matrix4_composita(position, rotation, scala)
+sit triga.Vector3 prorsum ← triga.camera_prorsum_planum_ex_yaw(heading_degrees)
+sit triga.Vector3 dextra ← triga.camera_dextra_ex_yaw(heading_degrees)
+sit f32 celeritas_prorsum ← triga.vector3_productum(old_velocity, prorsum)
+sit triga.Matrix4 exemplar ← triga.matrix4_composita(position, rotation, scala)
 ```
 
 Shape plus vocabulary (both axes):
 
 ```fab
-fixum triga.Vector3 prorsum ← camera.prorsum_planum(heading_degrees)
-fixum triga.Vector3 dextra ← camera.dextra(heading_degrees)
-fixum f32 celeritas_prorsum ← old_velocity.productum(prorsum)
-fixum triga.Matrix4 exemplar ← triga.matrix4_composita(position, rotation, scala)
+sit triga.Vector3 prorsum ← camera.prorsum_planum(heading_degrees)
+sit triga.Vector3 dextra ← camera.dextra(heading_degrees)
+sit f32 celeritas_prorsum ← old_velocity.productum(prorsum)
+sit triga.Matrix4 exemplar ← triga.matrix4_composita(position, rotation, scala)
 ```
 
 The third form is shorter than the current English and shorter than the

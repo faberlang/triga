@@ -15,18 +15,18 @@ locale = "en"
 
 @ public
 class Vector<size N> {
-    var vector<f32, N> lanes
+    mut vector<f32, N> lanes
 }
 
 @ public
 class Matrix<size R, size C> {
-    var matrix<f32, [R, C]> cells
+    mut matrix<f32, [R, C]> cells
 }
 
 @ public
 class Box<size N> {
-    var Vector<N> minima
-    var Vector<N> maxima
+    mut Vector<N> minima
+    mut Vector<N> maxima
 }
 
 @ public

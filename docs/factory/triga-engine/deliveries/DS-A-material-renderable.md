@@ -240,17 +240,17 @@ importa ex "triga:material" privata material                    importa ex "trig
                                                                 importa ex "triga:material/standard" privata standard
                                                                 importa ex "triga:material/lit" privata lit
 ...
-fixum material.MeshStandardMaterial pbr_material ←              fixum standard.MeshStandardMaterial pbr_material ←
+sit material.MeshStandardMaterial pbr_material ←              sit standard.MeshStandardMaterial pbr_material ←
   material.MeshStandardMaterial { base = material.material(       standard.MeshStandardMaterial { base = base.material(
   "pbr"), color = white, ... }                                    "pbr"), color = white, ... }
-fixum material.MeshGeometry empty_geometry ←                    # MeshGeometry retired (S0 §1.4.3): Mesh binds BufferGeometry
-  material.MeshGeometry { positions = vacua, indices =            fixum geometry.DrawRange empty_range ←
+sit material.MeshGeometry empty_geometry ←                    # MeshGeometry retired (S0 §1.4.3): Mesh binds BufferGeometry
+  material.MeshGeometry { positions = vacua, indices =            sit geometry.DrawRange empty_range ←
   vacua, draw_start = 0 }                                         geometry.DrawRange { start = 0, count = 0 }
-fixum material.Mesh mesh ← material.Mesh { base = standalone,   fixum geometry.BufferGeometry empty_geometry ←
+sit material.Mesh mesh ← material.Mesh { base = standalone,   sit geometry.BufferGeometry empty_geometry ←
   geometry = empty_geometry }                                     geometry.triangle_geometry(0, vacua, empty_range, vacua)
-fixum material.MeshPhongMaterial phong ←                        fixum mesh.Mesh mesh ← mesh.Mesh { base = standalone,
+sit material.MeshPhongMaterial phong ←                        sit mesh.Mesh mesh ← mesh.Mesh { base = standalone,
   material.MeshPhongMaterial { base = material.material(          geometry = empty_geometry }
-  "phong"), ... }                                               fixum lit.MeshPhongMaterial phong ← lit.MeshPhongMaterial
+  "phong"), ... }                                               sit lit.MeshPhongMaterial phong ← lit.MeshPhongMaterial
                                                                 { base = base.material("phong"), ... }
 ```
 

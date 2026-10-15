@@ -40,15 +40,15 @@ union PrimitiveTopology {
 # `geometry()` projection turns them into a validated Geometry.
 @ public
 class ColoredQuadMesh {
-    var list<f32> positions
-    var list<f32> colors
-    var list<u32> indices
+    mut list<f32> positions
+    mut list<f32> colors
+    mut list<u32> indices
 
     fn face_count() → int ∪ none {
         if self.positions.length() ≢ self.colors.length() then return null
         if self.positions.length() % 12 ≢ 0 then return null
         if self.indices.length() % 6 ≢ 0 then return null
-        const int count ← self.positions.length() / 12
+        let int count ← self.positions.length() / 12
         if count ≡ 0 then return null
         if self.indices.length() ≢ count * 6 then return null
         return count
@@ -58,35 +58,35 @@ class ColoredQuadMesh {
         if self.positions.length() ≢ self.colors.length() then return null
         if self.positions.length() % 3 ≢ 0 then return null
         if self.indices.length() % 3 ≢ 0 then return null
-        const int vertex_count ← self.positions.length() / 3
+        let int vertex_count ← self.positions.length() / 3
         return colored_indexed_geometry(vertex_count, self.positions, self.colors, self.indices)
     }
 
     fn facts() → batch.VisibleFaceMeshFacts ∪ none {
-        const int ∪ none face_count_result ← self.face_count()
+        let int ∪ none face_count_result ← self.face_count()
         if face_count_result is none then return null
-        const int face_count ← face_count_result
+        let int face_count ← face_count_result
         return batch.visible_face_mesh_facts(face_count)
     }
 
     fn draw_batch_facts(int instance_count) → batch.IndexedGeometryDrawBatchFacts ∪ none {
-        const Geometry ∪ none geometry_result ← self.geometry()
+        let Geometry ∪ none geometry_result ← self.geometry()
         if geometry_result is none then return null
-        const Geometry geom ← geometry_result
+        let Geometry geom ← geometry_result
         return geom.indexed_draw_batch_facts(instance_count)
     }
 
     fn bounding_box() → bounds.BoundingBox ∪ none {
-        const Geometry ∪ none geometry_result ← self.geometry()
+        let Geometry ∪ none geometry_result ← self.geometry()
         if geometry_result is none then return null
-        const Geometry geom ← geometry_result
+        let Geometry geom ← geometry_result
         return geom.bounding_box()
     }
 
     fn bounding_sphere() → bounds.BoundingSphere ∪ none {
-        const Geometry ∪ none geometry_result ← self.geometry()
+        let Geometry ∪ none geometry_result ← self.geometry()
         if geometry_result is none then return null
-        const Geometry geom ← geometry_result
+        let Geometry geom ← geometry_result
         return geom.bounding_sphere()
     }
 }
@@ -97,13 +97,13 @@ class ColoredQuadMesh {
 # host draw facts.
 @ public
 class Geometry {
-    var PrimitiveTopology topology
-    var int vertex_count
-    var list<attribute.Attribute> attributes
-    var bool indexed
-    var list<u32> indices
-    var batch.DrawRange draw_range
-    var list<batch.GeometryGroup> groups
+    mut PrimitiveTopology topology
+    mut int vertex_count
+    mut list<attribute.Attribute> attributes
+    mut bool indexed
+    mut list<u32> indices
+    mut batch.DrawRange draw_range
+    mut list<batch.GeometryGroup> groups
 
     # --- Validation -----------------------------------------------------
     # Validation-sensitive projections below call `valid()` first. Invalid
@@ -114,7 +114,7 @@ class Geometry {
         if self.vertex_count ≡ 0 then return false
         if not self.attributes_valid() then return false
         if not self.indices_valid() then return false
-        const int element_count ← self.element_count()
+        let int element_count ← self.element_count()
         if self.draw_range.count ≡ 0 then return false
         if self.draw_range.start + self.draw_range.count ≻ element_count then return false
         if not topology_range_valid(self.topology, self.draw_range.start, self.draw_range.count) then return false
@@ -123,9 +123,9 @@ class Geometry {
     }
 
     fn attributes_valid() → bool {
-        var bool has_position ← false
-        for range 0‥self.attributes.length() const i {
-            const attribute.Attribute attr ← self.attributes[i]
+        mut bool has_position ← false
+        for range 0‥self.attributes.length() let i {
+            let attribute.Attribute attr ← self.attributes[i]
             if not attr.valid() then return false
             if attr.element_count ≢ self.vertex_count then return false
             if attr.name ≡ "position" {
@@ -133,8 +133,8 @@ class Geometry {
                 if attr.component_width ≢ 3 then return false
                 if attr.float32_values() is none then return false
             }
-            for range 0‥i const j {
-                const attribute.Attribute previous ← self.attributes[j]
+            for range 0‥i let j {
+                let attribute.Attribute previous ← self.attributes[j]
                 if previous.name ≡ attr.name then return false
                 if previous.shader_location ≡ attr.shader_location then return false
             }
@@ -145,22 +145,22 @@ class Geometry {
     fn indices_valid() → bool {
         if not self.indexed then return self.indices.length() ≡ 0
         if self.indices.length() ≡ 0 then return false
-        for from self.indices const raw {
-            const int index ↤ raw
+        for from self.indices let raw {
+            let int index ↤ raw
             if index ≥ self.vertex_count then return false
         }
         return true
     }
 
     fn groups_valid() → bool {
-        const int element_count ← self.element_count()
-        var int previous_end ← 0
-        for range 0‥self.groups.length() const i {
-            const batch.GeometryGroup group ← self.groups[i]
+        let int element_count ← self.element_count()
+        mut int previous_end ← 0
+        for range 0‥self.groups.length() let i {
+            let batch.GeometryGroup group ← self.groups[i]
             if group.count ≡ 0 then return false
             if not topology_range_valid(self.topology, group.start, group.count) then return false
             if group.start ≺ previous_end then return false
-            const int group_end ← group.start + group.count
+            let int group_end ← group.start + group.count
             if group_end ≻ element_count then return false
             previous_end ← group_end
         }
@@ -168,7 +168,7 @@ class Geometry {
     }
 
     fn topology_valid() → bool {
-        const int element_count ← self.element_count()
+        let int element_count ← self.element_count()
         match self.topology {
             case TriangleList {
                 return element_count_divisible(element_count, 3)
@@ -197,7 +197,7 @@ class Geometry {
     fn index_count() → int ∪ none {
         if not self.valid() then return null
         if not self.indexed then return null
-        const int count ← self.indices.length()
+        let int count ← self.indices.length()
         return count
     }
 
@@ -209,7 +209,7 @@ class Geometry {
 
     fn group_count() → int ∪ none {
         if not self.valid() then return null
-        const int count ← self.groups.length()
+        let int count ← self.groups.length()
         return count
     }
 
@@ -217,10 +217,10 @@ class Geometry {
 
     fn attribute_byte_count(string name) → int ∪ none {
         if not self.valid() then return null
-        for from self.attributes const attribute {
+        for from self.attributes let attribute {
             if attribute.name ≡ name {
-                const int scalars ← attribute.scalar_count()
-                const int bytes ← scalars * attribute.scalar_bytes()
+                let int scalars ← attribute.scalar_count()
+                let int bytes ← scalars * attribute.scalar_bytes()
                 return bytes
             }
         }
@@ -229,7 +229,7 @@ class Geometry {
 
     fn attribute_scalar_count(string name) → int ∪ none {
         if not self.valid() then return null
-        for from self.attributes const attribute {
+        for from self.attributes let attribute {
             if attribute.name ≡ name then return attribute.scalar_count()
         }
         return null
@@ -237,8 +237,8 @@ class Geometry {
 
     fn vertex_payload_byte_count() → int ∪ none {
         if not self.valid() then return null
-        var int total ← 0
-        for from self.attributes const attribute {
+        mut int total ← 0
+        for from self.attributes let attribute {
             total ← total + attribute.scalar_count() * attribute.scalar_bytes()
         }
         return total
@@ -247,17 +247,17 @@ class Geometry {
     fn index_payload_byte_count() → int ∪ none {
         if not self.valid() then return null
         if not self.indexed then return null
-        const int bytes ← self.indices.length() * 4
+        let int bytes ← self.indices.length() * 4
         return bytes
     }
 
     fn payload_byte_count() → int ∪ none {
-        const int ∪ none vertex_bytes_result ← self.vertex_payload_byte_count()
+        let int ∪ none vertex_bytes_result ← self.vertex_payload_byte_count()
         if vertex_bytes_result is none then return null
-        const int vertex_bytes ← vertex_bytes_result
-        const int ∪ none index_bytes_result ← self.index_payload_byte_count()
+        let int vertex_bytes ← vertex_bytes_result
+        let int ∪ none index_bytes_result ← self.index_payload_byte_count()
         if index_bytes_result is none then return vertex_bytes
-        const int index_bytes ← index_bytes_result
+        let int index_bytes ← index_bytes_result
         return vertex_bytes + index_bytes
     }
 
@@ -305,18 +305,18 @@ class Geometry {
         if not self.valid() then return null
         if group_index ≥ self.groups.length() then return null
         if instance_count ≡ 0 then return null
-        const batch.GeometryGroup group ← self.groups[group_index]
+        let batch.GeometryGroup group ← self.groups[group_index]
         return batch.GeometryDrawCommand {indexed = self.indexed, element_count = group.count, first_element = group.start, base_vertex = 0, instance_count = instance_count, material_index = group.material_index}
     }
 
     fn group_draw_commands(int instance_count) → list<batch.GeometryDrawCommand> ∪ none {
         if not self.valid() then return null
         if instance_count ≡ 0 then return null
-        var list<batch.GeometryDrawCommand> commands ← empty
-        for range 0‥self.groups.length() const i {
-            const batch.GeometryDrawCommand ∪ none command ← self.group_draw_command(i, instance_count)
+        mut list<batch.GeometryDrawCommand> commands ← empty
+        for range 0‥self.groups.length() let i {
+            let batch.GeometryDrawCommand ∪ none command ← self.group_draw_command(i, instance_count)
             if command is none then return null
-            const batch.GeometryDrawCommand value ← command
+            let batch.GeometryDrawCommand value ← command
             commands.append(value)
         }
         return commands
@@ -324,8 +324,8 @@ class Geometry {
 
     fn group_element_total() → int ∪ none {
         if not self.valid() then return null
-        var int total ← 0
-        for from self.groups const group {
+        mut int total ← 0
+        for from self.groups let group {
             total ← total + group.count
         }
         return total
@@ -335,18 +335,18 @@ class Geometry {
 
     fn bounding_box() → bounds.BoundingBox ∪ none {
         if not self.valid() then return null
-        const list<f32> positions ← self.position_values()
-        var f32 min_x ← positions[0]
-        var f32 min_y ← positions[1]
-        var f32 min_z ← positions[2]
-        var f32 max_x ← positions[0]
-        var f32 max_y ← positions[1]
-        var f32 max_z ← positions[2]
-        var int i ← 3
+        let list<f32> positions ← self.position_values()
+        mut f32 min_x ← positions[0]
+        mut f32 min_y ← positions[1]
+        mut f32 min_z ← positions[2]
+        mut f32 max_x ← positions[0]
+        mut f32 max_y ← positions[1]
+        mut f32 max_z ← positions[2]
+        mut int i ← 3
         while i ≺ positions.length() {
-            const f32 x ← positions[i]
-            const f32 y ← positions[i + 1]
-            const f32 z ← positions[i + 2]
+            let f32 x ← positions[i]
+            let f32 y ← positions[i + 1]
+            let f32 z ← positions[i + 2]
             min_x ← min_x ⤓ x
             min_y ← min_y ⤓ y
             min_z ← min_z ⤓ z
@@ -361,30 +361,30 @@ class Geometry {
     fn group_bounding_box(int group_index) → bounds.BoundingBox ∪ none {
         if not self.valid() then return null
         if group_index ≥ self.groups.length() then return null
-        const batch.GeometryGroup group ← self.groups[group_index]
-        const list<f32> positions ← self.position_values()
-        var int vertex_index ← group.start
+        let batch.GeometryGroup group ← self.groups[group_index]
+        let list<f32> positions ← self.position_values()
+        mut int vertex_index ← group.start
         if self.indexed {
             vertex_index ↤ self.indices[group.start]
         }
-        var int position_index ← vertex_index * 3
-        var f32 min_x ← positions[position_index]
-        var f32 min_y ← positions[position_index + 1]
-        var f32 min_z ← positions[position_index + 2]
-        var f32 max_x ← min_x
-        var f32 max_y ← min_y
-        var f32 max_z ← min_z
-        var int i ← group.start
-        const int end ← group.start + group.count
+        mut int position_index ← vertex_index * 3
+        mut f32 min_x ← positions[position_index]
+        mut f32 min_y ← positions[position_index + 1]
+        mut f32 min_z ← positions[position_index + 2]
+        mut f32 max_x ← min_x
+        mut f32 max_y ← min_y
+        mut f32 max_z ← min_z
+        mut int i ← group.start
+        let int end ← group.start + group.count
         while i ≺ end {
             vertex_index ← i
             if self.indexed {
                 vertex_index ↤ self.indices[i]
             }
             position_index ← vertex_index * 3
-            const f32 x ← positions[position_index]
-            const f32 y ← positions[position_index + 1]
-            const f32 z ← positions[position_index + 2]
+            let f32 x ← positions[position_index]
+            let f32 y ← positions[position_index + 1]
+            let f32 z ← positions[position_index + 2]
             min_x ← min_x ⤓ x
             min_y ← min_y ⤓ y
             min_z ← min_z ⤓ z
@@ -397,20 +397,20 @@ class Geometry {
     }
 
     fn bounding_sphere() → bounds.BoundingSphere ∪ none {
-        const bounds.BoundingBox ∪ none bounds_result ← self.bounding_box()
+        let bounds.BoundingBox ∪ none bounds_result ← self.bounding_box()
         if bounds_result is none then return null
-        const bounds.BoundingBox bnd ← bounds_result
-        const f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
-        const f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
-        const f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
-        const list<f32> positions ← self.position_values()
-        var f32 radius_squared ← 0.0
-        var int i ← 0
+        let bounds.BoundingBox bnd ← bounds_result
+        let f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
+        let f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
+        let f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
+        let list<f32> positions ← self.position_values()
+        mut f32 radius_squared ← 0.0
+        mut int i ← 0
         while i ≺ positions.length() {
-            const f32 dx ← positions[i] - center_x
-            const f32 dy ← positions[i + 1] - center_y
-            const f32 dz ← positions[i + 2] - center_z
-            const f32 distance_squared ← (dx * dx + dy * dy) + dz * dz
+            let f32 dx ← positions[i] - center_x
+            let f32 dy ← positions[i + 1] - center_y
+            let f32 dz ← positions[i + 2] - center_z
+            let f32 distance_squared ← (dx * dx + dy * dy) + dz * dz
             radius_squared ← distance_squared ⤒ radius_squared
             i ← i + 3
         }
@@ -418,27 +418,27 @@ class Geometry {
     }
 
     fn group_bounding_sphere(int group_index) → bounds.BoundingSphere ∪ none {
-        const bounds.BoundingBox ∪ none bounds_result ← self.group_bounding_box(group_index)
+        let bounds.BoundingBox ∪ none bounds_result ← self.group_bounding_box(group_index)
         if bounds_result is none then return null
-        const bounds.BoundingBox bnd ← bounds_result
-        const f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
-        const f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
-        const f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
-        const batch.GeometryGroup group ← self.groups[group_index]
-        const list<f32> positions ← self.position_values()
-        var f32 radius_squared ← 0.0
-        var int i ← group.start
-        const int end ← group.start + group.count
+        let bounds.BoundingBox bnd ← bounds_result
+        let f32 center_x ← (bnd.min_x + bnd.max_x) * 0.5
+        let f32 center_y ← (bnd.min_y + bnd.max_y) * 0.5
+        let f32 center_z ← (bnd.min_z + bnd.max_z) * 0.5
+        let batch.GeometryGroup group ← self.groups[group_index]
+        let list<f32> positions ← self.position_values()
+        mut f32 radius_squared ← 0.0
+        mut int i ← group.start
+        let int end ← group.start + group.count
         while i ≺ end {
-            var int vertex_index ← i
+            mut int vertex_index ← i
             if self.indexed {
                 vertex_index ↤ self.indices[i]
             }
-            const int position_index ← vertex_index * 3
-            const f32 dx ← positions[position_index] - center_x
-            const f32 dy ← positions[position_index + 1] - center_y
-            const f32 dz ← positions[position_index + 2] - center_z
-            const f32 distance_squared ← (dx * dx + dy * dy) + dz * dz
+            let int position_index ← vertex_index * 3
+            let f32 dx ← positions[position_index] - center_x
+            let f32 dy ← positions[position_index + 1] - center_y
+            let f32 dz ← positions[position_index + 2] - center_z
+            let f32 distance_squared ← (dx * dx + dy * dy) + dz * dz
             radius_squared ← distance_squared ⤒ radius_squared
             i ← i + 1
         }
@@ -459,33 +459,33 @@ class Geometry {
                 return null
             }
         }
-        const list<f32> positions ← self.position_values()
-        var list<f32> normals ← empty
-        for range 0‥positions.length() const _ {
+        let list<f32> positions ← self.position_values()
+        mut list<f32> normals ← empty
+        for range 0‥positions.length() let _ {
             normals.append(0.0)
         }
-        var int i ← 0
+        mut int i ← 0
         while i ≺ self.element_count() {
-            var int a ← i
-            var int b ← i + 1
-            var int c ← i + 2
+            mut int a ← i
+            mut int b ← i + 1
+            mut int c ← i + 2
             if self.indexed {
                 a ↤ self.indices[i]
                 b ↤ self.indices[i + 1]
                 c ↤ self.indices[i + 2]
             }
-            const int ai ← a * 3
-            const int bi ← b * 3
-            const int ci ← c * 3
-            const f32 ab_x ← positions[bi] - positions[ai]
-            const f32 ab_y ← positions[bi + 1] - positions[ai + 1]
-            const f32 ab_z ← positions[bi + 2] - positions[ai + 2]
-            const f32 ac_x ← positions[ci] - positions[ai]
-            const f32 ac_y ← positions[ci + 1] - positions[ai + 1]
-            const f32 ac_z ← positions[ci + 2] - positions[ai + 2]
-            const f32 nx ← ab_y * ac_z - ab_z * ac_y
-            const f32 ny ← ab_z * ac_x - ab_x * ac_z
-            const f32 nz ← ab_x * ac_y - ab_y * ac_x
+            let int ai ← a * 3
+            let int bi ← b * 3
+            let int ci ← c * 3
+            let f32 ab_x ← positions[bi] - positions[ai]
+            let f32 ab_y ← positions[bi + 1] - positions[ai + 1]
+            let f32 ab_z ← positions[bi + 2] - positions[ai + 2]
+            let f32 ac_x ← positions[ci] - positions[ai]
+            let f32 ac_y ← positions[ci + 1] - positions[ai + 1]
+            let f32 ac_z ← positions[ci + 2] - positions[ai + 2]
+            let f32 nx ← ab_y * ac_z - ab_z * ac_y
+            let f32 ny ← ab_z * ac_x - ab_x * ac_z
+            let f32 nz ← ab_x * ac_y - ab_y * ac_x
             normals[ai] ← normals[ai] + nx
             normals[ai + 1] ← normals[ai + 1] + ny
             normals[ai + 2] ← normals[ai + 2] + nz
@@ -498,17 +498,17 @@ class Geometry {
             i ← i + 3
         }
         i ← 0
-        const f32 zero ← 0.0
+        let f32 zero ← 0.0
         while i ≺ normals.length() {
-            const f32 abs_x ← normals[i].abs()
-            const f32 abs_y ← normals[i + 1].abs()
-            const f32 abs_z ← normals[i + 2].abs()
-            const f32 normal_max ← abs_x ⤒ abs_y ⤒ abs_z
+            let f32 abs_x ← normals[i].abs()
+            let f32 abs_y ← normals[i + 1].abs()
+            let f32 abs_z ← normals[i + 2].abs()
+            let f32 normal_max ← abs_x ⤒ abs_y ⤒ abs_z
             if normal_max ≡ zero then return null
-            const f32 scaled_x ← normals[i] / normal_max
-            const f32 scaled_y ← normals[i + 1] / normal_max
-            const f32 scaled_z ← normals[i + 2] / normal_max
-            const f32 normal_scale ← normal_max * math.sqrt_f32((scaled_x * scaled_x + scaled_y * scaled_y) + scaled_z * scaled_z)
+            let f32 scaled_x ← normals[i] / normal_max
+            let f32 scaled_y ← normals[i + 1] / normal_max
+            let f32 scaled_z ← normals[i + 2] / normal_max
+            let f32 normal_scale ← normal_max * math.sqrt_f32((scaled_x * scaled_x + scaled_y * scaled_y) + scaled_z * scaled_z)
             normals[i] ← normals[i] / normal_scale
             normals[i + 1] ← normals[i + 1] / normal_scale
             normals[i + 2] ← normals[i + 2] / normal_scale
@@ -518,16 +518,16 @@ class Geometry {
     }
 
     fn planar_uvs() → attribute.Attribute ∪ none {
-        const bounds.BoundingBox ∪ none bounds_result ← self.bounding_box()
+        let bounds.BoundingBox ∪ none bounds_result ← self.bounding_box()
         if bounds_result is none then return null
-        const bounds.BoundingBox bnd ← bounds_result
-        const f32 width ← bnd.max_x - bnd.min_x
-        const f32 height ← bnd.max_y - bnd.min_y
-        const f32 zero ← 0.0
+        let bounds.BoundingBox bnd ← bounds_result
+        let f32 width ← bnd.max_x - bnd.min_x
+        let f32 height ← bnd.max_y - bnd.min_y
+        let f32 zero ← 0.0
         if width ≡ zero or height ≡ zero then return null
-        const list<f32> positions ← self.position_values()
-        var list<f32> uvs ← empty
-        var int i ← 0
+        let list<f32> positions ← self.position_values()
+        mut list<f32> uvs ← empty
+        mut int i ← 0
         while i ≺ positions.length() {
             uvs.append((positions[i] - bnd.min_x) / width)
             uvs.append((positions[i + 1] - bnd.min_y) / height)
@@ -538,10 +538,10 @@ class Geometry {
 
     # --- Vertex layout introspection ------------------------------------
     fn position_values() → list<f32> {
-        var list<f32> positions ← empty
-        for from self.attributes const attr {
+        mut list<f32> positions ← empty
+        for from self.attributes let attr {
             if attr.name ≡ "position" {
-                const list<f32> ∪ none values ← attr.float32_values()
+                let list<f32> ∪ none values ← attr.float32_values()
                 if values not is none {
                     positions ← values
                 }
@@ -553,7 +553,7 @@ class Geometry {
     fn vertex_layout_at(int index) → layout.VertexAttributeLayout ∪ none {
         if not self.valid() then return null
         if index ≥ self.attributes.length() then return null
-        const attribute.Attribute attr ← self.attributes[index]
+        let attribute.Attribute attr ← self.attributes[index]
         return attr.vertex_layout()
     }
 
@@ -564,66 +564,66 @@ class Geometry {
 
     fn vertex_layout_count() → int ∪ none {
         if not self.valid() then return null
-        const int count ← self.attributes.length()
+        let int count ← self.attributes.length()
         return count
     }
 
     fn vertex_layout_location(int index) → int ∪ none {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return null
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return lay.shader_location
     }
 
     fn vertex_layout_source_name(int index) → string ∪ none {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return null
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return lay.source_name
     }
 
     fn vertex_layout_format_code(int index) → int ∪ none {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return null
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return layout.layout_format_code(lay)
     }
 
     fn vertex_layout_offset_bytes(int index) → int ∪ none {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return null
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return lay.offset_bytes
     }
 
     fn vertex_layout_stride_bytes(int index) → int ∪ none {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return null
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return lay.stride_bytes
     }
 
     fn vertex_layout_step_mode_code(int index) → int ∪ none {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return null
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return layout.layout_step_mode_code(lay)
     }
 
     fn vertex_layout_matches(int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code) → bool {
-        const layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
+        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
         if layout_result is none then return false
-        const layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout lay ← layout_result
         return ((((lay.source_name ≡ source_name and lay.shader_location ≡ shader_location) and layout.layout_format_code(lay) ≡ format_code) and lay.offset_bytes ≡ offset_bytes) and lay.stride_bytes ≡ stride_bytes) and layout.layout_step_mode_code(lay) ≡ step_mode_code
     }
 
     fn vertex_layouts() → list<layout.VertexAttributeLayout> ∪ none {
         if not self.valid() then return null
-        var list<layout.VertexAttributeLayout> layouts ← empty
-        for from self.attributes const attr {
-            const layout.VertexAttributeLayout ∪ none layout_result ← attr.vertex_layout()
+        mut list<layout.VertexAttributeLayout> layouts ← empty
+        for from self.attributes let attr {
+            let layout.VertexAttributeLayout ∪ none layout_result ← attr.vertex_layout()
             if layout_result is none then return null
-            const layout.VertexAttributeLayout lay ← layout_result
+            let layout.VertexAttributeLayout lay ← layout_result
             layouts.append(lay)
         }
         return layouts
@@ -635,16 +635,16 @@ class Geometry {
         if not self.valid() then return null
         if not self.indexed then return null
         if instance_count ≡ 0 then return null
-        const list<batch.GeometryDrawCommand> ∪ none commands_result ← self.group_draw_commands(instance_count)
+        let list<batch.GeometryDrawCommand> ∪ none commands_result ← self.group_draw_commands(instance_count)
         if commands_result is none then return null
-        const list<batch.GeometryDrawCommand> commands ← commands_result
-        const int ∪ none grouped_elements_result ← self.group_element_total()
+        let list<batch.GeometryDrawCommand> commands ← commands_result
+        let int ∪ none grouped_elements_result ← self.group_element_total()
         if grouped_elements_result is none then return null
-        const int ∪ none vertex_bytes_result ← self.vertex_payload_byte_count()
+        let int ∪ none vertex_bytes_result ← self.vertex_payload_byte_count()
         if vertex_bytes_result is none then return null
-        const int ∪ none index_bytes_result ← self.index_payload_byte_count()
+        let int ∪ none index_bytes_result ← self.index_payload_byte_count()
         if index_bytes_result is none then return null
-        const int ∪ none total_bytes_result ← self.payload_byte_count()
+        let int ∪ none total_bytes_result ← self.payload_byte_count()
         if total_bytes_result is none then return null
         return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.length(), grouped_element_total = grouped_elements_result, vertex_payload_byte_count = vertex_bytes_result, index_payload_byte_count = index_bytes_result, total_payload_byte_count = total_bytes_result}
     }
@@ -653,12 +653,12 @@ class Geometry {
         if not self.valid() then return null
         if not self.indexed then return null
         if instance_count ≡ 0 then return null
-        const int ∪ none line_count_result ← self.line_count()
+        let int ∪ none line_count_result ← self.line_count()
         if line_count_result is none then return null
-        const batch.IndexedGeometryDrawBatchFacts ∪ none batch_result ← self.indexed_draw_batch_facts(instance_count)
+        let batch.IndexedGeometryDrawBatchFacts ∪ none batch_result ← self.indexed_draw_batch_facts(instance_count)
         if batch_result is none then return null
-        const int line_count_value ← line_count_result
-        const batch.IndexedGeometryDrawBatchFacts batch_facts ← batch_result
+        let int line_count_value ← line_count_result
+        let batch.IndexedGeometryDrawBatchFacts batch_facts ← batch_result
         return batch.LineGeometryDrawBatchFacts {draw_count = batch_facts.draw_count, line_count = line_count_value, grouped_element_total = batch_facts.grouped_element_total, vertex_payload_byte_count = batch_facts.vertex_payload_byte_count, index_payload_byte_count = batch_facts.index_payload_byte_count, total_payload_byte_count = batch_facts.total_payload_byte_count}
     }
 }
@@ -685,9 +685,9 @@ fn line_geometry(int vertex_count, ref list<attribute.Attribute> attributes, lis
 
 @ public
 fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> colors, list<u32> indices) → Geometry ∪ none {
-    const attribute.Attribute position_attribute ← attribute.float32_attribute("position", 0, 3, vertex_count, positions)
-    const attribute.Attribute color_attribute ← attribute.float32_attribute("color", 1, 3, vertex_count, colors)
-    const Geometry geometry ← indexed_triangle_geometry(vertex_count, [position_attribute, color_attribute], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
+    let attribute.Attribute position_attribute ← attribute.float32_attribute("position", 0, 3, vertex_count, positions)
+    let attribute.Attribute color_attribute ← attribute.float32_attribute("color", 1, 3, vertex_count, colors)
+    let Geometry geometry ← indexed_triangle_geometry(vertex_count, [position_attribute, color_attribute], indices, batch.DrawRange {start = 0, count = indices.length()}, [batch.GeometryGroup {start = 0, count = indices.length(), material_index = 0}])
     if not geometry.valid() then return null
     return geometry
 }
@@ -702,19 +702,19 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> ind
     if positions.length() ≢ colors.length() then return null
     if positions.length() % 3 ≢ 0 then return null
     if indices.length() % 3 ≢ 0 then return null
-    var list<f32> next_positions ← empty
-    for from positions const value {
+    mut list<f32> next_positions ← empty
+    for from positions let value {
         next_positions.append(value)
     }
-    var list<f32> next_colors ← empty
-    for from colors const value {
+    mut list<f32> next_colors ← empty
+    for from colors let value {
         next_colors.append(value)
     }
-    var list<u32> next_indices ← empty
-    for from indices const value {
+    mut list<u32> next_indices ← empty
+    for from indices let value {
         next_indices.append(value)
     }
-    const int vertex_base ← positions.length() / 3
+    let int vertex_base ← positions.length() / 3
     next_positions.append(math.x(a))
     next_positions.append(math.y(a))
     next_positions.append(math.z(a))
@@ -727,7 +727,7 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> ind
     next_positions.append(math.x(d))
     next_positions.append(math.y(d))
     next_positions.append(math.z(d))
-    for range 0‥4 const corner {
+    for range 0‥4 let corner {
         next_colors.append(color.r)
         next_colors.append(color.g)
         next_colors.append(color.b)

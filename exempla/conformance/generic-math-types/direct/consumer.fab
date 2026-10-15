@@ -10,23 +10,23 @@ locale = "en"
 import from "probevectors:vectors" gmt
 
 fn imported() → f32 {
-    const vector<f32, 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
-    const vector<f32, 3> b ← [2.0, 4.0, 6.0] ↦ vector<f32, 3>
-    const vector<f32, 3> s ← gmt.add(a, b)
-    const vector<f32, 3> x ← gmt.cross(a, b)
+    let vector<f32, 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    let vector<f32, 3> b ← [2.0, 4.0, 6.0] ↦ vector<f32, 3>
+    let vector<f32, 3> s ← gmt.add(a, b)
+    let vector<f32, 3> x ← gmt.cross(a, b)
     return (s.dot(b) + x.dot(a)) + gmt.lane(a)
 }
 
 fn imported_signature() → vector<f32, 4> {
-    const vector<f32, 4> a ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
-    const vector<f32, 4> b ← [2.0, 4.0, 6.0, 8.0] ↦ vector<f32, 4>
+    let vector<f32, 4> a ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, 4>
+    let vector<f32, 4> b ← [2.0, 4.0, 6.0, 8.0] ↦ vector<f32, 4>
     return gmt.add(a, b)
 }
 
 fn imported_shapes() → matrix<f32, [3, 3]> {
-    const vector<f32, 3> s ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
-    const vector<f32, 2> narrow ← [1.0, 2.0] ↦ vector<f32, 2>
-    const matrix<f32, [3, 2]> outer ← s ⊗ narrow
-    const matrix<f32, [2, 3]> inner ← narrow ⊗ s
+    let vector<f32, 3> s ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    let vector<f32, 2> narrow ← [1.0, 2.0] ↦ vector<f32, 2>
+    let matrix<f32, [3, 2]> outer ← s ⊗ narrow
+    let matrix<f32, [2, 3]> inner ← narrow ⊗ s
     return gmt.multiplied(outer, inner)
 }

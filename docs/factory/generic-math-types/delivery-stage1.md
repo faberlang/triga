@@ -68,7 +68,7 @@ Minimal repros executed at `574526dfb` (2026-09-16):
       fn size() → vector<f32, N> { return self.max.subtract(self.min) }
   }
   fn probe(Box<3> b) → f32 {
-      const vector<f32, 3> s ← b.size()
+      let vector<f32, 3> s ← b.size()
       return s.dot([1.0, 1.0, 1.0] ↦ vector<f32, 3>)
   }
   ```

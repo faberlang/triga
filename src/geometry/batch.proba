@@ -13,7 +13,7 @@ describe "geometry batch facts" {
     }
 
     test "visible face mesh facts preserve topology and payload shape" {
-        const batch.VisibleFaceMeshFacts facts ← batch.visible_face_mesh_facts(2) coalesce batch.VisibleFaceMeshFacts {face_count = 0, vertex_count = 0, index_count = 0, triangle_count = 0, position_payload_byte_count = 0, color_payload_byte_count = 0, index_payload_byte_count = 0, total_payload_byte_count = 0}
+        let batch.VisibleFaceMeshFacts facts ← batch.visible_face_mesh_facts(2) coalesce batch.VisibleFaceMeshFacts {face_count = 0, vertex_count = 0, index_count = 0, triangle_count = 0, position_payload_byte_count = 0, color_payload_byte_count = 0, index_payload_byte_count = 0, total_payload_byte_count = 0}
         assert facts.face_count ≡ 2
         assert facts.vertex_count ≡ 8
         assert facts.index_count ≡ 12
@@ -37,11 +37,11 @@ describe "geometry batch facts" {
     }
 
     test "draw ranges groups and commands publish their scalar fields" {
-        const batch.DrawRange range ← batch.DrawRange {start = 3, count = 6}
-        const batch.GeometryGroup group ← batch.GeometryGroup {start = 6, count = 3, material_index = 4}
-        const batch.GeometryDrawCommand command ← batch.GeometryDrawCommand {indexed = true, element_count = 6, first_element = 3, base_vertex = 0, instance_count = 2, material_index = 4}
-        const batch.IndexedGeometryDrawBatchFacts indexed_facts ← batch.IndexedGeometryDrawBatchFacts {draw_count = 1, grouped_element_total = 6, vertex_payload_byte_count = 72, index_payload_byte_count = 24, total_payload_byte_count = 96}
-        const batch.LineGeometryDrawBatchFacts line_facts ← batch.LineGeometryDrawBatchFacts {draw_count = 1, line_count = 3, grouped_element_total = 6, vertex_payload_byte_count = 48, index_payload_byte_count = 16, total_payload_byte_count = 64}
+        let batch.DrawRange range ← batch.DrawRange {start = 3, count = 6}
+        let batch.GeometryGroup group ← batch.GeometryGroup {start = 6, count = 3, material_index = 4}
+        let batch.GeometryDrawCommand command ← batch.GeometryDrawCommand {indexed = true, element_count = 6, first_element = 3, base_vertex = 0, instance_count = 2, material_index = 4}
+        let batch.IndexedGeometryDrawBatchFacts indexed_facts ← batch.IndexedGeometryDrawBatchFacts {draw_count = 1, grouped_element_total = 6, vertex_payload_byte_count = 72, index_payload_byte_count = 24, total_payload_byte_count = 96}
+        let batch.LineGeometryDrawBatchFacts line_facts ← batch.LineGeometryDrawBatchFacts {draw_count = 1, line_count = 3, grouped_element_total = 6, vertex_payload_byte_count = 48, index_payload_byte_count = 16, total_payload_byte_count = 64}
         assert range.start ≡ 3
         assert range.count ≡ 6
         assert group.start ≡ 6

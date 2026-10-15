@@ -15,8 +15,8 @@ import from "triga:material/base" base
 # that build this record; full `.power(shininess)` WGSL emit is still open.
 @ public
 class PhongMaterial {
-    var base.Material base
-    var math.Color color
-    var math.Color specular
-    var f32 shininess = 30.0
+    mut base.Material base
+    mut math.Color color
+    mut math.Color specular
+    mut f32 shininess = 30.0
 }

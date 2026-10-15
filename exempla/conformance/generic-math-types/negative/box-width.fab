@@ -9,8 +9,8 @@ locale = "en"
 type Vector<size N> = vector<f32, N>
 
 class Box<size N> {
-    var Vector<N> minima
-    var Vector<N> maxima
+    mut Vector<N> minima
+    mut Vector<N> maxima
 }
 
 fn box_minima<size N>(Box<N> b) → Vector<N> {
