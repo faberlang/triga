@@ -54,16 +54,16 @@ fn position_at(list<f32> scalars, int vertex_index) → vector<f32, 3> {
 
 # The triangle's geometric normal (cross product of two edges).
 fn triangle_normal(vector<f32, 3> a, vector<f32, 3> b, vector<f32, 3> c) → vector<f32, 3> {
-    const vector<f32, 3> ab ← b.subtract(a)
-    const vector<f32, 3> ac ← c.subtract(a)
+    const vector<f32, 3> ab ← b.subtracted(a)
+    const vector<f32, 3> ac ← c.subtracted(a)
     return ab.cross(ac)
 }
 
 # True when the given normal is perpendicular to all three triangle edges.
 fn edges_perpendicular_to(vector<f32, 3> normal, vector<f32, 3> a, vector<f32, 3> b, vector<f32, 3> c) → bool {
-    if near_zero(normal.dot(b.subtract(a))) ≡ false then return false
-    if near_zero(normal.dot(c.subtract(b))) ≡ false then return false
-    if near_zero(normal.dot(a.subtract(c))) ≡ false then return false
+    if near_zero(normal.dot(b.subtracted(a))) ≡ false then return false
+    if near_zero(normal.dot(c.subtracted(b))) ≡ false then return false
+    if near_zero(normal.dot(a.subtracted(c))) ≡ false then return false
     return true
 }
 

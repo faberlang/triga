@@ -104,7 +104,7 @@ fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
 fn view_projection(ref OrbitCamera cam, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
     const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
     const vector<f32, 3> offset ← math.scale3(direction, cam.distance)
-    const vector<f32, 3> eye ← cam.target.subtract(offset)
+    const vector<f32, 3> eye ← cam.target.subtracted(offset)
     const camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.1, far = 200.0}
     return perspective.view_projection(eye, cam.target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
 }

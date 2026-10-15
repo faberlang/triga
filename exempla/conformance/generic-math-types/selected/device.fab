@@ -43,5 +43,5 @@ class Box<size N> {
 }
 
 fn box_mensura<size N>(Box<N> b) → vector<f32, N> {
-    return b.maxima.subtract(b.minima)
+    return b.maxima.subtracted(b.minima)
 }

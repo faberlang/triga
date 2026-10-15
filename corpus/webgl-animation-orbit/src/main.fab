@@ -120,7 +120,7 @@ fn view_projection(f32 camera_yaw_degrees, f32 aspect) → matrix<f32, [4, 4]> �
     const vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
     const vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(camera_yaw_degrees, -22.0)
     const vector<f32, 3> offset ← math.scale3(direction, 13.0)
-    const vector<f32, 3> eye ← target.subtract(offset)
+    const vector<f32, 3> eye ← target.subtracted(offset)
     const matrix<f32, [4, 4]> ∪ none projection_result ← math.matrix_perspective(45.0, aspect, 0.1, 200.0)
     if projection_result is none then return null
     const matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)

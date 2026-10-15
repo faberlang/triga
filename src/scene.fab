@@ -241,7 +241,7 @@ class SceneStore {
     }
 
     fn effectively_visible(ref SceneHandle handle) → bool {
-        var SceneHandle cursor ← handle
+        var SceneHandle cursor ← copy handle
         var int remaining ← self.slots.length() + 1
         while remaining ≻ 0 {
             const SceneNode ∪ none current_result ← self.take(cursor)
@@ -454,7 +454,7 @@ class SceneStore {
     }
 
     fn would_cycle(ref SceneHandle child, ref SceneHandle parent) → bool {
-        var SceneHandle cursor ← parent
+        var SceneHandle cursor ← copy parent
         var int remaining ← self.slots.length() + 1
         while remaining ≻ 0 {
             if scene_handle_equals(cursor, child) then return true

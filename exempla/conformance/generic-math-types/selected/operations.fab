@@ -28,11 +28,11 @@ fn addita<size N>(vector<f32, N> a, vector<f32, N> b) → vector<f32, N> {
 }
 
 fn subtracta<size N>(vector<f32, N> a, vector<f32, N> b) → vector<f32, N> {
-    return a.subtract(b)
+    return a.subtracted(b)
 }
 
 fn multiplicata<size N>(vector<f32, N> a, vector<f32, N> b) → vector<f32, N> {
-    return a.multiply(b)
+    return a.multiplied(b)
 }
 
 fn productum<size N>(vector<f32, N> a, vector<f32, N> b) → f32 {
@@ -58,7 +58,7 @@ fn longitudo<size N>(vector<f32, N> v) → f32 {
 }
 
 fn distantia<size N>(vector<f32, N> a, vector<f32, N> b) → f32 {
-    return longitudo(a.subtract(b))
+    return longitudo(a.subtracted(b))
 }
 
 # --- §2.4 Vector<3>: cross product and 3D camera/face/ray uses ----------
@@ -141,25 +141,25 @@ fn uniform_4(f32 value) → vector<f32, 4> {
 # forms compose identically over uniform_3; one width proves the behavior.
 
 fn scala(vector<f32, 4> v, f32 s) → vector<f32, 4> {
-    return v.multiply(uniform_4(s))
+    return v.multiplied(uniform_4(s))
 }
 
 fn normata(vector<f32, 4> v) → vector<f32, 4> {
     const f32 length ← longitudo(v)
     if length ≤ 0.000001 then return uniform_4(0.0)
-    return v.multiply(uniform_4(1.0 / length))
+    return v.multiplied(uniform_4(1.0 / length))
 }
 
 fn interpolata(vector<f32, 4> a, vector<f32, 4> b, f32 ratio) → vector<f32, 4> {
-    const vector<f32, 4> difference ← b.subtract(a)
-    const vector<f32, 4> scaled ← difference.multiply(uniform_4(ratio))
+    const vector<f32, 4> difference ← b.subtracted(a)
+    const vector<f32, 4> scaled ← difference.multiplied(uniform_4(ratio))
     return a.added(scaled)
 }
 
 fn projecta(vector<f32, 4> v, vector<f32, 4> axis) → vector<f32, 4> {
     const f32 denominator ← axis.dot(axis)
     if denominator ≤ 0.000001 then return uniform_4(0.0)
-    return axis.multiply(uniform_4(v.dot(axis) / denominator))
+    return axis.multiplied(uniform_4(v.dot(axis) / denominator))
 }
 
 # [F] camera direction at width 3 — the current camera helper shape over
@@ -216,7 +216,7 @@ fn addita_matrix<size R, size C>(matrix<f32, [R, C]> a, matrix<f32, [R, C]> b) �
 }
 
 fn subtracta_matrix<size R, size C>(matrix<f32, [R, C]> a, matrix<f32, [R, C]> b) → matrix<f32, [R, C]> {
-    return a.subtract(b)
+    return a.subtracted(b)
 }
 
 # [F] two-axis access: `for from m at [r, c]` iterates every cell with its
@@ -373,7 +373,7 @@ fn perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matrix<f32,
 # [F] look-at/view construction — collinear inputs return null.
 
 fn conspectus(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → matrix<f32, [4, 4]> ∪ none {
-    const vector<f32, 3> forward ← target.subtract(eye).normalize()
+    const vector<f32, 3> forward ← target.subtracted(eye).normalize()
     if longitudo(forward) ≤ 0.000001 then return null
     const vector<f32, 3> side ← forward.cross(up).normalize()
     if longitudo(side) ≤ 0.000001 then return null
@@ -426,7 +426,7 @@ fn applica_punctum(matrix<f32, [4, 4]> m, vector<f32, 3> punctum) → vector<f32
     if w.abs() ≤ 0.000001 {
         divisor ← 1.0
     }
-    const vector<f32, 4> divided ← applied.multiply(uniform_4(1.0 / divisor))
+    const vector<f32, 4> divided ← applied.multiplied(uniform_4(1.0 / divisor))
     const f32 rx ← divided.dot(basis_4(0))
     const f32 ry ← divided.dot(basis_4(1))
     const f32 rz ← divided.dot(basis_4(2))
@@ -494,7 +494,7 @@ class Box<size N> {
 
     # [R] receivers expressible dimension-neutrally today.
     fn mensura() → vector<f32, N> {
-        return self.maxima.subtract(self.minima)
+        return self.maxima.subtracted(self.minima)
     }
 
     fn translata(vector<f32, N> offset) → Box<N> {
@@ -547,7 +547,7 @@ fn capsa_intersecat(Box<3> una, Box<3> alia) → bool {
 }
 
 fn capsa_inflata(Box<3> capsam, f32 quantitas) → Box<3> {
-    return Box {minima = capsam.minima.subtract(uniform_3(quantitas)), maxima = capsam.maxima.added(uniform_3(quantitas))}
+    return Box {minima = capsam.minima.subtracted(uniform_3(quantitas)), maxima = capsam.maxima.added(uniform_3(quantitas))}
 }
 
 fn capsa_centrum(Box<3> capsam) → vector<f32, 3> {
@@ -561,7 +561,7 @@ fn capsa_centrum(Box<3> capsam) → vector<f32, 3> {
     const vector<f32, 3> inferior ← [ax, ay, az] ↦ vector<f32, 3>
     const vector<f32, 3> superior ← [bx, by, bz] ↦ vector<f32, 3>
     const vector<f32, 3> sum ← inferior.added(superior)
-    return sum.multiply(half)
+    return sum.multiplied(half)
 }
 
 fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ none {

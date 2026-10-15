@@ -28,5 +28,5 @@ fn imported_shapes() → matrix<f32, [3, 3]> {
     const vector<f32, 2> narrow ← [1.0, 2.0] ↦ vector<f32, 2>
     const matrix<f32, [3, 2]> outer ← s ⊗ narrow
     const matrix<f32, [2, 3]> inner ← narrow ⊗ s
-    return gmt.multiply(outer, inner)
+    return gmt.multiplied(outer, inner)
 }

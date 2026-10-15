@@ -11,7 +11,7 @@ describe "vector carriers and arithmetic" {
         const vector<f32, 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
         const vector<f32, 3> b ← [4.0, 5.0, 6.0] ↦ vector<f32, 3>
         const vector<f32, 3> added ← a.added(b)
-        const vector<f32, 3> subtracted ← b.subtract(a)
+        const vector<f32, 3> subtracted ← b.subtracted(a)
         const vector<f32, 3> scaled ← math.scale3(a, 2.0)
         const vector<f32, 3> crossed ← a.cross(b)
         const vector<f32, 3> halfway ← math.lerp3(a, b, 0.5)
@@ -71,7 +71,7 @@ describe "matrix and transform carriers" {
         const matrix<f32, [4, 4]> composed ← math.matrix_compose(offset, identity_rotation, scale_vector)
 
         const matrix<f32, [3, 3]> doubled ← matrix3.added(matrix3)
-        assert doubled.subtract(matrix3) ≡ matrix3
+        assert doubled.subtracted(matrix3) ≡ matrix3
         assert math.affine_determinant(identity) ≡ (1.0 ∷ f32)
         assert math.matrix_element(translation, 0, 3) ≡ (5.0 ∷ f32)
         assert math.matrix_element(translation, 1, 3) ≡ (-2.0 ∷ f32)

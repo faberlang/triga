@@ -64,12 +64,12 @@ fn sqrt_f32(f32 value) → f32 {
 
 @ public
 fn scale3(vector<f32, 3> v, f32 scalar) → vector<f32, 3> {
-    return v.multiply(uniform3(scalar))
+    return v.multiplied(uniform3(scalar))
 }
 
 @ public
 fn scale4(vector<f32, 4> v, f32 scalar) → vector<f32, 4> {
-    return v.multiply(uniform4(scalar))
+    return v.multiplied(uniform4(scalar))
 }
 
 @ public
@@ -81,18 +81,18 @@ fn length<size N>(vector<f32, N> v) → f32 {
 fn normalized3(vector<f32, 3> v) → vector<f32, 3> {
     const f32 len ← length(v)
     if len ≤ 0.000001 then return [0.0, 0.0, 0.0] ↦ vector<f32, 3>
-    return v.multiply(uniform3(1.0 / len))
+    return v.multiplied(uniform3(1.0 / len))
 }
 
 @ public
 fn distance<size N>(vector<f32, N> a, vector<f32, N> b) → f32 {
-    return length(a.subtract(b))
+    return length(a.subtracted(b))
 }
 
 @ public
 fn lerp3(vector<f32, 3> a, vector<f32, 3> b, f32 amount) → vector<f32, 3> {
-    const vector<f32, 3> delta ← b.subtract(a)
-    const vector<f32, 3> scaled ← delta.multiply(uniform3(amount))
+    const vector<f32, 3> delta ← b.subtracted(a)
+    const vector<f32, 3> scaled ← delta.multiplied(uniform3(amount))
     return a.added(scaled)
 }
 
@@ -101,7 +101,7 @@ fn project3(vector<f32, 3> v, vector<f32, 3> axis) → vector<f32, 3> {
     const f32 denominator ← axis.dot(axis)
     if denominator ≤ 0.000001 then return [0.0, 0.0, 0.0] ↦ vector<f32, 3>
     const f32 scale ← v.dot(axis) / denominator
-    return axis.multiply(uniform3(scale))
+    return axis.multiplied(uniform3(scale))
 }
 
 # --- MATRIX BUILDERS ---
@@ -157,10 +157,10 @@ fn matrix_scale(vector<f32, 3> scale_vector) → matrix<f32, [4, 4]> {
 
 @ public
 fn transpose(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> {
-    const vector<f32, 4> r0 ← [matrix_element(m, 0, 0), matrix_element(m, 1, 0), matrix_element(m, 2, 0), matrix_element(m, 3, 0)] ↦ vector<f32, 4>
-    const vector<f32, 4> r1 ← [matrix_element(m, 0, 1), matrix_element(m, 1, 1), matrix_element(m, 2, 1), matrix_element(m, 3, 1)] ↦ vector<f32, 4>
-    const vector<f32, 4> r2 ← [matrix_element(m, 0, 2), matrix_element(m, 1, 2), matrix_element(m, 2, 2), matrix_element(m, 3, 2)] ↦ vector<f32, 4>
-    const vector<f32, 4> r3 ← [matrix_element(m, 0, 3), matrix_element(m, 1, 3), matrix_element(m, 2, 3), matrix_element(m, 3, 3)] ↦ vector<f32, 4>
+    const vector<f32, 4> r0 ← [matrix_element(m, 0, 0), matrix_element(m, 0, 1), matrix_element(m, 0, 2), matrix_element(m, 0, 3)] ↦ vector<f32, 4>
+    const vector<f32, 4> r1 ← [matrix_element(m, 1, 0), matrix_element(m, 1, 1), matrix_element(m, 1, 2), matrix_element(m, 1, 3)] ↦ vector<f32, 4>
+    const vector<f32, 4> r2 ← [matrix_element(m, 2, 0), matrix_element(m, 2, 1), matrix_element(m, 2, 2), matrix_element(m, 2, 3)] ↦ vector<f32, 4>
+    const vector<f32, 4> r3 ← [matrix_element(m, 3, 0), matrix_element(m, 3, 1), matrix_element(m, 3, 2), matrix_element(m, 3, 3)] ↦ vector<f32, 4>
     return matrix_from_columns(r0, r1, r2, r3)
 }
 
@@ -190,7 +190,7 @@ fn apply_point(matrix<f32, [4, 4]> m, vector<f32, 3> point) → vector<f32, 3> {
     if w.abs() ≤ 0.000001 {
         divisor ← 1.0
     }
-    const vector<f32, 4> divided ← applied.multiply(uniform4(1.0 / divisor))
+    const vector<f32, 4> divided ← applied.multiplied(uniform4(1.0 / divisor))
     const f32 rx ← divided.dot(basis4(0))
     const f32 ry ← divided.dot(basis4(1))
     const f32 rz ← divided.dot(basis4(2))
@@ -459,7 +459,7 @@ fn matrix_perspective(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matr
 
 @ public
 fn matrix_look_at(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → matrix<f32, [4, 4]> ∪ none {
-    const vector<f32, 3> toward ← target.subtract(eye)
+    const vector<f32, 3> toward ← target.subtracted(eye)
     const vector<f32, 3> forward ← normalized3(toward)
     if length(forward) ≤ 0.000001 then return null
     const vector<f32, 3> crossed ← forward.cross(up)
@@ -503,7 +503,7 @@ class BoxOverlapFacts {
 
 @ public
 fn box_valid(Box<3> box) → bool {
-    const vector<f32, 3> measure ← box.maxima.subtract(box.minima)
+    const vector<f32, 3> measure ← box.maxima.subtracted(box.minima)
     const f32 dx ← measure.dot(basis3(0))
     const f32 dy ← measure.dot(basis3(1))
     const f32 dz ← measure.dot(basis3(2))
@@ -546,7 +546,7 @@ fn box_intersects(Box<3> a, Box<3> b) → bool {
 
 @ public
 fn box_inflated(Box<3> box, f32 amount) → Box<3> {
-    const vector<f32, 3> lo ← box.minima.subtract(uniform3(amount))
+    const vector<f32, 3> lo ← box.minima.subtracted(uniform3(amount))
     const vector<f32, 3> hi ← box.maxima.added(uniform3(amount))
     const Box<3> expanded ← Box {minima = lo, maxima = hi}
     return expanded
@@ -556,7 +556,7 @@ fn box_inflated(Box<3> box, f32 amount) → Box<3> {
 fn box_center(Box<3> box) → vector<f32, 3> ∪ none {
     if not box_valid(box) then return null
     const vector<f32, 3> sum ← box.minima.added(box.maxima)
-    return sum.multiply(uniform3(0.5))
+    return sum.multiplied(uniform3(0.5))
 }
 
 @ public
@@ -635,8 +635,8 @@ fn box_from_center_and_size(vector<f32, 3> center, vector<f32, 3> size_vector) �
     const f32 sy ← size_vector.dot(basis3(1))
     const f32 sz ← size_vector.dot(basis3(2))
     if (sx ≤ 0.0 or sy ≤ 0.0) or sz ≤ 0.0 then return null
-    const vector<f32, 3> half ← size_vector.multiply(uniform3(0.5))
-    const vector<f32, 3> lo ← center.subtract(half)
+    const vector<f32, 3> half ← size_vector.multiplied(uniform3(0.5))
+    const vector<f32, 3> lo ← center.subtracted(half)
     const vector<f32, 3> hi ← center.added(half)
     const Box<3> bounds ← Box {minima = lo, maxima = hi}
     return bounds
@@ -645,7 +645,7 @@ fn box_from_center_and_size(vector<f32, 3> center, vector<f32, 3> size_vector) �
 @ public
 fn box_size(Box<3> box) → vector<f32, 3> ∪ none {
     if not box_valid(box) then return null
-    return box.maxima.subtract(box.minima)
+    return box.maxima.subtracted(box.minima)
 }
 
 @ public
@@ -763,7 +763,7 @@ class Ray {
     var vector<f32, 3> direction
 
     fn point_at(f32 distance) → vector<f32, 3> {
-        const vector<f32, 3> stepped ← self.direction.multiply(uniform3(distance))
+        const vector<f32, 3> stepped ← self.direction.multiplied(uniform3(distance))
         return self.origin.added(stepped)
     }
 
