@@ -46,11 +46,11 @@ main {
     print depth_compare_less
 
     # Goal 01 material
-    let goal_color ← math.Color {r = 1.0, g = 0.2, b = 0.2}
+    let _ goal_color ← math.Color {r = 1.0, g = 0.2, b = 0.2}
     let basic.UnlitMaterial ∪ none goal_material_result ← basic.basic_material("goal-material", goal_color)
-    let goal_material ← basic.UnlitMaterial {base = goal_material_result!.base, color = goal_material_result!.color}
+    let _ goal_material ← basic.UnlitMaterial {base = goal_material_result!.base, color = goal_material_result!.color}
     let base.MaterialPipelineFacts ∪ none goal_pipeline_result ← goal_material.pipeline_facts()
-    let goal_pipeline ← base.MaterialPipelineFacts {side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test}
+    let _ goal_pipeline ← base.MaterialPipelineFacts {side_code = goal_pipeline_result!.side_code, depth_test_enabled = goal_pipeline_result!.depth_test_enabled, depth_write_enabled = goal_pipeline_result!.depth_write_enabled, transparent = goal_pipeline_result!.transparent, alpha = goal_pipeline_result!.alpha, alpha_test = goal_pipeline_result!.alpha_test}
     print goal_pipeline.depth_test_enabled
     print goal_pipeline.transparent
     print goal_pipeline.side_code

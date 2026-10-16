@@ -25,11 +25,11 @@ import from "triga:geometry/attribute" attribute
 import from "triga:geometry/batch" batch
 
 incipit {
-    let position ← attribute.float32_attribute(
+    let _ position ← attribute.float32_attribute(
         "position", 0, 3, 3,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
     )
-    let triangle ← data.indexed_triangle_geometry(
+    let _ triangle ← data.indexed_triangle_geometry(
         3,
         [position],
         [0, 1, 2],

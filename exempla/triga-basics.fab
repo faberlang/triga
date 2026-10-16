@@ -21,8 +21,8 @@ main {
 
     # Material construction and validation
     let base.Material base_material ← base.material_from_name("hello-voxel")
-    let valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
-    let invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
+    let _ valid_color ← math.Color {r = 1.0, g = 0.0, b = 0.5}
+    let _ invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
     let base.MaterialPipelineFacts ∪ none base_pipeline_result ← base_material.pipeline_facts()
@@ -32,9 +32,9 @@ main {
     let base.Material double_sided ← base_material.double_sided()
 
     # UnlitMaterial
-    let unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
+    let _ unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
     let basic.UnlitMaterial ∪ none unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
-    let unlit_value ← basic.UnlitMaterial {base = unlit!.base, color = unlit!.color}
+    let _ unlit_value ← basic.UnlitMaterial {base = unlit!.base, color = unlit!.color}
     print unlit_value.color.g
 
     # Invalid material handling

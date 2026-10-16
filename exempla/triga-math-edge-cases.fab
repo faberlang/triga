@@ -30,14 +30,14 @@ main {
 
     # Color construction with out-of-range components
     let f32 negative_value ← 0.0 - 0.1
-    let bad_g ← math.Color {r = 0.5, g = negative_value, b = 0.0}
-    let bad_r ← math.Color {r = negative_value, g = 0.5, b = 0.5}
+    let _ bad_g ← math.Color {r = 0.5, g = negative_value, b = 0.0}
+    let _ bad_r ← math.Color {r = negative_value, g = 0.5, b = 0.5}
 
     # Ray and Box construction
-    let test_box ← math.Box<3> {minima = [-1.0, -1.0, -1.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
-    let ray ← math.Ray {origin = [-3.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+    let _ test_box ← math.Box<3> {minima = [-1.0, -1.0, -1.0] ↦ vector<f32, 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, 3>}
+    let _ ray ← math.Ray {origin = [-3.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
 
     # PerspectiveCamera construction from an Object base
-    let cam_base ← graph_object.Object {position = [0.0, 0.0, 5.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "cam"}
-    let test_camera ← camera.PerspectiveCamera {base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0}
+    let _ cam_base ← graph_object.Object {position = [0.0, 0.0, 5.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "cam"}
+    let _ test_camera ← camera.PerspectiveCamera {base = cam_base, fov = 90.0, aspect = 1.0, near = 0.1, far = 100.0}
 }

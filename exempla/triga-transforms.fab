@@ -60,15 +60,15 @@ main {
     print player_box
 
     # Sphere and Plane
-    let sphere ← math.Sphere {center = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, radius = 2.0}
-    let plane ← math.Plane {normal = [0.0, 1.0, 0.0] ↦ vector<f32, 3>, constant = -2.0}
+    let _ sphere ← math.Sphere {center = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, radius = 2.0}
+    let _ plane ← math.Plane {normal = [0.0, 1.0, 0.0] ↦ vector<f32, 3>, constant = -2.0}
 
     # Ray-Box intersection
-    let ray ← math.Ray {origin = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
+    let _ ray ← math.Ray {origin = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, direction = [1.0, 0.0, 0.0] ↦ vector<f32, 3>}
     let vector<f32, 3> ray_point ← ray.point_at(3.0)
     print math.x(ray_point)
     let math.RayBoxHit ∪ none ray_box_hit ← ray.box_hit(shifted_bounds, 6.0)
-    let ray_box_hit_value ← math.RayBoxHit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
+    let _ ray_box_hit_value ← math.RayBoxHit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
 
     # Camera yaw-pitch facts
     let math.CameraYawPitchFacts camera_facts ← math.camera_yaw_pitch_facts([2.0, 3.0, 4.0] ↦ vector<f32, 3>, 90.0, 100.0)
@@ -80,7 +80,7 @@ main {
     print math.z(forward_motion)
 
     # Color interpolation and matrix extras
-    let midpoint_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}.lerp(math.Color {r = 1.0, g = 0.5, b = 0.25}, 0.5)
+    let _ midpoint_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}.lerp(math.Color {r = 1.0, g = 0.5, b = 0.25}, 0.5)
     print midpoint_color.r
     let matrix<f32, [4, 4]> transposed_translation ← math.transpose(translation)
 }

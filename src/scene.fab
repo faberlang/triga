@@ -148,8 +148,8 @@ class SceneStore {
             children.append(existing)
         }
         children.append(child)
-        let updated_parent ← SceneNode {name = parent_node.name, kind = parent_node.kind, parent = parent_node.parent, children = children, visible = parent_node.visible, local_matrix = parent_node.local_matrix, world_matrix = parent_node.world_matrix, world_dirty = parent_node.world_dirty}
-        let updated_child ← SceneNode {name = child_node.name, kind = child_node.kind, parent = parent, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
+        let _ updated_parent ← SceneNode {name = parent_node.name, kind = parent_node.kind, parent = parent_node.parent, children = children, visible = parent_node.visible, local_matrix = parent_node.local_matrix, world_matrix = parent_node.world_matrix, world_dirty = parent_node.world_dirty}
+        let _ updated_child ← SceneNode {name = child_node.name, kind = child_node.kind, parent = parent, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
         self.replace(parent, updated_parent)
         self.replace(child, updated_child)
         self.mark_world_dirty(child)
@@ -168,7 +168,7 @@ class SceneStore {
         let SceneNode ∪ none parent_result ← self.take(parent_value)
         if parent_result is none then return false
         let SceneNode parent_node ← parent_result
-        let detached_child ← SceneNode {name = child_node.name, kind = child_node.kind, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
+        let _ detached_child ← SceneNode {name = child_node.name, kind = child_node.kind, children = child_node.children, visible = child_node.visible, local_matrix = child_node.local_matrix, world_matrix = child_node.world_matrix, world_dirty = true}
         self.replace(parent_value, self.without_children(parent_node, child))
         self.replace(child, detached_child)
         self.mark_world_dirty(child)

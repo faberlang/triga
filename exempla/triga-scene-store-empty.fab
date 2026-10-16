@@ -11,5 +11,5 @@ import from "triga:scene" scene
 
 main {
     let scene.SceneStore empty ← scene.scene_store()
-    let fresh_root ← scene.SceneHandle {index = 0, generation = 0}
+    let _ fresh_root ← scene.SceneHandle {index = 0, generation = 0}
 }

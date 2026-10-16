@@ -52,31 +52,31 @@ main {
     let matrix<f32, [3, 3]> matrix3 ← second.added(e2 ⊗ e2)
 
     # Object standalone
-    let standalone ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "standalone"}
+    let _ standalone ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}, quaternion = math.Quaternion {x = 0.0, y = 0.0, z = 0.0, w = 1.0}, scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "standalone"}
     print standalone.visible
 
     # Scene with background color
-    let scene ← graph_object.Scene {base = standalone, background = math.Color {r = 0.5, g = 0.6, b = 0.7}}
+    let _ scene ← graph_object.Scene {base = standalone, background = math.Color {r = 0.5, g = 0.6, b = 0.7}}
     print scene.background
 
     # OrthographicCamera
-    let ortho ← camera.OrthographicCamera {base = standalone, left = -10.0, right = 10.0, top = 10.0, bottom = -10.0, near = 0.1, far = 2000.0}
+    let _ ortho ← camera.OrthographicCamera {base = standalone, left = -10.0, right = 10.0, top = 10.0, bottom = -10.0, near = 0.1, far = 2000.0}
     print ortho.left
     print ortho.near
 
     # Mesh with StandardMaterial
-    let white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
-    let emissive ← math.Color {r = 0.0, g = 0.0, b = 0.0}
-    let pbr_material ← standard.StandardMaterial {base = base.material_from_name("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0}
+    let _ white ← math.Color {r = 1.0, g = 1.0, b = 1.0}
+    let _ emissive ← math.Color {r = 0.0, g = 0.0, b = 0.0}
+    let _ pbr_material ← standard.StandardMaterial {base = base.material_from_name("pbr"), color = white, roughness = 0.5, metalness = 0.8, emissive = emissive, emissive_intensity = 0.0}
 
     let list<attribute.Attribute> empty_attributes ← empty
-    let empty_range ← batch.DrawRange {start = 0, count = 0}
+    let _ empty_range ← batch.DrawRange {start = 0, count = 0}
     let data.Geometry empty_geometry ← data.triangle_geometry(0, empty_attributes, empty_range, empty)
-    let mesh ← mesh.Mesh {base = standalone, geometry = empty_geometry}
+    let _ mesh ← mesh.Mesh {base = standalone, geometry = empty_geometry}
     print pbr_material.roughness
 
     # PhongMaterial
-    let spec ← math.Color {r = 0.2, g = 0.2, b = 0.2}
-    let phong ← lit.PhongMaterial {base = base.material_from_name("phong"), color = white, specular = spec, shininess = 60.0}
+    let _ spec ← math.Color {r = 0.2, g = 0.2, b = 0.2}
+    let _ phong ← lit.PhongMaterial {base = base.material_from_name("phong"), color = white, specular = spec, shininess = 60.0}
     print phong.shininess
 }

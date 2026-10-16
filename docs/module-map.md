@@ -91,8 +91,8 @@ import from "triga:resource" resource
 ```
 
 ```fab
-let p ← math.vector3(1.0, 2.0, 3.0)
-let h ← resource.ResourceHandle { index = 0, generation = 1 }
+let _ p ← math.vector3(1.0, 2.0, 3.0)
+let _ h ← resource.ResourceHandle { index = 0, generation = 1 }
 mut _ store ← scene.scene_store()
 ```
 

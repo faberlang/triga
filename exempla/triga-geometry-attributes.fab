@@ -36,5 +36,5 @@ main {
 
     # Wire box (line geometry)
     let data.Geometry ∪ none box_wire_result ← basic.box_wire(2.0, 4.0, 6.0)
-    let box_wire ← data.Geometry {topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups}
+    let _ box_wire ← data.Geometry {topology = box_wire_result!.topology, vertex_count = box_wire_result!.vertex_count, attributes = box_wire_result!.attributes, indexed = box_wire_result!.indexed, indices = box_wire_result!.indices, draw_range = box_wire_result!.draw_range, groups = box_wire_result!.groups}
 }
