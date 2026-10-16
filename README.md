@@ -4,6 +4,9 @@
 library — the data contract between compiled Faber output and the GPU runtime
 host.
 
+> **Experimental.** Like Faber itself, this library is experimental until
+> Faber 2; APIs change without notice.
+
 It is a first-class Faber library, not a three.js clone. Dimension lives in
 types (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`). Industry domain
 nouns stay (`Mesh`, `Ray`, `PerspectiveCamera`). three.js product names
@@ -24,7 +27,7 @@ import from "triga:geometry/data" data
 import from "triga:geometry/attribute" attribute
 import from "triga:geometry/batch" batch
 
-incipit {
+main {
     let _ position ← attribute.float32_attribute(
         "position", 0, 3, 3,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
@@ -48,8 +51,8 @@ Then follow the learning path in [`exempla/README.md`](exempla/README.md):
    quaternions, bounds, and rays.
 3. [`triga-geometry-attributes.fab`](exempla/triga-geometry-attributes.fab) —
    attributes, layouts, draw ranges, bounds, and primitive generators.
-4. [`triga-scene-store.fab`](exempla/triga-scene-store.fab) — stable handles,
-   hierarchy, visibility, and traversal.
+4. [`triga-scene-store.fab`](exempla/triga-scene-store.fab) — generation-checked
+   handles, hierarchy, visibility, and traversal.
 5. [`triga-hello-voxel-pipeline.fab`](exempla/triga-hello-voxel-pipeline.fab) —
    the source-side facts that feed shader and host contracts.
 
@@ -61,16 +64,16 @@ split the way it is.
 
 | Layer | State |
 | --- | --- |
-| Math / transforms | Stable native Faber (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`, quaternions, …) |
-| Scene store | Stable handles, graph edits, world transforms; exempla green |
+| Math / transforms | Native Faber (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`, quaternions, …) |
+| Scene store | Generation-checked handles, graph edits, world transforms; exempla green |
 | Buffer geometry | SoA attributes, draw batches, vertex-layout reflection |
 | Primitive generators | Deterministic plane/box/sphere/… mesh builders |
-| Host WebGPU path | Sibling `hosts/webgpu-browser` consumes compiled graphics artifacts; Triga owns source contracts, not the browser runtime |
+| Browser presenter | Thin WebGPU presenter in [`host/`](host/README.md) draws compiled graphics artifacts; Triga owns source contracts, not a full browser runtime |
 
-CPU workloads typecheck and emit Rust. Stage 2 generated-Rust scene identity
-and the direct Radix scene-store check for `exempla/triga-scene-store.fab` are
-green. MIR/GPU parity continues to deepen on the Radix + host side; Triga's job
-is to keep the typed contract honest and modular.
+CPU workloads typecheck and emit Rust. Generated-Rust scene identity and the
+direct scene-store check for `exempla/triga-scene-store.fab` are green. MIR/GPU
+parity continues to deepen on the compiler and host side; Triga's job is to
+keep the typed contract honest and modular.
 
 ## Current Types
 
@@ -84,7 +87,7 @@ is to keep the typed contract honest and modular.
 | **Primitives** | `plane`, `box`, `sphere`, … | `triga:primitives/basic` | constructors returning `Geometry` |
 | **Materials** | `Material`, `UnlitMaterial`, `PhongMaterial`, `StandardMaterial` | `triga:material/{base,basic,lit,standard}` | lighting-model nouns; no `Mesh*Material` |
 | **Renderable** | `Mesh` | `triga:renderable/mesh` | `Object` + `Geometry` + material |
-| **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | stable identity graph |
+| **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | generation-checked identity graph |
 | **Resources** | `ResourceHandle` (transition/lifecycle receiver methods + batch queries) | `triga:resource` | host resource identity |
 
 Full module ownership: [`docs/module-map.md`](docs/module-map.md) (Norma-style multi-module package).
@@ -104,22 +107,26 @@ import from "triga:resource" resource
 This is an orientation map. In application code, import the leaf that owns the
 genus you use; the facade modules intentionally do not re-export types.
 
-Radix and `faber` resolve provider imports from the shared library home:
+Package installation is not yet available in the public toolchain: `faber`
+never installs packages. Clone this repository and point `faber` at it.
+`faber` resolves `triga:*` from a library home, a directory that holds this
+repo as `triga/` (`--library-home <DIR>`, or `[paths] library_home` in your
+`faber.toml`):
 
 ```text
-$FABER_LIBRARY_HOME/triga/src/**/*.fab
+<library home>/triga/src/**/*.fab
 ```
 
-In local Faber development, `FABER_LIBRARY_HOME` is usually the parent
-`faberlang/` directory that contains sibling checkouts:
-
-```text
-faberlang/
-  radix/
-  hosts/      # webgpu-browser product host
-  norma/
-  triga/      # this repo
+```bash
+mkdir libs && git clone https://github.com/faberlang/triga libs/triga
+faber doctor --library-home "$PWD/libs"      # library.triga.availability should be faber-package
+faber run --library-home "$PWD/libs" main.fab
 ```
+
+Install `faber` from the
+[release page](https://github.com/faberlang/releases/releases/latest); docs are
+at [faberlang.dev](https://faberlang.dev). Use an absolute library-home path.
+Norma is embedded in the binary and needs no home.
 
 ## Design
 
@@ -143,14 +150,14 @@ Read the library from the data contract outward:
 ```text
 math → geometry/{attribute,layout,data} → primitives/basic
      → graph/{object,camera} → scene → renderable/mesh
-     → shader_contract → sibling host
+     → shader_contract → presenter host
 ```
 
 `math`, `geometry`, and `scene` own backend-agnostic values and invariants.
 `primitives` assembles those values into useful meshes. `shader_contract`
-names the facts that the compiler can validate and reflect. The browser host
-is a separate sibling repository: Triga describes the contract; the host owns
-device setup, resource allocation, and presentation.
+names the facts that the compiler can validate and reflect. The browser
+presenter under `host/` is a thin consumer: Triga describes the contract; the
+host owns device setup, resource allocation, and presentation.
 
 This separation is deliberate. When reading a function, ask whether it is
 constructing a value, validating a value, or describing a fact for a later
@@ -159,12 +166,12 @@ stage. That distinction is the central Faber design lesson in this package.
 ## Layout
 
 ```text
-cista.toml     package identity + version (cista install)
+cista.toml     package identity + version (for the separate package-store tool)
 faber.toml     library provider metadata for faber package resolution
 src/           public `triga:*` Faber modules (`name.fab` + co-located `name.proba` tests)
 exempla/       instructional demos for triga types
 scripta/       source-library checks
-docs/          policy + module map + factory history
+docs/          policy + module map + planning history
 proof/         capability / capstone ledgers
 ```
 
@@ -172,8 +179,9 @@ proof/         capability / capstone ledgers
 
 The canonical local spine is `./scripta/check`. It discovers every live leaf
 and proba by running the existing rungs in order. A red rung is evidence, not
-a skip. Public CI is `.github/workflows/ci.yml` (no-Faber rungs only). Do not
-re-list the rungs here; `AGENTS.md` names the same spine.
+a skip. Faber-dependent rungs need a `faber` binary: set `FABER_BIN` to one.
+Public CI is `.github/workflows/ci.yml` (no-Faber rungs only). Do not re-list
+the rungs here; `AGENTS.md` names the same spine.
 
 ```bash
 ./scripta/check
@@ -184,12 +192,13 @@ zero, while browser availability and artifact freshness are reported
 separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
 
 The Hello Voxel contract check is a Triga-owned pre-browser gate, not part of
-the spine. Live browser execution lives under sibling `hosts/webgpu-browser`
-(`./scripta/webgpu-browser-proof` from that repo).
+the spine. Live browser execution uses the Triga-owned presenter in `host/`
+(`./scripta/host check` and `./scripta/host serve`; see
+[`host/README.md`](host/README.md)).
 
 ## Next Steps
 
-- Keep scene identity (generated-Rust + direct Radix scene-store) green.
+- Keep scene identity (generated-Rust + direct scene-store check) green.
 - Keep vertex-layout reflection and primitive generators aligned with host
   buffer upload seams.
 - Grow materials / textures / lighting only after graphics-stage contracts stay
