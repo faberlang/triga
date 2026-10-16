@@ -205,3 +205,8 @@ the spine. Live browser execution uses the Triga-owned presenter in `host/`
   green end to end on the host path.
 - Optional further module splits (math vs materials, resource lifecycle) when a
   second real importer appears — not for aesthetics alone.
+
+## License
+
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or
+[MIT license](LICENSE-MIT) at your option.
