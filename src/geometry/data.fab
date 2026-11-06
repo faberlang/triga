@@ -698,7 +698,7 @@ fn colored_indexed_geometry(int vertex_count, list<f32> positions, list<f32> col
 # they are useful when a caller wants to build a mesh one face at a time.
 
 @ public
-fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, vector<f32, 3> a, vector<f32, 3> b, vector<f32, 3> c, vector<f32, 3> d, ref math.Color color) → ColoredQuadMesh ∪ none {
+fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, vector<f32, size 3> a, vector<f32, size 3> b, vector<f32, size 3> c, vector<f32, size 3> d, ref math.Color color) → ColoredQuadMesh ∪ none {
     if positions.length() ≢ colors.length() then return null
     if positions.length() % 3 ≢ 0 then return null
     if indices.length() % 3 ≢ 0 then return null

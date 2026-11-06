@@ -19,7 +19,7 @@ class CameraInput {
 
 @ public
 class OrbitCamera {
-    mut vector<f32, 3> target
+    mut vector<f32, size 3> target
     mut f32 yaw_degrees
     mut f32 pitch_degrees
     mut f32 distance
@@ -28,7 +28,7 @@ class OrbitCamera {
 
 @ public
 fn spawn_camera() → OrbitCamera {
-    return OrbitCamera {target = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, yaw_degrees = -35.0 ∷ f32, pitch_degrees = -32.0 ∷ f32, distance = 110.0, input = CameraInput {}}
+    return OrbitCamera {target = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, yaw_degrees = -35.0 ∷ f32, pitch_degrees = -32.0 ∷ f32, distance = 110.0, input = CameraInput {}}
 }
 
 fn clamp_distance(f32 distance) → f32 {
@@ -97,16 +97,16 @@ fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
     let f32 next_yaw ← camera.yaw_degrees + (yaw_axis * 55.0) * safe_delta
     let f32 next_pitch ← math.camera_pitch_clamped(camera.pitch_degrees + (pitch_axis * 38.0) * safe_delta)
     let f32 next_distance ← clamp_distance(camera.distance + (dolly_axis * 60.0) * safe_delta)
-    let vector<f32, 3> pan ← math.camera_planar_motion_from_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
+    let vector<f32, size 3> pan ← math.camera_planar_motion_from_yaw(next_yaw, pan_forward_axis, pan_right_axis, 30.0, safe_delta)
     return OrbitCamera {target = camera.target.added(pan), yaw_degrees = next_yaw, pitch_degrees = next_pitch, distance = next_distance, input = camera.input}
 }
 
 fn view_projection(ref OrbitCamera cam, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
-    let vector<f32, 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
-    let vector<f32, 3> offset ← math.scale3(direction, cam.distance)
-    let vector<f32, 3> eye ← cam.target.subtracted(offset)
-    let camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
-    return perspective.view_projection(eye, cam.target, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let vector<f32, size 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
+    let vector<f32, size 3> offset ← math.scale3(direction, cam.distance)
+    let vector<f32, size 3> eye ← cam.target.subtracted(offset)
+    let camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
+    return perspective.view_projection(eye, cam.target, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
 }
 
 @ public

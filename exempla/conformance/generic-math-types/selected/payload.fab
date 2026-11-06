@@ -69,11 +69,11 @@ fn transform_payload(matrix<f32, [4, 4]> model, matrix<f32, [4, 4]> view_project
 main {
     # Model: identity with translation (2, 3, 5) — built from basis outer
     # products exactly as the operations proof constructs matrices.
-    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
-    let vector<f32, 4> t ← [2.0, 3.0, 5.0, 1.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> t ← [2.0, 3.0, 5.0, 1.0] ↦ vector<f32, size 4>
     let matrix<f32, [4, 4]> p00 ← e0 ⊗ e0
     let matrix<f32, [4, 4]> p11 ← e1 ⊗ e1
     let matrix<f32, [4, 4]> p22 ← e2 ⊗ e2

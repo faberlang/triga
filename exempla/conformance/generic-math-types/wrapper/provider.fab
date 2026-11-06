@@ -15,7 +15,7 @@ locale = "en"
 
 @ public
 class Vector<size N> {
-    mut vector<f32, N> lanes
+    mut vector<f32, size N> lanes
 }
 
 @ public
@@ -30,7 +30,7 @@ class Box<size N> {
 }
 
 @ public
-fn lanes<size N>(Vector<N> v) → vector<f32, N> {
+fn lanes<size N>(Vector<N> v) → vector<f32, size N> {
     return v.lanes
 }
 

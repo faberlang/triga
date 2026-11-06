@@ -14,10 +14,10 @@ import from "triga:geometry/data" data
 # code plus an origin/size into geometry-ready corners.
 @ public
 class FaceQuad {
-    mut vector<f32, 3> a
-    mut vector<f32, 3> b
-    mut vector<f32, 3> c
-    mut vector<f32, 3> d
+    mut vector<f32, size 3> a
+    mut vector<f32, size 3> b
+    mut vector<f32, size 3> c
+    mut vector<f32, size 3> d
 }
 
 # Build one oriented quad. Invalid face codes and non-positive sizes return
@@ -31,22 +31,22 @@ fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪
     let f32 z1 ← z + size
     switch code {
         case 1 {
-            return FaceQuad {a = [x, y, z] ↦ vector<f32, 3>, b = [x, y, z1] ↦ vector<f32, 3>, c = [x, y1, z1] ↦ vector<f32, 3>, d = [x, y1, z] ↦ vector<f32, 3>}
+            return FaceQuad {a = [x, y, z] ↦ vector<f32, size 3>, b = [x, y, z1] ↦ vector<f32, size 3>, c = [x, y1, z1] ↦ vector<f32, size 3>, d = [x, y1, z] ↦ vector<f32, size 3>}
         }
         case 2 {
-            return FaceQuad {a = [x1, y, z1] ↦ vector<f32, 3>, b = [x1, y, z] ↦ vector<f32, 3>, c = [x1, y1, z] ↦ vector<f32, 3>, d = [x1, y1, z1] ↦ vector<f32, 3>}
+            return FaceQuad {a = [x1, y, z1] ↦ vector<f32, size 3>, b = [x1, y, z] ↦ vector<f32, size 3>, c = [x1, y1, z] ↦ vector<f32, size 3>, d = [x1, y1, z1] ↦ vector<f32, size 3>}
         }
         case 3 {
-            return FaceQuad {a = [x, y, z] ↦ vector<f32, 3>, b = [x1, y, z] ↦ vector<f32, 3>, c = [x1, y, z1] ↦ vector<f32, 3>, d = [x, y, z1] ↦ vector<f32, 3>}
+            return FaceQuad {a = [x, y, z] ↦ vector<f32, size 3>, b = [x1, y, z] ↦ vector<f32, size 3>, c = [x1, y, z1] ↦ vector<f32, size 3>, d = [x, y, z1] ↦ vector<f32, size 3>}
         }
         case 4 {
-            return FaceQuad {a = [x, y1, z1] ↦ vector<f32, 3>, b = [x1, y1, z1] ↦ vector<f32, 3>, c = [x1, y1, z] ↦ vector<f32, 3>, d = [x, y1, z] ↦ vector<f32, 3>}
+            return FaceQuad {a = [x, y1, z1] ↦ vector<f32, size 3>, b = [x1, y1, z1] ↦ vector<f32, size 3>, c = [x1, y1, z] ↦ vector<f32, size 3>, d = [x, y1, z] ↦ vector<f32, size 3>}
         }
         case 5 {
-            return FaceQuad {a = [x1, y, z] ↦ vector<f32, 3>, b = [x, y, z] ↦ vector<f32, 3>, c = [x, y1, z] ↦ vector<f32, 3>, d = [x1, y1, z] ↦ vector<f32, 3>}
+            return FaceQuad {a = [x1, y, z] ↦ vector<f32, size 3>, b = [x, y, z] ↦ vector<f32, size 3>, c = [x, y1, z] ↦ vector<f32, size 3>, d = [x1, y1, z] ↦ vector<f32, size 3>}
         }
         case 6 {
-            return FaceQuad {a = [x, y, z1] ↦ vector<f32, 3>, b = [x1, y, z1] ↦ vector<f32, 3>, c = [x1, y1, z1] ↦ vector<f32, 3>, d = [x, y1, z1] ↦ vector<f32, 3>}
+            return FaceQuad {a = [x, y, z1] ↦ vector<f32, size 3>, b = [x1, y, z1] ↦ vector<f32, size 3>, c = [x1, y1, z1] ↦ vector<f32, size 3>, d = [x, y1, z1] ↦ vector<f32, size 3>}
         }
         default {
             return null

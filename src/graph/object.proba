@@ -8,7 +8,7 @@ import from "triga:graph/object" graph_object
 import from "triga:math" math
 
 fn objectum(string name) → graph_object.Object {
-    return graph_object.Object {position = [1.0, 2.0, 3.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
+    return graph_object.Object {position = [1.0, 2.0, 3.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
 }
 
 test "Object preserves identity and default node state" {
@@ -27,7 +27,7 @@ test "Object preserves identity and default node state" {
 
 test "Object child lists preserve parent and child defaults" {
     let graph_object.Object child ← objectum("child")
-    let graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = [child], visible = true, name = "parent"}
+    let graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = [child], visible = true, name = "parent"}
     assert parent.name ≡ "parent"
     assert parent.children.length() ≡ 1
     assert parent.children[0].name ≡ "child"

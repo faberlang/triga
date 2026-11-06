@@ -24,7 +24,7 @@ API.
 All public operations that act on a Triga-owned genus instance are **receiver
 methods** on that genus. The type prefix is dropped from the method name.
 
-Language-owned carriers (`vector<f32, N>`, `matrix<f32, [R, C]>`) cannot grow
+Language-owned carriers (`vector<f32, size N>`, `matrix<f32, [R, C]>`) cannot grow
 Triga receivers. Use compiler glyphs and intrinsics (`·`, `×`, `.dot`,
 `.cross`, `.added`, `.subtract`, `.multiply`, `.normalize`, `.apply`). Triga
 free functions cover graphics-domain work the compiler does not own
@@ -44,13 +44,13 @@ free functions cover graphics-domain work the compiler does not own
 ### Decision: Native Math Types (§ 1b)
 
 Triga does **not** own `Vector2`, `Vector3`, `Vector4`, `Matrix3`, or
-`Matrix4`. Callers use `vector<f32, N>` and `matrix<f32, [R, C]>` directly.
+`Matrix4`. Callers use `vector<f32, size N>` and `matrix<f32, [R, C]>` directly.
 `Box<N>` is the remaining Triga math nominal in that family, over two
-`vector<f32, N>` corners. `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`,
+`vector<f32, size N>` corners. `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`,
 `Ray`, and `TransformPayload` stay Triga genera and are retyped off the
 retired carriers. No `norma:vector` adoption. No numbered compatibility alias.
 
-Construction: `[x, y, z] ↦ vector<f32, 3>`. Matrix builders are
+Construction: `[x, y, z] ↦ vector<f32, size 3>`. Matrix builders are
 `matrix_identity`, `matrix_translation`, `matrix_scale`, `matrix_compose`,
 `matrix_perspective`, `matrix_look_at`.
 
@@ -70,7 +70,7 @@ Industry-standard domain nouns stay. three.js *product* names do not.
 `PerspectiveCamera`, `OrthographicCamera`, `Scene`, `f32`, `u32`, `UV`,
 `WGSL`, `WebGPU`, `vertex`, `fragment`, `shader`, `pipeline`, `yaw`, `pitch`.
 
-**Language types (not Triga genera):** `vector<f32, N>`, `matrix<f32, [R, C]>`.
+**Language types (not Triga genera):** `vector<f32, size N>`, `matrix<f32, [R, C]>`.
 
 **Triga reshape:** `Box<N>` (was `Box3`).
 

@@ -30,7 +30,7 @@ class AmbientLight {
 @ public
 class DirectionalLight {
     mut Light base
-    mut vector<f32, 3> target_position
+    mut vector<f32, size 3> target_position
 }
 
 # PointLight carries the distance and decay fields for the point-light path.

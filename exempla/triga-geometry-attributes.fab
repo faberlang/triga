@@ -21,10 +21,10 @@ main {
     let data.Geometry triangle ← data.indexed_triangle_geometry(3, [positions], [0, 1, 2], batch.DrawRange {start = 0, count = 3}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}])
 
     # ColoredQuadMesh accumulation
-    let data.ColoredQuadMesh ∪ none first_quad_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [1.0, 0.0, 0.0] ↦ vector<f32, 3>, [1.0, 1.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
+    let data.ColoredQuadMesh ∪ none first_quad_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [1.0, 0.0, 0.0] ↦ vector<f32, size 3>, [1.0, 1.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
     assert first_quad_result not is none
     let data.ColoredQuadMesh first_quad ← first_quad_result
-    let data.ColoredQuadMesh ∪ none two_quads ← data.colored_quad_mesh_append(first_quad.positions, first_quad.colors, first_quad.indices, [2.0, 0.0, 0.0] ↦ vector<f32, 3>, [3.0, 0.0, 0.0] ↦ vector<f32, 3>, [3.0, 1.0, 0.0] ↦ vector<f32, 3>, [2.0, 1.0, 0.0] ↦ vector<f32, 3>, math.Color {r = 0.7, g = 0.8, b = 0.9})
+    let data.ColoredQuadMesh ∪ none two_quads ← data.colored_quad_mesh_append(first_quad.positions, first_quad.colors, first_quad.indices, [2.0, 0.0, 0.0] ↦ vector<f32, size 3>, [3.0, 0.0, 0.0] ↦ vector<f32, size 3>, [3.0, 1.0, 0.0] ↦ vector<f32, size 3>, [2.0, 1.0, 0.0] ↦ vector<f32, size 3>, math.Color {r = 0.7, g = 0.8, b = 0.9})
     assert two_quads not is none
 
     # Split groups

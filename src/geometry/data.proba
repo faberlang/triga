@@ -187,7 +187,7 @@ describe "buffer geometry contracts" {
     }
 
     test "colored quad accumulation preserves exact topology and derived facts" {
-        let data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [2.0, 0.0, 0.0] ↦ vector<f32, 3>, [2.0, 2.0, 0.0] ↦ vector<f32, 3>, [0.0, 2.0, 0.0] ↦ vector<f32, 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
+        let data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [2.0, 0.0, 0.0] ↦ vector<f32, size 3>, [2.0, 2.0, 0.0] ↦ vector<f32, size 3>, [0.0, 2.0, 0.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
         assert mesh_result not is none
         let data.ColoredQuadMesh mesh ← mesh_result
         let batch.VisibleFaceMeshFacts ∪ none mesh_facts ← mesh.facts()

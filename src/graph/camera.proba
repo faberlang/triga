@@ -11,7 +11,7 @@ import from "triga:math" math
 const f32 TOLERATIO = 0.01
 
 fn base_camera(string name, f32 z) → graph_object.Object {
-    return graph_object.Object {position = [0.0, 0.0, z] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
+    return graph_object.Object {position = [0.0, 0.0, z] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
 }
 
 fn empty_projection_facts() → camera.PerspectiveCameraProjectionFacts {
@@ -47,12 +47,12 @@ test "PerspectiveCamera emits a valid projection and projection facts" {
 
 test "PerspectiveCamera emits view-projection output and facts" {
     let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("view-camera", 5.0), fov = 90.0, aspect = 2.0, near = 0.1, far = 100.0}
-    let matrix<f32, [4, 4]> ∪ none view_projection_result ← cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let matrix<f32, [4, 4]> ∪ none view_projection_result ← cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
     let matrix<f32, [4, 4]> view_projection ← view_projection_result coalesce math.matrix_identity()
     assert view_projection_result not is none
     assert math.matrix_element(view_projection, 3, 2) ≡ (-1.0 ∷ f32)
 
-    let camera.ViewProjectionFacts ∪ none facts_result ← cam.view_projection_facts([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let camera.ViewProjectionFacts ∪ none facts_result ← cam.view_projection_facts([0.0, 0.0, 5.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
     let camera.ViewProjectionFacts facts ← facts_result coalesce empty_view_facts()
     assert facts_result not is none
     assert facts.float_count ≡ 16
@@ -88,7 +88,7 @@ test "PerspectiveCamera rejects invalid projection field ranges" {
 
 test "PerspectiveCamera rejects degenerate view inputs" {
     let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = base_camera("degenerate-view", 5.0), fov = 50.0, aspect = 1.0, near = 0.1, far = 100.0}
-    assert cam.view_projection([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>) is none
-    assert cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 1.0] ↦ vector<f32, 3>) is none
-    assert cam.view_projection_facts([0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>) is none
+    assert cam.view_projection([0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>) is none
+    assert cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 0.0, 1.0] ↦ vector<f32, size 3>) is none
+    assert cam.view_projection_facts([0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>) is none
 }

@@ -18,7 +18,7 @@ locale = "en"
 # docs/factory/generic-math-types/representation-decision.md.
 
 @ public
-type Vector<size N> = vector<f32, N>
+type Vector<size N> = vector<f32, size N>
 
 @ public
 type Matrix<size R, size C> = matrix<f32, [R, C]>

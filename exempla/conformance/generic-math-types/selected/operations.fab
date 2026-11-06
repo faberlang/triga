@@ -3,7 +3,7 @@ locale = "en"
 +++
 
 # S0-T2 selected-operations proof for the DIRECT NATIVE representation
-# (representation-decision.md §1): `vector<f32, N>` / `matrix<f32, [R, C]>`
+# (representation-decision.md §1): `vector<f32, size N>` / `matrix<f32, [R, C]>`
 # carriers with dimension-neutral Triga free operations; `Box<N>` stays a
 # generic Triga nominal over the selected vector values.
 #
@@ -23,19 +23,19 @@ locale = "en"
 # [I] `.added` / `.subtract` / `.multiply` (elementwise) / `.dot` are
 # compiler intrinsics; the free functions below are the Triga surface.
 
-fn addita<size N>(vector<f32, N> a, vector<f32, N> b) → vector<f32, N> {
+fn addita<size N>(vector<f32, size N> a, vector<f32, size N> b) → vector<f32, size N> {
     return a.added(b)
 }
 
-fn subtracta<size N>(vector<f32, N> a, vector<f32, N> b) → vector<f32, N> {
+fn subtracta<size N>(vector<f32, size N> a, vector<f32, size N> b) → vector<f32, size N> {
     return a.subtracted(b)
 }
 
-fn multiplicata<size N>(vector<f32, N> a, vector<f32, N> b) → vector<f32, N> {
+fn multiplicata<size N>(vector<f32, size N> a, vector<f32, size N> b) → vector<f32, size N> {
     return a.multiplied(b)
 }
 
-fn productum<size N>(vector<f32, N> a, vector<f32, N> b) → f32 {
+fn productum<size N>(vector<f32, size N> a, vector<f32, size N> b) → f32 {
     return a.dot(b)
 }
 
@@ -53,17 +53,17 @@ fn radix_f32(f32 value) → f32 {
     return estimate
 }
 
-fn longitudo<size N>(vector<f32, N> v) → f32 {
+fn longitudo<size N>(vector<f32, size N> v) → f32 {
     return radix_f32(v.dot(v))
 }
 
-fn distantia<size N>(vector<f32, N> a, vector<f32, N> b) → f32 {
+fn distantia<size N>(vector<f32, size N> a, vector<f32, size N> b) → f32 {
     return longitudo(a.subtracted(b))
 }
 
 # --- §2.4 Vector<3>: cross product and 3D camera/face/ray uses ----------
 
-fn transversum(vector<f32, 3> a, vector<f32, 3> b) → vector<f32, 3> {
+fn transversum(vector<f32, size 3> a, vector<f32, size 3> b) → vector<f32, size 3> {
     return a.cross(b)
 }
 
@@ -100,24 +100,24 @@ fn cosinus_f32(f32 angle) → f32 {
 # sizes 2/3/4 is proven in lanes_2 / lanes_3 / lanes_4 below; the parametric
 # `v[i]` form is blocked at the pin (decision §7 N2).
 
-fn lanes_2(vector<f32, 2> v) → f32 {
-    let vector<f32, 2> e0 ← [1.0, 0.0] ↦ vector<f32, 2>
-    let vector<f32, 2> e1 ← [0.0, 1.0] ↦ vector<f32, 2>
+fn lanes_2(vector<f32, size 2> v) → f32 {
+    let vector<f32, size 2> e0 ← [1.0, 0.0] ↦ vector<f32, size 2>
+    let vector<f32, size 2> e1 ← [0.0, 1.0] ↦ vector<f32, size 2>
     return v.dot(e0) + v.dot(e1)
 }
 
-fn lanes_3(vector<f32, 3> v) → f32 {
-    let vector<f32, 3> e0 ← [1.0, 0.0, 0.0] ↦ vector<f32, 3>
-    let vector<f32, 3> e1 ← [0.0, 1.0, 0.0] ↦ vector<f32, 3>
-    let vector<f32, 3> e2 ← [0.0, 0.0, 1.0] ↦ vector<f32, 3>
+fn lanes_3(vector<f32, size 3> v) → f32 {
+    let vector<f32, size 3> e0 ← [1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    let vector<f32, size 3> e1 ← [0.0, 1.0, 0.0] ↦ vector<f32, size 3>
+    let vector<f32, size 3> e2 ← [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
     return (v.dot(e0) + v.dot(e1)) + v.dot(e2)
 }
 
-fn lanes_4(vector<f32, 4> v) → f32 {
-    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+fn lanes_4(vector<f32, size 4> v) → f32 {
+    let vector<f32, size 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
     return ((v.dot(e0) + v.dot(e1)) + v.dot(e2)) + v.dot(e3)
 }
 
@@ -126,13 +126,13 @@ fn lanes_4(vector<f32, 4> v) → f32 {
 # (and with it the parametric scalar scale) is blocked at the pin
 # (decision §7 N1).
 
-fn uniform_3(f32 value) → vector<f32, 3> {
-    let vector<f32, 3> seed ← [value, 0.0, 0.0] ↦ vector<f32, 3>
+fn uniform_3(f32 value) → vector<f32, size 3> {
+    let vector<f32, size 3> seed ← [value, 0.0, 0.0] ↦ vector<f32, size 3>
     return seed.swizzle("xxx")
 }
 
-fn uniform_4(f32 value) → vector<f32, 4> {
-    let vector<f32, 4> seed ← [value, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
+fn uniform_4(f32 value) → vector<f32, size 4> {
+    let vector<f32, size 4> seed ← [value, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
     return seed.swizzle("xxxx")
 }
 
@@ -140,23 +140,23 @@ fn uniform_4(f32 value) → vector<f32, 4> {
 # proven at width 4 (elementwise multiply against the uniform). The width-3
 # forms compose identically over uniform_3; one width proves the behavior.
 
-fn scala(vector<f32, 4> v, f32 s) → vector<f32, 4> {
+fn scala(vector<f32, size 4> v, f32 s) → vector<f32, size 4> {
     return v.multiplied(uniform_4(s))
 }
 
-fn normata(vector<f32, 4> v) → vector<f32, 4> {
+fn normata(vector<f32, size 4> v) → vector<f32, size 4> {
     let f32 length ← longitudo(v)
     if length ≤ 0.000001 then return uniform_4(0.0)
     return v.multiplied(uniform_4(1.0 / length))
 }
 
-fn interpolata(vector<f32, 4> a, vector<f32, 4> b, f32 ratio) → vector<f32, 4> {
-    let vector<f32, 4> difference ← b.subtracted(a)
-    let vector<f32, 4> scaled ← difference.multiplied(uniform_4(ratio))
+fn interpolata(vector<f32, size 4> a, vector<f32, size 4> b, f32 ratio) → vector<f32, size 4> {
+    let vector<f32, size 4> difference ← b.subtracted(a)
+    let vector<f32, size 4> scaled ← difference.multiplied(uniform_4(ratio))
     return a.added(scaled)
 }
 
-fn projecta(vector<f32, 4> v, vector<f32, 4> axis) → vector<f32, 4> {
+fn projecta(vector<f32, size 4> v, vector<f32, size 4> axis) → vector<f32, size 4> {
     let f32 denominator ← axis.dot(axis)
     if denominator ≤ 0.000001 then return uniform_4(0.0)
     return axis.multiplied(uniform_4(v.dot(axis) / denominator))
@@ -165,22 +165,22 @@ fn projecta(vector<f32, 4> v, vector<f32, 4> axis) → vector<f32, 4> {
 # [F] camera direction at width 3 — the current camera helper shape over
 # the selected carrier (concrete `.normalize` intrinsic).
 
-fn camera_directio(f32 yaw_radians, f32 pitch_radians) → vector<f32, 3> {
+fn camera_directio(f32 yaw_radians, f32 pitch_radians) → vector<f32, size 3> {
     let f32 horizontal ← cosinus_f32(pitch_radians)
-    let vector<f32, 3> directed ← [sinus_f32(yaw_radians) * horizontal, sinus_f32(pitch_radians), -(cosinus_f32(yaw_radians) * horizontal)] ↦ vector<f32, 3>
+    let vector<f32, size 3> directed ← [sinus_f32(yaw_radians) * horizontal, sinus_f32(pitch_radians), -(cosinus_f32(yaw_radians) * horizontal)] ↦ vector<f32, size 3>
     return directed.normalize()
 }
 
 # [F] face normal at width 3 — literal lane construction, no nominal
 # wrapper needed for the retired `.x/.y/.z` access.
 
-fn face_normal(int code) → vector<f32, 3> ∪ none {
-    if code ≡ 1 then return [-1.0, 0.0, 0.0] ↦ vector<f32, 3>
-    if code ≡ 2 then return [1.0, 0.0, 0.0] ↦ vector<f32, 3>
-    if code ≡ 3 then return [0.0, -1.0, 0.0] ↦ vector<f32, 3>
-    if code ≡ 4 then return [0.0, 1.0, 0.0] ↦ vector<f32, 3>
-    if code ≡ 5 then return [0.0, 0.0, -1.0] ↦ vector<f32, 3>
-    if code ≡ 6 then return [0.0, 0.0, 1.0] ↦ vector<f32, 3>
+fn face_normal(int code) → vector<f32, size 3> ∪ none {
+    if code ≡ 1 then return [-1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    if code ≡ 2 then return [1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    if code ≡ 3 then return [0.0, -1.0, 0.0] ↦ vector<f32, size 3>
+    if code ≡ 4 then return [0.0, 1.0, 0.0] ↦ vector<f32, size 3>
+    if code ≡ 5 then return [0.0, 0.0, -1.0] ↦ vector<f32, size 3>
+    if code ≡ 6 then return [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
     return null
 }
 
@@ -234,7 +234,7 @@ fn cells_summa<size R, size C>(matrix<f32, [R, C]> m) → f32 {
 # The parametric form rejects with matrix_applica_requires_literal_shape
 # at the pin (decision §7 N3); [4, 4] is the owning width.
 
-fn applica(matrix<f32, [4, 4]> m, vector<f32, 4> v) → vector<f32, 4> {
+fn applica(matrix<f32, [4, 4]> m, vector<f32, size 4> v) → vector<f32, size 4> {
     return m.apply(v)
 }
 
@@ -246,11 +246,11 @@ fn applica(matrix<f32, [4, 4]> m, vector<f32, 4> v) → vector<f32, 4> {
 # [F] construction from four column vectors via basis outer products: a
 # matrix with columns c0..c3 is Σ cj ⊗ ej. Column-major by construction.
 
-fn ex_columnis(vector<f32, 4> c0, vector<f32, 4> c1, vector<f32, 4> c2, vector<f32, 4> c3) → matrix<f32, [4, 4]> {
-    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+fn ex_columnis(vector<f32, size 4> c0, vector<f32, size 4> c1, vector<f32, size 4> c2, vector<f32, size 4> c3) → matrix<f32, [4, 4]> {
+    let vector<f32, size 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
     let matrix<f32, [4, 4]> m0 ← c0 ⊗ e0
     let matrix<f32, [4, 4]> m1 ← c1 ⊗ e1
     let matrix<f32, [4, 4]> m2 ← c2 ⊗ e2
@@ -260,14 +260,14 @@ fn ex_columnis(vector<f32, 4> c0, vector<f32, 4> c1, vector<f32, 4> c2, vector<f
     return m012.added(m3)
 }
 
-fn basis_4(int index) → vector<f32, 4> {
-    if index ≡ 0 then return [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    if index ≡ 1 then return [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    if index ≡ 2 then return [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    return [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+fn basis_4(int index) → vector<f32, size 4> {
+    if index ≡ 0 then return [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    if index ≡ 1 then return [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    if index ≡ 2 then return [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
+    return [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
 }
 
-fn columna(matrix<f32, [4, 4]> m, int index) → vector<f32, 4> {
+fn columna(matrix<f32, [4, 4]> m, int index) → vector<f32, size 4> {
     return m.apply(basis_4(index))
 }
 
@@ -276,41 +276,41 @@ fn elementum(matrix<f32, [4, 4]> m, int row, int col) → f32 {
 }
 
 fn identitas() → matrix<f32, [4, 4]> {
-    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
     return ex_columnis(e0, e1, e2, e3)
 }
 
-fn translatio(vector<f32, 3> offset) → matrix<f32, [4, 4]> {
-    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
+fn translatio(vector<f32, size 3> offset) → matrix<f32, [4, 4]> {
+    let vector<f32, size 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
     let f32 tx ← offset.dot(e0_basis3(0))
     let f32 ty ← offset.dot(e0_basis3(1))
     let f32 tz ← offset.dot(e0_basis3(2))
-    let vector<f32, 4> t ← [tx, ty, tz, 1.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> t ← [tx, ty, tz, 1.0] ↦ vector<f32, size 4>
     return ex_columnis(e0, e1, e2, t)
 }
 
-fn e0_basis3(int index) → vector<f32, 3> {
-    if index ≡ 0 then return [1.0, 0.0, 0.0] ↦ vector<f32, 3>
-    if index ≡ 1 then return [0.0, 1.0, 0.0] ↦ vector<f32, 3>
-    return [0.0, 0.0, 1.0] ↦ vector<f32, 3>
+fn e0_basis3(int index) → vector<f32, size 3> {
+    if index ≡ 0 then return [1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    if index ≡ 1 then return [0.0, 1.0, 0.0] ↦ vector<f32, size 3>
+    return [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
 }
 
-fn scala_diagonals(vector<f32, 3> scale) → matrix<f32, [4, 4]> {
-    let vector<f32, 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+fn scala_diagonals(vector<f32, size 3> scale) → matrix<f32, [4, 4]> {
+    let vector<f32, size 4> e0 ← [1.0, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e1 ← [0.0, 1.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e2 ← [0.0, 0.0, 1.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
     let f32 sx ← scale.dot(e0_basis3(0))
     let f32 sy ← scale.dot(e0_basis3(1))
     let f32 sz ← scale.dot(e0_basis3(2))
-    let vector<f32, 4> c0 ← [sx, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c1 ← [0.0, sy, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c2 ← [0.0, 0.0, sz, 0.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c0 ← [sx, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c1 ← [0.0, sy, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c2 ← [0.0, 0.0, sz, 0.0] ↦ vector<f32, size 4>
     return ex_columnis(c0, c1, c2, e3)
 }
 
@@ -324,7 +324,7 @@ class Quaternion {
     mut f32 w
 }
 
-fn composita(vector<f32, 3> position, Quaternion rotation, vector<f32, 3> scale) → matrix<f32, [4, 4]> {
+fn composita(vector<f32, size 3> position, Quaternion rotation, vector<f32, size 3> scale) → matrix<f32, [4, 4]> {
     let f32 xx ← rotation.x * rotation.x
     let f32 yy ← rotation.y * rotation.y
     let f32 zz ← rotation.z * rotation.z
@@ -337,13 +337,13 @@ fn composita(vector<f32, 3> position, Quaternion rotation, vector<f32, 3> scale)
     let f32 sx ← scale.dot(e0_basis3(0))
     let f32 sy ← scale.dot(e0_basis3(1))
     let f32 sz ← scale.dot(e0_basis3(2))
-    let vector<f32, 4> c0 ← [(1.0 - 2.0 * (yy + zz)) * sx, (2.0 * (xy + wz)) * sx, (2.0 * (xz - wy)) * sx, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c1 ← [(2.0 * (xy - wz)) * sy, (1.0 - 2.0 * (xx + zz)) * sy, (2.0 * (yz + wx)) * sy, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c2 ← [(2.0 * (xz + wy)) * sz, (2.0 * (yz - wx)) * sz, (1.0 - 2.0 * (xx + yy)) * sz, 0.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c0 ← [(1.0 - 2.0 * (yy + zz)) * sx, (2.0 * (xy + wz)) * sx, (2.0 * (xz - wy)) * sx, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c1 ← [(2.0 * (xy - wz)) * sy, (1.0 - 2.0 * (xx + zz)) * sy, (2.0 * (yz + wx)) * sy, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c2 ← [(2.0 * (xz + wy)) * sz, (2.0 * (yz - wx)) * sz, (1.0 - 2.0 * (xx + yy)) * sz, 0.0] ↦ vector<f32, size 4>
     let f32 px ← position.dot(e0_basis3(0))
     let f32 py ← position.dot(e0_basis3(1))
     let f32 pz ← position.dot(e0_basis3(2))
-    let vector<f32, 4> c3 ← [px, py, pz, 1.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c3 ← [px, py, pz, 1.0] ↦ vector<f32, size 4>
     return ex_columnis(c0, c1, c2, c3)
 }
 
@@ -363,21 +363,21 @@ fn perspectiva(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matrix<f32,
     if sine.abs() ≤ 0.000001 then return null
     let f32 focal ← cosinus_f32(half_angle) / sine
     let f32 depth ← far / (near - far)
-    let vector<f32, 4> c0 ← [focal / aspect, 0.0, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c1 ← [0.0, focal, 0.0, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c2 ← [0.0, 0.0, depth, -1.0 ∷ f32] ↦ vector<f32, 4>
-    let vector<f32, 4> c3 ← [0.0, 0.0, near * depth, 0.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c0 ← [focal / aspect, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c1 ← [0.0, focal, 0.0, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c2 ← [0.0, 0.0, depth, -1.0 ∷ f32] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c3 ← [0.0, 0.0, near * depth, 0.0] ↦ vector<f32, size 4>
     return ex_columnis(c0, c1, c2, c3)
 }
 
 # [F] look-at/view construction — collinear inputs return null.
 
-fn conspectus(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → matrix<f32, [4, 4]> ∪ none {
-    let vector<f32, 3> forward ← target.subtracted(eye).normalize()
+fn conspectus(vector<f32, size 3> eye, vector<f32, size 3> target, vector<f32, size 3> up) → matrix<f32, [4, 4]> ∪ none {
+    let vector<f32, size 3> forward ← target.subtracted(eye).normalize()
     if longitudo(forward) ≤ 0.000001 then return null
-    let vector<f32, 3> side ← forward.cross(up).normalize()
+    let vector<f32, size 3> side ← forward.cross(up).normalize()
     if longitudo(side) ≤ 0.000001 then return null
-    let vector<f32, 3> camera_up ← side.cross(forward)
+    let vector<f32, size 3> camera_up ← side.cross(forward)
     let f32 fx ← forward.dot(e0_basis3(0))
     let f32 fy ← forward.dot(e0_basis3(1))
     let f32 fz ← forward.dot(e0_basis3(2))
@@ -387,13 +387,13 @@ fn conspectus(vector<f32, 3> eye, vector<f32, 3> target, vector<f32, 3> up) → 
     let f32 ux ← camera_up.dot(e0_basis3(0))
     let f32 uy ← camera_up.dot(e0_basis3(1))
     let f32 uz ← camera_up.dot(e0_basis3(2))
-    let vector<f32, 4> c0 ← [sx, ux, -fx, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c1 ← [sy, uy, -fy, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c2 ← [sz, uz, -fz, 0.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c0 ← [sx, ux, -fx, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c1 ← [sy, uy, -fy, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c2 ← [sz, uz, -fz, 0.0] ↦ vector<f32, size 4>
     let f32 ex ← side.dot(eye)
     let f32 ey ← camera_up.dot(eye)
     let f32 ez ← forward.dot(eye)
-    let vector<f32, 4> c3 ← [-ex, -ey, ez, 1.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c3 ← [-ex, -ey, ez, 1.0] ↦ vector<f32, size 4>
     return ex_columnis(c0, c1, c2, c3)
 }
 
@@ -414,23 +414,23 @@ fn determinans_affinis(matrix<f32, [4, 4]> m) → f32 {
 
 # [F] homogeneous point application with the explicit w divide.
 
-fn applica_punctum(matrix<f32, [4, 4]> m, vector<f32, 3> punctum) → vector<f32, 3> {
-    let vector<f32, 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, 4>
+fn applica_punctum(matrix<f32, [4, 4]> m, vector<f32, size 3> punctum) → vector<f32, size 3> {
+    let vector<f32, size 4> e3 ← [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
     let f32 px ← punctum.dot(e0_basis3(0))
     let f32 py ← punctum.dot(e0_basis3(1))
     let f32 pz ← punctum.dot(e0_basis3(2))
-    let vector<f32, 4> p ← [px, py, pz, 1.0] ↦ vector<f32, 4>
-    let vector<f32, 4> applied ← m.apply(p)
+    let vector<f32, size 4> p ← [px, py, pz, 1.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> applied ← m.apply(p)
     let f32 w ← applied.dot(e3)
     mut f32 divisor ← w
     if w.abs() ≤ 0.000001 {
         divisor ← 1.0
     }
-    let vector<f32, 4> divided ← applied.multiplied(uniform_4(1.0 / divisor))
+    let vector<f32, size 4> divided ← applied.multiplied(uniform_4(1.0 / divisor))
     let f32 rx ← divided.dot(basis_4(0))
     let f32 ry ← divided.dot(basis_4(1))
     let f32 rz ← divided.dot(basis_4(2))
-    return [rx, ry, rz] ↦ vector<f32, 3>
+    return [rx, ry, rz] ↦ vector<f32, size 3>
 }
 
 # [F] affine inverse: near-zero determinant is a domain failure (nihil),
@@ -461,10 +461,10 @@ fn inversa_affinis(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> ∪ none {
     let f32 i20 ← (a10 * a21 - a11 * a20) * d
     let f32 i21 ← (a01 * a20 - a00 * a21) * d
     let f32 i22 ← (a00 * a11 - a01 * a10) * d
-    let vector<f32, 4> c0 ← [i00, i10, i20, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c1 ← [i01, i11, i21, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c2 ← [i02, i12, i22, 0.0] ↦ vector<f32, 4>
-    let vector<f32, 4> c3 ← [-((i00 * tx + i01 * ty) + i02 * tz), -((i10 * tx + i11 * ty) + i12 * tz), -((i20 * tx + i21 * ty) + i22 * tz), 1.0] ↦ vector<f32, 4>
+    let vector<f32, size 4> c0 ← [i00, i10, i20, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c1 ← [i01, i11, i21, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c2 ← [i02, i12, i22, 0.0] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c3 ← [-((i00 * tx + i01 * ty) + i02 * tz), -((i10 * tx + i11 * ty) + i12 * tz), -((i20 * tx + i21 * ty) + i22 * tz), 1.0] ↦ vector<f32, size 4>
     return ex_columnis(c0, c1, c2, c3)
 }
 
@@ -473,10 +473,10 @@ fn inversa_affinis(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> ∪ none {
 # (decision §7 N3); construction from read columns is the proven form.
 
 fn transposita(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> {
-    let vector<f32, 4> r0 ← [elementum(m, 0, 0), elementum(m, 1, 0), elementum(m, 2, 0), elementum(m, 3, 0)] ↦ vector<f32, 4>
-    let vector<f32, 4> r1 ← [elementum(m, 0, 1), elementum(m, 1, 1), elementum(m, 2, 1), elementum(m, 3, 1)] ↦ vector<f32, 4>
-    let vector<f32, 4> r2 ← [elementum(m, 0, 2), elementum(m, 1, 2), elementum(m, 2, 2), elementum(m, 3, 2)] ↦ vector<f32, 4>
-    let vector<f32, 4> r3 ← [elementum(m, 0, 3), elementum(m, 1, 3), elementum(m, 2, 3), elementum(m, 3, 3)] ↦ vector<f32, 4>
+    let vector<f32, size 4> r0 ← [elementum(m, 0, 0), elementum(m, 1, 0), elementum(m, 2, 0), elementum(m, 3, 0)] ↦ vector<f32, size 4>
+    let vector<f32, size 4> r1 ← [elementum(m, 0, 1), elementum(m, 1, 1), elementum(m, 2, 1), elementum(m, 3, 1)] ↦ vector<f32, size 4>
+    let vector<f32, size 4> r2 ← [elementum(m, 0, 2), elementum(m, 1, 2), elementum(m, 2, 2), elementum(m, 3, 2)] ↦ vector<f32, size 4>
+    let vector<f32, size 4> r3 ← [elementum(m, 0, 3), elementum(m, 1, 3), elementum(m, 2, 3), elementum(m, 3, 3)] ↦ vector<f32, size 4>
     return ex_columnis(r0, r1, r2, r3)
 }
 
@@ -489,15 +489,15 @@ fn transposita(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> {
 # --- §2.4 Box<N>: generic nominal over two selected vectors ---------------
 
 class Box<size N> {
-    mut vector<f32, N> minima
-    mut vector<f32, N> maxima
+    mut vector<f32, size N> minima
+    mut vector<f32, size N> maxima
 
     # [R] receivers expressible dimension-neutrally today.
-    fn mensura() → vector<f32, N> {
+    fn mensura() → vector<f32, size N> {
         return self.maxima.subtracted(self.minima)
     }
 
-    fn translata(vector<f32, N> offset) → Box<N> {
+    fn translata(vector<f32, size N> offset) → Box<N> {
         return Box {minima = self.minima.added(offset), maxima = self.maxima.added(offset)}
     }
 }
@@ -507,14 +507,14 @@ class Box<size N> {
 # them today; the parametric Box<N> forms are the routed N2 prerequisite.
 
 fn capsa_validum(Box<3> capsam) → bool {
-    let vector<f32, 3> mensura ← capsam.mensura()
+    let vector<f32, size 3> mensura ← capsam.mensura()
     let f32 dx ← mensura.dot(e0_basis3(0))
     let f32 dy ← mensura.dot(e0_basis3(1))
     let f32 dz ← mensura.dot(e0_basis3(2))
     return (dx ≥ 0.0 and dy ≥ 0.0) and dz ≥ 0.0
 }
 
-fn capsa_continet(Box<3> capsam, vector<f32, 3> punctum) → bool {
+fn capsa_continet(Box<3> capsam, vector<f32, size 3> punctum) → bool {
     let f32 px ← punctum.dot(e0_basis3(0))
     let f32 py ← punctum.dot(e0_basis3(1))
     let f32 pz ← punctum.dot(e0_basis3(2))
@@ -550,21 +550,21 @@ fn capsa_inflata(Box<3> capsam, f32 quantitas) → Box<3> {
     return Box {minima = capsam.minima.subtracted(uniform_3(quantitas)), maxima = capsam.maxima.added(uniform_3(quantitas))}
 }
 
-fn capsa_centrum(Box<3> capsam) → vector<f32, 3> {
-    let vector<f32, 3> half ← uniform_3(0.5)
+fn capsa_centrum(Box<3> capsam) → vector<f32, size 3> {
+    let vector<f32, size 3> half ← uniform_3(0.5)
     let f32 ax ← capsam.minima.dot(e0_basis3(0))
     let f32 ay ← capsam.minima.dot(e0_basis3(1))
     let f32 az ← capsam.minima.dot(e0_basis3(2))
     let f32 bx ← capsam.maxima.dot(e0_basis3(0))
     let f32 by ← capsam.maxima.dot(e0_basis3(1))
     let f32 bz ← capsam.maxima.dot(e0_basis3(2))
-    let vector<f32, 3> inferior ← [ax, ay, az] ↦ vector<f32, 3>
-    let vector<f32, 3> superior ← [bx, by, bz] ↦ vector<f32, 3>
-    let vector<f32, 3> sum ← inferior.added(superior)
+    let vector<f32, size 3> inferior ← [ax, ay, az] ↦ vector<f32, size 3>
+    let vector<f32, size 3> superior ← [bx, by, bz] ↦ vector<f32, size 3>
+    let vector<f32, size 3> sum ← inferior.added(superior)
     return sum.multiplied(half)
 }
 
-fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ none {
+fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, size 3> ∪ none {
     if capsa_intersecat(una, alia) ≡ false then return null
     let f32 minx ← una.maxima.dot(e0_basis3(0))
     let f32 miny ← una.maxima.dot(e0_basis3(1))
@@ -572,7 +572,7 @@ fn capsa_superpositio(Box<3> una, Box<3> alia) → vector<f32, 3> ∪ none {
     let f32 maxx ← alia.minima.dot(e0_basis3(0))
     let f32 maxy ← alia.minima.dot(e0_basis3(1))
     let f32 maxz ← alia.minima.dot(e0_basis3(2))
-    return [minx - maxx, miny - maxy, minz - maxz] ↦ vector<f32, 3>
+    return [minx - maxx, miny - maxy, minz - maxz] ↦ vector<f32, size 3>
 }
 
 fn capsa_unio(Box<3> una, Box<3> alia) → Box<3> ∪ none {
@@ -595,8 +595,8 @@ fn capsa_unio(Box<3> una, Box<3> alia) → Box<3> ∪ none {
     let f32 ox ← maxx ⤒ amaxx
     let f32 oy ← maxy ⤒ amaxy
     let f32 oz ← maxz ⤒ amaxz
-    let vector<f32, 3> inferior ← [ux, uy, uz] ↦ vector<f32, 3>
-    let vector<f32, 3> superior ← [ox, oy, oz] ↦ vector<f32, 3>
+    let vector<f32, size 3> inferior ← [ux, uy, uz] ↦ vector<f32, size 3>
+    let vector<f32, size 3> superior ← [ox, oy, oz] ↦ vector<f32, size 3>
     let Box<3> united ← Box {minima = inferior, maxima = superior}
     return united
 }
@@ -611,7 +611,7 @@ fn capsa_unio(Box<3> una, Box<3> alia) → Box<3> ∪ none {
 # row names, over the selected carriers. Each axis contributes a slab
 # [entry, exit]; the box hit is the intersection of the three slabs.
 
-fn capsa_intersecat_radium(Box<3> capsam, vector<f32, 3> origin, vector<f32, 3> direction, f32 distantia_maxima) → f32 ∪ none {
+fn capsa_intersecat_radium(Box<3> capsam, vector<f32, size 3> origin, vector<f32, size 3> direction, f32 distantia_maxima) → f32 ∪ none {
     if capsa_validum(capsam) ≡ false then return null
     if distantia_maxima ≺ 0.0 then return null
     let f32 ∪ none x_entry ← axis_interval(origin.dot(e0_basis3(0)), direction.dot(e0_basis3(0)), capsam.minima.dot(e0_basis3(0)), capsam.maxima.dot(e0_basis3(0)))

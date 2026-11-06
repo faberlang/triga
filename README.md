@@ -8,7 +8,7 @@ host.
 > Faber 2; APIs change without notice.
 
 It is a first-class Faber library, not a three.js clone. Dimension lives in
-types (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`). Industry domain
+types (`vector<f32, size N>`, `matrix<f32, [R, C]>`, `Box<N>`). Industry domain
 nouns stay (`Mesh`, `Ray`, `PerspectiveCamera`). three.js product names
 (`Object3D`, `BufferGeometry`, `MeshBasicMaterial`) do not.
 
@@ -64,7 +64,7 @@ split the way it is.
 
 | Layer | State |
 | --- | --- |
-| Math / transforms | Native Faber (`vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`, quaternions, …) |
+| Math / transforms | Native Faber (`vector<f32, size N>`, `matrix<f32, [R, C]>`, `Box<N>`, quaternions, …) |
 | Scene store | Generation-checked handles, graph edits, world transforms; exempla green |
 | Buffer geometry | SoA attributes, draw batches, vertex-layout reflection |
 | Primitive generators | Deterministic plane/box/sphere/… mesh builders |
@@ -79,7 +79,7 @@ keep the typed contract honest and modular.
 
 | Category | Types | Module | Mirror |
 | -------- | ----- | ------ | ------ |
-| **Math** | `vector<f32, N>`, `matrix<f32, [R, C]>`, `Box<N>`, `Ray`, quaternions, face-code tables | `triga:math` | language carriers + Triga domain genera |
+| **Math** | `vector<f32, size N>`, `matrix<f32, [R, C]>`, `Box<N>`, `Ray`, quaternions, face-code tables | `triga:math` | language carriers + Triga domain genera |
 | **Scene Graph** | `Object`, `Scene`, cameras | `triga:graph/{object,camera}` | industry cameras; no `Object3D` |
 | **Lighting** | `Light` family | `triga:lighting/light` | industry light nouns |
 | **Geometry data** | `Geometry`, `ColoredQuadMesh` | `triga:geometry/data` | SoA mesh contract |

@@ -138,7 +138,7 @@ the return value:
 
 ```
 @ fragment
-fn box_fragment(vector<f32, 3> color, vector<f32, 2> uv) → vector<f32, 4>
+fn box_fragment(vector<f32, size 3> color, vector<f32, size 2> uv) → vector<f32, size 4>
 ```
 
 The interstage interface is then read from the signature. `varying_matches`

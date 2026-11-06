@@ -7,11 +7,11 @@ import from "triga:graph/object" graph_object
 import from "triga:math" math
 
 fn spawn_light(string name) → graph_object.Object {
-    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, name = name}
+    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, name = name}
 }
 
 fn spawn_light_at(string name, f32 x, f32 y, f32 z) → graph_object.Object {
-    return graph_object.Object {position = [x, y, z] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, name = name}
+    return graph_object.Object {position = [x, y, z] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, name = name}
 }
 
 test "Light preserves color and default intensity as carrier facts" {
@@ -36,7 +36,7 @@ test "AmbientLight carries color and zero-intensity boundaries" {
 }
 
 test "DirectionalLight carries target position and full-intensity boundary" {
-    let vector<f32, 3> target ← [-2.0, 0.0, 5.0] ↦ vector<f32, 3>
+    let vector<f32, size 3> target ← [-2.0, 0.0, 5.0] ↦ vector<f32, size 3>
     let light.Light source ← light.Light {base = spawn_light("directional"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
     let light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
@@ -51,7 +51,7 @@ test "DirectionalLight carries target position and full-intensity boundary" {
 }
 
 test "DirectionalLight records position and target as direction carriers" {
-    let vector<f32, 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, 3>
+    let vector<f32, size 3> target ← [0.0, 0.0, 0.0] ↦ vector<f32, size 3>
     let light.Light source ← light.Light {base = spawn_light_at("from-above", 0.0, 4.0, 0.0), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, intensity = 1.0}
     let light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = target}
 
@@ -65,7 +65,7 @@ test "DirectionalLight records position and target as direction carriers" {
 }
 
 test "DirectionalLight keeps a coincident target as a degenerate direction carrier" {
-    let vector<f32, 3> origin ← [1.0, 2.0, 3.0] ↦ vector<f32, 3>
+    let vector<f32, size 3> origin ← [1.0, 2.0, 3.0] ↦ vector<f32, size 3>
     let light.Light source ← light.Light {base = spawn_light_at("coincident", 1.0, 2.0, 3.0), color = math.Color {r = 0.0, g = 0.0, b = 0.0}, intensity = 0.0}
     let light.DirectionalLight directional ← light.DirectionalLight {base = source, target_position = origin}
 
@@ -104,7 +104,7 @@ test "PointLight defaults remain explicit carrier values" {
 test "Presenter-shaped AmbientLight and DirectionalLight carriers" {
     # Same abstract field shape as host/fixtures/scene.fab (scene params, not API).
     let light.AmbientLight ambient ← light.AmbientLight {base = light.Light {base = spawn_light("presenter-ambient"), color = math.Color {r = 1.0, g = 0.0, b = 1.0}, intensity = 0.55}}
-    let light.DirectionalLight sun ← light.DirectionalLight {base = light.Light {base = spawn_light_at("presenter-sun", 2.0, 4.0, 1.0), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
+    let light.DirectionalLight sun ← light.DirectionalLight {base = light.Light {base = spawn_light_at("presenter-sun", 2.0, 4.0, 1.0), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, size 3>}
 
     assert ambient.base.base.name ≡ "presenter-ambient"
     assert ambient.base.color.r ≡ (1.0 ∷ f32)

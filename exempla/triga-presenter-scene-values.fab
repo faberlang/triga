@@ -25,15 +25,15 @@ import from "triga:scene" scene
 import from "triga:resource" resource
 
 fn camera_object() → graph_object.Object {
-    return graph_object.Object {position = [0.0, 1.8, 4.2] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-camera"}
+    return graph_object.Object {position = [0.0, 1.8, 4.2] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-camera"}
 }
 
 fn sun_object() → graph_object.Object {
-    return graph_object.Object {position = [2.0, 4.0, 1.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-sun"}
+    return graph_object.Object {position = [2.0, 4.0, 1.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-sun"}
 }
 
 fn ambient_object() → graph_object.Object {
-    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-ambient"}
+    return graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-ambient"}
 }
 
 main {
@@ -46,12 +46,12 @@ main {
     let scene.SceneHandle right ← store.insert(scene.scene_mesh("right", geom, mat))
     assert store.attach(left, root) panic "attach left"
     assert store.attach(right, root) panic "attach right"
-    assert store.set_local_matrix(left, math.matrix_translation([-1.25, 0.0, 0.0] ↦ vector<f32, 3>)) panic "left translate"
-    assert store.set_local_matrix(right, math.matrix_translation([1.25, 0.0, 0.0] ↦ vector<f32, 3>)) panic "right translate"
+    assert store.set_local_matrix(left, math.matrix_translation([-1.25, 0.0, 0.0] ↦ vector<f32, size 3>)) panic "left translate"
+    assert store.set_local_matrix(right, math.matrix_translation([1.25, 0.0, 0.0] ↦ vector<f32, size 3>)) panic "right translate"
     assert store.refresh_world(root) panic "refresh world"
 
     let camera.PerspectiveCamera cam ← camera.PerspectiveCamera {base = camera_object(), fov = 42.0, aspect = 1.0, near = 0.1, far = 40.0}
-    let matrix<f32, [4, 4]> ∪ none view_proj_opt ← cam.view_projection([0.0, 1.8, 4.2] ↦ vector<f32, 3>, [0.0, 0.0, 0.0] ↦ vector<f32, 3>, [0.0, 1.0, 0.0] ↦ vector<f32, 3>)
+    let matrix<f32, [4, 4]> ∪ none view_proj_opt ← cam.view_projection([0.0, 1.8, 4.2] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
     assert view_proj_opt not is none panic "view-projection"
     let matrix<f32, [4, 4]> view_proj ← view_proj_opt
 
@@ -67,7 +67,7 @@ main {
     assert ambient.base.base.name ≡ "presenter-ambient" panic "ambient name"
     assert ambient.base.intensity ≡ (0.55 ∷ f32) panic "ambient intensity"
 
-    let lighting.DirectionalLight sun ← lighting.DirectionalLight {base = lighting.Light {base = sun_object(), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, 3>}
+    let lighting.DirectionalLight sun ← lighting.DirectionalLight {base = lighting.Light {base = sun_object(), color = math.Color {r = 1.0, g = 0.98, b = 0.92}, intensity = 1.0}, target_position = [0.0, 0.0, -1.0] ↦ vector<f32, size 3>}
     assert sun.base.base.name ≡ "presenter-sun" panic "sun name"
 
     let lit.PhongMaterial phong ← lit.PhongMaterial {base = material_base.material_from_name("phong"), color = math.Color {r = 0.15, g = 1.0, b = 1.0}, specular = math.Color {r = 1.0, g = 1.0, b = 1.0}, shininess = 32.0}

@@ -19,7 +19,7 @@ import from "triga:material/lit" lit
 import from "triga:material/standard" standard
 
 fn objectum(string name) → graph_object.Object {
-    return graph_object.Object {position = [1.0, 2.0, 3.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
+    return graph_object.Object {position = [1.0, 2.0, 3.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
 }
 
 fn triangle_geometryum() → data.Geometry {
@@ -132,7 +132,7 @@ describe "Mesh public facts and missing components" {
 describe "Mesh composition edges" {
     test "Mesh keeps graph hierarchy and visibility in the carrier" {
         let graph_object.Object child ← objectum("child")
-        let graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [2.0, 2.0, 2.0] ↦ vector<f32, 3>, matrix = math.matrix_identity(), children = [child], visible = false, name = "parent"}
+        let graph_object.Object parent ← graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [2.0, 2.0, 2.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = [child], visible = false, name = "parent"}
         let data.Geometry geometry ← triangle_geometryum()
         let mesh.Mesh value ← mesh.Mesh {base = parent, geometry = geometry}
 

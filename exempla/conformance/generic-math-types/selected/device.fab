@@ -11,7 +11,7 @@ locale = "en"
 # fallback, list substitution, panic, or unsupported output labeled
 # success fails the gate.
 #
-# At the selection pin the register-class carriers (`vector<f32, N>`,
+# At the selection pin the register-class carriers (`vector<f32, size N>`,
 # `matrix<f32, [R, C]>`) and the `Box<N>` nominal are NOT device-backed:
 # `radix emit -t wgsl-text` and `-t metal-text` reject these functions
 # with `CODEGEN001:mir_wgsl_text_unsupported` /
@@ -21,15 +21,15 @@ locale = "en"
 # into. The runner asserts the rejection identity and the empty
 # artifact; representation-decision.md §7 records the posture.
 
-fn vector_addition(vector<f32, 4> a, vector<f32, 4> b) → vector<f32, 4> {
+fn vector_addition(vector<f32, size 4> a, vector<f32, size 4> b) → vector<f32, size 4> {
     return a.added(b)
 }
 
-fn vector_productum(vector<f32, 4> a, vector<f32, 4> b) → f32 {
+fn vector_productum(vector<f32, size 4> a, vector<f32, size 4> b) → f32 {
     return a.dot(b)
 }
 
-fn matrix_application(matrix<f32, [4, 4]> m, vector<f32, 4> v) → vector<f32, 4> {
+fn matrix_application(matrix<f32, [4, 4]> m, vector<f32, size 4> v) → vector<f32, size 4> {
     return m.apply(v)
 }
 
@@ -38,10 +38,10 @@ fn matrix_productum(matrix<f32, [4, 4]> a, matrix<f32, [4, 4]> b) → matrix<f32
 }
 
 class Box<size N> {
-    mut vector<f32, N> minima
-    mut vector<f32, N> maxima
+    mut vector<f32, size N> minima
+    mut vector<f32, size N> maxima
 }
 
-fn box_mensura<size N>(Box<N> b) → vector<f32, N> {
+fn box_mensura<size N>(Box<N> b) → vector<f32, size N> {
     return b.maxima.subtracted(b.minima)
 }

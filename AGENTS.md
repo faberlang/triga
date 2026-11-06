@@ -7,7 +7,7 @@ asked. Container law: [`../AGENTS.md`](../AGENTS.md).
 
 Triga is the public Faber source library for `triga:*` imports — geometry,
 scene graph, material, and GPU-facing type contracts. It is a first-class
-Faber library: dimension lives in types (`vector<f32, N>`, `matrix<f32,
+Faber library: dimension lives in types (`vector<f32, size N>`, `matrix<f32,
 [R, C]>`, `Box<N>`), not in identifiers, and three.js product names are not
 the public surface. This repo owns `.fab` source under `src/`; Radix and
 `faber` consume it through `FABER_LIBRARY_HOME`, usually the parent

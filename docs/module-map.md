@@ -28,7 +28,7 @@ not `triga:scene/resource`).
 
 | Import | File | Owns |
 | --- | --- | --- |
-| `triga:math` | `src/math.fab` | `vector<f32, N>` / `matrix<f32, [R, C]>` helpers, `Box<N>`, `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`, `Ray`, transform payload, face-code tables |
+| `triga:math` | `src/math.fab` | `vector<f32, size N>` / `matrix<f32, [R, C]>` helpers, `Box<N>`, `Quaternion`, `Euler`, `Color`, `Sphere`, `Plane`, `Ray`, transform payload, face-code tables |
 | `triga:graph` | `src/graph.fab` | Facade / map only (no genera) |
 | `triga:graph/object` | `src/graph/object.fab` | `Object`, `Scene` |
 | `triga:graph/camera` | `src/graph/camera.fab` | `PerspectiveCamera`, `OrthographicCamera`, `PerspectiveCameraProjectionFacts`, `ViewProjectionFacts` |
