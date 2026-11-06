@@ -1,43 +1,48 @@
 # Co-located package coverage for the public math carrier and constructor surface.
 import from "./math" math
 
+# Absolute-difference check for results that are computed, not exact.
+fn close(f32 actual, f32 expected) → bool {
+    return (actual - expected).abs() ≺ 0.000001
+}
+
 describe "vector carriers and arithmetic" {
     test "constructors expose exact vector lanes and arithmetic" {
         let vector<f32, size 2> point2 ← [1.0, 2.0] ↦ vector<f32, size 2>
         let vector<f32, size 4> point4 ← [1.0, 2.0, 3.0, 4.0] ↦ vector<f32, size 4>
-        assert point2.dot([1.0, 0.0] ↦ vector<f32, size 2>) ≡ (1.0 ∷ f32)
-        assert point4.dot([0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>) ≡ (4.0 ∷ f32)
+        assert (point2 · ([1.0, 0.0] ↦ vector<f32, size 2>)) ≡ (1.0 ∷ f32)
+        assert (point4 · ([0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>)) ≡ (4.0 ∷ f32)
 
         let vector<f32, size 3> a ← [1.0, 2.0, 3.0] ↦ vector<f32, size 3>
         let vector<f32, size 3> b ← [4.0, 5.0, 6.0] ↦ vector<f32, size 3>
-        let vector<f32, size 3> added ← a.added(b)
-        let vector<f32, size 3> subtracted ← b.subtracted(a)
-        let vector<f32, size 3> scaled ← math.scale3(a, 2.0)
-        let vector<f32, size 3> crossed ← a.cross(b)
+        let vector<f32, size 3> added ← a + b
+        let vector<f32, size 3> subtracted ← b - a
+        let vector<f32, size 3> scaled ← a * 2.0
+        let vector<f32, size 3> crossed ← a × b
         let vector<f32, size 3> halfway ← math.lerp3(a, b, 0.5)
         let vector<f32, size 3> projection ← math.project3(a, [1.0, 0.0, 0.0] ↦ vector<f32, size 3>)
 
-        assert math.x(added) ≡ (5.0 ∷ f32)
-        assert math.y(added) ≡ (7.0 ∷ f32)
-        assert math.z(added) ≡ (9.0 ∷ f32)
-        assert math.x(subtracted) ≡ (3.0 ∷ f32)
-        assert math.y(subtracted) ≡ (3.0 ∷ f32)
-        assert math.z(subtracted) ≡ (3.0 ∷ f32)
-        assert math.x(scaled) ≡ (2.0 ∷ f32)
-        assert math.y(scaled) ≡ (4.0 ∷ f32)
-        assert math.z(scaled) ≡ (6.0 ∷ f32)
-        assert a.dot(b) ≡ (32.0 ∷ f32)
-        assert math.x(crossed) ≡ (-3.0 ∷ f32)
-        assert math.y(crossed) ≡ (6.0 ∷ f32)
-        assert math.z(crossed) ≡ (-3.0 ∷ f32)
-        assert math.length(a) ≻ (3.7 ∷ f32)
-        assert math.distance(a, b) ≻ (5.1 ∷ f32)
-        assert math.x(halfway) ≡ (2.5 ∷ f32)
-        assert math.y(halfway) ≡ (3.5 ∷ f32)
-        assert math.z(halfway) ≡ (4.5 ∷ f32)
-        assert math.x(projection) ≡ (1.0 ∷ f32)
-        assert math.y(projection) ≡ (0.0 ∷ f32)
-        assert math.z(projection) ≡ (0.0 ∷ f32)
+        assert added[0] ≡ (5.0 ∷ f32)
+        assert added[1] ≡ (7.0 ∷ f32)
+        assert added[2] ≡ (9.0 ∷ f32)
+        assert subtracted[0] ≡ (3.0 ∷ f32)
+        assert subtracted[1] ≡ (3.0 ∷ f32)
+        assert subtracted[2] ≡ (3.0 ∷ f32)
+        assert scaled[0] ≡ (2.0 ∷ f32)
+        assert scaled[1] ≡ (4.0 ∷ f32)
+        assert scaled[2] ≡ (6.0 ∷ f32)
+        assert (a · b) ≡ (32.0 ∷ f32)
+        assert crossed[0] ≡ (-3.0 ∷ f32)
+        assert crossed[1] ≡ (6.0 ∷ f32)
+        assert crossed[2] ≡ (-3.0 ∷ f32)
+        assert a.norm() ≻ (3.7 ∷ f32)
+        assert (a - b).norm() ≻ (5.1 ∷ f32)
+        assert halfway[0] ≡ (2.5 ∷ f32)
+        assert halfway[1] ≡ (3.5 ∷ f32)
+        assert halfway[2] ≡ (4.5 ∷ f32)
+        assert projection[0] ≡ (1.0 ∷ f32)
+        assert projection[1] ≡ (0.0 ∷ f32)
+        assert projection[2] ≡ (0.0 ∷ f32)
     }
 
     test "normalization and projection have zero-vector boundaries" {
@@ -46,13 +51,28 @@ describe "vector carriers and arithmetic" {
         let vector<f32, size 3> zero_normalized ← math.normalized3(zero)
         let vector<f32, size 3> zero_projection ← math.project3([1.0, 2.0, 3.0] ↦ vector<f32, size 3>, zero)
 
-        assert math.z(normalized) ≻ (0.99 ∷ f32)
-        assert math.x(zero_normalized) ≡ (0.0 ∷ f32)
-        assert math.y(zero_normalized) ≡ (0.0 ∷ f32)
-        assert math.z(zero_normalized) ≡ (0.0 ∷ f32)
-        assert math.x(zero_projection) ≡ (0.0 ∷ f32)
-        assert math.y(zero_projection) ≡ (0.0 ∷ f32)
-        assert math.z(zero_projection) ≡ (0.0 ∷ f32)
+        assert normalized[2] ≻ (0.99 ∷ f32)
+        assert zero_normalized[0] ≡ (0.0 ∷ f32)
+        assert zero_normalized[1] ≡ (0.0 ∷ f32)
+        assert zero_normalized[2] ≡ (0.0 ∷ f32)
+        assert zero_projection[0] ≡ (0.0 ∷ f32)
+        assert zero_projection[1] ≡ (0.0 ∷ f32)
+        assert zero_projection[2] ≡ (0.0 ∷ f32)
+    }
+
+    test "normalization stays accurate for large vectors" {
+        let vector<f32, size 3> along_x ← math.normalized3([100000.0, 0.0, 0.0] ↦ vector<f32, size 3>)
+        let vector<f32, size 3> diagonal ← math.normalized3([300000.0, 400000.0, 0.0] ↦ vector<f32, size 3>)
+        let vector<f32, size 3> huge ← math.normalized3([0.0, 0.0, 10000000000.0] ↦ vector<f32, size 3>)
+
+        assert (along_x[0] - 1.0).abs() ≺ (0.00001 ∷ f32)
+        assert along_x[1].abs() ≺ (0.00001 ∷ f32)
+        assert along_x[2].abs() ≺ (0.00001 ∷ f32)
+        assert (diagonal[0] - 0.6).abs() ≺ (0.00001 ∷ f32)
+        assert (diagonal[1] - 0.8).abs() ≺ (0.00001 ∷ f32)
+        assert diagonal[2].abs() ≺ (0.00001 ∷ f32)
+        assert (huge[2] - 1.0).abs() ≺ (0.00001 ∷ f32)
+        assert (along_x.norm() - 1.0).abs() ≺ (0.00001 ∷ f32)
     }
 }
 
@@ -66,44 +86,61 @@ describe "matrix and transform carriers" {
         let matrix<f32, [4, 4]> scale ← math.matrix_scale(scale_vector)
         let matrix<f32, [4, 4]> world ← translation · scale
         let vector<f32, size 3> transformed ← math.apply_point(world, [1.0, 2.0, -1.0] ↦ vector<f32, size 3>)
-        let matrix<f32, [4, 4]> transposed ← math.transpose(translation)
+        let matrix<f32, [4, 4]> transposed ← translationᵀ
         let math.Quaternion identity_rotation ← math.quaternion(0.0, 0.0, 0.0, 1.0)
         let matrix<f32, [4, 4]> composed ← math.matrix_compose(offset, identity_rotation, scale_vector)
 
-        let matrix<f32, [3, 3]> doubled ← matrix3.added(matrix3)
-        assert doubled.subtracted(matrix3) ≡ matrix3
+        let matrix<f32, [3, 3]> doubled ← matrix3 + matrix3
+        assert doubled - matrix3 ≡ matrix3
         assert math.affine_determinant(identity) ≡ (1.0 ∷ f32)
-        assert math.matrix_element(translation, 0, 3) ≡ (5.0 ∷ f32)
-        assert math.matrix_element(translation, 1, 3) ≡ (-2.0 ∷ f32)
-        assert math.matrix_element(translation, 2, 3) ≡ (3.0 ∷ f32)
-        assert math.matrix_element(scale, 0, 0) ≡ (2.0 ∷ f32)
-        assert math.matrix_element(scale, 1, 1) ≡ (3.0 ∷ f32)
-        assert math.matrix_element(scale, 2, 2) ≡ (4.0 ∷ f32)
-        assert math.x(transformed) ≡ (7.0 ∷ f32)
-        assert math.y(transformed) ≡ (4.0 ∷ f32)
-        assert math.z(transformed) ≡ (-1.0 ∷ f32)
-        assert math.matrix_element(transposed, 3, 0) ≡ (5.0 ∷ f32)
-        assert math.matrix_element(composed, 0, 0) ≡ (2.0 ∷ f32)
-        assert math.matrix_element(composed, 1, 1) ≡ (3.0 ∷ f32)
-        assert math.matrix_element(composed, 2, 2) ≡ (4.0 ∷ f32)
-        assert math.matrix_element(composed, 0, 3) ≡ (5.0 ∷ f32)
+        assert translation[[0, 3]] ≡ (5.0 ∷ f32)
+        assert translation[[1, 3]] ≡ (-2.0 ∷ f32)
+        assert translation[[2, 3]] ≡ (3.0 ∷ f32)
+        assert scale[[0, 0]] ≡ (2.0 ∷ f32)
+        assert scale[[1, 1]] ≡ (3.0 ∷ f32)
+        assert scale[[2, 2]] ≡ (4.0 ∷ f32)
+        assert transformed[0] ≡ (7.0 ∷ f32)
+        assert transformed[1] ≡ (4.0 ∷ f32)
+        assert transformed[2] ≡ (-1.0 ∷ f32)
+        assert transposed[[3, 0]] ≡ (5.0 ∷ f32)
+        assert composed[[0, 0]] ≡ (2.0 ∷ f32)
+        assert composed[[1, 1]] ≡ (3.0 ∷ f32)
+        assert composed[[2, 2]] ≡ (4.0 ∷ f32)
+        assert composed[[0, 3]] ≡ (5.0 ∷ f32)
     }
 
     test "matrix projection boundaries are explicit" {
         let matrix<f32, [4, 4]> identity ← math.matrix_identity()
         let matrix<f32, [4, 4]> translation ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, size 3>)
+        let matrix<f32, [4, 4]> identity_transposed ← identityᵀ
         let matrix<f32, [4, 4]> ∪ none inverse_result ← math.affine_inverse(translation)
         let matrix<f32, [4, 4]> ∪ none perspective_result ← math.matrix_perspective(60.0, 1.0, 0.1, 100.0)
         let matrix<f32, [4, 4]> ∪ none invalid_perspective ← math.matrix_perspective(0.0, 1.0, 0.1, 100.0)
         let matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at([0.0, 0.0, 5.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
         let matrix<f32, [4, 4]> ∪ none invalid_view ← math.matrix_look_at([0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
 
-        assert math.matrix_element(math.transpose(identity), 0, 0) ≡ (1.0 ∷ f32)
+        assert identity_transposed[[0, 0]] ≡ (1.0 ∷ f32)
         assert inverse_result not is none
         assert perspective_result not is none
         assert invalid_perspective is none
         assert view_result not is none
         assert invalid_view is none
+    }
+
+    test "perspective at a wide field of view follows the built-in sine and cosine" {
+        let f32 half_angle ← math.radians_from_degrees(179.0) * 0.5
+        let f32 focal ← half_angle.cos() / half_angle.sin()
+        let matrix<f32, [4, 4]> ∪ none wide_result ← math.matrix_perspective(179.0, 2.0, 0.1, 100.0)
+        assert wide_result not is none
+        let matrix<f32, [4, 4]> wide ← wide_result
+
+        assert close(wide[[1, 1]], focal)
+        assert close(wide[[0, 0]], focal / 2.0)
+        assert wide[[3, 2]] ≡ (-1.0 ∷ f32)
+
+        let vector<f32, size 3> projected ← math.apply_point(wide, [1.0, 1.0, -2.0] ↦ vector<f32, size 3>)
+        assert close(projected[0], focal / 4.0)
+        assert close(projected[1], focal / 2.0)
     }
 
     test "transform payload records model and view-projection facts" {
@@ -151,6 +188,44 @@ describe "quaternion and euler rotation" {
         assert interpolated.w ≻ (0.99 ∷ f32)
     }
 
+    test "quaternion normalization is accurate for large magnitudes" {
+        let math.Quaternion large ← math.quaternion(100000.0, 0.0, 0.0, 0.0)
+        let math.Quaternion normalized ← large.normalized()
+
+        assert close(normalized.x, 1.0)
+        assert close(normalized.y, 0.0)
+        assert close(normalized.z, 0.0)
+        assert close(normalized.w, 0.0)
+    }
+
+    test "euler quaternions follow the built-in sine and cosine near half-turn angles" {
+        let f32 near_pi ← 3.1
+        let f32 near_two_pi ← 6.0
+        let f32 half_pi_gap ← near_pi * 0.5
+        let f32 half_turn_gap ← near_two_pi * 0.5
+
+        let math.Quaternion ∪ none yaw_result ← math.euler(0.0, near_pi, 0.0).to_quaternion()
+        let math.Quaternion ∪ none negative_result ← math.euler(0.0, -near_pi, 0.0).to_quaternion()
+        let math.Quaternion ∪ none roll_result ← math.euler(0.0, 0.0, near_two_pi).to_quaternion()
+        assert yaw_result not is none
+        assert negative_result not is none
+        assert roll_result not is none
+        let math.Quaternion yaw ← yaw_result
+        let math.Quaternion negative ← negative_result
+        let math.Quaternion roll ← roll_result
+
+        assert close(yaw.x, 0.0)
+        assert close(yaw.y, half_pi_gap.sin())
+        assert close(yaw.z, 0.0)
+        assert close(yaw.w, half_pi_gap.cos())
+        assert close(negative.y, -half_pi_gap.sin())
+        assert close(negative.w, half_pi_gap.cos())
+        assert close(roll.x, 0.0)
+        assert close(roll.y, 0.0)
+        assert close(roll.z, half_turn_gap.sin())
+        assert close(roll.w, half_turn_gap.cos())
+    }
+
     test "euler values accept XYZ and reject unsupported orders" {
         let math.Euler zero ← math.euler(0.0, 0.0, 0.0)
         let math.Euler other ← math.Euler {x = 0.0, y = 0.0, z = 0.0, order = "XYZ"}
@@ -187,6 +262,22 @@ describe "color, angle, and camera contracts" {
         assert midpoint.b ≡ (0.5 ∷ f32)
     }
 
+    test "camera yaw near a half turn follows the built-in sine and cosine" {
+        let f32 yaw ← math.radians_from_degrees(179.0)
+        let vector<f32, size 3> forward ← math.camera_planar_forward_from_yaw(179.0)
+        let vector<f32, size 3> right ← math.camera_right_from_yaw(179.0)
+        let vector<f32, size 3> looking ← math.camera_direction_from_yaw_pitch(179.0, 0.0)
+
+        assert close(forward[0], yaw.sin())
+        assert close(forward[1], 0.0)
+        assert close(forward[2], -yaw.cos())
+        assert close(right[0], yaw.cos())
+        assert close(right[1], 0.0)
+        assert close(right[2], yaw.sin())
+        assert close(looking[0], yaw.sin())
+        assert close(looking[2], -yaw.cos())
+    }
+
     test "camera helpers clamp pitch and return coherent carriers" {
         let vector<f32, size 3> origin ← [2.0, 3.0, 4.0] ↦ vector<f32, size 3>
         let vector<f32, size 3> direction ← math.camera_direction_from_yaw_pitch(0.0, 100.0)
@@ -200,18 +291,18 @@ describe "color, angle, and camera contracts" {
         assert math.radians_from_degrees((0.0 ∷ f32)) ≡ (0.0 ∷ f32)
         assert math.camera_pitch_clamped((100.0 ∷ f32)) ≡ (89.0 ∷ f32)
         assert math.camera_pitch_clamped((-100.0 ∷ f32)) ≡ (-89.0 ∷ f32)
-        assert math.y(direction) ≻ (0.99 ∷ f32)
-        assert math.z(planar_forward) ≡ (-1.0 ∷ f32)
-        assert math.x(planar_right) ≡ (1.0 ∷ f32)
-        assert math.x(stopped) ≡ (0.0 ∷ f32)
-        assert math.y(stopped) ≡ (0.0 ∷ f32)
-        assert math.z(stopped) ≡ (0.0 ∷ f32)
-        assert math.z(moved) ≺ (0.0 ∷ f32)
-        assert math.x(camera_ray.origin) ≡ (2.0 ∷ f32)
+        assert direction[1] ≻ (0.99 ∷ f32)
+        assert planar_forward[2] ≡ (-1.0 ∷ f32)
+        assert planar_right[0] ≡ (1.0 ∷ f32)
+        assert stopped[0] ≡ (0.0 ∷ f32)
+        assert stopped[1] ≡ (0.0 ∷ f32)
+        assert stopped[2] ≡ (0.0 ∷ f32)
+        assert moved[2] ≺ (0.0 ∷ f32)
+        assert camera_ray.origin[0] ≡ (2.0 ∷ f32)
         assert facts.yaw_degrees ≡ (90.0 ∷ f32)
         assert facts.pitch_degrees ≡ (100.0 ∷ f32)
         assert facts.clamped_pitch_degrees ≡ (89.0 ∷ f32)
-        assert math.z(facts.ray.origin) ≡ (4.0 ∷ f32)
+        assert facts.ray.origin[2] ≡ (4.0 ∷ f32)
     }
 }
 
@@ -244,22 +335,22 @@ describe "box, sphere, and plane volumes" {
         assert math.box_contains_box(bounds, centered)
         assert math.box_intersects(bounds, overlap_box)
         assert math.box_intersects(bounds, disjoint_box) ≡ false
-        assert math.x(bounds.maxima) ≡ (2.0 ∷ f32)
-        assert math.x(centered.minima) ≡ (0.0 ∷ f32)
+        assert bounds.maxima[0] ≡ (2.0 ∷ f32)
+        assert centered.minima[0] ≡ (0.0 ∷ f32)
     }
 
     test "box inflation copies by the published contract" {
         let math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, size 3>}
         let math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
-        assert math.x(expanded.minima) ≡ (-1.0 ∷ f32)
+        assert expanded.minima[0] ≡ (-1.0 ∷ f32)
     }
 
     test "box measure and center match the published corners" {
         let math.Box<3> bounds ← math.Box {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, size 3>}
         let vector<f32, size 3> measure ← math.box_size(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, size 3>)
         let vector<f32, size 3> center ← math.box_center(bounds) coalesce ([0.0, 0.0, 0.0] ↦ vector<f32, size 3>)
-        assert math.x(measure) ≡ (2.0 ∷ f32)
-        assert math.x(center) ≡ (1.0 ∷ f32)
+        assert measure[0] ≡ (2.0 ∷ f32)
+        assert center[0] ≡ (1.0 ∷ f32)
     }
 
     test "box overlap union and translation preserve bound facts" {
@@ -269,11 +360,11 @@ describe "box, sphere, and plane volumes" {
         let math.BoxOverlapFacts facts ← math.box_overlap_facts(bounds, overlap_box) coalesce math.BoxOverlapFacts {overlap = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, x = 0.0, y = 0.0, z = 0.0}
         let math.Box<3> unioned ← math.box_union(bounds, overlap_box) coalesce bounds
         let math.Box<3> translated ← math.box_translated(bounds, [2.0, 0.0, 0.0] ↦ vector<f32, size 3>)
-        assert math.x(overlap) ≡ (1.0 ∷ f32)
-        assert math.y(facts.overlap) ≡ (1.0 ∷ f32)
+        assert overlap[0] ≡ (1.0 ∷ f32)
+        assert facts.overlap[1] ≡ (1.0 ∷ f32)
         assert facts.x ≡ (1.0 ∷ f32)
-        assert math.z(unioned.maxima) ≡ (3.0 ∷ f32)
-        assert math.x(translated.minima) ≡ (2.0 ∷ f32)
+        assert unioned.maxima[2] ≡ (3.0 ∷ f32)
+        assert translated.minima[0] ≡ (2.0 ∷ f32)
     }
 
     test "invalid boxes and primitive volumes reject or preserve boundaries" {
@@ -309,13 +400,13 @@ describe "ray intersections and face-code facts" {
         let math.FaceCodeFacts facts ← math.FaceCodeFacts {code = 1, axis_code = 1, opposite_code = 2, x_offset = -1, y_offset = 0, z_offset = 0, normal = [-1.0, 0.0, 0.0] ↦ vector<f32, size 3>, color = math.Color {r = 0.8, g = 0.1, b = 0.1}}
 
         assert interval.minimum ≡ (1.0 ∷ f32)
-        assert math.x(point) ≡ (0.0 ∷ f32)
+        assert point[0] ≡ (0.0 ∷ f32)
         assert distance_result not is none
         assert rejected_distance is none
         assert hit_result not is none
         assert hit.distance ≡ (2.0 ∷ f32)
-        assert math.x(hit.point) ≡ (0.0 ∷ f32)
-        assert math.x(hit.normal) ≡ (-1.0 ∷ f32)
+        assert hit.point[0] ≡ (0.0 ∷ f32)
+        assert hit.normal[0] ≡ (-1.0 ∷ f32)
         assert hit.hit_face_code() not is none
         assert hit.hit_face_offset_x() not is none
         assert hit.hit_face_offset_y() not is none
@@ -324,7 +415,7 @@ describe "ray intersections and face-code facts" {
         assert facts.code ≡ 1
         assert facts.axis_code ≡ 1
         assert facts.opposite_code ≡ 2
-        assert math.x(facts.normal) ≡ (-1.0 ∷ f32)
+        assert facts.normal[0] ≡ (-1.0 ∷ f32)
         assert facts.color.r ≡ (0.8 ∷ f32)
     }
 
@@ -357,7 +448,7 @@ describe "ray intersections and face-code facts" {
         assert x_offset ≡ 0
         assert y_offset ≡ 0
         assert z_offset ≡ 1
-        assert math.z(normal) ≡ (1.0 ∷ f32)
+        assert normal[2] ≡ (1.0 ∷ f32)
         assert color.b ≡ (1.0 ∷ f32)
         assert facts.code ≡ 6
         assert facts.opposite_code ≡ 5

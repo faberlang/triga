@@ -16,7 +16,7 @@ main {
     let vector<f32, size 3> projected_point ← [1.0, 2.0, 3.0] ↦ vector<f32, size 3>
     let vector<f32, size 3> zero_axis ← [0.0, 0.0, 0.0] ↦ vector<f32, size 3>
     let vector<f32, size 3> projected ← math.project3(projected_point, zero_axis)
-    print math.x(projected)
+    print projected[0]
 
     # Quaternion normalized with all-zero quaternion
     let math.Quaternion zero_q ← math.quaternion(0.0, 0.0, 0.0, 0.0)
@@ -26,7 +26,7 @@ main {
     # normalized3 with all-zero input
     let vector<f32, size 3> all_zero ← [0.0, 0.0, 0.0] ↦ vector<f32, size 3>
     let vector<f32, size 3> zero_normalized ← math.normalized3(all_zero)
-    print math.x(zero_normalized)
+    print zero_normalized[0]
 
     # Color construction with out-of-range components
     let f32 negative_value ← 0.0 - 0.1

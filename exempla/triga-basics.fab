@@ -15,8 +15,8 @@ import from "triga:material/basic" basic
 main {
     let vector<f32, size 3> origin ← [0.0, 0.0, 0.0] ↦ vector<f32, size 3>
     let vector<f32, size 3> offset ← [1.5, 2.5, 3.0] ↦ vector<f32, size 3>
-    print math.x(origin)
-    print math.z(offset)
+    print origin[0]
+    print offset[2]
     let matrix<f32, [4, 4]> matrix ← math.matrix_identity()
 
     # Material construction and validation

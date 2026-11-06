@@ -11,8 +11,6 @@
 
 import from "triga:geometry/data" data
 
-import from "triga:math" math
-
 import from "triga:geometry/attribute" attribute
 
 import from "triga:geometry/batch" batch
@@ -218,7 +216,7 @@ fn cone(f32 radius, f32 height) → data.Geometry ∪ none {
     let list<f32> ring_n ← [1.0, 0.70710678, 0.0, -0.70710678, -1.0, -0.70710678, 0.0, 0.70710678, 1.0]
     let list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
     let f32 side_slope ← radius / height
-    let f32 side_scale ← math.sqrt_f32(1.0 + side_slope * side_slope)
+    let f32 side_scale ← (1.0 + side_slope * side_slope).sqrt()
     mut list<f32> positions ← empty
     mut list<f32> normals ← empty
     mut list<f32> uvs ← empty

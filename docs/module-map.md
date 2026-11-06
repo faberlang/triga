@@ -102,7 +102,7 @@ mut _ store ← scene.scene_store()
 
 | File | Lines |
 | --- | --- |
-| `math.fab` | ~850 |
+| `math.fab` | ~750 |
 | `geometry/data.fab` | ~500 |
 | `geometry/attribute.fab` | ~180 |
 | `geometry/layout.fab` | ~220 |

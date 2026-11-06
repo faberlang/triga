@@ -22,20 +22,6 @@ schema_version = 1
 provider = "triga"
 module_path = ["math"]
 kind = "function"
-canonical = "length"
-surface = "longitudo"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "distance"
-surface = "distantia"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
 canonical = "normalized3"
 surface = "normata"
 
@@ -57,13 +43,6 @@ surface = "projecta"
 provider = "triga"
 module_path = ["math"]
 kind = "function"
-canonical = "scale3"
-surface = "scala3"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
 canonical = "apply_point"
 surface = "applica_punctum"
 
@@ -80,13 +59,6 @@ module_path = ["math"]
 kind = "function"
 canonical = "affine_determinant"
 surface = "determinans_affinis"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "transpose"
-surface = "transposita"
 
 [[library_members]]
 provider = "triga"
@@ -129,13 +101,6 @@ module_path = ["math"]
 kind = "function"
 canonical = "matrix_look_at"
 surface = "matrix_conspectus"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "matrix_element"
-surface = "matrix_elementum"
 
 [[library_members]]
 provider = "triga"
@@ -321,14 +286,6 @@ surface = "continet"
 [[library_members]]
 provider = "triga"
 module_path = ["math"]
-owner = "Plane"
-kind = "method"
-canonical = "distance"
-surface = "distantia"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
 owner = "Ray"
 kind = "method"
 canonical = "point_at"
@@ -350,13 +307,6 @@ module_path = ["math"]
 kind = "function"
 canonical = "face_code_valid"
 surface = "face_code_valida"
-
-[[library_members]]
-provider = "triga"
-module_path = ["math"]
-kind = "function"
-canonical = "sqrt_f32"
-surface = "radix_f32"
 
 [[library_members]]
 provider = "triga"

@@ -2,7 +2,7 @@
 #
 # These cases pin the camera data facts, projection matrices, compact facts,
 # view-projection composition, and fail-closed invalid-input behavior.
-# matrix<f32, [4, 4]> is a type invariant; facts read cells through matrix_element.
+# matrix<f32, [4, 4]> is a type invariant; facts read cells with m[[row, column]].
 
 import from "triga:graph/camera" camera
 import from "triga:graph/object" graph_object
@@ -30,7 +30,7 @@ test "PerspectiveCamera emits a valid projection and projection facts" {
     assert cam.fov ≡ (90.0 ∷ f32)
     assert cam.aspect ≡ (2.0 ∷ f32)
     assert projection_result not is none
-    assert math.matrix_element(projection, 3, 2) ≡ (-1.0 ∷ f32)
+    assert projection[[3, 2]] ≡ (-1.0 ∷ f32)
 
     let camera.PerspectiveCameraProjectionFacts ∪ none facts_result ← cam.projection_facts()
     let camera.PerspectiveCameraProjectionFacts facts ← facts_result coalesce empty_projection_facts()
@@ -50,7 +50,7 @@ test "PerspectiveCamera emits view-projection output and facts" {
     let matrix<f32, [4, 4]> ∪ none view_projection_result ← cam.view_projection([0.0, 0.0, 5.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
     let matrix<f32, [4, 4]> view_projection ← view_projection_result coalesce math.matrix_identity()
     assert view_projection_result not is none
-    assert math.matrix_element(view_projection, 3, 2) ≡ (-1.0 ∷ f32)
+    assert view_projection[[3, 2]] ≡ (-1.0 ∷ f32)
 
     let camera.ViewProjectionFacts ∪ none facts_result ← cam.view_projection_facts([0.0, 0.0, 5.0] ↦ vector<f32, size 3>, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)
     let camera.ViewProjectionFacts facts ← facts_result coalesce empty_view_facts()

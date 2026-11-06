@@ -103,7 +103,7 @@ fn step_camera(ref OrbitCamera camera, f32 delta_seconds) → OrbitCamera {
 
 fn view_projection(ref OrbitCamera cam, f32 aspect) → matrix<f32, [4, 4]> ∪ none {
     let vector<f32, size 3> direction ← math.camera_direction_from_yaw_pitch(cam.yaw_degrees, cam.pitch_degrees)
-    let vector<f32, size 3> offset ← math.scale3(direction, cam.distance)
+    let vector<f32, size 3> offset ← direction * cam.distance
     let vector<f32, size 3> eye ← cam.target.subtracted(offset)
     let camera.PerspectiveCamera perspective ← camera.PerspectiveCamera {base = graph_object.Object {position = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "corpus-orbit"}, fov = 45.0, aspect = aspect, near = 0.5, far = 600.0}
     return perspective.view_projection(eye, cam.target, [0.0, 1.0, 0.0] ↦ vector<f32, size 3>)

@@ -34,12 +34,14 @@ free functions cover graphics-domain work the compiler does not own
 
 - **Constructors** — no receiver exists yet: `matrix_identity()`,
   `box_from_min_max(...)`, `quaternion(...)`.
-- **Pure scalar helpers** — no genus receiver: `sqrt_f32`, `sin_f32`,
-  `cos_f32`, `radians_from_degrees`.
+- **Pure scalar helpers** — no genus receiver: `radians_from_degrees`. Square
+  root, sine and cosine are the built-in `f32` methods (`x.sqrt()`, `x.sin()`,
+  `x.cos()`); Triga ships no wrappers for them.
 - **Primitive generators** — build a new genus, no receiver: `plane(...)`,
   `box(...)` on `triga:primitives/basic`.
-- **Lane and matrix cell reads** on language carriers: `x` / `y` / `z`,
-  `matrix_element`.
+- **Lane and matrix cell reads** on language carriers are the language's own
+  indexing, not Triga helpers: `v[i]` and `m[[row, column]]` (row-major). Vector
+  length is `v.norm()`, scaling is `v * s`, and transpose is `mᵀ`.
 
 ### Decision: Native Math Types (§ 1b)
 

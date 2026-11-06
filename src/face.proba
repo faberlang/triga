@@ -2,19 +2,18 @@
 # mesh accumulation.
 import from "triga:face" face
 import from "triga:geometry/data" data
-import from "triga:math" math
 
 describe "face quad builders" {
     test "negative X face publishes exact corners" {
         let face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
         assert quad_result not is none
         let face.FaceQuad quad ← quad_result
-        assert math.x(quad.a) ≡ (10.0 ∷ f32)
-        assert math.y(quad.a) ≡ (20.0 ∷ f32)
-        assert math.z(quad.a) ≡ (30.0 ∷ f32)
-        assert math.z(quad.b) ≡ (32.0 ∷ f32)
-        assert math.y(quad.c) ≡ (22.0 ∷ f32)
-        assert math.x(quad.d) ≡ (10.0 ∷ f32)
+        assert quad.a[0] ≡ (10.0 ∷ f32)
+        assert quad.a[1] ≡ (20.0 ∷ f32)
+        assert quad.a[2] ≡ (30.0 ∷ f32)
+        assert quad.b[2] ≡ (32.0 ∷ f32)
+        assert quad.c[1] ≡ (22.0 ∷ f32)
+        assert quad.d[0] ≡ (10.0 ∷ f32)
     }
 
     test "all face codes preserve their orientation and winding" {
@@ -33,17 +32,17 @@ describe "face quad builders" {
         let face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
         assert positive_z_result not is none
         let face.FaceQuad positive_z ← positive_z_result
-        assert math.x(positive_x.a) ≡ (5.0 ∷ f32)
-        assert math.z(positive_x.a) ≡ (7.0 ∷ f32)
-        assert math.z(positive_x.d) ≡ (7.0 ∷ f32)
-        assert math.y(negative_y.a) ≡ (2.0 ∷ f32)
-        assert math.x(negative_y.b) ≡ (5.0 ∷ f32)
-        assert math.y(positive_y.a) ≡ (6.0 ∷ f32)
-        assert math.z(positive_y.c) ≡ (3.0 ∷ f32)
-        assert math.z(negative_z.a) ≡ (3.0 ∷ f32)
-        assert math.x(negative_z.b) ≡ (1.0 ∷ f32)
-        assert math.z(positive_z.a) ≡ (7.0 ∷ f32)
-        assert math.y(positive_z.c) ≡ (6.0 ∷ f32)
+        assert positive_x.a[0] ≡ (5.0 ∷ f32)
+        assert positive_x.a[2] ≡ (7.0 ∷ f32)
+        assert positive_x.d[2] ≡ (7.0 ∷ f32)
+        assert negative_y.a[1] ≡ (2.0 ∷ f32)
+        assert negative_y.b[0] ≡ (5.0 ∷ f32)
+        assert positive_y.a[1] ≡ (6.0 ∷ f32)
+        assert positive_y.c[2] ≡ (3.0 ∷ f32)
+        assert negative_z.a[2] ≡ (3.0 ∷ f32)
+        assert negative_z.b[0] ≡ (1.0 ∷ f32)
+        assert positive_z.a[2] ≡ (7.0 ∷ f32)
+        assert positive_z.c[1] ≡ (6.0 ∷ f32)
     }
 
     test "invalid codes and non-positive sizes return absence" {

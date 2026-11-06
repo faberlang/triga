@@ -26,7 +26,7 @@ class PerspectiveCamera {
         let matrix<f32, [4, 4]> ∪ none projection_result ← self.projection()
         if projection_result is none then return null
         let matrix<f32, [4, 4]> projection ← projection_result
-        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = 16, x_scale = math.matrix_element(projection, 0, 0), y_scale = math.matrix_element(projection, 1, 1), depth_scale = math.matrix_element(projection, 2, 2)}
+        return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = 16, x_scale = projection[[0, 0]], y_scale = projection[[1, 1]], depth_scale = projection[[2, 2]]}
     }
 
     fn view_projection(vector<f32, size 3> eye, vector<f32, size 3> target, vector<f32, size 3> up) → matrix<f32, [4, 4]> ∪ none {
@@ -43,7 +43,7 @@ class PerspectiveCamera {
         let matrix<f32, [4, 4]> ∪ none view_projection_result ← self.view_projection(eye, target, up)
         if view_projection_result is none then return null
         let matrix<f32, [4, 4]> view_projection ← view_projection_result
-        return ViewProjectionFacts {float_count = 16, x_scale = math.matrix_element(view_projection, 0, 0), y_scale = math.matrix_element(view_projection, 1, 1), depth_scale = math.matrix_element(view_projection, 2, 2), view_translation_z = math.matrix_element(view_projection, 2, 3)}
+        return ViewProjectionFacts {float_count = 16, x_scale = view_projection[[0, 0]], y_scale = view_projection[[1, 1]], depth_scale = view_projection[[2, 2]], view_translation_z = view_projection[[2, 3]]}
     }
 }
 

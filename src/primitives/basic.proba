@@ -75,30 +75,6 @@ fn wire_geometry_matches(data.Geometry ∪ none geometry, list<f32> positions, l
     return true
 }
 
-# The cone side-normal scale uses the leaf's published Newton sqrt. The helper
-# is private, so the probe repeats that same iteration to pin the public
-# payload without calling the implementation through a back door.
-fn published_sqrt_f32(f32 value) → f32 {
-    if value ≤ 0.0 then return 0.0
-    mut f32 scaled ← value
-    mut f32 scale ← 1.0
-    while scaled ≻ 4.0 {
-        scaled ← scaled * 0.25
-        scale ← scale * 2.0
-    }
-    while scaled ≺ 0.25 {
-        scaled ← scaled * 4.0
-        scale ← scale * 0.5
-    }
-    mut f32 estimate ← 1.0
-    mut int iteration ← 0
-    while iteration ≺ 8 {
-        estimate ← (estimate + scaled / estimate) * 0.5
-        iteration ← iteration + 1
-    }
-    return estimate * scale
-}
-
 describe "primitive generator contracts" {
     test "plane publishes exact indexed payload and winding" {
         let data.Geometry ∪ none result ← basic.plane(4.0, 2.0)
@@ -240,7 +216,7 @@ describe "primitive generator contracts" {
         let f32 cap_d ← (d + 1.0) * 0.5
         let f32 cap_n ← (-d + 1.0) * 0.5
         let f32 side_slope ← 0.5
-        let f32 side_scale ← published_sqrt_f32(1.0 + side_slope * side_slope)
+        let f32 side_scale ← (1.0 + side_slope * side_slope).sqrt()
         let f32 ny ← side_slope / side_scale
         let f32 inv ← 1.0 / side_scale
         let f32 ndiv ← d / side_scale
