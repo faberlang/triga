@@ -242,8 +242,7 @@ class SceneStore {
 
     fn effectively_visible(ref SceneHandle handle) → bool {
         mut SceneHandle cursor ← copy handle
-        mut int remaining ← self.slots.length() + 1
-        while remaining ≻ 0 {
+        for range 0 ‥ (self.slots.length() + 1) let _ {
             let SceneNode ∪ none current_result ← self.take(cursor)
             if current_result is none then return false
             let SceneNode current_node ← current_result
@@ -253,7 +252,6 @@ class SceneStore {
             if parent_opt is none then return true
             let SceneHandle parent ← parent_opt
             cursor ← parent
-            remaining ← remaining - 1
         }
         return false
     }
@@ -455,8 +453,7 @@ class SceneStore {
 
     fn would_cycle(ref SceneHandle child, ref SceneHandle parent) → bool {
         mut SceneHandle cursor ← copy parent
-        mut int remaining ← self.slots.length() + 1
-        while remaining ≻ 0 {
+        for range 0 ‥ (self.slots.length() + 1) let _ {
             if scene_handle_equals(cursor, child) then return true
             let SceneNode ∪ none current ← self.take(cursor)
             if current is none then return false
@@ -466,7 +463,6 @@ class SceneStore {
             if parent_opt is none then return false
             let SceneHandle current_parent ← parent_opt
             cursor ← current_parent
-            remaining ← remaining - 1
         }
         return true
     }

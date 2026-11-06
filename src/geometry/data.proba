@@ -20,6 +20,10 @@ fn quad_geometry() → data.Geometry {
     return data.indexed_triangle_geometry(6, [quad_positions(), quad_colors()], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 2}, batch.GeometryGroup {start = 3, count = 3, material_index = 7}])
 }
 
+fn within_relative(f32 actual, f32 expected, f32 tolerance) → bool {
+    return (actual - expected).abs() ≤ expected.abs() * tolerance
+}
+
 describe "buffer geometry contracts" {
     test "indexed geometry publishes counts payloads and topology" {
         let data.Geometry geometry ← quad_geometry()
@@ -243,5 +247,90 @@ describe "buffer geometry contracts" {
         assert degenerate.valid()
         assert degenerate.vertex_normals() is none
         assert degenerate.planar_uvs() is none
+    }
+}
+
+describe "geometry numerics at large coordinates" {
+    test "bounding sphere radius is accurate for a triangle at 1000 to 100000 units" {
+        let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 3, [1000.0, 2000.0, 3000.0, 61000.0, 82000.0, 3000.0, 61000.0, 2000.0, 3000.0])
+        let data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
+        let bounds.BoundingSphere ∪ none sphere ← geometry.bounding_sphere()
+        assert sphere not is none
+        assert sphere!.center_x ≡ (31000.0 ∷ f32)
+        assert sphere!.center_y ≡ (42000.0 ∷ f32)
+        assert sphere!.center_z ≡ (3000.0 ∷ f32)
+        assert within_relative(sphere!.radius, 50000.0, 0.00001)
+    }
+
+    test "bounding sphere radius is accurate for a spread in all three axes" {
+        let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 100000.0, 0.0, 0.0, 0.0, 100000.0, 0.0, 0.0, 0.0, 100000.0])
+        let data.Geometry geometry ← data.indexed_triangle_geometry(4, [position], [0, 1, 2, 0, 2, 3], batch.DrawRange {start = 0, count = 6}, empty)
+        let bounds.BoundingSphere ∪ none sphere ← geometry.bounding_sphere()
+        assert sphere not is none
+        assert sphere!.center_x ≡ (50000.0 ∷ f32)
+        assert within_relative(sphere!.radius, 86602.54, 0.00001)
+    }
+
+    test "group bounding sphere follows indices and stays accurate at large coordinates" {
+        let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 20000.0, 30000.0, 10000.0, 80000.0, 110000.0, 10000.0, 80000.0, 30000.0, 10000.0])
+        let data.Geometry geometry ← data.indexed_triangle_geometry(6, [position], [3, 4, 5, 0, 1, 2], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 3, count = 3, material_index = 1}])
+        let bounds.BoundingBox ∪ none far_box ← geometry.group_bounding_box(0)
+        let bounds.BoundingSphere ∪ none far_sphere ← geometry.group_bounding_sphere(0)
+        let bounds.BoundingSphere ∪ none near_sphere ← geometry.group_bounding_sphere(1)
+        assert far_box not is none
+        assert far_box!.min_x ≡ (20000.0 ∷ f32)
+        assert far_box!.max_y ≡ (110000.0 ∷ f32)
+        assert far_sphere not is none
+        assert far_sphere!.center_x ≡ (50000.0 ∷ f32)
+        assert far_sphere!.center_y ≡ (70000.0 ∷ f32)
+        assert far_sphere!.center_z ≡ (10000.0 ∷ f32)
+        assert within_relative(far_sphere!.radius, 50000.0, 0.00001)
+        assert near_sphere not is none
+        assert near_sphere!.center_x ≡ (0.5 ∷ f32)
+        assert within_relative(near_sphere!.radius, 0.70710677, 0.00001)
+    }
+
+    test "vertex normals are unit length for a large triangle" {
+        let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 3, [1000.0, 2000.0, 3000.0, 31000.0, 42000.0, 3000.0, 1000.0, 2000.0, 53000.0])
+        let data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
+        let attribute.Attribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
+        let list<f32> empty_values ← empty
+        let attribute.Attribute normal ← geometry.vertex_normals() coalesce empty_normal
+        let list<f32> values ← normal.float32_values() coalesce empty_values
+        assert values.length() ≡ 9
+        for range 0 ‥ 3 let vertex {
+            let f32 nx ← values[vertex * 3]
+            let f32 ny ← values[vertex * 3 + 1]
+            let f32 nz ← values[vertex * 3 + 2]
+            let f32 length_squared ← (nx * nx + ny * ny) + nz * nz
+            assert within_relative(length_squared, 1.0, 0.00001)
+            assert within_relative(nx, 0.8, 0.00001)
+            assert within_relative(ny, -0.6, 0.00001)
+            assert nz ≡ (0.0 ∷ f32)
+        }
+    }
+
+    test "vertex normals of an indexed large mesh are unit length at shared vertices" {
+        let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 100000.0, 0.0, 0.0, 100000.0, 100000.0, 0.0, 0.0, 100000.0, 0.0])
+        let data.Geometry geometry ← data.indexed_triangle_geometry(4, [position], [0, 1, 2, 0, 2, 3], batch.DrawRange {start = 0, count = 6}, empty)
+        let attribute.Attribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
+        let list<f32> empty_values ← empty
+        let attribute.Attribute normal ← geometry.vertex_normals() coalesce empty_normal
+        let list<f32> values ← normal.float32_values() coalesce empty_values
+        assert values.length() ≡ 12
+        for range 0 ‥ 4 let vertex {
+            assert values[vertex * 3] ≡ (0.0 ∷ f32)
+            assert values[vertex * 3 + 1] ≡ (0.0 ∷ f32)
+            assert values[vertex * 3 + 2] ≡ (1.0 ∷ f32)
+        }
+    }
+
+    test "quad accumulation keeps corner order and every component" {
+        let data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, [1.0, 2.0, 3.0] ↦ vector<f32, size 3>, [4.0, 5.0, 6.0] ↦ vector<f32, size 3>, [7.0, 8.0, 9.0] ↦ vector<f32, size 3>, [10.0, 11.0, 12.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
+        assert mesh_result not is none
+        let data.ColoredQuadMesh mesh ← mesh_result
+        let list<f32> expected ← [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0]
+        assert mesh.positions ≡ expected
+        assert mesh.colors.length() ≡ 12
     }
 }

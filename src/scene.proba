@@ -2,6 +2,13 @@
 import from "triga:scene" scene
 import from "triga:resource" resource
 
+# Parent links are public fields, so a test can corrupt them directly. The
+# attach path never builds a cycle; this does, to exercise the bounded
+# parent-chain walks.
+fn reparented(scene.SceneNode node, scene.SceneHandle parent) → scene.SceneNode {
+    return scene.SceneNode {name = node.name, kind = node.kind, parent = parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = node.world_matrix, world_dirty = node.world_dirty}
+}
+
 describe "scene store lifecycle" {
     test "empty stores distinguish absent names from invalid handles" {
         mut scene.SceneStore store ← scene.scene_store()
@@ -140,5 +147,74 @@ describe "scene store lifecycle" {
         assert store.remove(root)
         assert store.contains(root) ≡ false
         assert store.traverse(root) is none
+    }
+}
+
+describe "scene parent-chain guards" {
+    test "effective visibility walks a deep chain to the root" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle first ← store.insert(scene.scene_group("first"))
+        let scene.SceneHandle second ← store.insert(scene.scene_group("second"))
+        let scene.SceneHandle third ← store.insert(scene.scene_group("third"))
+        let scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+        assert store.attach(first, root)
+        assert store.attach(second, first)
+        assert store.attach(third, second)
+        assert store.attach(leaf, third)
+
+        assert store.effectively_visible(leaf)
+        assert store.set_visible(first, false)
+        assert store.effectively_visible(leaf) ≡ false
+        assert store.effectively_visible(root)
+        assert store.set_visible(first, true)
+        assert store.set_visible(root, false)
+        assert store.effectively_visible(leaf) ≡ false
+    }
+
+    test "effective visibility fails closed on a corrupted parent cycle" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle left ← store.insert(scene.scene_group("left"))
+        let scene.SceneHandle right ← store.insert(scene.scene_group("right"))
+        let scene.SceneNode ∪ none left_node ← store.take(left)
+        let scene.SceneNode ∪ none right_node ← store.take(right)
+        assert left_node not is none
+        assert right_node not is none
+        assert store.effectively_visible(left)
+        let scene.SceneNode left_value ← left_node
+        let scene.SceneNode right_value ← right_node
+        assert store.replace(left, reparented(left_value, right))
+        assert store.replace(right, reparented(right_value, left))
+
+        assert store.effectively_visible(left) ≡ false
+        assert store.effectively_visible(right) ≡ false
+    }
+
+    test "cycle detection finds ancestors and fails closed on a corrupted chain" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle middle ← store.insert(scene.scene_group("middle"))
+        let scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+        let scene.SceneHandle stray ← store.insert(scene.scene_group("stray"))
+        assert store.attach(middle, root)
+        assert store.attach(leaf, middle)
+
+        assert store.would_cycle(root, leaf)
+        assert store.would_cycle(middle, leaf)
+        assert store.would_cycle(leaf, leaf)
+        assert store.would_cycle(stray, leaf) ≡ false
+        assert store.would_cycle(leaf, stray) ≡ false
+
+        let scene.SceneNode ∪ none root_node ← store.take(root)
+        let scene.SceneNode ∪ none middle_node ← store.take(middle)
+        assert root_node not is none
+        assert middle_node not is none
+        let scene.SceneNode root_value ← root_node
+        let scene.SceneNode middle_value ← middle_node
+        assert store.replace(root, reparented(root_value, middle))
+        assert store.replace(middle, reparented(middle_value, root))
+
+        assert store.would_cycle(stray, leaf)
+        assert store.attach(stray, leaf) ≡ false
     }
 }
