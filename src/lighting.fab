@@ -4,17 +4,12 @@ locale = "en"
 +++ faber
 # lighting.fab — package map facade for the lighting package.
 #
-# Public import: import from "triga:lighting" lighting
+# Public import: import from "triga:lighting"
 #
-# Prefer leaf modules (Norma style — one concern per import path):
+# Prefer leaf modules (one concern per import path):
 #   triga:lighting/light    Light family (Light, AmbientLight, DirectionalLight, PointLight)
 #
-# Planned leaves (recorded future homes; do NOT create empty leaves):
-#   triga:lighting/model       H3
-#   triga:lighting/environment H5
-#   triga:lighting/shadow      H4
-#
-# This file intentionally holds no genera. Import the leaf modules above.
+# This file holds no types. Import the leaf modules above.
 
 import from "triga:lighting/light" let lighting
 

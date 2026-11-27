@@ -9,9 +9,9 @@ locale = "en"
 #   - geometry/attribute: Attribute / float32_attribute.
 #   - geometry/batch: DrawRange, GeometryGroup, batch facts.
 #   - primitives/basic: free generators that build Geometry (plane, box, …).
-#   - Do not add GPU reflection enums here; do not grow three.js mirror genera.
+#   - Do not add GPU reflection unions here; do not grow three.js mirror classes.
 #
-# Public import: import from "triga:primitives/basic" basic
+# Public import: import from "triga:primitives/basic"
 
 import from "triga:geometry/data"
 
@@ -110,7 +110,7 @@ fn sphere(f32 radius) → data.Geometry ∪ none {
         for exclusive 8 let j {
             indices.append(27 ↦ u32)
             indices.append(j ↦ u32)
-            indices.append((j + 1) ↦ u32)
+            indices.append(j + 1 ↦ u32)
         }
         # Middle bands: quad (a, c, d) + (a, d, b) — outward winding (verified).
         for exclusive 2 let band {
@@ -130,8 +130,8 @@ fn sphere(f32 radius) → data.Geometry ∪ none {
         # North cap: (north, ring2[j+1], ring2[j]) — outward winding (verified).
         for exclusive 8 let j {
             indices.append(28 ↦ u32)
-            indices.append((19 + j) ↦ u32)
-            indices.append((18 + j) ↦ u32)
+            indices.append(19 + j ↦ u32)
+            indices.append(18 + j ↦ u32)
         }
     }
     catch err {
@@ -220,7 +220,7 @@ fn cone(f32 radius, f32 height) → data.Geometry ∪ none {
     let list<f32> ring_n ← [1.0, 0.70710678, 0.0, -0.70710678, -1.0, -0.70710678, 0.0, 0.70710678, 1.0]
     let list<f32> ring_u ← [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
     let f32 side_slope ← radius / height
-    let f32 side_scale ← (1.0 + side_slope * side_slope).sqrt()
+    let f32 side_scale ← √ (1.0 + side_slope * side_slope)
     mut list<f32> positions ← empty
     mut list<f32> normals ← empty
     mut list<f32> uvs ← empty
@@ -260,14 +260,14 @@ fn cone(f32 radius, f32 height) → data.Geometry ∪ none {
     normals.append(0.0)
     uvs.append(0.5)
     uvs.append(0.5)
-    # Base fan winds outward (down, −Y) — the previous fan order was inverted.
+    # Base fan winds outward (down, −Y).
     return assemble_geometry(28, positions, normals, uvs, [0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 11, 12, 12, 13, 14, 14, 15, 16, 27, 18, 19, 27, 19, 20, 27, 20, 21, 27, 21, 22, 27, 22, 23, 27, 23, 24, 27, 24, 25, 27, 25, 26])
 }
 
 # A torus represented by the fixed ring/tube tessellation used by this leaf.
 @ public
 fn torus(f32 radius, f32 tube_radius) → data.Geometry ∪ none {
-    if (radius ≤ 0.0 or tube_radius ≤ 0.0) or tube_radius ≥ radius then return null
+    if radius ≤ 0.0 or tube_radius ≤ 0.0 or tube_radius ≥ radius then return null
     let f32 diagonal ← 0.70710678
     let list<f32> ring_cos ← [1.0, diagonal, 0.0, -diagonal, -1.0, -diagonal, 0.0, diagonal, 1.0]
     let list<f32> ring_sin ← [0.0, diagonal, 1.0, diagonal, 0.0, -diagonal, -1.0, -diagonal, 0.0]
@@ -315,7 +315,7 @@ fn torus(f32 radius, f32 tube_radius) → data.Geometry ∪ none {
 # A six-sided box with one independently shaded face set per side.
 @ public
 fn box(f32 width, f32 height, f32 depth) → data.Geometry ∪ none {
-    if (width ≤ 0.0 or height ≤ 0.0) or depth ≤ 0.0 then return null
+    if width ≤ 0.0 or height ≤ 0.0 or depth ≤ 0.0 then return null
     let f32 x ← width * 0.5
     let f32 y ← height * 0.5
     let f32 z ← depth * 0.5
@@ -325,7 +325,7 @@ fn box(f32 width, f32 height, f32 depth) → data.Geometry ∪ none {
 # A line-list box useful for debug views and early host bring-up.
 @ public
 fn box_wire(f32 width, f32 height, f32 depth) → data.Geometry ∪ none {
-    if (width ≤ 0.0 or height ≤ 0.0) or depth ≤ 0.0 then return null
+    if width ≤ 0.0 or height ≤ 0.0 or depth ≤ 0.0 then return null
     let f32 x ← width * 0.5
     let f32 y ← height * 0.5
     let f32 z ← depth * 0.5
@@ -338,9 +338,8 @@ fn box_wire(f32 width, f32 height, f32 depth) → data.Geometry ∪ none {
 
 @ public
 fn box_wire_draw_batch_facts(f32 width, f32 height, f32 depth, int instance_count) → batch.LineGeometryDrawBatchFacts ∪ none {
-    let data.Geometry ∪ none geometry_result ← box_wire(width, height, depth)
-    if geometry_result is none then return null
-    let data.Geometry geom ← geometry_result
+    let data.Geometry ∪ none geom ← box_wire(width, height, depth)
+    if geom is none then return null
     return geom.line_draw_batch_facts(instance_count)
 }
 
@@ -354,71 +353,51 @@ import from "triga:primitives/basic"
 import from "triga:geometry/data"
 import from "triga:geometry/batch"
 
-fn exact_f32_values(list<f32> actual, list<f32> expected) → bool {
-    if actual.length() ≢ expected.length() then return false
-    mut int i ← 0
-    while i ≺ actual.length() {
-        if actual[i] ≢ expected[i] then return false
-        i ← i + 1
-    }
-    return true
-}
-
-fn exact_u32_values(list<u32> actual, list<u32> expected) → bool {
-    if actual.length() ≢ expected.length() then return false
-    mut int i ← 0
-    while i ≺ actual.length() {
-        if actual[i] ≢ expected[i] then return false
-        i ← i + 1
-    }
-    return true
-}
-
 fn primitive_geometry_matches(data.Geometry ∪ none geometry, int vertex_count, list<f32> positions, list<f32> normals, list<f32> uvs, list<u32> indices) → bool {
     if geometry is none then return false
-    let data.Geometry actual ← data.Geometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
-    if actual.valid() ≡ false then return false
-    if actual.indexed ≡ false then return false
-    if (actual.topology_code() coalesce 0) ≢ 1 then return false
-    if actual.vertex_count ≢ vertex_count then return false
-    if actual.element_count() ≢ indices.length() then return false
-    if (actual.index_count() coalesce 0) ≢ indices.length() then return false
-    if (actual.group_count() coalesce 0) ≢ 1 then return false
-    if actual.attributes.length() ≢ 3 then return false
-    if actual.attributes[0].name ≢ "position" or actual.attributes[0].shader_location ≢ 0 or actual.attributes[0].component_width ≢ 3 or actual.attributes[0].element_count ≢ vertex_count then return false
-    if actual.attributes[1].name ≢ "normal" or actual.attributes[1].shader_location ≢ 1 or actual.attributes[1].component_width ≢ 3 or actual.attributes[1].element_count ≢ vertex_count then return false
-    if actual.attributes[2].name ≢ "uv" or actual.attributes[2].shader_location ≢ 2 or actual.attributes[2].component_width ≢ 2 or actual.attributes[2].element_count ≢ vertex_count then return false
-    let list<f32> empty_values ← empty
-    let list<f32> actual_positions ← actual.attributes[0].float32_values() coalesce empty_values
-    let list<f32> actual_normals ← actual.attributes[1].float32_values() coalesce empty_values
-    let list<f32> actual_uvs ← actual.attributes[2].float32_values() coalesce empty_values
-    if exact_f32_values(actual_positions, positions) ≡ false then return false
-    if exact_f32_values(actual_normals, normals) ≡ false then return false
-    if exact_f32_values(actual_uvs, uvs) ≡ false then return false
-    if exact_u32_values(actual.indices, indices) ≡ false then return false
-    if actual.draw_range.start ≢ 0 or actual.draw_range.count ≢ indices.length() then return false
-    if actual.groups[0].start ≢ 0 or actual.groups[0].count ≢ indices.length() or actual.groups[0].material_index ≢ 0 then return false
+    if not geometry.valid() then return false
+    if not geometry.indexed then return false
+    if (geometry.topology_code() coalesce 0) ≢ 1 then return false
+    if geometry.vertex_count ≢ vertex_count then return false
+    if geometry.element_count() ≢ indices.length() then return false
+    if (geometry.index_count() coalesce 0) ≢ indices.length() then return false
+    if (geometry.group_count() coalesce 0) ≢ 1 then return false
+    if geometry.attributes.length() ≢ 3 then return false
+    if geometry.attributes[0].name ≢ "position" or geometry.attributes[0].shader_location ≢ 0 or geometry.attributes[0].component_width ≢ 3 or geometry.attributes[0].element_count ≢ vertex_count then return false
+    if geometry.attributes[1].name ≢ "normal" or geometry.attributes[1].shader_location ≢ 1 or geometry.attributes[1].component_width ≢ 3 or geometry.attributes[1].element_count ≢ vertex_count then return false
+    if geometry.attributes[2].name ≢ "uv" or geometry.attributes[2].shader_location ≢ 2 or geometry.attributes[2].component_width ≢ 2 or geometry.attributes[2].element_count ≢ vertex_count then return false
+    let list<f32> ∪ none actual_positions ← geometry.attributes[0].float32_values()
+    if actual_positions is none then return false
+    let list<f32> ∪ none actual_normals ← geometry.attributes[1].float32_values()
+    if actual_normals is none then return false
+    let list<f32> ∪ none actual_uvs ← geometry.attributes[2].float32_values()
+    if actual_uvs is none then return false
+    if actual_positions ≢ positions then return false
+    if actual_normals ≢ normals then return false
+    if actual_uvs ≢ uvs then return false
+    if geometry.indices ≢ indices then return false
+    if geometry.draw_range.start ≢ 0 or geometry.draw_range.count ≢ indices.length() then return false
+    if geometry.groups[0].start ≢ 0 or geometry.groups[0].count ≢ indices.length() or geometry.groups[0].material_index ≢ 0 then return false
     return true
 }
 
 fn wire_geometry_matches(data.Geometry ∪ none geometry, list<f32> positions, list<u32> indices) → bool {
     if geometry is none then return false
-    let data.Geometry actual ← data.Geometry {topology = geometry!.topology, vertex_count = geometry!.vertex_count, attributes = geometry!.attributes, indexed = geometry!.indexed, indices = geometry!.indices, draw_range = geometry!.draw_range, groups = geometry!.groups}
-    if actual.valid() ≡ false then return false
-    if actual.indexed ≡ false then return false
-    if (actual.topology_code() coalesce 0) ≢ 2 then return false
-    if actual.vertex_count ≢ 8 then return false
-    if actual.element_count() ≢ indices.length() then return false
-    if (actual.index_count() coalesce 0) ≢ indices.length() then return false
-    if (actual.group_count() coalesce 0) ≢ 1 then return false
-    if actual.attributes.length() ≢ 1 then return false
-    if actual.attributes[0].name ≢ "position" or actual.attributes[0].shader_location ≢ 0 or actual.attributes[0].component_width ≢ 3 or actual.attributes[0].element_count ≢ 8 then return false
-    let list<f32> empty_values ← empty
-    let list<f32> actual_positions ← actual.attributes[0].float32_values() coalesce empty_values
-    if exact_f32_values(actual_positions, positions) ≡ false then return false
-    if exact_u32_values(actual.indices, indices) ≡ false then return false
-    if actual.draw_range.start ≢ 0 or actual.draw_range.count ≢ indices.length() then return false
-    if actual.groups[0].start ≢ 0 or actual.groups[0].count ≢ indices.length() or actual.groups[0].material_index ≢ 0 then return false
+    if not geometry.valid() then return false
+    if not geometry.indexed then return false
+    if (geometry.topology_code() coalesce 0) ≢ 2 then return false
+    if geometry.vertex_count ≢ 8 then return false
+    if geometry.element_count() ≢ indices.length() then return false
+    if (geometry.index_count() coalesce 0) ≢ indices.length() then return false
+    if (geometry.group_count() coalesce 0) ≢ 1 then return false
+    if geometry.attributes.length() ≢ 1 then return false
+    if geometry.attributes[0].name ≢ "position" or geometry.attributes[0].shader_location ≢ 0 or geometry.attributes[0].component_width ≢ 3 or geometry.attributes[0].element_count ≢ 8 then return false
+    let list<f32> ∪ none actual_positions ← geometry.attributes[0].float32_values()
+    if actual_positions is none then return false
+    if actual_positions ≢ positions then return false
+    if geometry.indices ≢ indices then return false
+    if geometry.draw_range.start ≢ 0 or geometry.draw_range.count ≢ indices.length() then return false
+    if geometry.groups[0].start ≢ 0 or geometry.groups[0].count ≢ indices.length() or geometry.groups[0].material_index ≢ 0 then return false
     return true
 }
 
@@ -563,7 +542,7 @@ describe "primitive generator contracts" {
         let f32 cap_d ← (d + 1.0) * 0.5
         let f32 cap_n ← (-d + 1.0) * 0.5
         let f32 side_slope ← 0.5
-        let f32 side_scale ← (1.0 + side_slope * side_slope).sqrt()
+        let f32 side_scale ← √ (1.0 + side_slope * side_slope)
         let f32 ny ← side_slope / side_scale
         let f32 inv ← 1.0 / side_scale
         let f32 ndiv ← d / side_scale

@@ -4,26 +4,26 @@ locale = "en"
 +++ faber
 # triga.fab — package map facade for the graphics library.
 #
-# Public import: import from "triga:triga" triga
+# Public import: import from "triga:triga"
 #
-# Prefer leaf modules (Norma style — one concern per import path):
+# Prefer leaf modules (one concern per import path):
 #   triga:math            vectors, matrices, volumes, rays, transform payload
 #   triga:graph/object    Object, Scene
 #   triga:graph/camera    PerspectiveCamera, OrthographicCamera, projection facts
 #   triga:lighting/light  Light family (Light, AmbientLight, DirectionalLight, PointLight)
-#   triga:material/base   Material, MaterialPipelineFacts, TextureDescriptor (H3 seed)
+#   triga:material/base   Material, MaterialPipelineFacts, TextureDescriptor
 #   triga:material/basic  UnlitMaterial
 #   triga:material/lit    PhongMaterial
 #   triga:material/standard StandardMaterial
 #   triga:renderable/mesh Mesh (graph + geometry + material composition)
 #   triga:face            voxel face-code helpers
 #   triga:geometry/data   Geometry (plus attribute/layout/bounds/batch leaves)
-#   triga:primitives/basic mesh generators (procedural/terrain/voxel planned)
+#   triga:primitives/basic mesh generators
 #   triga:scene           scene store + identity
 #   triga:resource        resource handle lifecycle free functions
 #   triga:shader          Texture2D, Sampler, bound sample (WGSL manifest)
 #
-# This file intentionally holds no genera. Import the leaf modules above.
+# This file holds no types. Import the leaf modules above.
 
 import from "triga:math"
 

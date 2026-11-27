@@ -4,18 +4,13 @@ locale = "en"
 +++ faber
 # Deterministic mesh primitive generators — package map facade.
 #
-# Public import: import from "triga:primitives" primitives
+# Public import: import from "triga:primitives"
 #
-# Prefer leaf modules (Norma style — one concern per import path):
+# Prefer leaf modules (one concern per import path):
 #   triga:primitives/basic   plane, circle, sphere, cylinder, cone, torus,
 #                            box, box wire generators
 #
-# Planned leaves (recorded future homes; do NOT create empty leaves):
-#   triga:primitives/procedural H2
-#   triga:primitives/terrain    H5 (corpus webgl-geometry-terrain generator is the seed)
-#   triga:primitives/voxel      H5
-#
-# This file intentionally holds no genera. Import the leaf modules above.
+# This file holds no types. Import the leaf modules above.
 
 import from "triga:primitives/basic"
 

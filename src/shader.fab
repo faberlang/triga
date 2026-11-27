@@ -4,7 +4,7 @@ locale = "en"
 +++ faber
 # Shader vocabulary Triga owns and Radix only spells.
 #
-# Public import: import from "triga:shader" shader
+# Public import: import from "triga:shader"
 #
 # Stage contracts, opaque resource types and bound functions. The WGSL
 # spellings live in bindings/wgsl.toml (`[target.wgsl-text]`). The compiler

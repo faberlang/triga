@@ -4,19 +4,17 @@ locale = "en"
 +++ faber
 # PhongMaterial — Phong-shaded material contract.
 #
-# Public import: import from "triga:material/lit" lit
+# Public import: import from "triga:material/lit"
 #
 # Owns: PhongMaterial.
-#
-# Imports: triga:math, triga:material/base.
 
 import from "triga:math"
 
 import from "triga:material/base"
 
-# PhongMaterial is the first lit-material shape. The Triga presenter fixture
-# (`host/fixtures/scene.fab`) draws color/specular from the same module consts
-# that build this record; full `.power(shininess)` WGSL emit is still open.
+# PhongMaterial is the lit-material shape: a diffuse color, a specular color
+# and the specular exponent. The fields are source data; a fragment stage
+# applies them.
 @ public
 class PhongMaterial {
     mut base.Material base

@@ -4,12 +4,12 @@ locale = "en"
 +++ faber
 # Geometry-side bounding volumes.
 #
-# Public import: import from "triga:geometry/bounds" bounds
+# Public import: import from "triga:geometry/bounds"
 #
 # Owns the geometry-side BoundingBox / BoundingSphere pair used by
 # Geometry. math.Box<N> / math.Sphere stay in triga:math — RayBoxHit
 # and the face-code tables depend on them — so this leaf is intentionally
-# the distinct geometry-side bounds family (report §1.4.2).
+# the distinct geometry-side bounds family.
 #
 # Zero imports.
 
@@ -53,22 +53,21 @@ describe "geometry bounds" {
     test "bounding box and sphere publish exact enclosing records" {
         let attribute.Attribute position ← segment_positions()
         let data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
-        let data.Geometry value ← data.Geometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
-        let bounds.BoundingBox ∪ none box ← value.bounding_box()
-        let bounds.BoundingSphere ∪ none sphere ← value.bounding_sphere()
-        assert value.valid()
+        let bounds.BoundingBox ∪ none box ← geometry.bounding_box()
+        let bounds.BoundingSphere ∪ none sphere ← geometry.bounding_sphere()
+        assert geometry.valid()
         assert box not is none
-        assert box!.min_x ≡ (0.0 ∷ f32)
-        assert box!.min_y ≡ (0.0 ∷ f32)
-        assert box!.min_z ≡ (0.0 ∷ f32)
-        assert box!.max_x ≡ (2.0 ∷ f32)
-        assert box!.max_y ≡ (0.0 ∷ f32)
-        assert box!.max_z ≡ (0.0 ∷ f32)
+        assert box.min_x ≡ (0.0 ∷ f32)
+        assert box.min_y ≡ (0.0 ∷ f32)
+        assert box.min_z ≡ (0.0 ∷ f32)
+        assert box.max_x ≡ (2.0 ∷ f32)
+        assert box.max_y ≡ (0.0 ∷ f32)
+        assert box.max_z ≡ (0.0 ∷ f32)
         assert sphere not is none
-        assert sphere!.center_x ≡ (1.0 ∷ f32)
-        assert sphere!.center_y ≡ (0.0 ∷ f32)
-        assert sphere!.center_z ≡ (0.0 ∷ f32)
-        assert sphere!.radius ≡ (1.0 ∷ f32)
+        assert sphere.center_x ≡ (1.0 ∷ f32)
+        assert sphere.center_y ≡ (0.0 ∷ f32)
+        assert sphere.center_z ≡ (0.0 ∷ f32)
+        assert sphere.radius ≡ (1.0 ∷ f32)
     }
 
     test "group bounds select only the group element range" {
@@ -77,13 +76,13 @@ describe "geometry bounds" {
         let bounds.BoundingBox ∪ none box ← geometry.group_bounding_box(1)
         let bounds.BoundingSphere ∪ none sphere ← geometry.group_bounding_sphere(1)
         assert box not is none
-        assert box!.min_x ≡ (10.0 ∷ f32)
-        assert box!.min_y ≡ (10.0 ∷ f32)
-        assert box!.max_x ≡ (12.0 ∷ f32)
-        assert box!.max_y ≡ (12.0 ∷ f32)
+        assert box.min_x ≡ (10.0 ∷ f32)
+        assert box.min_y ≡ (10.0 ∷ f32)
+        assert box.max_x ≡ (12.0 ∷ f32)
+        assert box.max_y ≡ (12.0 ∷ f32)
         assert sphere not is none
-        assert sphere!.center_x ≡ (11.0 ∷ f32)
-        assert sphere!.center_y ≡ (11.0 ∷ f32)
+        assert sphere.center_x ≡ (11.0 ∷ f32)
+        assert sphere.center_y ≡ (11.0 ∷ f32)
         assert geometry.group_bounding_box(2) is none
     }
 
@@ -102,9 +101,9 @@ describe "geometry bounds" {
         let bounds.BoundingSphere ∪ none degenerate_sphere ← degenerate.bounding_sphere()
         assert degenerate.valid()
         assert degenerate_box not is none
-        assert degenerate_box!.min_x ≡ (2.0 ∷ f32)
-        assert degenerate_box!.max_z ≡ (2.0 ∷ f32)
+        assert degenerate_box.min_x ≡ (2.0 ∷ f32)
+        assert degenerate_box.max_z ≡ (2.0 ∷ f32)
         assert degenerate_sphere not is none
-        assert degenerate_sphere!.radius ≡ (0.0 ∷ f32)
+        assert degenerate_sphere.radius ≡ (0.0 ∷ f32)
     }
 }
