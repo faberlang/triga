@@ -52,26 +52,35 @@ done < <(find exempla -name '*.fab' | sort)
 
 echo "check: faber check (exempla): $((checked - failed))/$checked green"
 
+# Exempla with a `+++ text stdout` section run the way a user's program does:
+# copied outside this package and linked against Triga through the library
+# home. (Inside the package the compiler links Triga's modules as package
+# modules, which can hide a failure a consumer would hit.) The output must
+# match the section exactly.
+outside_dir="$(mktemp -d)"
 goldens=0
 golden_failed=0
 while IFS= read -r file; do
   goldens=$((goldens + 1))
-  summary="$("$FABER_BIN" corpus "$file" --target clif-jit 2>/dev/null | tail -n 1)"
-  if [[ "$summary" != *'"status":"pass"'* ]]; then
+  copy="$outside_dir/$goldens.fab"
+  cp "$file" "$copy"
+  expected="$(awk 'found && /^\+\+\+ / {exit} found {print} /^\+\+\+ text stdout$/ {found = 1}' "$file")"
+  actual="$("$FABER_BIN" run --library-home "$FABER_LIBRARY_HOME" "$copy" 2>/dev/null)"
+  if [[ "$actual" != "$expected" ]]; then
     echo "check: red output: $file"
     golden_failed=$((golden_failed + 1))
     status=1
   fi
 done < <(grep -rl --include='*.fab' '^+++ text stdout$' exempla | sort)
 
-echo "check: faber corpus (exempla output): $((goldens - golden_failed))/$goldens green"
+echo "check: faber run (exempla output, outside the package): $((goldens - golden_failed))/$goldens green"
 
 # Exempla that declare a graphics stage must emit WGSL, and naga (when it is
 # installed) must accept it. Emission needs a faber build with the wgsl-text
 # target (cargo feature `mir-wgsl`); without one the step is reported as
 # skipped, not green.
 wgsl_dir="$(mktemp -d)"
-trap 'rm -f "$wgsl_dir"/*.wgsl "$wgsl_dir"/*.err; rmdir "$wgsl_dir"' EXIT
+trap 'rm -f "$wgsl_dir"/*.wgsl "$wgsl_dir"/*.err "$outside_dir"/*.fab; rmdir "$wgsl_dir" "$outside_dir"' EXIT
 have_naga=0
 command -v naga >/dev/null 2>&1 && have_naga=1
 stages=0

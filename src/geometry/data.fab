@@ -215,15 +215,18 @@ class Geometry {
 
     fn attribute_byte_count(string name) → int ∪ none {
         if not self.valid() then return null
-        let attribute.Attribute ∪ none found ← self.attributes.find((attribute.Attribute attr) → bool ∴ attr.name ≡ name)
-        if found is none then return null
-        return found.scalar_count() * found.scalar_bytes()
+        for from self.attributes let attr {
+            if attr.name ≡ name then return attr.scalar_count() * attr.scalar_bytes()
+        }
+        return null
     }
 
     fn attribute_scalar_count(string name) → int ∪ none {
         if not self.valid() then return null
-        let attribute.Attribute ∪ none found ← self.attributes.find((attribute.Attribute attr) → bool ∴ attr.name ≡ name)
-        return found?.scalar_count()
+        for from self.attributes let attr {
+            if attr.name ≡ name then return attr.scalar_count()
+        }
+        return null
     }
 
     fn vertex_payload_byte_count() → int ∪ none {
