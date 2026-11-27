@@ -20,12 +20,15 @@ data into a graphics contract:
 5. [`triga-presenter-scene-values.fab`](triga-presenter-scene-values.fab)
    mirrors the thin presenter fixture: two SceneStore meshes, AmbientLight,
    DirectionalLight, PhongMaterial, and a PerspectiveCamera (values only).
-6. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) connects
-   geometry and transforms to explicit vertex, fragment, resource, and
-   pipeline facts.
+6. [`shaders/unlit.fab`](shaders/unlit.fab) writes a vertex and fragment
+   stage as typed functions marked `@ Vertex` and `@ Fragment`;
+   [`shaders/lambert.fab`](shaders/lambert.fab) adds diffuse lighting.
+7. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) connects
+   geometry and transforms to real stages and explicit resource and pipeline
+   facts.
 
-The remaining files are focused fixtures: edge cases, type coverage, shader
-contract conformance, and a three.js-shaped browser host demonstration.
+The remaining files are focused fixtures: edge cases, type coverage, and a
+three.js-shaped browser host demonstration.
 
 ## Layout
 
@@ -36,22 +39,18 @@ exempla/
   hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
   triga-presenter-scene-values.fab # Presenter-shaped SceneStore + lights + Phong values
-  triga-stage4-source-facts.fab # Stage 4 vertex-layout handoff (primitives.plane)
+  triga-stage4-source-facts.fab # Vertex-layout facts for primitives.plane
   triga-transforms.fab          # Vector, quaternion, and matrix operations
   triga-types-untested.fab      # Instantiation of previously untested genus types
   triga-math-edge-cases.fab     # NaN/Infinity, degenerate-input, boundary tests
   triga-scene-store-empty.fab   # Empty SceneStore edge case tests
   triga-graphics-pipeline-facts.fab # Shader stages, pipeline reflection, Goal 01
-  triga-vertex-fragment-stub.fab # @vertex / @fragment annotation stubs
-  triga-hello-voxel-shaders.fab  # @vertex + @fragment with layout + fragment facts
-  triga-hello-voxel-pipeline.fab # Full Goal 01 pipeline facts
+  triga-hello-voxel-pipeline.fab # Cube geometry, real stages, and pipeline facts
   triga-box3-genus-spike.fab    # Box free-function overlap oracle
   triga-normal-oracle.fab       # Surface-normal winding oracle: cylinder caps + sphere poles
-  conformance/                  # Shader-contract conformance fixtures (WGSL/Naga lanes)
+  shaders/                      # Vertex/fragment stage pairs; each emits WGSL
   threejs-host-demo/            # Browser fixture: Triga scene data via three.js
 ```
-
-Language keyword exempla: sibling `examples/corpus/`.
 
 ## Imports
 
@@ -64,6 +63,7 @@ Language keyword exempla: sibling `examples/corpus/`.
 | `triga:geometry/batch` | Draw ranges, groups, and batch facts |
 | `triga:primitives/basic` | Mesh generators (`plane`, `box_wire`, …) |
 | `triga:scene` | SceneStore / handles |
+| `triga:shader` | `@ Vertex`, `@ Fragment`, `@ Position` stage contracts |
 
 Prefer the leaf that owns the type. The `triga:triga`, `triga:geometry`,
 `triga:graph`, `triga:material`, and `triga:primitives` modules are maps for
@@ -84,4 +84,6 @@ keep the result visible so failure behavior is easy to study.
 
 ## Checking
 
-`./scripta/check` runs `faber check` on every exemplum alongside the library.
+`./scripta/check` runs `faber check` on every exemplum, verifies the
+`+++ text stdout` sections with `faber corpus`, and emits WGSL for the
+exempla that declare stages.

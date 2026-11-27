@@ -1,0 +1,47 @@
++++ toml
+locale = "en"
+
++++ faber
+# exempla/shaders/lambert — diffuse lighting from one fixed light.
+#
+# The vertex stage passes the normal and color through to the fragment stage.
+# The fragment stage scales the color by an ambient term plus the Lambert
+# term `max(normal · light, 0)` for a light shining along +Z.
+#
+# `faber emit -t wgsl-text` turns the two stages into WGSL entry points.
+# `main` runs the fragment stage on the host for a lit and an unlit normal.
+
+import from "triga:shader"
+
+class LitVertex {
+    @ Position
+    mut vector<f32, size 4> clip
+    mut vector<f32, size 3> normal
+    mut vector<f32, size 3> color
+}
+
+@ Vertex
+fn lit_vertex(vector<f32, size 3> position, vector<f32, size 3> normal, vector<f32, size 3> color) → LitVertex {
+    let vector<f32, size 4> clip ← [position[0], position[1], position[2], 1.0] ↦ vector<f32, size 4>
+    return LitVertex {clip = clip, normal = normal, color = color}
+}
+
+@ Fragment
+fn lambert_fragment(vector<f32, size 3> normal, vector<f32, size 3> color) → vector<f32, size 4> {
+    let vector<f32, size 3> light ← [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
+    let f32 diffuse ← (normal · light).maximum(0.0)
+    let f32 lighting ← 0.2 + 0.8 * diffuse
+    return [color[0] * lighting, color[1] * lighting, color[2] * lighting, 1.0] ↦ vector<f32, size 4>
+}
+
+main {
+    let vector<f32, size 3> white ← [1.0, 1.0, 1.0] ↦ vector<f32, size 3>
+    let vector<f32, size 3> facing ← [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
+    let vector<f32, size 3> away ← [0.0, 0.0, -1.0] ↦ vector<f32, size 3>
+    print lambert_fragment(facing, white)
+    print lambert_fragment(away, white)
+}
+
++++ text stdout
+[1.0, 1.0, 1.0, 1.0]
+[0.2, 0.2, 0.2, 1.0]

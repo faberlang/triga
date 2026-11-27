@@ -65,6 +65,44 @@ done < <(grep -rl --include='*.fab' '^+++ text stdout$' exempla | sort)
 
 echo "check: faber corpus (exempla output): $((goldens - golden_failed))/$goldens green"
 
+# Exempla that declare a graphics stage must emit WGSL, and naga (when it is
+# installed) must accept it. Emission needs a faber build with the wgsl-text
+# target (cargo feature `mir-wgsl`); without one the step is reported as
+# skipped, not green.
+wgsl_dir="$(mktemp -d)"
+trap 'rm -f "$wgsl_dir"/*.wgsl "$wgsl_dir"/*.err; rmdir "$wgsl_dir"' EXIT
+have_naga=0
+command -v naga >/dev/null 2>&1 && have_naga=1
+stages=0
+stage_failed=0
+wgsl_skipped=0
+while IFS= read -r file; do
+  stages=$((stages + 1))
+  out="$wgsl_dir/$stages.wgsl"
+  err="$wgsl_dir/$stages.err"
+  if ! "$FABER_BIN" emit --library-home "$FABER_LIBRARY_HOME" -t wgsl-text "$file" >"$out" 2>"$err"; then
+    if grep -q 'target_not_in_this_build' "$err"; then
+      wgsl_skipped=1
+      break
+    fi
+    echo "check: red wgsl: $file"
+    stage_failed=$((stage_failed + 1))
+    status=1
+  elif [[ "$have_naga" -eq 1 ]] && ! naga "$out" >/dev/null 2>&1; then
+    echo "check: red wgsl (naga): $file"
+    stage_failed=$((stage_failed + 1))
+    status=1
+  fi
+done < <(grep -rlE --include='*.fab' '^@ (Vertex|Fragment)$' exempla | sort)
+
+if [[ "$wgsl_skipped" -eq 1 ]]; then
+  echo "check: faber emit wgsl-text: skipped (this faber build has no wgsl-text target)"
+elif [[ "$have_naga" -eq 1 ]]; then
+  echo "check: faber emit wgsl-text + naga: $((stages - stage_failed))/$stages green"
+else
+  echo "check: faber emit wgsl-text: $((stages - stage_failed))/$stages green (naga not installed; WGSL not validated)"
+fi
+
 if "$FABER_BIN" test . ; then
   echo "check: faber test: green"
 else

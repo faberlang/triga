@@ -70,7 +70,7 @@ that owns the type you use.
 | `triga:renderable/mesh` | `Mesh` (object + geometry + material) |
 | `triga:scene` | `SceneStore`, `SceneHandle`, generation-checked hierarchy and traversal |
 | `triga:resource` | `ResourceHandle` identity and lifecycle |
-| `triga:shader` | opaque `Texture2D` and `Sampler` |
+| `triga:shader` | `Vertex`, `Fragment` and `Position` stage contracts; opaque `Texture2D` and `Sampler` |
 | `triga:shader_contract` | Triga's shader-contract roles and pipeline defaults |
 
 ## Using Triga
@@ -124,6 +124,37 @@ facts the compiler validates and reflects. The browser presenter under
 `host/` is a thin consumer: Triga describes the contract; the host owns device
 setup, resource allocation and presentation.
 
+## Shader stages
+
+A shader stage is an ordinary typed function marked with a `triga:shader`
+stage contract. Its parameters are the stage inputs and its return value is
+the output. Triga's WGSL bindings map `Vertex`, `Fragment` and `Position` to
+`@vertex`, `@fragment` and `@builtin(position)`:
+
+```fab
+import from "triga:shader"
+
+class UnlitVertex {
+    @ Position
+    mut vector<f32, size 4> clip
+    mut vector<f32, size 3> color
+}
+
+@ Vertex
+fn unlit_vertex(vector<f32, size 3> position, vector<f32, size 3> color) → UnlitVertex {
+    let vector<f32, size 4> clip ← [position[0], position[1], position[2], 1.0] ↦ vector<f32, size 4>
+    return UnlitVertex {clip = clip, color = color}
+}
+
+@ Fragment
+fn unlit_fragment(vector<f32, size 3> color) → vector<f32, size 4> {
+    return [color[0], color[1], color[2], 1.0] ↦ vector<f32, size 4>
+}
+```
+
+`faber emit -t wgsl-text` emits the two entry points. The same functions also
+run on the host. See [`exempla/shaders/`](exempla/shaders/).
+
 ## Layout
 
 ```text
@@ -144,9 +175,12 @@ scripta/       checks and the presenter driver
 ./scripta/check
 ```
 
-This runs `faber check` on every module and exemplum, `faber corpus` on the
-exempla that carry expected output, then `faber test` on the package. It uses `FABER_BIN` if set, otherwise a sibling `../radix` build.
-The presenter has its own driver: `./scripta/host check` and
+This runs `faber check` on the library and each exemplum, `faber corpus` on
+the exempla that carry expected output, `faber emit -t wgsl-text` plus `naga`
+on the exempla that declare shader stages, then `faber test` on the package.
+It uses `FABER_BIN` if set, otherwise a sibling `../radix` build. The WGSL
+step needs a faber built with the `mir-wgsl` feature; otherwise it reports
+itself as skipped. The presenter has its own driver: `./scripta/host check` and
 `./scripta/host serve` (see [`host/README.md`](host/README.md)).
 
 ## License

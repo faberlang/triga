@@ -30,8 +30,10 @@ surface. The module list is in [`README.md`](README.md).
   scalars and generators.
 - No `@ externa` or `@ subsidia`. Optional fields use `sponte`.
 - Do not move modules into Norma unless asked.
-- Triga owns its graphics stage contracts and their WGSL bindings
-  (`bindings/wgsl.toml`, read through `[target.wgsl-text]` in `faber.toml`).
+- Triga owns its graphics stage contracts: `Vertex`, `Fragment` and
+  `Position` in `triga:shader`, bound to WGSL in `bindings/wgsl.toml` (read
+  through `[target.wgsl-text]` in `faber.toml`). A stage is a typed function;
+  apply the contract bare (`@ Vertex`), not qualified.
 
 ## Tests and exempla
 
@@ -55,10 +57,12 @@ surface. The module list is in [`README.md`](README.md).
 ```
 
 It runs `faber check` on the library and on each exemplum, `faber corpus` on
-the exempla that carry expected output, then `faber test` on the package. It
-takes about 15 seconds: about 9 checking exempla one at a time, about 5 in
-`faber test`. The presenter has its own driver: `./scripta/host check` and
-`./scripta/host serve`.
+the exempla that carry expected output, `faber emit -t wgsl-text` plus `naga`
+on the exempla that declare stages, then `faber test` on the package. It takes
+about 11 seconds. The WGSL step needs a faber built with
+`--features mir-wgsl`; a default build reports it as skipped. Point `FABER_BIN`
+at such a build to run it. The presenter has its own driver:
+`./scripta/host check` and `./scripta/host serve`.
 
 ## Releases
 

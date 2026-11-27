@@ -11,7 +11,7 @@ source = "src"
 
 [build]
 kind = "lib"
-targets = ["rust", "ts"]
+targets = ["rust", "ts", "wgsl-text"]
 
 # Faber emit -t wgsl-text reads this table from imported libraries.
 [target.wgsl-text]

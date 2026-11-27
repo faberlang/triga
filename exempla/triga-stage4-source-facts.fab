@@ -15,10 +15,6 @@ import from "triga:geometry/batch"
 
 import from "triga:primitives/basic"
 
-@ vertex { }
-fn triga_plane_vertex() → void {
-}
-
 main {
     let data.Geometry ∪ none plane_result ← basic.plane(2.0, 2.0)
     let _ plane ← data.Geometry {topology = plane_result!.topology, vertex_count = plane_result!.vertex_count, attributes = plane_result!.attributes, indexed = plane_result!.indexed, indices = plane_result!.indices, draw_range = plane_result!.draw_range, groups = plane_result!.groups}

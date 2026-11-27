@@ -15,12 +15,25 @@ import from "triga:geometry/batch"
 
 import from "triga:math"
 
-@ vertex { }
-fn hello_voxel_vertex() → void {
+import from "triga:shader"
+
+# The cube's two stages. The vertex stage carries each corner's color to the
+# fragment stage; `@ Position` marks the clip-space output.
+class VoxelVertex {
+    @ Position
+    mut vector<f32, size 4> clip
+    mut vector<f32, size 3> color
 }
 
-@ fragment { }
-fn hello_voxel_fragment() → void {
+@ Vertex
+fn hello_voxel_vertex(vector<f32, size 3> position, vector<f32, size 3> color) → VoxelVertex {
+    let vector<f32, size 4> clip ← [position[0], position[1], position[2], 1.0] ↦ vector<f32, size 4>
+    return VoxelVertex {clip = clip, color = color}
+}
+
+@ Fragment
+fn hello_voxel_fragment(vector<f32, size 3> color) → vector<f32, size 4> {
+    return [color[0], color[1], color[2], 1.0] ↦ vector<f32, size 4>
 }
 
 main {

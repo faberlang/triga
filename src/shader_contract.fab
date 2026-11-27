@@ -18,22 +18,21 @@ locale = "en"
 #     resource_binding), each stage-I/O role declared explicitly via
 #     `stage_io_role_code` (radix U6; roles are never synthesized from
 #     source-name spelling or location);
-#   * Triga's canonical code vocabulary (the codes the conformance programs
-#     assert — they must be canonical radix_mir::shader_contract codes);
+#   * Triga's canonical code vocabulary (the codes programs assert; they
+#     must be canonical radix_mir::shader_contract codes);
 #   * the Goal-01 pipeline defaults, which per decision D2 live HERE as
 #     Triga's contract, not in radix (bgra8unorm, depth24plus less+write,
 #     triangle-list, 36 vertices, transform storage buffer).
 #
-# Council lock: Triga never emits WGSL. It maps its API to the generic
-# surface; radix emits.
+# Triga never emits WGSL itself. These facts feed reflection; the stage
+# entry points come from the stage contracts in triga:shader and their
+# bindings in bindings/wgsl.toml, and the compiler emits.
 #
 # The radix driver recognizes a contract-role function when the annotated
 # function is declared in the compiled unit and its constant-argument calls
-# appear in `adfirma` assertions. Triga's real API function
+# appear in `assert` statements. Triga's real API function
 # `geometry.geometry_vertex_layout_matches` (src/geometry/data.fab) is the
-# vertex-layout member of this contract; conformance programs
-# (exempla/conformance/shader-contract/*) declare the adapter pattern and
-# assert facts against it.
+# vertex-layout member of this contract.
 #
 # Canonical code tables (radix_mir::shader_contract; unknown codes fail
 # closed with a structured diagnostic):

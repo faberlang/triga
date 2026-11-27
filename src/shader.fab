@@ -6,9 +6,36 @@ locale = "en"
 #
 # Public import: import from "triga:shader" shader
 #
-# Opaque resource types and bound functions. The WGSL spellings live in
-# bindings/wgsl.toml (`[target.wgsl-text]`). Radix emits the manifest text
-# and does not learn these names.
+# Stage contracts, opaque resource types and bound functions. The WGSL
+# spellings live in bindings/wgsl.toml (`[target.wgsl-text]`). The compiler
+# emits the manifest text and does not learn these names.
+
+# --- Stage contracts -------------------------------------------------------
+# A stage is an ordinary typed function. Its parameters are the stage inputs
+# and its return value is the stage output. A vertex stage returns a class
+# whose clip-space field carries `@ Position`; a fragment stage returns its
+# color. Without the WGSL bindings these annotations are plain metadata.
+
+# Marks a function as a vertex stage. Bound to WGSL `@vertex`.
+@ public
+@ annotation { target = functio }
+class Vertex {
+}
+
+# Marks a function as a fragment stage. Bound to WGSL `@fragment`.
+@ public
+@ annotation { target = functio }
+class Fragment {
+}
+
+# Marks the clip-space position field of a vertex stage's output class.
+# Bound to WGSL `@builtin(position)`.
+@ public
+@ annotation { target = field }
+class Position {
+}
+
+# --- Resources -------------------------------------------------------------
 
 # GPU-facing 2D texture handle. Not `TextureDescriptor` in material/base
 # (that is the CPU-side seed). Mapped to `texture_2d<f32>` in the WGSL
