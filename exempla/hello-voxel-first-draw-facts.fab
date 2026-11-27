@@ -1,8 +1,12 @@
-import from "triga:geometry/data" data
++++ toml
+locale = "en"
 
-import from "triga:geometry/attribute" attribute
++++ faber
+import from "triga:geometry/data"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/attribute"
+
+import from "triga:geometry/batch"
 
 main {
     let list<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0]

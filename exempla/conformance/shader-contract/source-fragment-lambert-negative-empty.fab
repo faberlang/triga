@@ -1,10 +1,12 @@
-+++
++++ toml
 term = "shader-contract-source-fragment-lambert-negative-empty"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "U5 conformance (moved from radix U4): empty @fragment body emits no Lambert math via the generic shader-contract surface."
-+++
+locale = "en"
+
++++ faber
 # Conformance:
 # triga_stage4_source_fragment_lambert_negative_empty_body_has_no_lambert_math
 # (moved from radix U4).
@@ -15,9 +17,9 @@ summary = "U5 conformance (moved from radix U4): empty @fragment body emits no L
 #   * NOT `max(`
 #   * NOT `lit_color`
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:primitives/basic" basic
+import from "triga:primitives/basic"
 
 @ shader_contract "vertex_layout"
 fn vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {

@@ -1,15 +1,17 @@
-+++
++++ toml
 term = "triga-scene-store"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Stable heterogeneous Triga scene store: insertion, visibility, and traversal."
-+++
-import from "triga:scene" scene
+locale = "en"
 
-import from "triga:math" math
++++ faber
+import from "triga:scene"
 
-import from "triga:resource" resource
+import from "triga:math"
+
+import from "triga:resource"
 
 main {
     # Resource handles

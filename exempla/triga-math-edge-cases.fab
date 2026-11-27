@@ -1,15 +1,16 @@
-+++
++++ toml
 term = "triga-math-edge-cases"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Degenerate-input and edge-case examples for triga math."
-+++
+locale = "en"
 
-import from "triga:math" math
++++ faber
+import from "triga:math"
 
-import from "triga:graph/object" object as graph_object
-import from "triga:graph/camera" camera
+import from "triga:graph/object" let graph_object
+import from "triga:graph/camera"
 
 main {
     # project3 with zero-length axis

@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Backend-agnostic geometry data, vertex attributes, layout, bounds, and draw-batch facts — package map facade.
 #
 # Public import: import from "triga:geometry" geometry
@@ -11,12 +15,23 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:geometry/attribute" attribute
+import from "triga:geometry/attribute"
 
-import from "triga:geometry/layout" layout
+import from "triga:geometry/layout"
 
-import from "triga:geometry/bounds" bounds
+import from "triga:geometry/bounds"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/batch"
+
++++ faber test
+# Co-located package test for the geometry facade.  The facade is a package
+# map only; leaf types remain owned by their leaf imports.
+import from "triga:geometry"
+
+describe "geometry facade discovery" {
+    test "geometry facade imports as a package map" {
+        assert true
+    }
+}

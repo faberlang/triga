@@ -1,17 +1,19 @@
-+++
++++ toml
 term = "triga-stage4-source-facts"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Stage 4 source-owned vertex-layout facts for the graphics MIR handoff."
-+++
-import from "triga:geometry/data" data
+locale = "en"
 
-import from "triga:geometry/attribute" attribute
++++ faber
+import from "triga:geometry/data"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/attribute"
 
-import from "triga:primitives/basic" basic
+import from "triga:geometry/batch"
+
+import from "triga:primitives/basic"
 
 @ vertex { }
 fn triga_plane_vertex() → void {

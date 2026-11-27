@@ -1,17 +1,19 @@
-+++
++++ toml
 term = "shader-contract-vertex-body-naga"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "U5 conformance (moved from radix U4): authored @vertex body emits Naga-valid WGSL via the generic shader-contract surface."
-+++
+locale = "en"
+
++++ faber
 # Conformance: triga_stage4_vertex_body_validates_with_naga (moved from radix
 # U4). Identical facts to vertex-body-emits-wgsl; the harness additionally
 # validates the emitted WGSL with `naga`.
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:primitives/basic" basic
+import from "triga:primitives/basic"
 
 @ shader_contract "vertex_layout"
 fn vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {

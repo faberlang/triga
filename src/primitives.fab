@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Deterministic mesh primitive generators — package map facade.
 #
 # Public import: import from "triga:primitives" primitives
@@ -13,4 +17,15 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:primitives/basic" basic
+import from "triga:primitives/basic"
+
++++ faber test
+# Co-located package test for the primitive facade. The facade is a package
+# map only; generator contracts remain owned by the basic leaf import.
+import from "triga:primitives"
+
+describe "primitives facade discovery" {
+    test "primitives facade imports as a package map" {
+        assert true
+    }
+}

@@ -1,17 +1,19 @@
-+++
++++ toml
 term = "triga-hello-voxel-pipeline"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Full graphics pipeline fixture: @vertex/@fragment with varying, fragment output, resource binding, transform, pipeline, and draw facts."
-+++
-import from "triga:geometry/data" data
+locale = "en"
 
-import from "triga:geometry/attribute" attribute
++++ faber
+import from "triga:geometry/data"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/attribute"
 
-import from "triga:math" math
+import from "triga:geometry/batch"
+
+import from "triga:math"
 
 @ vertex { }
 fn hello_voxel_vertex() → void {

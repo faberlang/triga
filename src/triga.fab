@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # triga.fab — package map facade for the graphics library.
 #
 # Public import: import from "triga:triga" triga
@@ -21,18 +25,29 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:graph/object" object as graph_object
+import from "triga:graph/object" let graph_object
 
-import from "triga:graph/camera" camera
+import from "triga:graph/camera"
 
-import from "triga:material/base" base
+import from "triga:material/base"
 
-import from "triga:material/basic" basic
+import from "triga:material/basic"
 
-import from "triga:material/lit" lit
+import from "triga:material/lit"
 
-import from "triga:material/standard" standard
+import from "triga:material/standard"
 
-import from "triga:face" face
+import from "triga:face"
+
++++ faber test
+# Co-located package smoke for the top-level triga facade.
+#
+# The facade is an import map only. Leaf types remain owned by their leaf
+# modules, so this case proves discoverability without inventing re-exports.
+import from "triga:triga"
+
+test "triga facade is discoverable" {
+    assert true
+}

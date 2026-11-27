@@ -1,11 +1,13 @@
-+++
++++ toml
 term = "triga-transforms"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Triga native-vector and native-matrix transform-chain demonstration."
-+++
-import from "triga:math" math
+locale = "en"
+
++++ faber
+import from "triga:math"
 
 main {
     # Affine transform chain: translate, scale, compose, apply

@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Material family shape contracts — package map facade.
 #
 # Public import: import from "triga:material" material
@@ -15,10 +19,20 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:material/base" base
+import from "triga:material/base"
 
-import from "triga:material/basic" basic
+import from "triga:material/basic"
 
-import from "triga:material/lit" lit
+import from "triga:material/lit"
 
-import from "triga:material/standard" standard
+import from "triga:material/standard"
+
++++ faber test
+# Co-located package smoke for the map-only material facade.
+# Leaf contracts remain owned by triga:material/base, /basic, /lit, and
+# /standard; this case proves only that the public facade path is discoverable.
+import from "triga:material"
+
+test "material facade is discoverable" {
+    assert true
+}

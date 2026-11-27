@@ -1,16 +1,17 @@
-+++
++++ toml
 term = "triga-basics"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Triga math and material basics."
-+++
+locale = "en"
 
-import from "triga:math" math
++++ faber
+import from "triga:math"
 
-import from "triga:material/base" base
+import from "triga:material/base"
 
-import from "triga:material/basic" basic
+import from "triga:material/basic"
 
 main {
     let vector<f32, size 3> origin ← [0.0, 0.0, 0.0] ↦ vector<f32, size 3>

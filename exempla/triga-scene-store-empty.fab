@@ -1,13 +1,14 @@
-+++
++++ toml
 term = "triga-scene-store-empty"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Empty SceneStore construction and a fresh root handle."
 syntax = "importa ex \"triga:scene\" privata scene"
-+++
+locale = "en"
 
-import from "triga:scene" scene
++++ faber
+import from "triga:scene"
 
 main {
     let scene.SceneStore empty ← scene.scene_store()

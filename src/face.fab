@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Voxel face quad construction helpers.
 #
 # Public import: import from "triga:face" face
@@ -5,9 +9,9 @@
 # can call them without a math↔face import cycle.
 # Depends on: triga:math, triga:geometry/data
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
 # FaceQuad is the four-corner source shape used by voxel-style face builders.
 # Face-code orientation and color stay in `triga:math`; this leaf only turns a
@@ -65,4 +69,88 @@ fn face_code_colored_quad_mesh_append(list<f32> positions, list<f32> colors, lis
     if color_result is none then return null
     let math.Color color ← color_result
     return data.colored_quad_mesh_append(positions, colors, indices, quad.a, quad.b, quad.c, quad.d, color)
+}
+
++++ faber test
+# Co-located package tests for oriented FaceQuad construction and colored
+# mesh accumulation.
+import from "triga:face"
+import from "triga:geometry/data"
+
+describe "face quad builders" {
+    test "negative X face publishes exact corners" {
+        let face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
+        assert quad_result not is none
+        let face.FaceQuad quad ← quad_result
+        assert quad.a[0] ≡ (10.0 ∷ f32)
+        assert quad.a[1] ≡ (20.0 ∷ f32)
+        assert quad.a[2] ≡ (30.0 ∷ f32)
+        assert quad.b[2] ≡ (32.0 ∷ f32)
+        assert quad.c[1] ≡ (22.0 ∷ f32)
+        assert quad.d[0] ≡ (10.0 ∷ f32)
+    }
+
+    test "all face codes preserve their orientation and winding" {
+        let face.FaceQuad ∪ none positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
+        assert positive_x_result not is none
+        let face.FaceQuad positive_x ← positive_x_result
+        let face.FaceQuad ∪ none negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
+        assert negative_y_result not is none
+        let face.FaceQuad negative_y ← negative_y_result
+        let face.FaceQuad ∪ none positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
+        assert positive_y_result not is none
+        let face.FaceQuad positive_y ← positive_y_result
+        let face.FaceQuad ∪ none negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
+        assert negative_z_result not is none
+        let face.FaceQuad negative_z ← negative_z_result
+        let face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
+        assert positive_z_result not is none
+        let face.FaceQuad positive_z ← positive_z_result
+        assert positive_x.a[0] ≡ (5.0 ∷ f32)
+        assert positive_x.a[2] ≡ (7.0 ∷ f32)
+        assert positive_x.d[2] ≡ (7.0 ∷ f32)
+        assert negative_y.a[1] ≡ (2.0 ∷ f32)
+        assert negative_y.b[0] ≡ (5.0 ∷ f32)
+        assert positive_y.a[1] ≡ (6.0 ∷ f32)
+        assert positive_y.c[2] ≡ (3.0 ∷ f32)
+        assert negative_z.a[2] ≡ (3.0 ∷ f32)
+        assert negative_z.b[0] ≡ (1.0 ∷ f32)
+        assert positive_z.a[2] ≡ (7.0 ∷ f32)
+        assert positive_z.c[1] ≡ (6.0 ∷ f32)
+    }
+
+    test "invalid codes and non-positive sizes return absence" {
+        assert face.face_code_unit_quad(0, 0.0, 0.0, 0.0, 1.0) is none
+        assert face.face_code_unit_quad(7, 0.0, 0.0, 0.0, 1.0) is none
+        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, 0.0) is none
+        assert face.face_code_unit_quad(1, 0.0, 0.0, 0.0, -1.0) is none
+        assert face.face_code_colored_quad_mesh_append(empty, empty, empty, 9, 0.0, 0.0, 0.0, 1.0) is none
+        assert face.face_code_colored_quad_mesh_append([0.0], empty, empty, 1, 0.0, 0.0, 0.0, 1.0) is none
+    }
+
+    test "colored face append publishes exact position color and index arrays" {
+        let data.ColoredQuadMesh ∪ none mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
+        assert mesh_result not is none
+        let data.ColoredQuadMesh mesh ← mesh_result
+        assert mesh.positions.length() ≡ 12
+        assert mesh.colors.length() ≡ 12
+        assert mesh.indices.length() ≡ 6
+        assert mesh.positions[0] ≡ (1.0 ∷ f32)
+        assert mesh.positions[2] ≡ (5.0 ∷ f32)
+        assert mesh.positions[5] ≡ (5.0 ∷ f32)
+        assert mesh.positions[8] ≡ (5.0 ∷ f32)
+        assert mesh.positions[9] ≡ (1.0 ∷ f32)
+        assert mesh.positions[11] ≡ (5.0 ∷ f32)
+        assert mesh.colors[0] ≡ (0.4 ∷ f32)
+        assert mesh.colors[1] ≡ (0.4 ∷ f32)
+        assert mesh.colors[2] ≡ (1.0 ∷ f32)
+        assert mesh.indices[0] ≡ (0 ∷ u32)
+        assert mesh.indices[1] ≡ (1 ∷ u32)
+        assert mesh.indices[2] ≡ (2 ∷ u32)
+        assert mesh.indices[3] ≡ (0 ∷ u32)
+        assert mesh.indices[4] ≡ (2 ∷ u32)
+        assert mesh.indices[5] ≡ (3 ∷ u32)
+        assert (mesh.face_count() coalesce 0) ≡ 1
+        assert mesh.geometry() not is none
+    }
 }

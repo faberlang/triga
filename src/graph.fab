@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Scene-graph shape contracts (Object, cameras) — package map facade.
 #
 # Public import: import from "triga:graph" graph
@@ -8,6 +12,19 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:graph/object" object as graph_object
+import from "triga:graph/object" let graph_object
 
-import from "triga:graph/camera" camera
+import from "triga:graph/camera"
+
++++ faber test
+# Co-located package smoke for the graph facade.
+#
+# The facade intentionally contains only imports. This case proves that the
+# public `triga:graph` path is discoverable without claiming that it re-exports
+# the leaf types from `triga:graph/object` or `triga:graph/camera`.
+
+import from "triga:graph"
+
+test "graph facade is discoverable" {
+    assert true
+}

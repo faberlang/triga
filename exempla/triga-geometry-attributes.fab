@@ -1,19 +1,21 @@
-+++
++++ toml
 term = "triga-geometry-attributes"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Triga attribute construction, indexed/non-indexed geometry with draw ranges and groups, ColoredQuadMesh accumulation, and primitive generators."
-+++
-import from "triga:math" math
+locale = "en"
 
-import from "triga:geometry/data" data
++++ faber
+import from "triga:math"
 
-import from "triga:geometry/attribute" attribute
+import from "triga:geometry/data"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/attribute"
 
-import from "triga:primitives/basic" basic
+import from "triga:geometry/batch"
+
+import from "triga:primitives/basic"
 
 main {
     # Indexed triangle geometry
