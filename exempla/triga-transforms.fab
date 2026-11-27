@@ -70,7 +70,8 @@ main {
     let vector<f32, size 3> ray_point ← ray.point_at(3.0)
     print ray_point[0]
     let math.RayBoxHit ∪ none ray_box_hit ← ray.box_hit(shifted_bounds, 6.0)
-    let _ ray_box_hit_value ← math.RayBoxHit {distance = ray_box_hit!.distance, point = ray_box_hit!.point, normal = ray_box_hit!.normal}
+    assert ray_box_hit not is none
+    print ray_box_hit.distance
 
     # Camera yaw-pitch facts
     let math.CameraYawPitchFacts camera_facts ← math.camera_yaw_pitch_facts([2.0, 3.0, 4.0] ↦ vector<f32, size 3>, 90.0, 100.0)
@@ -82,7 +83,27 @@ main {
     print forward_motion[2]
 
     # Color interpolation and matrix extras
-    let _ midpoint_color ← math.Color {r = 0.0, g = 0.0, b = 0.0}.lerp(math.Color {r = 1.0, g = 0.5, b = 0.25}, 0.5)
+    let math.Color black ← math.Color {r = 0.0, g = 0.0, b = 0.0}
+    let math.Color warm ← math.Color {r = 1.0, g = 0.5, b = 0.25}
+    let math.Color midpoint_color ← black.lerp(warm, 0.5)
     print midpoint_color.r
     let matrix<f32, [4, 4]> transposed_translation ← translationᵀ
 }
+
++++ text stdout
+7.0
+2.0
+1.0
+1.0
+Quaternion { x = 0.0, y = 0.0, z = 0.0, w = 1.0 }
+-1.0
+1.0
+1.0
+Box { minima = [-2.0, -3.0, -4.0], maxima = [2.0, 3.0, 4.0] }
+Box { minima = [-0.3, 0.0, -0.3], maxima = [0.3, 1.8, 0.3] }
+3.0
+1.0
+89.0
+0.9998477
+-2.0
+0.5

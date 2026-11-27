@@ -4,31 +4,30 @@ locale = "en"
 +++ faber
 # Vertex attribute layout types, format codes, and code helpers.
 #
-# Public import: import from "triga:geometry/layout" layout
+# Public import: import from "triga:geometry/layout"
 #
 # Owns: VertexAttributeLayout, VertexFormat, VertexStepMode, the format and
 # step-mode code helpers, and the VertexFormat / VertexStepMode variant
-# constructors. Enum variants are only constructible in the declaring leaf
-# under the current file-interface rules, so the constructors live next to
-# the enums and consumers build layout values through them.
+# constructors. Union variants are only constructible in the declaring
+# module, so the constructors live next to the unions and consumers build
+# layout values through them.
 #
-# PrimitiveTopology stays in geometry/data so the topology discerne sites on
+# PrimitiveTopology stays in geometry/data so the topology match sites on
 # Geometry remain same-module (see data.fab).
 #
 # Zero imports; self-contained.
 
 # The compact set of scalar formats understood by a vertex input. The suffix
-# is the component width, so the enum carries the same 1-to-4 shape used by
+# is the component width, so the union carries the same 1-to-4 shape used by
 # Attribute validation and stride calculation.
 #
-# TEMPORARY SHAPE (operator ruling 2026-08-21): the hardcoded-width variant
-# spellings (Float32x4, Uint32, …) mirror the closed host vocabulary
-# (WebGPU GPUVertexFormat, which inherited the three.js spelling). They are
-# accepted only because component width is a runtime value Faber generics
-# cannot parameterize today — the spellings are not canonical Faber style.
-# When value-parameterized bounded buffers ship, convert this union to
-# proper generics. The integer format codes are frozen ABI and outlive the
-# spelling change.
+# Temporary shape: the hardcoded-width variant spellings (Float32x4, Uint32,
+# …) mirror the closed host vocabulary (WebGPU GPUVertexFormat, which
+# inherited the three.js spelling). They are accepted only because component
+# width is a runtime value Faber generics cannot parameterize today, so the
+# spellings are not canonical Faber style. When value-parameterized bounded
+# buffers ship, convert this union to proper generics. The integer format
+# codes are frozen ABI and outlive the spelling change.
 @ public
 union VertexFormat {
     Float32,
@@ -64,7 +63,7 @@ class VertexAttributeLayout {
 
 # --- Public variant constructors ---
 
-# These constructors keep enum variant creation in the declaring leaf. The
+# These constructors keep union variant creation in the declaring leaf. The
 # component-width helper expects the 1-to-4 width guaranteed by Attribute
 # validation and selects the float32 or uint32 family with `is_float32`.
 

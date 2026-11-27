@@ -26,18 +26,24 @@ main {
     let _ invalid_color ← math.Color {r = 1.1, g = 0.0, b = 0.0}
 
     # Material pipeline facts
-    let base.MaterialPipelineFacts ∪ none base_pipeline_result ← base_material.pipeline_facts()
-    print base_pipeline_result
+    print base_material.pipeline_facts()
 
     # Double-sided material
-    let base.Material double_sided ← base_material.double_sided()
+    print base_material.double_sided().is_double_sided()
 
     # UnlitMaterial
     let _ unlit_color ← math.Color {r = 1.0, g = 0.5, b = 0.0}
     let basic.UnlitMaterial ∪ none unlit ← basic.basic_material("hello-voxel-unlit", unlit_color)
-    let _ unlit_value ← basic.UnlitMaterial {base = unlit!.base, color = unlit!.color}
-    print unlit_value.color.g
+    assert unlit not is none
+    print unlit.color.g
 
     # Invalid material handling
     let base.Material invalid ← base.material_from_name("")
 }
+
++++ text stdout
+0.0
+3.0
+MaterialPipelineFacts { side_code = 0, depth_test_enabled = true, depth_write_enabled = true, transparent = false, alpha = 1.0, alpha_test = 0.0 }
+true
+0.5

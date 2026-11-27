@@ -1,0 +1,42 @@
++++ toml
+term = "triga-vertex-layout-facts"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "The vertex-buffer layout a generated plane publishes, and the refusal of two attributes at one shader location."
+locale = "en"
+
++++ faber
+# A plane carries three attributes: position, normal and uv. Each one has a
+# shader location, a format, an offset and a stride. A host builds its vertex
+# buffer layout from these facts; `geometry_vertex_layout_matches` is the
+# `vertex_layout` shader-contract role, so the compiler records each assert
+# below as a layout fact.
+
+import from "triga:geometry/data"
+
+import from "triga:geometry/attribute"
+
+import from "triga:geometry/batch"
+
+import from "triga:primitives/basic"
+
+main {
+    let data.Geometry ∪ none plane ← basic.plane(2.0, 2.0)
+    assert plane not is none panic "a 2 × 2 plane is valid"
+
+    # Formats: 3 = float32x3, 2 = float32x2. Step mode 1 = per vertex.
+    assert data.geometry_vertex_layout_matches(plane, 0, "position", 0, 3, 0, 12, 1) panic "position: location 0, float32x3, 12-byte stride"
+    assert data.geometry_vertex_layout_matches(plane, 1, "normal", 1, 3, 0, 12, 1) panic "normal: location 1, float32x3, 12-byte stride"
+    assert data.geometry_vertex_layout_matches(plane, 2, "uv", 2, 2, 0, 8, 1) panic "uv: location 2, float32x2, 8-byte stride"
+    print plane.attributes.length()
+
+    # A second attribute at location 0 makes the geometry invalid.
+    let attribute.Attribute other_position ← attribute.float32_attribute("other_position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0])
+    let data.Geometry clashing ← data.triangle_geometry(4, [plane.attributes[0], other_position, plane.attributes[2]], batch.DrawRange {start = 0, count = 3}, empty)
+    print clashing.valid()
+}
+
++++ text stdout
+3
+false

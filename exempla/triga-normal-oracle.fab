@@ -1,5 +1,5 @@
 +++ toml
-term = "triga"
+term = "triga-normal-oracle"
 kind = "concept"
 category = "library"
 canonical = true

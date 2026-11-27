@@ -4,7 +4,7 @@ locale = "en"
 +++ faber
 # Light family shape contracts (Light, AmbientLight, DirectionalLight, PointLight).
 #
-# Public import: import from "triga:lighting/light" lighting
+# Public import: import from "triga:lighting/light" let lighting
 # Depends on: triga:math, triga:graph/object (Object base)
 
 import from "triga:math"

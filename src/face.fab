@@ -4,9 +4,9 @@ locale = "en"
 +++ faber
 # Voxel face quad construction helpers.
 #
-# Public import: import from "triga:face" face
+# Public import: import from "triga:face"
 # Face-code tables (valid/normal/color/offsets) live in triga:math so RayBoxHit
-# can call them without a math↔face import cycle.
+# can call them without a math/face import cycle.
 # Depends on: triga:math, triga:geometry/data
 
 import from "triga:math"
@@ -62,12 +62,10 @@ fn face_code_unit_quad(int code, f32 x, f32 y, f32 z, f32 size) → FaceQuad ∪
 # the accumulation shape used by the voxel exempla.
 @ public
 fn face_code_colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> indices, int code, f32 x, f32 y, f32 z, f32 size) → data.ColoredQuadMesh ∪ none {
-    let FaceQuad ∪ none quad_result ← face_code_unit_quad(code, x, y, z, size)
-    if quad_result is none then return null
-    let FaceQuad quad ← quad_result
-    let math.Color ∪ none color_result ← math.face_code_color(code)
-    if color_result is none then return null
-    let math.Color color ← color_result
+    let FaceQuad ∪ none quad ← face_code_unit_quad(code, x, y, z, size)
+    if quad is none then return null
+    let math.Color ∪ none color ← math.face_code_color(code)
+    if color is none then return null
     return data.colored_quad_mesh_append(positions, colors, indices, quad.a, quad.b, quad.c, quad.d, color)
 }
 
@@ -79,9 +77,8 @@ import from "triga:geometry/data"
 
 describe "face quad builders" {
     test "negative X face publishes exact corners" {
-        let face.FaceQuad ∪ none quad_result ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
-        assert quad_result not is none
-        let face.FaceQuad quad ← quad_result
+        let face.FaceQuad ∪ none quad ← face.face_code_unit_quad(1, 10.0, 20.0, 30.0, 2.0)
+        assert quad not is none
         assert quad.a[0] ≡ (10.0 ∷ f32)
         assert quad.a[1] ≡ (20.0 ∷ f32)
         assert quad.a[2] ≡ (30.0 ∷ f32)
@@ -91,21 +88,16 @@ describe "face quad builders" {
     }
 
     test "all face codes preserve their orientation and winding" {
-        let face.FaceQuad ∪ none positive_x_result ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
-        assert positive_x_result not is none
-        let face.FaceQuad positive_x ← positive_x_result
-        let face.FaceQuad ∪ none negative_y_result ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
-        assert negative_y_result not is none
-        let face.FaceQuad negative_y ← negative_y_result
-        let face.FaceQuad ∪ none positive_y_result ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
-        assert positive_y_result not is none
-        let face.FaceQuad positive_y ← positive_y_result
-        let face.FaceQuad ∪ none negative_z_result ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
-        assert negative_z_result not is none
-        let face.FaceQuad negative_z ← negative_z_result
-        let face.FaceQuad ∪ none positive_z_result ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
-        assert positive_z_result not is none
-        let face.FaceQuad positive_z ← positive_z_result
+        let face.FaceQuad ∪ none positive_x ← face.face_code_unit_quad(2, 1.0, 2.0, 3.0, 4.0)
+        assert positive_x not is none
+        let face.FaceQuad ∪ none negative_y ← face.face_code_unit_quad(3, 1.0, 2.0, 3.0, 4.0)
+        assert negative_y not is none
+        let face.FaceQuad ∪ none positive_y ← face.face_code_unit_quad(4, 1.0, 2.0, 3.0, 4.0)
+        assert positive_y not is none
+        let face.FaceQuad ∪ none negative_z ← face.face_code_unit_quad(5, 1.0, 2.0, 3.0, 4.0)
+        assert negative_z not is none
+        let face.FaceQuad ∪ none positive_z ← face.face_code_unit_quad(6, 1.0, 2.0, 3.0, 4.0)
+        assert positive_z not is none
         assert positive_x.a[0] ≡ (5.0 ∷ f32)
         assert positive_x.a[2] ≡ (7.0 ∷ f32)
         assert positive_x.d[2] ≡ (7.0 ∷ f32)
@@ -129,9 +121,8 @@ describe "face quad builders" {
     }
 
     test "colored face append publishes exact position color and index arrays" {
-        let data.ColoredQuadMesh ∪ none mesh_result ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
-        assert mesh_result not is none
-        let data.ColoredQuadMesh mesh ← mesh_result
+        let data.ColoredQuadMesh ∪ none mesh ← face.face_code_colored_quad_mesh_append(empty, empty, empty, 6, 1.0, 2.0, 3.0, 2.0)
+        assert mesh not is none
         assert mesh.positions.length() ≡ 12
         assert mesh.colors.length() ≡ 12
         assert mesh.indices.length() ≡ 6

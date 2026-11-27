@@ -4,11 +4,9 @@ locale = "en"
 +++ faber
 # StandardMaterial — PBR standard material contract.
 #
-# Public import: import from "triga:material/standard" standard
+# Public import: import from "triga:material/standard"
 #
 # Owns: StandardMaterial.
-#
-# Imports: triga:math, triga:material/base.
 
 import from "triga:math"
 
@@ -16,7 +14,7 @@ import from "triga:material/base"
 
 # StandardMaterial is the PBR-shaped material carrier. The fields are
 # source data only; texture sampling, environment lighting, and pipeline
-# allocation belong to the future material/render seams.
+# allocation belong to the host renderer.
 @ public
 class StandardMaterial {
     mut base.Material base

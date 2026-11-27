@@ -35,18 +35,18 @@ main {
     let int step_mode_instance ← 2
     print step_mode_vertex
 
-    # Color target format codes (canonical radix table: 1 = bgra8unorm, 2 = bgra8unorm-srgb; no rgba8unorm code)
+    # Color target format codes (the compiler's table: 1 = bgra8unorm, 2 = bgra8unorm-srgb; no rgba8unorm code)
     let int color_target_bgra8_unorm ← 1
     let int color_target_bgra8_unorm_srgb ← 2
     print color_target_bgra8_unorm
 
-    # Depth compare codes (canonical radix table: 0 = no depth attachment sentinel, not a compare function; 1-7 = less..always)
+    # Depth compare codes (the compiler's table: 0 = no depth attachment, not a compare function; 1-7 = less..always)
     let int depth_attachment_none ← 0
     let int depth_compare_less ← 1
     let int depth_compare_always ← 7
     print depth_compare_less
 
-    # Goal 01 material
+    # Default material
     let _ goal_color ← math.Color {r = 1.0, g = 0.2, b = 0.2}
     let basic.UnlitMaterial ∪ none goal_material_result ← basic.basic_material("goal-material", goal_color)
     let _ goal_material ← basic.UnlitMaterial {base = goal_material_result!.base, color = goal_material_result!.color}

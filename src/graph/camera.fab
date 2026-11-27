@@ -4,7 +4,7 @@ locale = "en"
 +++ faber
 # Camera shape contracts (PerspectiveCamera, OrthographicCamera, projection facts).
 #
-# Public import: import from "triga:graph/camera" camera
+# Public import: import from "triga:graph/camera"
 # Depends on: triga:math, triga:graph/object
 
 import from "triga:math"
@@ -27,26 +27,22 @@ class PerspectiveCamera {
     }
 
     fn projection_facts() → PerspectiveCameraProjectionFacts ∪ none {
-        let matrix<f32, [4, 4]> ∪ none projection_result ← self.projection()
-        if projection_result is none then return null
-        let matrix<f32, [4, 4]> projection ← projection_result
+        let matrix<f32, [4, 4]> ∪ none projection ← self.projection()
+        if projection is none then return null
         return PerspectiveCameraProjectionFacts {fov_y_degrees = self.fov, aspect = self.aspect, near = self.near, far = self.far, projection_float_count = 16, x_scale = projection[[0, 0]], y_scale = projection[[1, 1]], depth_scale = projection[[2, 2]]}
     }
 
     fn view_projection(vector<f32, size 3> eye, vector<f32, size 3> target, vector<f32, size 3> up) → matrix<f32, [4, 4]> ∪ none {
-        let matrix<f32, [4, 4]> ∪ none projection_result ← self.projection()
-        if projection_result is none then return null
-        let matrix<f32, [4, 4]> ∪ none view_result ← math.matrix_look_at(eye, target, up)
-        if view_result is none then return null
-        let matrix<f32, [4, 4]> projection ← projection_result
-        let matrix<f32, [4, 4]> view ← view_result
+        let matrix<f32, [4, 4]> ∪ none projection ← self.projection()
+        if projection is none then return null
+        let matrix<f32, [4, 4]> ∪ none view ← math.matrix_look_at(eye, target, up)
+        if view is none then return null
         return projection · view
     }
 
     fn view_projection_facts(vector<f32, size 3> eye, vector<f32, size 3> target, vector<f32, size 3> up) → ViewProjectionFacts ∪ none {
-        let matrix<f32, [4, 4]> ∪ none view_projection_result ← self.view_projection(eye, target, up)
-        if view_projection_result is none then return null
-        let matrix<f32, [4, 4]> view_projection ← view_projection_result
+        let matrix<f32, [4, 4]> ∪ none view_projection ← self.view_projection(eye, target, up)
+        if view_projection is none then return null
         return ViewProjectionFacts {float_count = 16, x_scale = view_projection[[0, 0]], y_scale = view_projection[[1, 1]], depth_scale = view_projection[[2, 2]], view_translation_z = view_projection[[2, 3]]}
     }
 }
@@ -68,7 +64,7 @@ class PerspectiveCameraProjectionFacts {
 
 # ViewProjectionFacts describes the combined projection × view result used by
 # a render path. The full matrix remains available from `view_projection`; this
-# genus is for compact validation and reflection facts.
+# class is for compact validation and reflection facts.
 @ public
 class ViewProjectionFacts {
     mut int float_count
@@ -103,7 +99,7 @@ import from "triga:graph/camera"
 import from "triga:graph/object" let graph_object
 import from "triga:math"
 
-const f32 TOLERATIO = 0.01
+const f32 TOLERANCE = 0.01
 
 fn base_camera(string name, f32 z) → graph_object.Object {
     return graph_object.Object {position = [0.0, 0.0, z] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = name}
@@ -135,9 +131,9 @@ test "PerspectiveCamera emits a valid projection and projection facts" {
     assert facts.near ≡ (0.1 ∷ f32)
     assert facts.far ≡ (100.0 ∷ f32)
     assert facts.projection_float_count ≡ 16
-    assert facts.x_scale.approx(0.5, TOLERATIO)
-    assert facts.y_scale.approx(1.0, TOLERATIO)
-    assert facts.depth_scale.approx(-1.001, TOLERATIO)
+    assert facts.x_scale.approx(0.5, TOLERANCE)
+    assert facts.y_scale.approx(1.0, TOLERANCE)
+    assert facts.depth_scale.approx(-1.001, TOLERANCE)
 }
 
 test "PerspectiveCamera emits view-projection output and facts" {
@@ -151,10 +147,10 @@ test "PerspectiveCamera emits view-projection output and facts" {
     let camera.ViewProjectionFacts facts ← facts_result coalesce empty_view_facts()
     assert facts_result not is none
     assert facts.float_count ≡ 16
-    assert facts.x_scale.approx(0.5, TOLERATIO)
-    assert facts.y_scale.approx(1.0, TOLERATIO)
-    assert facts.depth_scale.approx(-1.001, TOLERATIO)
-    assert facts.view_translation_z.approx(4.905, TOLERATIO)
+    assert facts.x_scale.approx(0.5, TOLERANCE)
+    assert facts.y_scale.approx(1.0, TOLERANCE)
+    assert facts.depth_scale.approx(-1.001, TOLERANCE)
+    assert facts.view_translation_z.approx(4.905, TOLERANCE)
 }
 
 test "OrthographicCamera preserves extents and camera defaults" {

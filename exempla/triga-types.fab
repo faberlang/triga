@@ -1,15 +1,13 @@
 +++ toml
-term = "triga-types-untested"
+term = "triga-types"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Constructor and field-access examples for triga genus types."
-syntax = "importa ex \"triga:triga\" privata triga"
+summary = "Constructor and field-access examples for Triga's classes."
 locale = "en"
 
 +++ faber
-# exempla/triga-types-untested — instantiation and field defaults for types
-# that previously had zero exempla coverage.
+# exempla/triga-types — construction and field defaults for Triga's classes.
 #
 # Covers: native vector/matrix widths, Mesh, Scene, StandardMaterial,
 # PhongMaterial, OrthographicCamera, Object standalone.

@@ -4,7 +4,7 @@ locale = "en"
 +++ faber
 # Object scene-graph node and Scene container shape contracts.
 #
-# Public import: import from "triga:graph/object" object
+# Public import: import from "triga:graph/object"
 # Depends on: triga:math
 
 import from "triga:math"
@@ -26,7 +26,7 @@ class Object {
 }
 
 # Scene adds only an optional background color to the common Object shape.
-# The scene store in `triga:scene` owns identity and hierarchy; this genus is
+# The scene store in `triga:scene` owns identity and hierarchy; this class is
 # the lightweight value shape used by graph-facing APIs.
 @ public
 class Scene {

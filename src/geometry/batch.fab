@@ -4,12 +4,11 @@ locale = "en"
 +++ faber
 # Geometry draw-range, draw-command, group, and payload byte-count facts.
 #
-# Public import: import from "triga:geometry/batch" batch
+# Public import: import from "triga:geometry/batch"
 #
 # Owns: DrawRange, GeometryDrawCommand, GeometryGroup, the indexed/line
-# draw-batch fact genera, VisibleFaceMeshFacts, and the visible_face_*
-# scalar helpers. Geometry-side payload/byte-count facts stay here until
-# the render package's render/batch leaf lands at H4 (report §1.4.6).
+# draw-batch fact classes, VisibleFaceMeshFacts, and the visible_face_*
+# scalar helpers (geometry-side payload and byte-count facts).
 #
 # Zero imports.
 
@@ -112,65 +111,52 @@ fn visible_face_triangle_count(int face_count) → int ∪ none {
 
 @ public
 fn visible_face_position_payload_byte_count(int face_count) → int ∪ none {
-    let int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
-    if vertex_count_result is none then return null
-    let int vertex_count ← vertex_count_result
-    return (vertex_count * 3) * 4
+    let int ∪ none vertex_count ← visible_face_vertex_count(face_count)
+    if vertex_count is none then return null
+    return vertex_count * 3 * 4
 }
 
 @ public
 fn visible_face_color_payload_byte_count(int face_count) → int ∪ none {
-    let int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
-    if vertex_count_result is none then return null
-    let int vertex_count ← vertex_count_result
-    return (vertex_count * 3) * 4
+    let int ∪ none vertex_count ← visible_face_vertex_count(face_count)
+    if vertex_count is none then return null
+    return vertex_count * 3 * 4
 }
 
 @ public
 fn visible_face_index_payload_byte_count(int face_count) → int ∪ none {
-    let int ∪ none index_count_result ← visible_face_index_count(face_count)
-    if index_count_result is none then return null
-    let int index_count ← index_count_result
+    let int ∪ none index_count ← visible_face_index_count(face_count)
+    if index_count is none then return null
     return index_count * 4
 }
 
 @ public
 fn visible_face_payload_byte_count(int face_count) → int ∪ none {
-    let int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
-    if position_bytes_result is none then return null
-    let int position_bytes ← position_bytes_result
-    let int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
-    if color_bytes_result is none then return null
-    let int color_bytes ← color_bytes_result
-    let int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
-    if index_bytes_result is none then return null
-    let int index_bytes ← index_bytes_result
-    return (position_bytes + color_bytes) + index_bytes
+    let int ∪ none position_bytes ← visible_face_position_payload_byte_count(face_count)
+    if position_bytes is none then return null
+    let int ∪ none color_bytes ← visible_face_color_payload_byte_count(face_count)
+    if color_bytes is none then return null
+    let int ∪ none index_bytes ← visible_face_index_payload_byte_count(face_count)
+    if index_bytes is none then return null
+    return position_bytes + color_bytes + index_bytes
 }
 
 @ public
 fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ none {
-    let int ∪ none vertex_count_result ← visible_face_vertex_count(face_count)
-    if vertex_count_result is none then return null
-    let int ∪ none index_count_result ← visible_face_index_count(face_count)
-    if index_count_result is none then return null
-    let int ∪ none triangle_count_result ← visible_face_triangle_count(face_count)
-    if triangle_count_result is none then return null
-    let int ∪ none position_bytes_result ← visible_face_position_payload_byte_count(face_count)
-    if position_bytes_result is none then return null
-    let int ∪ none color_bytes_result ← visible_face_color_payload_byte_count(face_count)
-    if color_bytes_result is none then return null
-    let int ∪ none index_bytes_result ← visible_face_index_payload_byte_count(face_count)
-    if index_bytes_result is none then return null
-    let int ∪ none total_bytes_result ← visible_face_payload_byte_count(face_count)
-    if total_bytes_result is none then return null
-    let int vertex_count ← vertex_count_result
-    let int index_count ← index_count_result
-    let int triangle_count ← triangle_count_result
-    let int position_bytes ← position_bytes_result
-    let int color_bytes ← color_bytes_result
-    let int index_bytes ← index_bytes_result
-    let int total_bytes ← total_bytes_result
+    let int ∪ none vertex_count ← visible_face_vertex_count(face_count)
+    if vertex_count is none then return null
+    let int ∪ none index_count ← visible_face_index_count(face_count)
+    if index_count is none then return null
+    let int ∪ none triangle_count ← visible_face_triangle_count(face_count)
+    if triangle_count is none then return null
+    let int ∪ none position_bytes ← visible_face_position_payload_byte_count(face_count)
+    if position_bytes is none then return null
+    let int ∪ none color_bytes ← visible_face_color_payload_byte_count(face_count)
+    if color_bytes is none then return null
+    let int ∪ none index_bytes ← visible_face_index_payload_byte_count(face_count)
+    if index_bytes is none then return null
+    let int ∪ none total_bytes ← visible_face_payload_byte_count(face_count)
+    if total_bytes is none then return null
     return VisibleFaceMeshFacts {face_count = face_count, vertex_count = vertex_count, index_count = index_count, triangle_count = triangle_count, position_payload_byte_count = position_bytes, color_payload_byte_count = color_bytes, index_payload_byte_count = index_bytes, total_payload_byte_count = total_bytes}
 }
 
@@ -190,7 +176,8 @@ describe "geometry batch facts" {
     }
 
     test "visible face mesh facts preserve topology and payload shape" {
-        let batch.VisibleFaceMeshFacts facts ← batch.visible_face_mesh_facts(2) coalesce batch.VisibleFaceMeshFacts {face_count = 0, vertex_count = 0, index_count = 0, triangle_count = 0, position_payload_byte_count = 0, color_payload_byte_count = 0, index_payload_byte_count = 0, total_payload_byte_count = 0}
+        let batch.VisibleFaceMeshFacts ∪ none facts ← batch.visible_face_mesh_facts(2)
+        assert facts not is none
         assert facts.face_count ≡ 2
         assert facts.vertex_count ≡ 8
         assert facts.index_count ≡ 12

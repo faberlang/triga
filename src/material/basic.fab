@@ -4,12 +4,10 @@ locale = "en"
 +++ faber
 # UnlitMaterial and its construction/access helpers.
 #
-# Public import: import from "triga:material/basic" basic
+# Public import: import from "triga:material/basic"
 #
 # Owns: UnlitMaterial (+ receiver methods) and the basic_material
 # constructor.
-#
-# Imports: triga:math, triga:material/base.
 
 import from "triga:math"
 
@@ -17,8 +15,8 @@ import from "triga:material/base"
 
 # UnlitMaterial is the unlit material path. Its base contract carries
 # depth, alpha, and side state; this leaf adds only the source color used by
-# the basic pipeline facts. Operations on a material value are receiver
-# methods (api-shape-policy §1); basic_material is the free constructor.
+# the basic pipeline facts. Every accessor returns null for an invalid
+# material.
 @ public
 class UnlitMaterial {
     mut base.Material base
@@ -58,11 +56,8 @@ class UnlitMaterial {
 fn basic_material(string name, ref math.Color color) → UnlitMaterial ∪ none {
     let base.Material base_material ← base.material_from_name(name)
     if not base_material.valid() then return null
-    # The ∪ null contract extends to the color: every accessor already
-    # fails closed on an invalid color (valid), so the constructor must not
-    # return a material whose accessors all return null (the correctness-fix
-    # slice — the accessors were the authority, the constructor now matches
-    # the contract).
+    # The accessors return null for an invalid color, so refuse it here rather
+    # than build a material whose accessors all return null.
     if not color.valid() then return null
     return UnlitMaterial {base = base_material, color = color}
 }

@@ -36,19 +36,17 @@ three.js-shaped browser host demonstration.
 ```text
 exempla/
   triga-basics.fab              # Native vectors, matrices, and material basics
+  triga-transforms.fab          # Vector, quaternion, and matrix operations
   triga-geometry-attributes.fab # Typed attributes, indexed/non-indexed geometry, ColoredQuadMesh accumulation, primitive generators
-  hello-voxel-first-draw-facts.fab # Locked position/color indexed-draw facts
+  triga-vertex-layout-facts.fab # Vertex-buffer layout of a generated plane
   triga-scene-store.fab         # Stable handles, graph edits, and world transforms
   triga-presenter-scene-values.fab # Presenter-shaped SceneStore + lights + Phong values
-  triga-stage4-source-facts.fab # Vertex-layout facts for primitives.plane
-  triga-transforms.fab          # Vector, quaternion, and matrix operations
-  triga-types-untested.fab      # Instantiation of previously untested genus types
+  triga-types.fab               # Construction and field defaults for Triga's classes
   triga-math-edge-cases.fab     # NaN/Infinity, degenerate-input, boundary tests
-  triga-scene-store-empty.fab   # Empty SceneStore edge case tests
-  triga-graphics-pipeline-facts.fab # Shader stages, pipeline reflection, Goal 01
-  triga-hello-voxel-pipeline.fab # Cube geometry, stages run on the host, draw command
-  triga-box3-genus-spike.fab    # Box free-function overlap oracle
+  triga-box-overlap.fab         # Box<3> inflation and per-axis overlap
   triga-normal-oracle.fab       # Surface-normal winding oracle: cylinder caps + sphere poles
+  triga-graphics-pipeline-facts.fab # Color target, depth, topology and vertex-input facts
+  triga-hello-voxel-pipeline.fab # Cube geometry, stages run on the host, draw command
   shaders/                      # Vertex/fragment stage pairs; each emits WGSL
   threejs-host-demo/            # Browser fixture: Triga scene data via three.js
 ```
@@ -68,7 +66,7 @@ exempla/
 
 Prefer the leaf that owns the type. The `triga:triga`, `triga:geometry`,
 `triga:graph`, `triga:material`, and `triga:primitives` modules are maps for
-humans; they intentionally do not re-export genera. This keeps an example's
+humans; they do not re-export types. This keeps an example's
 dependency list honest and makes each source file a useful place to learn.
 
 ## How to read an example

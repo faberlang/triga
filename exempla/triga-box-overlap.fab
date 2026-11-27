@@ -1,0 +1,47 @@
++++ toml
+term = "triga-box-overlap"
+kind = "concept"
+category = "library"
+canonical = true
+summary = "Box<3> construction, inflation and overlap on each axis."
+locale = "en"
+
++++ faber
+# exempla/triga-box-overlap — Box<3> construction, inflation and overlap.
+#
+# Box operations are free functions over Box<N>. Two boxes overlap only when
+# their ranges overlap on every axis, so the cases below separate boxes on z
+# alone and check that a y-overlap does not hide a z-separation.
+
+import from "triga:math"
+
+main {
+    let math.Box<3> bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, size 3>}
+
+    let math.Box<3> overlap_box ← math.Box<3> {minima = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, maxima = [3.0, 3.0, 3.0] ↦ vector<f32, size 3>}
+
+    let math.Box<3> expanded ← math.box_inflated(bounds, 1.0)
+
+    mut math.Box<3> mutable_bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>}
+    mutable_bounds ← math.box_inflated(mutable_bounds, 2.0)
+
+    # Separated on z (one box starts where the other ends, or past it), and
+    # overlapping on every axis.
+    let math.Box<3> z_above ← math.Box<3> {minima = [0.0, 0.0, 3.0] ↦ vector<f32, size 3>, maxima = [2.0, 2.0, 5.0] ↦ vector<f32, size 3>}
+    let math.Box<3> small ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>}
+    let math.Box<3> narrow ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [1.0, 4.0, 1.0] ↦ vector<f32, size 3>}
+    let math.Box<3> tall ← math.Box<3> {minima = [0.0, 3.0, 0.0] ↦ vector<f32, size 3>, maxima = [2.0, 5.0, 4.0] ↦ vector<f32, size 3>}
+
+    print math.box_intersects(z_above, small)
+    print math.box_intersects(bounds, z_above)
+    print math.box_intersects(bounds, overlap_box)
+    print math.box_intersects(tall, narrow)
+    print expanded
+}
+
++++ text stdout
+false
+false
+true
+true
+Box { minima = [-1.0, -1.0, -1.0], maxima = [3.0, 3.0, 3.0] }

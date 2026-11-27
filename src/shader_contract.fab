@@ -2,27 +2,22 @@
 locale = "en"
 
 +++ faber
-# Triga's adapter onto the compiler-owned generic shader-contract surface.
+# Triga's adapter onto the compiler's generic shader-contract surface.
 #
-# Public import: import from "triga:shader_contract" contract
+# Public import: import from "triga:shader_contract" let contract
 #
-# The compiler (root) owns the generic shader-contract lane: the
-# `@ shader_contract "<role>"` annotation, identity-resolved ingestion,
-# fail-closed code tables, validation, reflection, and WGSL emission.
-# Triga owns the concrete external Faber contract and maps its real API onto
-# that generic surface. This module is that mapping:
+# The compiler owns the generic `@ shader_contract "<role>"` annotation: it
+# collects facts from calls to annotated functions, checks them against fixed
+# code tables, and refuses unknown codes. Triga owns the concrete contract and
+# maps its API onto that surface. This module is that mapping:
 #
-#   * contract-role functions carrying the compiler-owned annotation, whose
-#     call argument shapes match the canonical surface root recognizes
-#     (roles: vertex_layout / varying / fragment_output / pipeline /
-#     resource_binding / bound_resource_binding), each stage-I/O role declared explicitly via
-#     `stage_io_role_code` (radix U6; roles are never synthesized from
-#     source-name spelling or location);
-#   * Triga's canonical code vocabulary (the codes programs assert; they
-#     must be canonical radix_mir::shader_contract codes);
-#   * the Goal-01 pipeline defaults, which per decision D2 live HERE as
-#     Triga's contract, not in radix (bgra8unorm, depth24plus less+write,
-#     triangle-list, 36 vertices, transform storage buffer).
+#   * one role function per fact family (vertex_layout, varying,
+#     fragment_output, pipeline, resource_binding, bound_resource_binding).
+#     Each stage-I/O fact names its role explicitly through
+#     `stage_io_role_code`; the compiler never infers a role from a name;
+#   * Triga's default pipeline: bgra8unorm color, depth24plus with compare
+#     less and writes on, triangle-list, 36 vertices, and a read-only
+#     transform storage buffer at group 0 binding 0.
 #
 # Triga never emits WGSL itself. The stage entry points come from the stage
 # contracts in triga:shader (`@ Vertex`, `@ Fragment`, `@ Position`) and
@@ -39,34 +34,30 @@ locale = "en"
 # They stay until the presenter host reads stage I/O from the stage
 # signature; then they are removed.
 #
-# The radix driver recognizes a contract-role function when the annotated
+# The compiler recognizes a contract-role function when the annotated
 # function is declared in the compiled unit and its constant-argument calls
 # appear in `assert` statements. Triga's real API function
 # `geometry.geometry_vertex_layout_matches` (src/geometry/data.fab) is the
 # vertex-layout member of this contract.
 #
-# Canonical code tables (radix_mir::shader_contract; unknown codes fail
-# closed with a structured diagnostic):
+# Code tables (fixed by the compiler; an unknown code is refused with a
+# diagnostic):
 #   vertex format   2 = float32x2, 3 = float32x3, 4 = float32x4
 #   color target    1 = bgra8unorm, 2 = bgra8unorm-srgb
 #   topology        1 = triangle-list, 2 = line-list, 3 = point-list
-#   depth compare   0 = no depth attachment (driver sentinel),
+#   depth compare   0 = no depth attachment,
 #                   1 = less, 2 = equal, 3 = less-equal, 4 = greater,
 #                   5 = not-equal, 6 = greater-equal, 7 = always
 #   step mode       1 = vertex, 2 = instance
 #   interpolation   1 = perspective, 2 = linear, 3 = flat
 #   stage-io role   1 = position, 2 = color, 3 = transform, 4 = other
-#   (stage_io_role_code, radix_mir::shader_contract::stage_io_role_from_code:
-#   the explicit stage-I/O role declared on each vertex_layout / varying /
-#   fragment_output / resource_binding call — never synthesized from
-#   source-name spelling or location)
 #   resource kind   1 = storage buffer, 2 = runtime extent
 #   resource role   1 = input, 2 = output
 #   resource access 1 = read, 2 = write, 3 = read-write
 #   scalar layout   1 = f32 (4 bytes), 2 = f64 (8), 3 = i32 (4), 4 = u32 (4)
 
 # ---------------------------------------------------------------------------
-# Contract-role adapter functions (decision D1 surface)
+# Contract-role functions
 #
 # Each declaration mirrors one slice of the generic shader contract. The
 # compiler registers the annotation by identity and ingests facts from
@@ -83,7 +74,7 @@ fn vertex_layout_matches(int geo, int index, string source_name, int shader_loca
 }
 
 # Interstage varying: source semantic, location, format, and interpolation.
-# Explicit varying declarations are Triga's contract (decision D3).
+# Varyings are declared explicitly.
 @ public
 @ shader_contract "varying"
 fn varying_matches(string source_name, int shader_location, int format_code, int interpolation_code, int stage_io_role_code) → bool {
@@ -99,8 +90,7 @@ fn fragment_output_matches(int location, int format_code, int stage_io_role_code
 
 # Pipeline state: color target, depth compare + write, topology, vertex count.
 # Maps Triga's geometry.geometry_pipeline_descriptor_matches contract onto the
-# pipeline role; the Goal-01 defaults are declared as named constants below
-# (decision D2).
+# pipeline role; Triga's defaults are the DEFAULT_* constants below.
 @ public
 @ shader_contract "pipeline"
 fn pipeline_matches(int color_target_format_code, int depth_compare_code, int depth_write_enabled_code, int primitive_topology_code, int vertex_count) → bool {
@@ -125,295 +115,111 @@ fn bound_resource_matches(int group, int binding, string source_name) → bool {
 }
 
 # ---------------------------------------------------------------------------
-# Goal-01 pipeline defaults (decision D2 — Triga's contract)
+# Default pipeline
 #
-# The first-pipeline contract: color target bgra8unorm, depth24plus with
-# compare less + writes enabled, triangle-list topology, 36 vertices, and a
-# group-0 binding-0 read-only transform storage buffer (32 f32). Conformance
-# programs assert these defaults through the pipeline / resource_binding role
-# functions above.
+# Color target bgra8unorm, depth24plus with compare less and writes enabled,
+# triangle-list topology, 36 vertices, and a group-0 binding-0 read-only
+# transform storage buffer (32 f32). Programs assert these through the
+# pipeline and resource_binding role functions above.
 # ---------------------------------------------------------------------------
 
-const int GOAL_COLOR_TARGET_FORMAT_CODE = 1
+@ public
+const int DEFAULT_COLOR_TARGET_FORMAT_CODE = 1
 
-const int GOAL_DEPTH_COMPARE_CODE = 1
+@ public
+const int DEFAULT_DEPTH_COMPARE_CODE = 1
 
-const int GOAL_DEPTH_WRITE_ENABLED_CODE = 1
+@ public
+const int DEFAULT_DEPTH_WRITE_ENABLED_CODE = 1
 
-const int GOAL_PRIMITIVE_TOPOLOGY_CODE = 1
+@ public
+const int DEFAULT_PRIMITIVE_TOPOLOGY_CODE = 1
 
-const int GOAL_VERTEX_COUNT = 36
+@ public
+const int DEFAULT_VERTEX_COUNT = 36
+
 # Position input layout: location 0, float32x3, offset 0, stride 12, vertex
 # step mode.
 
-const int GOAL_POSITION_FORMAT_CODE = 3
+@ public
+const int DEFAULT_POSITION_FORMAT_CODE = 3
 
-const int GOAL_POSITION_OFFSET_BYTES = 0
+@ public
+const int DEFAULT_POSITION_OFFSET_BYTES = 0
 
-const int GOAL_POSITION_STRIDE_BYTES = 12
+@ public
+const int DEFAULT_POSITION_STRIDE_BYTES = 12
 
-const int GOAL_STEP_MODE_VERTEX = 1
+@ public
+const int DEFAULT_STEP_MODE_VERTEX = 1
 
 # Transform resource: group 0 binding 0, storage buffer, input role, read
 # access, 32 f32 elements, f32 scalar layout.
 
-const int GOAL_TRANSFORM_GROUP = 0
+@ public
+const int DEFAULT_TRANSFORM_GROUP = 0
 
-const int GOAL_TRANSFORM_BINDING = 0
+@ public
+const int DEFAULT_TRANSFORM_BINDING = 0
 
-const int GOAL_TRANSFORM_KIND_CODE = 1
+@ public
+const int DEFAULT_TRANSFORM_KIND_CODE = 1
 
-const int GOAL_TRANSFORM_ROLE_CODE = 1
+@ public
+const int DEFAULT_TRANSFORM_ROLE_CODE = 1
 
-const int GOAL_TRANSFORM_ACCESS_CODE = 1
+@ public
+const int DEFAULT_TRANSFORM_ACCESS_CODE = 1
 
-const int GOAL_TRANSFORM_ELEMENT_COUNT = 32
+@ public
+const int DEFAULT_TRANSFORM_ELEMENT_COUNT = 32
 
-const int GOAL_TRANSFORM_LAYOUT_CODE = 1
+@ public
+const int DEFAULT_TRANSFORM_LAYOUT_CODE = 1
 
 # Fragment color output: location 0, float32x4.
 
-const int GOAL_FRAGMENT_OUTPUT_LOCATION = 0
+@ public
+const int DEFAULT_FRAGMENT_OUTPUT_LOCATION = 0
 
-const int GOAL_FRAGMENT_OUTPUT_FORMAT_CODE = 4
+@ public
+const int DEFAULT_FRAGMENT_OUTPUT_FORMAT_CODE = 4
 
 +++ faber test
-# Co-located coverage for the compiler-facing shader-contract adapter.
-#
-# Adapter functions are compiler-owned contract declarations. Matching cases
-# pin the published Goal-01 / hello-voxel argument shape on each role. Invalid
-# codes and conflicting facts are rejected by the compiler collector before a
-# test can execute them, so mismatch and unpublished-code rejection are
-# proven against the published fact tables rather than by inventing adapter
-# return values or a WGSL admission claim.
+# The role functions accept Triga's default pipeline facts. The compiler checks
+# every code in these calls against its tables, so an unknown code here fails
+# the build rather than the test.
 import from "triga:shader_contract" let contract
 
-fn known_vertex_format(int code) → bool {
-    return (code ≡ 2 or code ≡ 3) or code ≡ 4
-}
-
-fn known_color_target_format(int code) → bool {
-    return code ≡ 1 or code ≡ 2
-}
-
-fn known_primitive_topology(int code) → bool {
-    return (code ≡ 1 or code ≡ 2) or code ≡ 3
-}
-
-fn known_depth_compare(int code) → bool {
-    if code ≡ 0 then return true
-    if code ≡ 1 then return true
-    if code ≡ 2 then return true
-    if code ≡ 3 then return true
-    if code ≡ 4 then return true
-    if code ≡ 5 then return true
-    if code ≡ 6 then return true
-    return code ≡ 7
-}
-
-fn known_step_mode(int code) → bool {
-    return code ≡ 1 or code ≡ 2
-}
-
-fn known_interpolation(int code) → bool {
-    return (code ≡ 1 or code ≡ 2) or code ≡ 3
-}
-
-fn known_stage_io_role(int code) → bool {
-    return ((code ≡ 1 or code ≡ 2) or code ≡ 3) or code ≡ 4
-}
-
-fn known_resource_kind(int code) → bool {
-    return code ≡ 1 or code ≡ 2
-}
-
-fn known_resource_role(int code) → bool {
-    return code ≡ 1 or code ≡ 2
-}
-
-fn known_resource_access(int code) → bool {
-    return (code ≡ 1 or code ≡ 2) or code ≡ 3
-}
-
-fn known_scalar_layout(int code) → bool {
-    return ((code ≡ 1 or code ≡ 2) or code ≡ 3) or code ≡ 4
-}
-
-fn goal_vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {
-    return (((((((geo ≡ 0 and index ≡ 0) and source_name ≡ "position") and shader_location ≡ 0) and format_code ≡ 3) and offset_bytes ≡ 0) and stride_bytes ≡ 12) and step_mode_code ≡ 1) and stage_io_role_code ≡ 1
-}
-
-fn goal_varying_matches(string source_name, int shader_location, int format_code, int interpolation_code, int stage_io_role_code) → bool {
-    return (((source_name ≡ "color" and shader_location ≡ 0) and format_code ≡ 4) and interpolation_code ≡ 1) and stage_io_role_code ≡ 2
-}
-
-fn goal_fragment_output_matches(int location, int format_code, int stage_io_role_code) → bool {
-    return (location ≡ 0 and format_code ≡ 4) and stage_io_role_code ≡ 2
-}
-
-fn goal_pipeline_matches(int color_target_format_code, int depth_compare_code, int depth_write_enabled_code, int primitive_topology_code, int vertex_count) → bool {
-    return (((color_target_format_code ≡ 1 and depth_compare_code ≡ 1) and depth_write_enabled_code ≡ 1) and primitive_topology_code ≡ 1) and vertex_count ≡ 36
-}
-
-fn goal_resource_binding_matches(int group, int binding, int kind_code, int role_code, int access_code, int element_count, int layout_code, string source_name, int stage_io_role_code) → bool {
-    return ((((((((group ≡ 0 and binding ≡ 0) and kind_code ≡ 1) and role_code ≡ 1) and access_code ≡ 1) and element_count ≡ 32) and layout_code ≡ 1) and source_name ≡ "transform") and stage_io_role_code ≡ 3)
-}
-
-describe "shader contract adapter facts" {
-    test "vertex layout covers semantic location format offsets stride step and role" {
-        assert contract.vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1)
-        assert goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 1)
+describe "default pipeline facts" {
+    test "the position input is float32x3 at location 0 with a 12-byte stride" {
+        assert contract.vertex_layout_matches(0, 0, "position", 0, contract.DEFAULT_POSITION_FORMAT_CODE, contract.DEFAULT_POSITION_OFFSET_BYTES, contract.DEFAULT_POSITION_STRIDE_BYTES, contract.DEFAULT_STEP_MODE_VERTEX, 1)
+        assert contract.DEFAULT_POSITION_FORMAT_CODE ≡ 3
+        assert contract.DEFAULT_POSITION_STRIDE_BYTES ≡ 12
     }
 
-    test "varying covers semantic location format interpolation and role" {
+    test "the color varying and the fragment output are float32x4" {
         assert contract.varying_matches("color", 0, 4, 1, 2)
-        assert goal_varying_matches("color", 0, 4, 1, 2)
+        assert contract.fragment_output_matches(contract.DEFAULT_FRAGMENT_OUTPUT_LOCATION, contract.DEFAULT_FRAGMENT_OUTPUT_FORMAT_CODE, 2)
+        assert contract.DEFAULT_FRAGMENT_OUTPUT_FORMAT_CODE ≡ 4
     }
 
-    test "fragment output covers location format and color role" {
-        assert contract.fragment_output_matches(0, 4, 2)
-        assert goal_fragment_output_matches(0, 4, 2)
+    test "the pipeline is bgra8unorm, depth less with writes, triangle-list, 36 vertices" {
+        assert contract.pipeline_matches(contract.DEFAULT_COLOR_TARGET_FORMAT_CODE, contract.DEFAULT_DEPTH_COMPARE_CODE, contract.DEFAULT_DEPTH_WRITE_ENABLED_CODE, contract.DEFAULT_PRIMITIVE_TOPOLOGY_CODE, contract.DEFAULT_VERTEX_COUNT)
+        assert contract.DEFAULT_COLOR_TARGET_FORMAT_CODE ≡ 1
+        assert contract.DEFAULT_DEPTH_COMPARE_CODE ≡ 1
+        assert contract.DEFAULT_PRIMITIVE_TOPOLOGY_CODE ≡ 1
+        assert contract.DEFAULT_VERTEX_COUNT ≡ 36
     }
 
-    test "pipeline covers color depth write topology and vertex count" {
-        assert contract.pipeline_matches(1, 1, 1, 1, 36)
-        assert goal_pipeline_matches(1, 1, 1, 1, 36)
+    test "the transform is a read-only 32-float storage buffer at group 0 binding 0" {
+        assert contract.resource_binding_matches(contract.DEFAULT_TRANSFORM_GROUP, contract.DEFAULT_TRANSFORM_BINDING, contract.DEFAULT_TRANSFORM_KIND_CODE, contract.DEFAULT_TRANSFORM_ROLE_CODE, contract.DEFAULT_TRANSFORM_ACCESS_CODE, contract.DEFAULT_TRANSFORM_ELEMENT_COUNT, contract.DEFAULT_TRANSFORM_LAYOUT_CODE, "transform", 3)
+        assert contract.DEFAULT_TRANSFORM_ELEMENT_COUNT ≡ 32
+        assert contract.DEFAULT_TRANSFORM_ACCESS_CODE ≡ 1
     }
 
-    test "resource binding covers group binding kind role access count layout semantic and role" {
-        assert contract.resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3)
-        assert goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 3)
-    }
-}
-
-describe "shader contract published code tables" {
-    test "vertex format codes accept float32x2 through float32x4 and reject unpublished values" {
-        assert known_vertex_format(2)
-        assert known_vertex_format(3)
-        assert known_vertex_format(4)
-        assert not known_vertex_format(0)
-        assert not known_vertex_format(1)
-        assert not known_vertex_format(5)
-    }
-
-    test "color target codes accept bgra8unorm variants and reject unpublished values" {
-        assert known_color_target_format(1)
-        assert known_color_target_format(2)
-        assert not known_color_target_format(0)
-        assert not known_color_target_format(3)
-    }
-
-    test "topology codes accept list primitives and reject unpublished values" {
-        assert known_primitive_topology(1)
-        assert known_primitive_topology(2)
-        assert known_primitive_topology(3)
-        assert not known_primitive_topology(0)
-        assert not known_primitive_topology(4)
-    }
-
-    test "depth compare codes accept the none sentinel through always and reject unpublished values" {
-        assert known_depth_compare(0)
-        assert known_depth_compare(1)
-        assert known_depth_compare(7)
-        assert not known_depth_compare(8)
-        assert not known_depth_compare(-1)
-    }
-
-    test "step interpolation stage-io and resource codes reject unpublished values" {
-        assert known_step_mode(1)
-        assert known_step_mode(2)
-        assert not known_step_mode(0)
-        assert not known_step_mode(3)
-        assert known_interpolation(1)
-        assert known_interpolation(2)
-        assert known_interpolation(3)
-        assert not known_interpolation(0)
-        assert not known_interpolation(4)
-        assert known_stage_io_role(1)
-        assert known_stage_io_role(2)
-        assert known_stage_io_role(3)
-        assert known_stage_io_role(4)
-        assert not known_stage_io_role(0)
-        assert not known_stage_io_role(5)
-        assert known_resource_kind(1)
-        assert known_resource_kind(2)
-        assert not known_resource_kind(0)
-        assert not known_resource_kind(3)
-        assert known_resource_role(1)
-        assert known_resource_role(2)
-        assert not known_resource_role(0)
-        assert not known_resource_role(3)
-        assert known_resource_access(1)
-        assert known_resource_access(2)
-        assert known_resource_access(3)
-        assert not known_resource_access(0)
-        assert not known_resource_access(4)
-        assert known_scalar_layout(1)
-        assert known_scalar_layout(2)
-        assert known_scalar_layout(3)
-        assert known_scalar_layout(4)
-        assert not known_scalar_layout(0)
-        assert not known_scalar_layout(5)
-    }
-}
-
-describe "shader contract matcher mismatch dimensions" {
-    test "vertex layout rejects each published mismatch dimension" {
-        assert not goal_vertex_layout_matches(1, 0, "position", 0, 3, 0, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 1, "position", 0, 3, 0, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "color", 0, 3, 0, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 1, 3, 0, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 4, 0, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 2, 0, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 12, 12, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 8, 1, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 2, 1)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 2)
-        assert not goal_vertex_layout_matches(0, 0, "position", 0, 3, 0, 12, 1, 4)
-    }
-
-    test "varying rejects each published mismatch dimension" {
-        assert not goal_varying_matches("position", 0, 4, 1, 2)
-        assert not goal_varying_matches("color", 1, 4, 1, 2)
-        assert not goal_varying_matches("color", 0, 3, 1, 2)
-        assert not goal_varying_matches("color", 0, 4, 2, 2)
-        assert not goal_varying_matches("color", 0, 4, 3, 2)
-        assert not goal_varying_matches("color", 0, 4, 1, 1)
-        assert not goal_varying_matches("color", 0, 4, 1, 4)
-    }
-
-    test "fragment output rejects each published mismatch dimension" {
-        assert not goal_fragment_output_matches(1, 4, 2)
-        assert not goal_fragment_output_matches(0, 3, 2)
-        assert not goal_fragment_output_matches(0, 2, 2)
-        assert not goal_fragment_output_matches(0, 4, 1)
-        assert not goal_fragment_output_matches(0, 4, 4)
-    }
-
-    test "pipeline rejects each published mismatch dimension" {
-        assert not goal_pipeline_matches(2, 1, 1, 1, 36)
-        assert not goal_pipeline_matches(1, 0, 1, 1, 36)
-        assert not goal_pipeline_matches(1, 7, 1, 1, 36)
-        assert not goal_pipeline_matches(1, 1, 0, 1, 36)
-        assert not goal_pipeline_matches(1, 1, 1, 2, 36)
-        assert not goal_pipeline_matches(1, 1, 1, 3, 36)
-        assert not goal_pipeline_matches(1, 1, 1, 1, 0)
-        assert not goal_pipeline_matches(1, 1, 1, 1, 64)
-    }
-
-    test "resource binding rejects each published mismatch dimension" {
-        assert not goal_resource_binding_matches(1, 0, 1, 1, 1, 32, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 1, 1, 1, 1, 32, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 2, 1, 1, 32, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 2, 1, 32, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 2, 32, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 3, 32, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 64, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 16, 1, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 2, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 3, "transform", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "position", 3)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 1)
-        assert not goal_resource_binding_matches(0, 0, 1, 1, 1, 32, 1, "transform", 4)
+    test "a bound texture and sampler take their group and binding" {
+        assert contract.bound_resource_matches(1, 0, "albedo")
+        assert contract.bound_resource_matches(1, 1, "albedo_sampler")
     }
 }

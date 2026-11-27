@@ -2,17 +2,17 @@
 locale = "en"
 
 +++ faber
-# Triga math: graphics-domain genera and builders over the language's own
+# Triga math: graphics-domain classes and builders over the language's own
 # vectors and matrices.
 #
-# Public import: import from "triga:math" math
+# Public import: import from "triga:math"
 #
 # Carriers: vector<f32, size N> and matrix<f32, [R, C]> are language types, and
 # their arithmetic is the language's: `v[i]` lane reads, `m[[r, c]]` cell reads
 # (row-major: row r, column c), `+ - * ⊙ · × ⊗ ᵀ`, `⤒ ⤓`, `.norm()`, and the
-# built-in `.sqrt()` / `.sin()` / `.cos()` on f32. Triga wraps none of them.
+# `√`, `sin` and `cos` on f32. Triga wraps none of them.
 # Triga owns Box<N>, TransformPayload, Quaternion, Euler, Color, Sphere,
-# Plane, Ray, and face/camera fact genera, plus three small vector helpers
+# Plane, Ray, and face/camera fact classes, plus three small vector helpers
 # (normalized3, lerp3, project3).
 #
 # Construction: [x, y, z] ↦ vector<f32, size 3>. Matrix builders are
@@ -20,11 +20,10 @@ locale = "en"
 # matrix_perspective / matrix_look_at; matrix_column reads one column.
 # Multiply matrices with ·.
 #
-# SECTION ORDER IS LOAD-BEARING (radix workaround, 2026-11-05): a radix MIR
-# merge bug (PKG001 mir_validation_applied_struct_field_projection_type_
-# argument_count_mismatch on Box<3> field projections) blocks test sections
-# that import this module, depending only on declaration order here. This order
-# keeps them green; re-run `faber test .` after moving or adding declarations.
+# SECTION ORDER IS LOAD-BEARING: a compiler bug on Box<3> field projections
+# blocks test sections that import this module, depending only on declaration
+# order here. This order keeps them green; re-run `faber test .` after moving
+# or adding declarations.
 
 # --- TRANSFORM PAYLOAD ---
 # 32-float / 128-byte wire: model then view-projection, column-major.
@@ -119,10 +118,7 @@ fn apply_point(matrix<f32, [4, 4]> m, vector<f32, size 3> point) → vector<f32,
     let vector<f32, size 4> p ← [point[0], point[1], point[2], 1.0] ↦ vector<f32, size 4>
     let vector<f32, size 4> applied ← m · p
     let f32 w ← applied[3]
-    mut f32 divisor ← w
-    if w.abs() ≤ 0.000001 {
-        divisor ← 1.0
-    }
+    let f32 divisor ← abs w ≤ 0.000001 ✓ 1.0 ✗ w
     let vector<f32, size 4> divided ← applied * (1.0 / divisor)
     return [divided[0], divided[1], divided[2]] ↦ vector<f32, size 3>
 }
@@ -130,7 +126,7 @@ fn apply_point(matrix<f32, [4, 4]> m, vector<f32, size 3> point) → vector<f32,
 @ public
 fn affine_inverse(matrix<f32, [4, 4]> m) → matrix<f32, [4, 4]> ∪ none {
     let f32 determinant ← affine_determinant(m)
-    if determinant.abs() ≤ 0.000001 then return null
+    if abs determinant ≤ 0.000001 then return null
     let f32 d ← 1.0 / determinant
     let f32 a00 ← m[[0, 0]]
     let f32 a01 ← m[[0, 1]]
@@ -256,21 +252,21 @@ fn face_code_color(int code) → Color ∪ none {
 @ public
 fn face_code_facts(int code) → FaceCodeFacts ∪ none {
     if not face_code_valid(code) then return null
-    let int ∪ none axis_result ← face_code_axis_code(code)
-    if axis_result is none then return null
-    let int ∪ none opposite_result ← face_code_opposite(code)
-    if opposite_result is none then return null
-    let int ∪ none x_offset_result ← face_code_x_offset(code)
-    if x_offset_result is none then return null
-    let int ∪ none y_offset_result ← face_code_y_offset(code)
-    if y_offset_result is none then return null
-    let int ∪ none z_offset_result ← face_code_z_offset(code)
-    if z_offset_result is none then return null
-    let vector<f32, size 3> ∪ none normal_result ← face_code_normal(code)
-    if normal_result is none then return null
-    let Color ∪ none color_result ← face_code_color(code)
-    if color_result is none then return null
-    return FaceCodeFacts {code = code, axis_code = axis_result, opposite_code = opposite_result, x_offset = x_offset_result, y_offset = y_offset_result, z_offset = z_offset_result, normal = normal_result, color = color_result}
+    let int ∪ none axis_code ← face_code_axis_code(code)
+    if axis_code is none then return null
+    let int ∪ none opposite_code ← face_code_opposite(code)
+    if opposite_code is none then return null
+    let int ∪ none x_offset ← face_code_x_offset(code)
+    if x_offset is none then return null
+    let int ∪ none y_offset ← face_code_y_offset(code)
+    if y_offset is none then return null
+    let int ∪ none z_offset ← face_code_z_offset(code)
+    if z_offset is none then return null
+    let vector<f32, size 3> ∪ none normal ← face_code_normal(code)
+    if normal is none then return null
+    let Color ∪ none color ← face_code_color(code)
+    if color is none then return null
+    return FaceCodeFacts {code = code, axis_code = axis_code, opposite_code = opposite_code, x_offset = x_offset, y_offset = y_offset, z_offset = z_offset, normal = normal, color = color}
 }
 
 # --- ROTATION AND COLOR ---
@@ -287,7 +283,7 @@ class Quaternion {
     }
 
     fn normalized() → Quaternion {
-        let f32 len ← (((self.x * self.x + self.y * self.y) + self.z * self.z) + self.w * self.w).sqrt()
+        let f32 len ← √(((self.x * self.x + self.y * self.y) + self.z * self.z) + self.w * self.w)
         if len ≤ 0.000001 then return quaternion(0.0, 0.0, 0.0, 1.0)
         return quaternion(self.x / len, self.y / len, self.z / len, self.w / len)
     }
@@ -339,24 +335,22 @@ class Euler {
         let f32 hx ← self.x * 0.5
         let f32 hy ← self.y * 0.5
         let f32 hz ← self.z * 0.5
-        let f32 sx ← hx.sin()
-        let f32 cx ← hx.cos()
-        let f32 sy ← hy.sin()
-        let f32 cy ← hy.cos()
-        let f32 sz ← hz.sin()
-        let f32 cz ← hz.cos()
+        let f32 sx ← sin hx
+        let f32 cx ← cos hx
+        let f32 sy ← sin hy
+        let f32 cy ← cos hy
+        let f32 sz ← sin hz
+        let f32 cz ← cos hz
         let Quaternion raw ← quaternion((sx * cy) * cz + (cx * sy) * sz, (cx * sy) * cz - (sx * cy) * sz, (cx * cy) * sz + (sx * sy) * cz, (cx * cy) * cz - (sx * sy) * sz)
         return raw.normalized()
     }
 
     fn compose(ref Euler other) → Quaternion ∪ none {
-        let Quaternion ∪ none qa ← self.to_quaternion()
-        if qa is none then return null
-        let Quaternion ∪ none qb ← other.to_quaternion()
-        if qb is none then return null
-        let Quaternion av ← qa
-        let Quaternion bv ← qb
-        let Quaternion product ← av.multiply(bv)
+        let Quaternion ∪ none first ← self.to_quaternion()
+        if first is none then return null
+        let Quaternion ∪ none second ← other.to_quaternion()
+        if second is none then return null
+        let Quaternion product ← first.multiply(second)
         return product.normalized()
     }
 
@@ -401,7 +395,7 @@ fn matrix_compose(vector<f32, size 3> position, ref Quaternion rotation, vector<
 
 @ public
 fn radians_from_degrees(f32 degrees) → f32 {
-    return degrees * 0.017453292519943295
+    return degrees * π / 180.0
 }
 
 @ public
@@ -410,13 +404,13 @@ fn matrix_perspective(f32 fov_y_degrees, f32 aspect, f32 near, f32 far) → matr
     if aspect ≤ 0.0 then return null
     if near ≤ 0.0 or far ≤ near then return null
     let f32 half_angle ← radians_from_degrees(fov_y_degrees) * 0.5
-    let f32 sine ← half_angle.sin()
-    if sine.abs() ≤ 0.000001 then return null
-    let f32 focal ← half_angle.cos() / sine
+    let f32 sine ← sin half_angle
+    if abs sine ≤ 0.000001 then return null
+    let f32 focal ← cos half_angle / sine
     let f32 depth ← far / (near - far)
     let vector<f32, size 4> c0 ← [focal / aspect, 0.0, 0.0, 0.0] ↦ vector<f32, size 4>
     let vector<f32, size 4> c1 ← [0.0, focal, 0.0, 0.0] ↦ vector<f32, size 4>
-    let vector<f32, size 4> c2 ← [0.0, 0.0, depth, -1.0 ∷ f32] ↦ vector<f32, size 4>
+    let vector<f32, size 4> c2 ← [0.0, 0.0, depth, -1.0] ↦ vector<f32, size 4>
     let vector<f32, size 4> c3 ← [0.0, 0.0, near * depth, 0.0] ↦ vector<f32, size 4>
     return matrix_from_columns(c0, c1, c2, c3)
 }
@@ -460,32 +454,32 @@ class RayBoxHit {
     }
 
     fn hit_face_offset_x() → int ∪ none {
-        let int ∪ none code_result ← self.hit_face_code()
-        if code_result is none then return null
-        return face_code_x_offset(code_result)
+        let int ∪ none code ← self.hit_face_code()
+        if code is none then return null
+        return face_code_x_offset(code)
     }
 
     fn hit_face_offset_y() → int ∪ none {
-        let int ∪ none code_result ← self.hit_face_code()
-        if code_result is none then return null
-        return face_code_y_offset(code_result)
+        let int ∪ none code ← self.hit_face_code()
+        if code is none then return null
+        return face_code_y_offset(code)
     }
 
     fn hit_face_offset_z() → int ∪ none {
-        let int ∪ none code_result ← self.hit_face_code()
-        if code_result is none then return null
-        return face_code_z_offset(code_result)
+        let int ∪ none code ← self.hit_face_code()
+        if code is none then return null
+        return face_code_z_offset(code)
     }
 
     fn hit_face_facts() → FaceCodeFacts ∪ none {
-        let int ∪ none code_result ← self.hit_face_code()
-        if code_result is none then return null
-        return face_code_facts(code_result)
+        let int ∪ none code ← self.hit_face_code()
+        if code is none then return null
+        return face_code_facts(code)
     }
 }
 
 fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInterval ∪ none {
-    if direction.abs() ≤ 0.000001 {
+    if abs direction ≤ 0.000001 {
         if origin ≺ minimum or origin ≻ maximum then return null
         return RayInterval {minimum = -1000000000.0, maximum = 1000000000.0}
     }
@@ -495,12 +489,12 @@ fn axis_interval(f32 origin, f32 direction, f32 minimum, f32 maximum) → RayInt
 }
 
 fn hit_normal(Box<3> bounds, vector<f32, size 3> point) → vector<f32, size 3> {
-    if (point[0] - bounds.minima[0]).abs() ≤ 0.0001 then return [-1.0, 0.0, 0.0] ↦ vector<f32, size 3>
-    if (point[0] - bounds.maxima[0]).abs() ≤ 0.0001 then return [1.0, 0.0, 0.0] ↦ vector<f32, size 3>
-    if (point[1] - bounds.minima[1]).abs() ≤ 0.0001 then return [0.0, -1.0, 0.0] ↦ vector<f32, size 3>
-    if (point[1] - bounds.maxima[1]).abs() ≤ 0.0001 then return [0.0, 1.0, 0.0] ↦ vector<f32, size 3>
-    if (point[2] - bounds.minima[2]).abs() ≤ 0.0001 then return [0.0, 0.0, -1.0] ↦ vector<f32, size 3>
-    if (point[2] - bounds.maxima[2]).abs() ≤ 0.0001 then return [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
+    if abs (point[0] - bounds.minima[0]) ≤ 0.0001 then return [-1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    if abs (point[0] - bounds.maxima[0]) ≤ 0.0001 then return [1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    if abs (point[1] - bounds.minima[1]) ≤ 0.0001 then return [0.0, -1.0, 0.0] ↦ vector<f32, size 3>
+    if abs (point[1] - bounds.maxima[1]) ≤ 0.0001 then return [0.0, 1.0, 0.0] ↦ vector<f32, size 3>
+    if abs (point[2] - bounds.minima[2]) ≤ 0.0001 then return [0.0, 0.0, -1.0] ↦ vector<f32, size 3>
+    if abs (point[2] - bounds.maxima[2]) ≤ 0.0001 then return [0.0, 0.0, 1.0] ↦ vector<f32, size 3>
     return [0.0, 0.0, 0.0] ↦ vector<f32, size 3>
 }
 
@@ -522,19 +516,15 @@ class Ray {
         if y_interval is none then return null
         let RayInterval ∪ none z_interval ← axis_interval(self.origin[2], self.direction[2], box.minima[2], box.maxima[2])
         if z_interval is none then return null
-        let RayInterval x_axis ← x_interval
-        let RayInterval y_axis ← y_interval
-        let RayInterval z_axis ← z_interval
-        let f32 entry ← (((x_axis.minimum ⤒ y_axis.minimum) ⤒ z_axis.minimum) ⤒ 0.0)
-        let f32 exit ← (((x_axis.maximum ⤓ y_axis.maximum) ⤓ z_axis.maximum) ⤓ max_distance)
+        let f32 entry ← ((x_interval.minimum ⤒ y_interval.minimum) ⤒ z_interval.minimum) ⤒ 0.0
+        let f32 exit ← ((x_interval.maximum ⤓ y_interval.maximum) ⤓ z_interval.maximum) ⤓ max_distance
         if entry ≻ exit then return null
         return entry
     }
 
     fn box_hit(Box<3> box, f32 max_distance) → RayBoxHit ∪ none {
-        let f32 ∪ none distance_result ← self.intersects_box(box, max_distance)
-        if distance_result is none then return null
-        let f32 distance ← distance_result
+        let f32 ∪ none distance ← self.intersects_box(box, max_distance)
+        if distance is none then return null
         let vector<f32, size 3> point ← self.point_at(distance)
         return RayBoxHit {distance = distance, point = point, normal = hit_normal(box, point)}
     }
@@ -584,26 +574,26 @@ fn camera_pitch_clamped(f32 pitch_degrees) → f32 {
 fn camera_direction_from_yaw_pitch(f32 yaw_degrees, f32 pitch_degrees) → vector<f32, size 3> {
     let f32 yaw ← radians_from_degrees(yaw_degrees)
     let f32 pitch ← radians_from_degrees(camera_pitch_clamped(pitch_degrees))
-    let f32 pitch_cos ← pitch.cos()
-    let f32 pitch_sin ← pitch.sin()
-    let f32 yaw_sin ← yaw.sin()
-    let f32 yaw_cos ← yaw.cos()
+    let f32 pitch_cos ← cos pitch
+    let f32 pitch_sin ← sin pitch
+    let f32 yaw_sin ← sin yaw
+    let f32 yaw_cos ← cos yaw
     return normalized3([yaw_sin * pitch_cos, pitch_sin, -yaw_cos * pitch_cos] ↦ vector<f32, size 3>)
 }
 
 @ public
 fn camera_planar_forward_from_yaw(f32 yaw_degrees) → vector<f32, size 3> {
     let f32 yaw ← radians_from_degrees(yaw_degrees)
-    let f32 yaw_sin ← yaw.sin()
-    let f32 yaw_cos ← yaw.cos()
+    let f32 yaw_sin ← sin yaw
+    let f32 yaw_cos ← cos yaw
     return normalized3([yaw_sin, 0.0, -yaw_cos] ↦ vector<f32, size 3>)
 }
 
 @ public
 fn camera_right_from_yaw(f32 yaw_degrees) → vector<f32, size 3> {
     let f32 yaw ← radians_from_degrees(yaw_degrees)
-    let f32 yaw_sin ← yaw.sin()
-    let f32 yaw_cos ← yaw.cos()
+    let f32 yaw_sin ← sin yaw
+    let f32 yaw_cos ← cos yaw
     return normalized3([yaw_cos, 0.0, yaw_sin] ↦ vector<f32, size 3>)
 }
 
@@ -684,8 +674,7 @@ fn box_intersects(Box<3> a, Box<3> b) → bool {
 
 @ public
 fn box_inflated(Box<3> box, f32 amount) → Box<3> {
-    let Box<3> expanded ← Box {minima = box.minima - amount, maxima = box.maxima + amount}
-    return expanded
+    return Box {minima = box.minima - amount, maxima = box.maxima + amount}
 }
 
 @ public
@@ -708,17 +697,15 @@ fn box_overlap(Box<3> a, Box<3> b) → vector<f32, size 3> ∪ none {
 
 @ public
 fn box_overlap_facts(Box<3> a, Box<3> b) → BoxOverlapFacts ∪ none {
-    let vector<f32, size 3> ∪ none overlap_result ← box_overlap(a, b)
-    if overlap_result is none then return null
-    let vector<f32, size 3> overlap ← overlap_result
+    let vector<f32, size 3> ∪ none overlap ← box_overlap(a, b)
+    if overlap is none then return null
     return BoxOverlapFacts {overlap = overlap, x = overlap[0], y = overlap[1], z = overlap[2]}
 }
 
 @ public
 fn box_union(Box<3> a, Box<3> b) → Box<3> ∪ none {
     if not box_valid(a) or not box_valid(b) then return null
-    let Box<3> united ← Box {minima = a.minima ⤓ b.minima, maxima = a.maxima ⤒ b.maxima}
-    return united
+    return Box<3> {minima = a.minima ⤓ b.minima, maxima = a.maxima ⤒ b.maxima}
 }
 
 @ public
@@ -731,16 +718,14 @@ fn box_from_min_max(vector<f32, size 3> minimum, vector<f32, size 3> maximum) �
 @ public
 fn box_from_min_and_size(vector<f32, size 3> minimum, vector<f32, size 3> size_vector) → Box<3> ∪ none {
     if (size_vector[0] ≤ 0.0 or size_vector[1] ≤ 0.0) or size_vector[2] ≤ 0.0 then return null
-    let Box<3> bounds ← Box {minima = minimum, maxima = minimum + size_vector}
-    return bounds
+    return Box<3> {minima = minimum, maxima = minimum + size_vector}
 }
 
 @ public
 fn box_from_center_and_size(vector<f32, size 3> center, vector<f32, size 3> size_vector) → Box<3> ∪ none {
     if (size_vector[0] ≤ 0.0 or size_vector[1] ≤ 0.0) or size_vector[2] ≤ 0.0 then return null
     let vector<f32, size 3> half ← size_vector * 0.5
-    let Box<3> bounds ← Box {minima = center - half, maxima = center + half}
-    return bounds
+    return Box<3> {minima = center - half, maxima = center + half}
 }
 
 @ public
@@ -751,8 +736,7 @@ fn box_size(Box<3> box) → vector<f32, size 3> ∪ none {
 
 @ public
 fn box_translated(Box<3> box, vector<f32, size 3> offset) → Box<3> {
-    let Box<3> moved ← Box {minima = box.minima + offset, maxima = box.maxima + offset}
-    return moved
+    return Box {minima = box.minima + offset, maxima = box.maxima + offset}
 }
 
 +++ faber test
@@ -761,7 +745,7 @@ import from "./math"
 
 # Absolute-difference check for results that are computed, not exact.
 fn close(f32 actual, f32 expected) → bool {
-    return (actual - expected).abs() ≺ 0.000001
+    return abs (actual - expected) ≺ 0.000001
 }
 
 describe "vector carriers and arithmetic" {
@@ -823,14 +807,14 @@ describe "vector carriers and arithmetic" {
         let vector<f32, size 3> diagonal ← math.normalized3([300000.0, 400000.0, 0.0] ↦ vector<f32, size 3>)
         let vector<f32, size 3> huge ← math.normalized3([0.0, 0.0, 10000000000.0] ↦ vector<f32, size 3>)
 
-        assert (along_x[0] - 1.0).abs() ≺ (0.00001 ∷ f32)
-        assert along_x[1].abs() ≺ (0.00001 ∷ f32)
-        assert along_x[2].abs() ≺ (0.00001 ∷ f32)
-        assert (diagonal[0] - 0.6).abs() ≺ (0.00001 ∷ f32)
-        assert (diagonal[1] - 0.8).abs() ≺ (0.00001 ∷ f32)
-        assert diagonal[2].abs() ≺ (0.00001 ∷ f32)
-        assert (huge[2] - 1.0).abs() ≺ (0.00001 ∷ f32)
-        assert (along_x.norm() - 1.0).abs() ≺ (0.00001 ∷ f32)
+        assert abs (along_x[0] - 1.0) ≺ (0.00001 ∷ f32)
+        assert abs along_x[1] ≺ (0.00001 ∷ f32)
+        assert abs along_x[2] ≺ (0.00001 ∷ f32)
+        assert abs (diagonal[0] - 0.6) ≺ (0.00001 ∷ f32)
+        assert abs (diagonal[1] - 0.8) ≺ (0.00001 ∷ f32)
+        assert abs diagonal[2] ≺ (0.00001 ∷ f32)
+        assert abs (huge[2] - 1.0) ≺ (0.00001 ∷ f32)
+        assert abs (along_x.norm() - 1.0) ≺ (0.00001 ∷ f32)
     }
 }
 
@@ -887,10 +871,9 @@ describe "matrix and transform carriers" {
 
     test "perspective at a wide field of view follows the built-in sine and cosine" {
         let f32 half_angle ← math.radians_from_degrees(179.0) * 0.5
-        let f32 focal ← half_angle.cos() / half_angle.sin()
-        let matrix<f32, [4, 4]> ∪ none wide_result ← math.matrix_perspective(179.0, 2.0, 0.1, 100.0)
-        assert wide_result not is none
-        let matrix<f32, [4, 4]> wide ← wide_result
+        let f32 focal ← cos half_angle / sin half_angle
+        let matrix<f32, [4, 4]> ∪ none wide ← math.matrix_perspective(179.0, 2.0, 0.1, 100.0)
+        assert wide not is none
 
         assert close(wide[[1, 1]], focal)
         assert close(wide[[0, 0]], focal / 2.0)
@@ -904,10 +887,10 @@ describe "matrix and transform carriers" {
     test "transform payload records model and view-projection facts" {
         let matrix<f32, [4, 4]> model ← math.matrix_translation([1.0, 2.0, 3.0] ↦ vector<f32, size 3>)
         let matrix<f32, [4, 4]> view_projection ← math.matrix_scale([4.0, 5.0, 6.0] ↦ vector<f32, size 3>)
-        let math.TransformPayload payload_result ← math.transform_payload(model, view_projection)
+        let math.TransformPayload built ← math.transform_payload(model, view_projection)
 
-        assert payload_result.float_count() coalesce 0 ≡ 32
-        assert payload_result.byte_count() coalesce 0 ≡ 128
+        assert built.float_count() coalesce 0 ≡ 32
+        assert built.byte_count() coalesce 0 ≡ 128
 
         let math.TransformPayload payload ← math.TransformPayload {values = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 2.0, 3.0, 1.0, 4.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0]}
         let int count ← payload.float_count() coalesce 0
@@ -962,26 +945,23 @@ describe "quaternion and euler rotation" {
         let f32 half_pi_gap ← near_pi * 0.5
         let f32 half_turn_gap ← near_two_pi * 0.5
 
-        let math.Quaternion ∪ none yaw_result ← math.euler(0.0, near_pi, 0.0).to_quaternion()
-        let math.Quaternion ∪ none negative_result ← math.euler(0.0, -near_pi, 0.0).to_quaternion()
-        let math.Quaternion ∪ none roll_result ← math.euler(0.0, 0.0, near_two_pi).to_quaternion()
-        assert yaw_result not is none
-        assert negative_result not is none
-        assert roll_result not is none
-        let math.Quaternion yaw ← yaw_result
-        let math.Quaternion negative ← negative_result
-        let math.Quaternion roll ← roll_result
+        let math.Quaternion ∪ none yaw ← math.euler(0.0, near_pi, 0.0).to_quaternion()
+        let math.Quaternion ∪ none negative ← math.euler(0.0, -near_pi, 0.0).to_quaternion()
+        let math.Quaternion ∪ none roll ← math.euler(0.0, 0.0, near_two_pi).to_quaternion()
+        assert yaw not is none
+        assert negative not is none
+        assert roll not is none
 
         assert close(yaw.x, 0.0)
-        assert close(yaw.y, half_pi_gap.sin())
+        assert close(yaw.y, sin half_pi_gap)
         assert close(yaw.z, 0.0)
-        assert close(yaw.w, half_pi_gap.cos())
-        assert close(negative.y, -half_pi_gap.sin())
-        assert close(negative.w, half_pi_gap.cos())
+        assert close(yaw.w, cos half_pi_gap)
+        assert close(negative.y, -sin half_pi_gap)
+        assert close(negative.w, cos half_pi_gap)
         assert close(roll.x, 0.0)
         assert close(roll.y, 0.0)
-        assert close(roll.z, half_turn_gap.sin())
-        assert close(roll.w, half_turn_gap.cos())
+        assert close(roll.z, sin half_turn_gap)
+        assert close(roll.w, cos half_turn_gap)
     }
 
     test "euler values accept XYZ and reject unsupported orders" {
@@ -1026,14 +1006,14 @@ describe "color, angle, and camera contracts" {
         let vector<f32, size 3> right ← math.camera_right_from_yaw(179.0)
         let vector<f32, size 3> looking ← math.camera_direction_from_yaw_pitch(179.0, 0.0)
 
-        assert close(forward[0], yaw.sin())
+        assert close(forward[0], sin yaw)
         assert close(forward[1], 0.0)
-        assert close(forward[2], -yaw.cos())
-        assert close(right[0], yaw.cos())
+        assert close(forward[2], -cos yaw)
+        assert close(right[0], cos yaw)
         assert close(right[1], 0.0)
-        assert close(right[2], yaw.sin())
-        assert close(looking[0], yaw.sin())
-        assert close(looking[2], -yaw.cos())
+        assert close(right[2], sin yaw)
+        assert close(looking[0], sin yaw)
+        assert close(looking[2], -cos yaw)
     }
 
     test "camera helpers clamp pitch and return coherent carriers" {

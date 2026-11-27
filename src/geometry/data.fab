@@ -4,7 +4,7 @@ locale = "en"
 +++ faber
 # CPU-side geometry data, topology, and mesh construction.
 #
-# Public import: import from "triga:geometry/data" data
+# Public import: import from "triga:geometry/data"
 #
 # Owns: Geometry (+ all methods, including index_format_code() and
 # topology_code()), ColoredQuadMesh (+ methods), colored_quad_mesh_append,
@@ -13,9 +13,9 @@ locale = "en"
 # helpers, and the standalone free function geometry_vertex_layout_matches.
 #
 # PrimitiveTopology lives here (not in geometry/layout): Geometry's
-# topology discerne sites and the free constructors' variant construction
-# must stay same-module under the current file-interface rules, and
-# topology_code stays co-located with the enum it matches.
+# topology match sites and the free constructors' variant construction
+# must stay same-module, and topology_code stays co-located with the union it
+# matches.
 #
 # Imports: triga:math, triga:geometry/attribute, triga:geometry/layout,
 # triga:geometry/bounds, triga:geometry/batch.
@@ -67,30 +67,26 @@ class ColoredQuadMesh {
     }
 
     fn facts() → batch.VisibleFaceMeshFacts ∪ none {
-        let int ∪ none face_count_result ← self.face_count()
-        if face_count_result is none then return null
-        let int face_count ← face_count_result
+        let int ∪ none face_count ← self.face_count()
+        if face_count is none then return null
         return batch.visible_face_mesh_facts(face_count)
     }
 
     fn draw_batch_facts(int instance_count) → batch.IndexedGeometryDrawBatchFacts ∪ none {
-        let Geometry ∪ none geometry_result ← self.geometry()
-        if geometry_result is none then return null
-        let Geometry geom ← geometry_result
+        let Geometry ∪ none geom ← self.geometry()
+        if geom is none then return null
         return geom.indexed_draw_batch_facts(instance_count)
     }
 
     fn bounding_box() → bounds.BoundingBox ∪ none {
-        let Geometry ∪ none geometry_result ← self.geometry()
-        if geometry_result is none then return null
-        let Geometry geom ← geometry_result
+        let Geometry ∪ none geom ← self.geometry()
+        if geom is none then return null
         return geom.bounding_box()
     }
 
     fn bounding_sphere() → bounds.BoundingSphere ∪ none {
-        let Geometry ∪ none geometry_result ← self.geometry()
-        if geometry_result is none then return null
-        let Geometry geom ← geometry_result
+        let Geometry ∪ none geom ← self.geometry()
+        if geom is none then return null
         return geom.bounding_sphere()
     }
 }
@@ -201,8 +197,7 @@ class Geometry {
     fn index_count() → int ∪ none {
         if not self.valid() then return null
         if not self.indexed then return null
-        let int count ← self.indices.length()
-        return count
+        return self.indices.length()
     }
 
     fn index_format_code() → int ∪ none {
@@ -213,30 +208,22 @@ class Geometry {
 
     fn group_count() → int ∪ none {
         if not self.valid() then return null
-        let int count ← self.groups.length()
-        return count
+        return self.groups.length()
     }
 
     # --- Attribute payload byte counts ----------------------------------
 
     fn attribute_byte_count(string name) → int ∪ none {
         if not self.valid() then return null
-        for from self.attributes let attribute {
-            if attribute.name ≡ name {
-                let int scalars ← attribute.scalar_count()
-                let int bytes ← scalars * attribute.scalar_bytes()
-                return bytes
-            }
-        }
-        return null
+        let attribute.Attribute ∪ none found ← self.attributes.find((attribute.Attribute attr) → bool ∴ attr.name ≡ name)
+        if found is none then return null
+        return found.scalar_count() * found.scalar_bytes()
     }
 
     fn attribute_scalar_count(string name) → int ∪ none {
         if not self.valid() then return null
-        for from self.attributes let attribute {
-            if attribute.name ≡ name then return attribute.scalar_count()
-        }
-        return null
+        let attribute.Attribute ∪ none found ← self.attributes.find((attribute.Attribute attr) → bool ∴ attr.name ≡ name)
+        return found?.scalar_count()
     }
 
     fn vertex_payload_byte_count() → int ∪ none {
@@ -251,17 +238,14 @@ class Geometry {
     fn index_payload_byte_count() → int ∪ none {
         if not self.valid() then return null
         if not self.indexed then return null
-        let int bytes ← self.indices.length() * 4
-        return bytes
+        return self.indices.length() * 4
     }
 
     fn payload_byte_count() → int ∪ none {
-        let int ∪ none vertex_bytes_result ← self.vertex_payload_byte_count()
-        if vertex_bytes_result is none then return null
-        let int vertex_bytes ← vertex_bytes_result
-        let int ∪ none index_bytes_result ← self.index_payload_byte_count()
-        if index_bytes_result is none then return vertex_bytes
-        let int index_bytes ← index_bytes_result
+        let int ∪ none vertex_bytes ← self.vertex_payload_byte_count()
+        if vertex_bytes is none then return null
+        let int ∪ none index_bytes ← self.index_payload_byte_count()
+        if index_bytes is none then return vertex_bytes
         return vertex_bytes + index_bytes
     }
 
@@ -272,10 +256,7 @@ class Geometry {
         match self.topology {
             case TriangleList {
             }
-            case LineList {
-                return null
-            }
-            case PointList {
+            case _ {
                 return null
             }
         }
@@ -285,12 +266,9 @@ class Geometry {
     fn line_count() → int ∪ none {
         if not self.valid() then return null
         match self.topology {
-            case TriangleList {
-                return null
-            }
             case LineList {
             }
-            case PointList {
+            case _ {
                 return null
             }
         }
@@ -318,9 +296,8 @@ class Geometry {
         if instance_count ≡ 0 then return null
         mut list<batch.GeometryDrawCommand> commands ← empty
         for exclusive self.groups.length() let i {
-            let batch.GeometryDrawCommand ∪ none command ← self.group_draw_command(i, instance_count)
-            if command is none then return null
-            let batch.GeometryDrawCommand value ← command
+            let batch.GeometryDrawCommand ∪ none value ← self.group_draw_command(i, instance_count)
+            if value is none then return null
             commands.append(value)
         }
         return commands
@@ -368,9 +345,8 @@ class Geometry {
     }
 
     fn bounding_sphere() → bounds.BoundingSphere ∪ none {
-        let bounds.BoundingBox ∪ none bounds_result ← self.bounding_box()
-        if bounds_result is none then return null
-        let bounds.BoundingBox bnd ← bounds_result
+        let bounds.BoundingBox ∪ none bnd ← self.bounding_box()
+        if bnd is none then return null
         let vector<f32, size 3> center ← box_center(bnd)
         let list<f32> positions ← self.position_values()
         mut f32 radius ← 0.0
@@ -381,9 +357,8 @@ class Geometry {
     }
 
     fn group_bounding_sphere(int group_index) → bounds.BoundingSphere ∪ none {
-        let bounds.BoundingBox ∪ none bounds_result ← self.group_bounding_box(group_index)
-        if bounds_result is none then return null
-        let bounds.BoundingBox bnd ← bounds_result
+        let bounds.BoundingBox ∪ none bnd ← self.group_bounding_box(group_index)
+        if bnd is none then return null
         let vector<f32, size 3> center ← box_center(bnd)
         let batch.GeometryGroup group ← self.groups[group_index]
         let list<f32> positions ← self.position_values()
@@ -404,10 +379,7 @@ class Geometry {
         match self.topology {
             case TriangleList {
             }
-            case LineList {
-                return null
-            }
-            case PointList {
+            case _ {
                 return null
             }
         }
@@ -440,9 +412,8 @@ class Geometry {
     }
 
     fn planar_uvs() → attribute.Attribute ∪ none {
-        let bounds.BoundingBox ∪ none bounds_result ← self.bounding_box()
-        if bounds_result is none then return null
-        let bounds.BoundingBox bnd ← bounds_result
+        let bounds.BoundingBox ∪ none bnd ← self.bounding_box()
+        if bnd is none then return null
         let f32 width ← bnd.max_x - bnd.min_x
         let f32 height ← bnd.max_y - bnd.min_y
         let f32 zero ← 0.0
@@ -485,66 +456,57 @@ class Geometry {
 
     fn vertex_layout_count() → int ∪ none {
         if not self.valid() then return null
-        let int count ← self.attributes.length()
-        return count
+        return self.attributes.length()
     }
 
     fn vertex_layout_location(int index) → int ∪ none {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return null
-        let layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return null
         return lay.shader_location
     }
 
     fn vertex_layout_source_name(int index) → string ∪ none {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return null
-        let layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return null
         return lay.source_name
     }
 
     fn vertex_layout_format_code(int index) → int ∪ none {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return null
-        let layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return null
         return layout.layout_format_code(lay)
     }
 
     fn vertex_layout_offset_bytes(int index) → int ∪ none {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return null
-        let layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return null
         return lay.offset_bytes
     }
 
     fn vertex_layout_stride_bytes(int index) → int ∪ none {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return null
-        let layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return null
         return lay.stride_bytes
     }
 
     fn vertex_layout_step_mode_code(int index) → int ∪ none {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return null
-        let layout.VertexAttributeLayout lay ← layout_result
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return null
         return layout.layout_step_mode_code(lay)
     }
 
     fn vertex_layout_matches(int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code) → bool {
-        let layout.VertexAttributeLayout ∪ none layout_result ← self.vertex_layout_at(index)
-        if layout_result is none then return false
-        let layout.VertexAttributeLayout lay ← layout_result
-        return ((((lay.source_name ≡ source_name and lay.shader_location ≡ shader_location) and layout.layout_format_code(lay) ≡ format_code) and lay.offset_bytes ≡ offset_bytes) and lay.stride_bytes ≡ stride_bytes) and layout.layout_step_mode_code(lay) ≡ step_mode_code
+        let layout.VertexAttributeLayout ∪ none lay ← self.vertex_layout_at(index)
+        if lay is none then return false
+        return lay.source_name ≡ source_name and lay.shader_location ≡ shader_location and layout.layout_format_code(lay) ≡ format_code and lay.offset_bytes ≡ offset_bytes and lay.stride_bytes ≡ stride_bytes and layout.layout_step_mode_code(lay) ≡ step_mode_code
     }
 
     fn vertex_layouts() → list<layout.VertexAttributeLayout> ∪ none {
         if not self.valid() then return null
         mut list<layout.VertexAttributeLayout> layouts ← empty
         for from self.attributes let attr {
-            let layout.VertexAttributeLayout ∪ none layout_result ← attr.vertex_layout()
-            if layout_result is none then return null
-            let layout.VertexAttributeLayout lay ← layout_result
+            let layout.VertexAttributeLayout ∪ none lay ← attr.vertex_layout()
+            if lay is none then return null
             layouts.append(lay)
         }
         return layouts
@@ -556,31 +518,28 @@ class Geometry {
         if not self.valid() then return null
         if not self.indexed then return null
         if instance_count ≡ 0 then return null
-        let list<batch.GeometryDrawCommand> ∪ none commands_result ← self.group_draw_commands(instance_count)
-        if commands_result is none then return null
-        let list<batch.GeometryDrawCommand> commands ← commands_result
-        let int ∪ none grouped_elements_result ← self.group_element_total()
-        if grouped_elements_result is none then return null
-        let int ∪ none vertex_bytes_result ← self.vertex_payload_byte_count()
-        if vertex_bytes_result is none then return null
-        let int ∪ none index_bytes_result ← self.index_payload_byte_count()
-        if index_bytes_result is none then return null
-        let int ∪ none total_bytes_result ← self.payload_byte_count()
-        if total_bytes_result is none then return null
-        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.length(), grouped_element_total = grouped_elements_result, vertex_payload_byte_count = vertex_bytes_result, index_payload_byte_count = index_bytes_result, total_payload_byte_count = total_bytes_result}
+        let list<batch.GeometryDrawCommand> ∪ none commands ← self.group_draw_commands(instance_count)
+        if commands is none then return null
+        let int ∪ none grouped_elements ← self.group_element_total()
+        if grouped_elements is none then return null
+        let int ∪ none vertex_bytes ← self.vertex_payload_byte_count()
+        if vertex_bytes is none then return null
+        let int ∪ none index_bytes ← self.index_payload_byte_count()
+        if index_bytes is none then return null
+        let int ∪ none total_bytes ← self.payload_byte_count()
+        if total_bytes is none then return null
+        return batch.IndexedGeometryDrawBatchFacts {draw_count = commands.length(), grouped_element_total = grouped_elements, vertex_payload_byte_count = vertex_bytes, index_payload_byte_count = index_bytes, total_payload_byte_count = total_bytes}
     }
 
     fn line_draw_batch_facts(int instance_count) → batch.LineGeometryDrawBatchFacts ∪ none {
         if not self.valid() then return null
         if not self.indexed then return null
         if instance_count ≡ 0 then return null
-        let int ∪ none line_count_result ← self.line_count()
-        if line_count_result is none then return null
-        let batch.IndexedGeometryDrawBatchFacts ∪ none batch_result ← self.indexed_draw_batch_facts(instance_count)
-        if batch_result is none then return null
-        let int line_count_value ← line_count_result
-        let batch.IndexedGeometryDrawBatchFacts batch_facts ← batch_result
-        return batch.LineGeometryDrawBatchFacts {draw_count = batch_facts.draw_count, line_count = line_count_value, grouped_element_total = batch_facts.grouped_element_total, vertex_payload_byte_count = batch_facts.vertex_payload_byte_count, index_payload_byte_count = batch_facts.index_payload_byte_count, total_payload_byte_count = batch_facts.total_payload_byte_count}
+        let int ∪ none line_count ← self.line_count()
+        if line_count is none then return null
+        let batch.IndexedGeometryDrawBatchFacts ∪ none batch_facts ← self.indexed_draw_batch_facts(instance_count)
+        if batch_facts is none then return null
+        return batch.LineGeometryDrawBatchFacts {draw_count = batch_facts.draw_count, line_count = line_count, grouped_element_total = batch_facts.grouped_element_total, vertex_payload_byte_count = batch_facts.vertex_payload_byte_count, index_payload_byte_count = batch_facts.index_payload_byte_count, total_payload_byte_count = batch_facts.total_payload_byte_count}
     }
 }
 
@@ -623,25 +582,16 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> ind
     if positions.length() ≢ colors.length() then return null
     if positions.length() % 3 ≢ 0 then return null
     if indices.length() % 3 ≢ 0 then return null
-    mut list<f32> next_positions ← empty
-    for from positions let value {
-        next_positions.append(value)
-    }
-    mut list<f32> next_colors ← empty
-    for from colors let value {
-        next_colors.append(value)
-    }
-    mut list<u32> next_indices ← empty
-    for from indices let value {
-        next_indices.append(value)
-    }
+    mut list<f32> next_positions ← copy positions
+    mut list<f32> next_colors ← copy colors
+    mut list<u32> next_indices ← copy indices
     let int vertex_base ← positions.length() / 3
     for from [a, b, c, d] let corner {
         next_positions.append(corner[0])
         next_positions.append(corner[1])
         next_positions.append(corner[2])
     }
-    for exclusive 4 let corner {
+    for exclusive 4 {
         next_colors.append(color.r)
         next_colors.append(color.g)
         next_colors.append(color.b)
@@ -662,7 +612,7 @@ fn colored_quad_mesh_append(list<f32> positions, list<f32> colors, list<u32> ind
     return ColoredQuadMesh {positions = next_positions, colors = next_colors, indices = next_indices}
 }
 
-# --- Private scalar and code helpers (free, no genus receiver) ---
+# --- Private scalar and code helpers (free functions, no class receiver) ---
 
 # Positions are stored flat (x, y, z per vertex); this reads one vertex as a
 # vector so callers work with vector arithmetic instead of stride indexing.
@@ -717,10 +667,10 @@ fn topology_range_valid(ref PrimitiveTopology topology, int start, int count) �
 
 # --- Standalone vertex-layout assertion (wraps Geometry method) ---
 #
-# Contract-role adapter: the compiler-owned `@ shader_contract "vertex_layout"`
-# annotation maps this real Triga API onto the generic shader-contract surface
-# radix recognizes (see src/shader_contract.fab). The argument shape matches
-# the canonical vertex_layout role: (geo, index, source_name, location,
+# Contract-role adapter: the `@ shader_contract "vertex_layout"` annotation
+# maps this Triga API onto the generic shader-contract surface (see
+# src/shader_contract.fab). The argument shape matches the canonical
+# vertex_layout role: (geo, index, source_name, location,
 # format_code, offset_bytes, stride_bytes, step_mode_code).
 
 @ public
@@ -759,8 +709,8 @@ fn within_relative(f32 actual, f32 expected, f32 tolerance) → bool {
 describe "buffer geometry contracts" {
     test "indexed geometry publishes counts payloads and topology" {
         let data.Geometry geometry ← quad_geometry()
-        let list<layout.VertexAttributeLayout> empty_layouts ← empty
-        let list<layout.VertexAttributeLayout> layouts ← geometry.vertex_layouts() coalesce empty_layouts
+        let list<layout.VertexAttributeLayout> ∪ none layouts ← geometry.vertex_layouts()
+        assert layouts not is none
         assert geometry.valid()
         assert geometry.indexed
         assert geometry.element_count() ≡ 6
@@ -796,19 +746,19 @@ describe "buffer geometry contracts" {
         let data.Geometry geometry ← quad_geometry()
         let batch.GeometryDrawCommand ∪ none draw ← geometry.draw_command(3)
         let batch.GeometryDrawCommand ∪ none group_draw ← geometry.group_draw_command(1, 4)
-        let list<batch.GeometryDrawCommand> empty_commands ← empty
-        let list<batch.GeometryDrawCommand> commands ← geometry.group_draw_commands(2) coalesce empty_commands
+        let list<batch.GeometryDrawCommand> ∪ none commands ← geometry.group_draw_commands(2)
+        assert commands not is none
         let batch.IndexedGeometryDrawBatchFacts ∪ none facts ← geometry.indexed_draw_batch_facts(2)
         assert draw not is none
-        assert draw!.indexed
-        assert draw!.element_count ≡ 6
-        assert draw!.first_element ≡ 0
-        assert draw!.instance_count ≡ 3
+        assert draw.indexed
+        assert draw.element_count ≡ 6
+        assert draw.first_element ≡ 0
+        assert draw.instance_count ≡ 3
         assert group_draw not is none
-        assert group_draw!.element_count ≡ 3
-        assert group_draw!.first_element ≡ 3
-        assert group_draw!.instance_count ≡ 4
-        assert group_draw!.material_index ≡ 7
+        assert group_draw.element_count ≡ 3
+        assert group_draw.first_element ≡ 3
+        assert group_draw.instance_count ≡ 4
+        assert group_draw.material_index ≡ 7
         assert geometry.group_draw_command(2, 1) is none
         assert commands.length() ≡ 2
         assert commands[0].material_index ≡ 2
@@ -817,11 +767,11 @@ describe "buffer geometry contracts" {
         assert geometry.draw_command(0) is none
         assert geometry.group_draw_commands(0) is none
         assert facts not is none
-        assert facts!.draw_count ≡ 2
-        assert facts!.grouped_element_total ≡ 6
-        assert facts!.vertex_payload_byte_count ≡ 144
-        assert facts!.index_payload_byte_count ≡ 24
-        assert facts!.total_payload_byte_count ≡ 168
+        assert facts.draw_count ≡ 2
+        assert facts.grouped_element_total ≡ 6
+        assert facts.vertex_payload_byte_count ≡ 144
+        assert facts.index_payload_byte_count ≡ 24
+        assert facts.total_payload_byte_count ≡ 168
         assert geometry.indexed_draw_batch_facts(0) is none
     }
 
@@ -833,16 +783,15 @@ describe "buffer geometry contracts" {
         let bounds.BoundingBox ∪ none second_box ← geometry.group_bounding_box(1)
         let bounds.BoundingSphere ∪ none first_sphere ← geometry.group_bounding_sphere(0)
         let bounds.BoundingSphere ∪ none second_sphere ← geometry.group_bounding_sphere(1)
-        let attribute.Attribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
-        let attribute.Attribute empty_uv ← attribute.float32_attribute("uv", 2, 2, 0, [])
-        let list<f32> empty_values ← empty
-        let list<f32> normal_values ← (geometry.vertex_normals() coalesce empty_normal).float32_values() coalesce empty_values
-        let list<f32> uv_values ← (geometry.planar_uvs() coalesce empty_uv).float32_values() coalesce empty_values
+        let list<f32> ∪ none normal_values ← geometry.vertex_normals()?.float32_values()
+        assert normal_values not is none
+        let list<f32> ∪ none uv_values ← geometry.planar_uvs()?.float32_values()
+        assert uv_values not is none
         assert box not is none
-        assert box!.min_x ≡ (0.0 ∷ f32)
-        assert box!.min_y ≡ (0.0 ∷ f32)
-        assert box!.max_x ≡ (3.0 ∷ f32)
-        assert box!.max_y ≡ (3.0 ∷ f32)
+        assert box.min_x ≡ (0.0 ∷ f32)
+        assert box.min_y ≡ (0.0 ∷ f32)
+        assert box.max_x ≡ (3.0 ∷ f32)
+        assert box.max_y ≡ (3.0 ∷ f32)
         assert first_box!.max_x ≡ (1.0 ∷ f32)
         assert first_box!.max_y ≡ (1.0 ∷ f32)
         assert second_box!.min_x ≡ (2.0 ∷ f32)
@@ -878,7 +827,7 @@ describe "buffer geometry contracts" {
         assert (triangles.payload_byte_count() coalesce 0) ≡ 36
         assert triangles.indexed_draw_batch_facts(1) is none
         assert triangle_draw not is none
-        assert triangle_draw!.indexed ≡ false
+        assert triangle_draw.indexed ≡ false
 
         let attribute.Attribute line_position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0])
         let data.Geometry lines ← data.line_geometry(4, [line_position], [0, 1, 2, 3], batch.DrawRange {start = 0, count = 4}, [batch.GeometryGroup {start = 0, count = 4, material_index = 4}])
@@ -889,12 +838,12 @@ describe "buffer geometry contracts" {
         assert (lines.topology_code() coalesce 0) ≡ 2
         assert lines.indexed_draw_batch_facts(1) not is none
         assert line_facts not is none
-        assert line_facts!.draw_count ≡ 1
-        assert line_facts!.line_count ≡ 2
-        assert line_facts!.grouped_element_total ≡ 4
-        assert line_facts!.vertex_payload_byte_count ≡ 48
-        assert line_facts!.index_payload_byte_count ≡ 16
-        assert line_facts!.total_payload_byte_count ≡ 64
+        assert line_facts.draw_count ≡ 1
+        assert line_facts.line_count ≡ 2
+        assert line_facts.grouped_element_total ≡ 4
+        assert line_facts.vertex_payload_byte_count ≡ 48
+        assert line_facts.index_payload_byte_count ≡ 16
+        assert line_facts.total_payload_byte_count ≡ 64
     }
 
     test "empty malformed and misaligned buffers are rejected" {
@@ -923,9 +872,8 @@ describe "buffer geometry contracts" {
     }
 
     test "colored quad accumulation preserves exact topology and derived facts" {
-        let data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [2.0, 0.0, 0.0] ↦ vector<f32, size 3>, [2.0, 2.0, 0.0] ↦ vector<f32, size 3>, [0.0, 2.0, 0.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
-        assert mesh_result not is none
-        let data.ColoredQuadMesh mesh ← mesh_result
+        let data.ColoredQuadMesh ∪ none mesh ← data.colored_quad_mesh_append(empty, empty, empty, [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, [2.0, 0.0, 0.0] ↦ vector<f32, size 3>, [2.0, 2.0, 0.0] ↦ vector<f32, size 3>, [0.0, 2.0, 0.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
+        assert mesh not is none
         let batch.VisibleFaceMeshFacts ∪ none mesh_facts ← mesh.facts()
         let data.Geometry ∪ none projected ← data.colored_indexed_geometry(4, mesh.positions, mesh.colors, mesh.indices)
         let data.Geometry geometry ← projected coalesce quad_geometry()
@@ -951,14 +899,14 @@ describe "buffer geometry contracts" {
         assert (mesh.face_count() coalesce 0) ≡ 1
         assert projected not is none
         assert mesh_facts not is none
-        assert mesh_facts!.face_count ≡ 1
-        assert mesh_facts!.vertex_count ≡ 4
-        assert mesh_facts!.index_count ≡ 6
-        assert mesh_facts!.triangle_count ≡ 2
-        assert mesh_facts!.total_payload_byte_count ≡ 120
+        assert mesh_facts.face_count ≡ 1
+        assert mesh_facts.vertex_count ≡ 4
+        assert mesh_facts.index_count ≡ 6
+        assert mesh_facts.triangle_count ≡ 2
+        assert mesh_facts.total_payload_byte_count ≡ 120
         assert draw_facts not is none
-        assert draw_facts!.draw_count ≡ 1
-        assert draw_facts!.grouped_element_total ≡ 6
+        assert draw_facts.draw_count ≡ 1
+        assert draw_facts.grouped_element_total ≡ 6
         assert mesh_box!.max_x ≡ (2.0 ∷ f32)
         assert mesh_box!.max_y ≡ (2.0 ∷ f32)
         assert mesh_sphere!.center_x ≡ (1.0 ∷ f32)
@@ -988,10 +936,10 @@ describe "geometry numerics at large coordinates" {
         let data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
         let bounds.BoundingSphere ∪ none sphere ← geometry.bounding_sphere()
         assert sphere not is none
-        assert sphere!.center_x ≡ (31000.0 ∷ f32)
-        assert sphere!.center_y ≡ (42000.0 ∷ f32)
-        assert sphere!.center_z ≡ (3000.0 ∷ f32)
-        assert within_relative(sphere!.radius, 50000.0, 0.00001)
+        assert sphere.center_x ≡ (31000.0 ∷ f32)
+        assert sphere.center_y ≡ (42000.0 ∷ f32)
+        assert sphere.center_z ≡ (3000.0 ∷ f32)
+        assert within_relative(sphere.radius, 50000.0, 0.00001)
     }
 
     test "bounding sphere radius is accurate for a spread in all three axes" {
@@ -999,8 +947,8 @@ describe "geometry numerics at large coordinates" {
         let data.Geometry geometry ← data.indexed_triangle_geometry(4, [position], [0, 1, 2, 0, 2, 3], batch.DrawRange {start = 0, count = 6}, empty)
         let bounds.BoundingSphere ∪ none sphere ← geometry.bounding_sphere()
         assert sphere not is none
-        assert sphere!.center_x ≡ (50000.0 ∷ f32)
-        assert within_relative(sphere!.radius, 86602.54, 0.00001)
+        assert sphere.center_x ≡ (50000.0 ∷ f32)
+        assert within_relative(sphere.radius, 86602.54, 0.00001)
     }
 
     test "group bounding sphere follows indices and stays accurate at large coordinates" {
@@ -1010,25 +958,23 @@ describe "geometry numerics at large coordinates" {
         let bounds.BoundingSphere ∪ none far_sphere ← geometry.group_bounding_sphere(0)
         let bounds.BoundingSphere ∪ none near_sphere ← geometry.group_bounding_sphere(1)
         assert far_box not is none
-        assert far_box!.min_x ≡ (20000.0 ∷ f32)
-        assert far_box!.max_y ≡ (110000.0 ∷ f32)
+        assert far_box.min_x ≡ (20000.0 ∷ f32)
+        assert far_box.max_y ≡ (110000.0 ∷ f32)
         assert far_sphere not is none
-        assert far_sphere!.center_x ≡ (50000.0 ∷ f32)
-        assert far_sphere!.center_y ≡ (70000.0 ∷ f32)
-        assert far_sphere!.center_z ≡ (10000.0 ∷ f32)
-        assert within_relative(far_sphere!.radius, 50000.0, 0.00001)
+        assert far_sphere.center_x ≡ (50000.0 ∷ f32)
+        assert far_sphere.center_y ≡ (70000.0 ∷ f32)
+        assert far_sphere.center_z ≡ (10000.0 ∷ f32)
+        assert within_relative(far_sphere.radius, 50000.0, 0.00001)
         assert near_sphere not is none
-        assert near_sphere!.center_x ≡ (0.5 ∷ f32)
-        assert within_relative(near_sphere!.radius, 0.70710677, 0.00001)
+        assert near_sphere.center_x ≡ (0.5 ∷ f32)
+        assert within_relative(near_sphere.radius, 0.70710677, 0.00001)
     }
 
     test "vertex normals are unit length for a large triangle" {
         let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 3, [1000.0, 2000.0, 3000.0, 31000.0, 42000.0, 3000.0, 1000.0, 2000.0, 53000.0])
         let data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
-        let attribute.Attribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
-        let list<f32> empty_values ← empty
-        let attribute.Attribute normal ← geometry.vertex_normals() coalesce empty_normal
-        let list<f32> values ← normal.float32_values() coalesce empty_values
+        let list<f32> ∪ none values ← geometry.vertex_normals()?.float32_values()
+        assert values not is none
         assert values.length() ≡ 9
         for range 0 ‥ 3 let vertex {
             let f32 nx ← values[vertex * 3]
@@ -1045,10 +991,8 @@ describe "geometry numerics at large coordinates" {
     test "vertex normals of an indexed large mesh are unit length at shared vertices" {
         let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 4, [0.0, 0.0, 0.0, 100000.0, 0.0, 0.0, 100000.0, 100000.0, 0.0, 0.0, 100000.0, 0.0])
         let data.Geometry geometry ← data.indexed_triangle_geometry(4, [position], [0, 1, 2, 0, 2, 3], batch.DrawRange {start = 0, count = 6}, empty)
-        let attribute.Attribute empty_normal ← attribute.float32_attribute("normal", 1, 3, 0, [])
-        let list<f32> empty_values ← empty
-        let attribute.Attribute normal ← geometry.vertex_normals() coalesce empty_normal
-        let list<f32> values ← normal.float32_values() coalesce empty_values
+        let list<f32> ∪ none values ← geometry.vertex_normals()?.float32_values()
+        assert values not is none
         assert values.length() ≡ 12
         for range 0 ‥ 4 let vertex {
             assert values[vertex * 3] ≡ (0.0 ∷ f32)
@@ -1058,9 +1002,8 @@ describe "geometry numerics at large coordinates" {
     }
 
     test "quad accumulation keeps corner order and every component" {
-        let data.ColoredQuadMesh ∪ none mesh_result ← data.colored_quad_mesh_append(empty, empty, empty, [1.0, 2.0, 3.0] ↦ vector<f32, size 3>, [4.0, 5.0, 6.0] ↦ vector<f32, size 3>, [7.0, 8.0, 9.0] ↦ vector<f32, size 3>, [10.0, 11.0, 12.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
-        assert mesh_result not is none
-        let data.ColoredQuadMesh mesh ← mesh_result
+        let data.ColoredQuadMesh ∪ none mesh ← data.colored_quad_mesh_append(empty, empty, empty, [1.0, 2.0, 3.0] ↦ vector<f32, size 3>, [4.0, 5.0, 6.0] ↦ vector<f32, size 3>, [7.0, 8.0, 9.0] ↦ vector<f32, size 3>, [10.0, 11.0, 12.0] ↦ vector<f32, size 3>, math.Color {r = 0.2, g = 0.4, b = 0.6})
+        assert mesh not is none
         let list<f32> expected ← [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0]
         assert mesh.positions ≡ expected
         assert mesh.colors.length() ≡ 12

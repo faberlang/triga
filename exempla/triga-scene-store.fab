@@ -22,7 +22,7 @@ main {
     let resource.ResourceTransition stable ← geom_handle.transition_unchanged()
     let resource.ResourceTransition replaced ← mat_handle.transition_replaced()
 
-    # Scene construction and insertion (Imperativus — requires varia)
+    # Scene construction and insertion. Inserting changes the store, so it is `mut`.
     mut scene.SceneStore store ← scene.scene_store()
     let scene.SceneNode mesh_node ← scene.scene_mesh("cube", geom_handle, mat_handle)
     let scene.SceneHandle mesh_handle ← store.insert(mesh_node)

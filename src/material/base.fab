@@ -4,20 +4,15 @@ locale = "en"
 +++ faber
 # Material base contracts, pipeline facts, and the texture descriptor seed.
 #
-# Public import: import from "triga:material/base" base
+# Public import: import from "triga:material/base"
 #
 # Owns: Material (+ receiver methods), MaterialPipelineFacts, TextureDescriptor
-# (H3 placeholder seed), and the material_from_name constructor.
-# MaterialPipelineFacts.side_code is frozen ABI (api-shape-policy §3).
-# TextureDescriptor relocates to material/texture.fab when the texture
-# pipeline (samplers, mipmaps, render targets) is designed (report §1.3).
-#
-# Zero imports.
+# and the material_from_name constructor. TextureDescriptor is a placeholder
+# until the texture pipeline (samplers, mipmaps, render targets) is designed.
 
 # Material is deliberately a small value contract. The
 # fields describe pipeline-relevant state; texture storage and host
-# allocation belong to later material leaves and the sibling renderer.
-# Operations on a material value are receiver methods (api-shape-policy §1).
+# allocation belong to later material leaves and the host renderer.
 @ public
 class Material {
     mut string name
@@ -38,16 +33,16 @@ class Material {
     }
 
     fn double_sided() → Material {
-        return Material {name = self.name, side = 2, transparent = self.transparent, opacity = self.opacity, depth_write = self.depth_write, depth_test = self.depth_test, alpha_test = self.alpha_test}
+        return Material {side = 2} from self
     }
 
     fn is_double_sided() → bool {
-        return self.side ≡ (2 ↦ u32)
+        return self.side ≡ 2
     }
 
     fn side_code() → int ∪ none {
         if not self.valid() then return null
-        return self.side ↦ int
+        return self.side
     }
 
     fn depth_enabled() → bool {
@@ -64,13 +59,14 @@ class Material {
 
     fn pipeline_facts() → MaterialPipelineFacts ∪ none {
         if not self.valid() then return null
-        return MaterialPipelineFacts {side_code = self.side ↦ int, depth_test_enabled = self.depth_test, depth_write_enabled = self.depth_write, transparent = self.transparent, alpha = self.opacity, alpha_test = self.alpha_test}
+        return MaterialPipelineFacts {side_code = self.side, depth_test_enabled = self.depth_test, depth_write_enabled = self.depth_write, transparent = self.transparent, alpha = self.opacity, alpha_test = self.alpha_test}
     }
 }
 
 # MaterialPipelineFacts is the validated, compact view used by pipeline-facing
-# examples. `side_code` is a frozen ABI field; the remaining fields expose the
-# depth and alpha decisions without requiring consumers to inspect Material.
+# examples. Hosts read `side_code` by its numeric value, so the codes don't
+# change; the remaining fields expose the depth and alpha decisions without
+# requiring consumers to inspect Material.
 @ public
 class MaterialPipelineFacts {
     mut int side_code
@@ -81,8 +77,8 @@ class MaterialPipelineFacts {
     mut f32 alpha_test
 }
 
-# TextureDescriptor is a texture-shape seed.
-# Relocates to material/texture.fab at H3; see header.
+# TextureDescriptor is the CPU-side description of a texture. The GPU handle
+# is `Texture2D` in triga:shader.
 @ public
 class TextureDescriptor {
     mut u32 width
