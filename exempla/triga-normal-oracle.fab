@@ -24,11 +24,7 @@ summary = "Surface-normal oracle for closed caps and sphere poles (winding invar
 #
 # Prints true/false per check; the sibling .expected records the observed
 # output (the exempla runtime-probe oracle convention — see the Box3 probe
-# triga-box3-genus-spike). The faber generated-Rust lane is blocked for
-# triga imports by the acknowledged emitter defect (CTO-5 registry row 7,
-# E0308 / Vec3; faber lane allowlisted in scripta/check-exempla-inventory),
-# so this probe executes through the radix TS-emit lane (the same lane the
-# 9f34e71 cap smoke used).
+# triga-box3-genus-spike).
 
 import from "triga:math" math
 

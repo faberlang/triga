@@ -104,8 +104,7 @@ fn resource_binding_matches(int group, int binding, int kind_code, int role_code
 # ---------------------------------------------------------------------------
 # Goal-01 pipeline defaults (decision D2 — Triga's contract)
 #
-# The first-pipeline contract locked by docs/factory/hello-voxel/goals/
-# 01-source-graphics-pipeline.md: color target bgra8unorm, depth24plus with
+# The first-pipeline contract: color target bgra8unorm, depth24plus with
 # compare less + writes enabled, triangle-list topology, 36 vertices, and a
 # group-0 binding-0 read-only transform storage buffer (32 f32). Conformance
 # programs assert these defaults through the pipeline / resource_binding role

@@ -2,8 +2,6 @@
 #
 # Public import: import from "triga:triga" triga
 #
-# Full module map (facade modules included): docs/module-map.md
-#
 # Prefer leaf modules (Norma style — one concern per import path):
 #   triga:math            vectors, matrices, volumes, rays, transform payload
 #   triga:graph/object    Object, Scene
