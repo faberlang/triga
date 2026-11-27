@@ -22,10 +22,11 @@ data into a graphics contract:
    DirectionalLight, PhongMaterial, and a PerspectiveCamera (values only).
 6. [`shaders/unlit.fab`](shaders/unlit.fab) writes a vertex and fragment
    stage as typed functions marked `@ Vertex` and `@ Fragment`;
-   [`shaders/lambert.fab`](shaders/lambert.fab) adds diffuse lighting.
-7. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) connects
-   geometry and transforms to real stages and explicit resource and pipeline
-   facts.
+   [`shaders/lambert.fab`](shaders/lambert.fab) adds diffuse lighting, and
+   [`shaders/textured.fab`](shaders/textured.fab) samples a bound texture.
+7. [`triga-hello-voxel-pipeline.fab`](triga-hello-voxel-pipeline.fab) builds a
+   colored cube, runs its vertex and fragment stages on the host, and forms
+   the draw command.
 
 The remaining files are focused fixtures: edge cases, type coverage, and a
 three.js-shaped browser host demonstration.
@@ -45,7 +46,7 @@ exempla/
   triga-math-edge-cases.fab     # NaN/Infinity, degenerate-input, boundary tests
   triga-scene-store-empty.fab   # Empty SceneStore edge case tests
   triga-graphics-pipeline-facts.fab # Shader stages, pipeline reflection, Goal 01
-  triga-hello-voxel-pipeline.fab # Cube geometry, real stages, and pipeline facts
+  triga-hello-voxel-pipeline.fab # Cube geometry, stages run on the host, draw command
   triga-box3-genus-spike.fab    # Box free-function overlap oracle
   triga-normal-oracle.fab       # Surface-normal winding oracle: cylinder caps + sphere poles
   shaders/                      # Vertex/fragment stage pairs; each emits WGSL

@@ -177,10 +177,10 @@ scripta/       checks and the presenter driver
 
 This runs `faber check` on the library and each exemplum, `faber corpus` on
 the exempla that carry expected output, `faber emit -t wgsl-text` plus `naga`
-on the exempla that declare shader stages, then `faber test` on the package.
-It uses `FABER_BIN` if set, otherwise a sibling `../radix` build. The WGSL
-step needs a faber built with the `mir-wgsl` feature; otherwise it reports
-itself as skipped. The presenter has its own driver: `./scripta/host check` and
+on the exempla that declare shader stages, `faber verify-library` for the WGSL
+bindings, then `faber test` on the package. It uses `FABER_BIN` if set,
+otherwise a sibling `../radix` build. The WGSL steps need a faber built with
+the `mir-wgsl` feature; otherwise they report themselves as skipped. The presenter has its own driver: `./scripta/host check` and
 `./scripta/host serve` (see [`host/README.md`](host/README.md)).
 
 ## License

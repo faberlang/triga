@@ -15,7 +15,7 @@ locale = "en"
 #   * contract-role functions carrying the compiler-owned annotation, whose
 #     call argument shapes match the canonical surface root recognizes
 #     (roles: vertex_layout / varying / fragment_output / pipeline /
-#     resource_binding), each stage-I/O role declared explicitly via
+#     resource_binding / bound_resource_binding), each stage-I/O role declared explicitly via
 #     `stage_io_role_code` (radix U6; roles are never synthesized from
 #     source-name spelling or location);
 #   * Triga's canonical code vocabulary (the codes programs assert; they
@@ -24,9 +24,20 @@ locale = "en"
 #     Triga's contract, not in radix (bgra8unorm, depth24plus less+write,
 #     triangle-list, 36 vertices, transform storage buffer).
 #
-# Triga never emits WGSL itself. These facts feed reflection; the stage
-# entry points come from the stage contracts in triga:shader and their
-# bindings in bindings/wgsl.toml, and the compiler emits.
+# Triga never emits WGSL itself. The stage entry points come from the stage
+# contracts in triga:shader (`@ Vertex`, `@ Fragment`, `@ Position`) and
+# their bindings in bindings/wgsl.toml, and the compiler emits them. A stage's
+# typed signature already carries its inputs, varyings and output, so
+# `@ shader_contract` keeps only the facts a signature cannot state:
+#
+#   * where a bound stage resource sits (`bound_resource_binding`: the WGSL
+#     backend needs one per Texture2D or Sampler parameter);
+#   * vertex-buffer layout, storage-resource placement and pipeline state
+#     (`vertex_layout`, `resource_binding`, `pipeline`), which the host reads.
+#
+# `varying` and `fragment_output` restate what the stage signature declares.
+# They stay until the presenter host reads stage I/O from the stage
+# signature; then they are removed.
 #
 # The radix driver recognizes a contract-role function when the annotated
 # function is declared in the compiled unit and its constant-argument calls
@@ -101,6 +112,15 @@ fn pipeline_matches(int color_target_format_code, int depth_compare_code, int de
 @ public
 @ shader_contract "resource_binding"
 fn resource_binding_matches(int group, int binding, int kind_code, int role_code, int access_code, int element_count, int layout_code, string source_name, int stage_io_role_code) → bool {
+    return true
+}
+
+# Bound stage resource: places a stage parameter whose type is bound in the
+# WGSL manifest (`Texture2D`, `Sampler`) at a bind group and binding. The
+# name is the stage parameter's name. Each bound parameter needs exactly one.
+@ public
+@ shader_contract "bound_resource_binding"
+fn bound_resource_matches(int group, int binding, string source_name) → bool {
     return true
 }
 

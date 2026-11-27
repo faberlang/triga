@@ -58,10 +58,11 @@ surface. The module list is in [`README.md`](README.md).
 
 It runs `faber check` on the library and on each exemplum, `faber corpus` on
 the exempla that carry expected output, `faber emit -t wgsl-text` plus `naga`
-on the exempla that declare stages, then `faber test` on the package. It takes
-about 11 seconds. The WGSL step needs a faber built with
-`--features mir-wgsl`; a default build reports it as skipped. Point `FABER_BIN`
-at such a build to run it. The presenter has its own driver:
+on the exempla that declare stages, `faber verify-library --target wgsl-text`,
+then `faber test` on the package. It takes about 11 seconds on a default
+build and about 20 seconds with the WGSL steps (measured 2026-11-27). The
+WGSL steps need a faber built with `--features mir-wgsl`; a default build
+reports them as skipped. Point `FABER_BIN` at such a build to run them. The presenter has its own driver:
 `./scripta/host check` and `./scripta/host serve`.
 
 ## Releases
