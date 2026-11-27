@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Geometry draw-range, draw-command, group, and payload byte-count facts.
 #
 # Public import: import from "triga:geometry/batch" batch
@@ -168,4 +172,67 @@ fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ none {
     let int index_bytes ← index_bytes_result
     let int total_bytes ← total_bytes_result
     return VisibleFaceMeshFacts {face_count = face_count, vertex_count = vertex_count, index_count = index_count, triangle_count = triangle_count, position_payload_byte_count = position_bytes, color_payload_byte_count = color_bytes, index_payload_byte_count = index_bytes, total_payload_byte_count = total_bytes}
+}
+
++++ faber test
+# Co-located package tests for visible-face payload and draw-batch facts.
+import from "triga:geometry/batch"
+
+describe "geometry batch facts" {
+    test "visible face helpers return exact counts and byte totals" {
+        assert (batch.visible_face_vertex_count(2) coalesce 0) ≡ 8
+        assert (batch.visible_face_index_count(2) coalesce 0) ≡ 12
+        assert (batch.visible_face_triangle_count(2) coalesce 0) ≡ 4
+        assert (batch.visible_face_position_payload_byte_count(2) coalesce 0) ≡ 96
+        assert (batch.visible_face_color_payload_byte_count(2) coalesce 0) ≡ 96
+        assert (batch.visible_face_index_payload_byte_count(2) coalesce 0) ≡ 48
+        assert (batch.visible_face_payload_byte_count(2) coalesce 0) ≡ 240
+    }
+
+    test "visible face mesh facts preserve topology and payload shape" {
+        let batch.VisibleFaceMeshFacts facts ← batch.visible_face_mesh_facts(2) coalesce batch.VisibleFaceMeshFacts {face_count = 0, vertex_count = 0, index_count = 0, triangle_count = 0, position_payload_byte_count = 0, color_payload_byte_count = 0, index_payload_byte_count = 0, total_payload_byte_count = 0}
+        assert facts.face_count ≡ 2
+        assert facts.vertex_count ≡ 8
+        assert facts.index_count ≡ 12
+        assert facts.triangle_count ≡ 4
+        assert facts.position_payload_byte_count ≡ 96
+        assert facts.color_payload_byte_count ≡ 96
+        assert facts.index_payload_byte_count ≡ 48
+        assert facts.total_payload_byte_count ≡ 240
+    }
+
+    test "empty and malformed face counts are rejected" {
+        assert batch.visible_face_vertex_count(0) is none
+        assert batch.visible_face_index_count(0) is none
+        assert batch.visible_face_triangle_count(0) is none
+        assert batch.visible_face_position_payload_byte_count(0) is none
+        assert batch.visible_face_color_payload_byte_count(0) is none
+        assert batch.visible_face_index_payload_byte_count(0) is none
+        assert batch.visible_face_payload_byte_count(0) is none
+        assert batch.visible_face_mesh_facts(0) is none
+        assert batch.visible_face_mesh_facts(-1) is none
+    }
+
+    test "draw ranges groups and commands publish their scalar fields" {
+        let batch.DrawRange range ← batch.DrawRange {start = 3, count = 6}
+        let batch.GeometryGroup group ← batch.GeometryGroup {start = 6, count = 3, material_index = 4}
+        let batch.GeometryDrawCommand command ← batch.GeometryDrawCommand {indexed = true, element_count = 6, first_element = 3, base_vertex = 0, instance_count = 2, material_index = 4}
+        let batch.IndexedGeometryDrawBatchFacts indexed_facts ← batch.IndexedGeometryDrawBatchFacts {draw_count = 1, grouped_element_total = 6, vertex_payload_byte_count = 72, index_payload_byte_count = 24, total_payload_byte_count = 96}
+        let batch.LineGeometryDrawBatchFacts line_facts ← batch.LineGeometryDrawBatchFacts {draw_count = 1, line_count = 3, grouped_element_total = 6, vertex_payload_byte_count = 48, index_payload_byte_count = 16, total_payload_byte_count = 64}
+        assert range.start ≡ 3
+        assert range.count ≡ 6
+        assert group.start ≡ 6
+        assert group.count ≡ 3
+        assert group.material_index ≡ 4
+        assert command.indexed
+        assert command.element_count ≡ 6
+        assert command.first_element ≡ 3
+        assert command.base_vertex ≡ 0
+        assert command.instance_count ≡ 2
+        assert command.material_index ≡ 4
+        assert indexed_facts.draw_count ≡ 1
+        assert indexed_facts.total_payload_byte_count ≡ 96
+        assert line_facts.line_count ≡ 3
+        assert line_facts.total_payload_byte_count ≡ 64
+    }
 }

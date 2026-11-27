@@ -1,11 +1,13 @@
-+++
++++ toml
 term = "triga-types-untested"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Constructor and field-access examples for triga genus types."
 syntax = "importa ex \"triga:triga\" privata triga"
-+++
+locale = "en"
+
++++ faber
 # exempla/triga-types-untested — instantiation and field defaults for types
 # that previously had zero exempla coverage.
 #
@@ -15,24 +17,24 @@ syntax = "importa ex \"triga:triga\" privata triga"
 # Mesh binds Geometry (triga:geometry/data); Mesh lives in
 # triga:renderable/mesh.
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:graph/object" object as graph_object
-import from "triga:graph/camera" camera
+import from "triga:graph/object" let graph_object
+import from "triga:graph/camera"
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:geometry/attribute" attribute
+import from "triga:geometry/attribute"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/batch"
 
-import from "triga:renderable/mesh" mesh
+import from "triga:renderable/mesh"
 
-import from "triga:material/base" base
+import from "triga:material/base"
 
-import from "triga:material/standard" standard
+import from "triga:material/standard"
 
-import from "triga:material/lit" lit
+import from "triga:material/lit"
 
 main {
     # Width-2 construction

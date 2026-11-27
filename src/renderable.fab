@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Renderable objects — package map facade.
 #
 # Public import: import from "triga:renderable" renderable
@@ -10,4 +14,17 @@
 #
 # This file intentionally holds no genera. Import the leaf modules above.
 
-import from "triga:renderable/mesh" mesh
+import from "triga:renderable/mesh"
+
++++ faber test
+# Co-located package smoke for the renderable facade.
+#
+# The facade intentionally contains only imports. This case proves that the
+# public `triga:renderable` path is discoverable without claiming that it
+# re-exports Mesh or that a host draws the composed carrier.
+
+import from "triga:renderable"
+
+test "renderable facade is discoverable" {
+    assert true
+}

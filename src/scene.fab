@@ -1,11 +1,15 @@
++++ toml
+locale = "en"
+
++++ faber
 # Stable, backend-agnostic scene identity and heterogeneous node storage.
 #
 # Public import: import from "triga:scene" scene
 # Depends on: triga:math, triga:resource
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:resource" resource
+import from "triga:resource"
 
 # A SceneHandle names a slot and its generation. Handles are the stable value
 # passed between scene edits and render queries; callers never need to hold a
@@ -242,7 +246,7 @@ class SceneStore {
 
     fn effectively_visible(ref SceneHandle handle) → bool {
         mut SceneHandle cursor ← copy handle
-        for range 0 ‥ (self.slots.length() + 1) let _ {
+        for exclusive self.slots.length() + 1 {
             let SceneNode ∪ none current_result ← self.take(cursor)
             if current_result is none then return false
             let SceneNode current_node ← current_result
@@ -453,7 +457,7 @@ class SceneStore {
 
     fn would_cycle(ref SceneHandle child, ref SceneHandle parent) → bool {
         mut SceneHandle cursor ← copy parent
-        for range 0 ‥ (self.slots.length() + 1) let _ {
+        for exclusive self.slots.length() + 1 {
             if scene_handle_equals(cursor, child) then return true
             let SceneNode ∪ none current ← self.take(cursor)
             if current is none then return false
@@ -603,7 +607,7 @@ class VisibleMeshes {
 
     fn packets() → list<SceneMeshDrawPacket> {
         mut list<SceneMeshDrawPacket> packets ← empty
-        for range 0‥self.handles.length() let i {
+        for exclusive self.handles.length() let i {
             packets.append(SceneMeshDrawPacket {node = SceneHandle {index = self.handles[i].index, generation = self.handles[i].generation}, geometry = resource.ResourceHandle {index = self.geometry_resources[i].index, generation = self.geometry_resources[i].generation}, material = resource.ResourceHandle {index = self.material_resources[i].index, generation = self.material_resources[i].generation}, transform = self.payloads[i]})
         }
         return packets
@@ -690,4 +694,226 @@ fn parent_handle(SceneHandle ∪ none parent) → SceneHandle ∪ none {
 @ public
 fn scene_handle_equals(ref SceneHandle a, ref SceneHandle b) → bool {
     return a.index ≡ b.index and a.generation ≡ b.generation
+}
+
++++ faber test
+# Co-located package tests for SceneStore identity, hierarchy, and traversal.
+import from "triga:scene"
+import from "triga:resource"
+
+# Parent links are public fields, so a test can corrupt them directly. The
+# attach path never builds a cycle; this does, to exercise the bounded
+# parent-chain walks.
+fn reparented(scene.SceneNode node, scene.SceneHandle parent) → scene.SceneNode {
+    return scene.SceneNode {name = node.name, kind = node.kind, parent = parent, children = node.children, visible = node.visible, local_matrix = node.local_matrix, world_matrix = node.world_matrix, world_dirty = node.world_dirty}
+}
+
+describe "scene store lifecycle" {
+    test "empty stores distinguish absent names from invalid handles" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle missing ← scene.SceneHandle {index = 0, generation = 0}
+        let scene.SceneHandle negative_generation ← scene.SceneHandle {index = 0, generation = -1}
+
+        # No node named `missing` is genuine absence, not handle rejection.
+        assert store.find("missing") is none
+        # These calls reject handles that do not identify a live slot.
+        assert store.contains(missing) ≡ false
+        assert store.take(missing) is none
+        assert store.contains(negative_generation) ≡ false
+        assert store.take(negative_generation) is none
+        assert store.traverse(missing) is none
+    }
+
+    test "insertion establishes defaults and deep and orphaned traversal" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle middle ← store.insert(scene.scene_group("middle"))
+        let scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+        let scene.SceneHandle orphan ← store.insert(scene.scene_group("orphan"))
+
+        assert store.attach(middle, root)
+        assert store.attach(leaf, middle)
+
+        let list<scene.SceneHandle> empty_handles ← empty
+        let scene.SceneNode ∪ none root_value ← store.take(root)
+        assert root_value not is none
+        assert root_value!.name ≡ "root"
+        assert root_value!.parent is none
+        assert root_value!.children.length() ≡ 1
+        assert root_value!.visible
+        assert root_value!.world_dirty
+
+        let list<scene.SceneHandle> ∪ none deep ← store.traverse(root)
+        let list<scene.SceneHandle> deep_value ← deep coalesce empty_handles
+        assert deep not is none
+        assert deep_value.length() ≡ 3
+        assert scene.scene_handle_equals(deep_value[0], root)
+        assert scene.scene_handle_equals(deep_value[2], leaf)
+
+        let list<scene.SceneHandle> ∪ none isolated ← store.traverse(orphan)
+        let list<scene.SceneHandle> isolated_value ← isolated coalesce empty_handles
+        assert isolated not is none
+        assert isolated_value.length() ≡ 1
+        assert scene.scene_handle_equals(isolated_value[0], orphan)
+        assert store.find("leaf") not is none
+        assert store.find("missing") is none
+    }
+
+    test "self attach and cycles are rejected while reparent and detach update both sides" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle left ← store.insert(scene.scene_group("left"))
+        let scene.SceneHandle right ← store.insert(scene.scene_group("right"))
+        let scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+
+        assert store.attach(root, root) ≡ false
+        assert store.attach(left, root)
+        assert store.attach(leaf, left)
+        assert store.attach(leaf, left) ≡ false
+        assert store.attach(root, leaf) ≡ false
+        assert store.attach(leaf, right)
+
+        let scene.SceneNode ∪ none old_parent ← store.take(left)
+        let scene.SceneNode ∪ none new_parent ← store.take(right)
+        let scene.SceneNode ∪ none moved ← store.take(leaf)
+        assert old_parent not is none
+        assert old_parent!.children.length() ≡ 0
+        assert new_parent not is none
+        assert new_parent!.children.length() ≡ 1
+        assert moved not is none
+        assert moved!.parent not is none
+        assert moved!.parent!.index ≡ right.index
+        assert moved!.parent!.generation ≡ right.generation
+
+        assert store.detach(leaf)
+        let scene.SceneNode ∪ none detached ← store.take(leaf)
+        assert detached not is none
+        assert detached!.parent is none
+        assert store.detach(leaf) ≡ false
+    }
+
+    test "visibility traversal follows inherited visibility and mesh filtering" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let resource.ResourceHandle geometry ← resource.ResourceHandle {index = 4, generation = 1}
+        let resource.ResourceHandle material ← resource.ResourceHandle {index = 8, generation = 2}
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle mesh ← store.insert(scene.scene_mesh("mesh", geometry, material))
+
+        assert store.attach(mesh, root)
+        assert store.effectively_visible(mesh)
+
+        let list<scene.SceneHandle> empty_handles ← empty
+        let list<scene.SceneHandle> ∪ none visible ← store.traverse_visible(root)
+        let list<scene.SceneHandle> visible_value ← visible coalesce empty_handles
+        let list<scene.SceneHandle> ∪ none visible_meshes ← store.traverse_visible_mesh(root)
+        let list<scene.SceneHandle> visible_meshes_value ← visible_meshes coalesce empty_handles
+        assert visible not is none
+        assert visible_value.length() ≡ 2
+        assert visible_meshes not is none
+        assert visible_meshes_value.length() ≡ 1
+        assert scene.scene_handle_equals(visible_meshes_value[0], mesh)
+        assert store.find("mesh") not is none
+
+        assert store.set_visible(root, false)
+        assert store.effectively_visible(mesh) ≡ false
+        let list<scene.SceneHandle> ∪ none hidden ← store.traverse_visible(root)
+        let list<scene.SceneHandle> hidden_value ← hidden coalesce empty_handles
+        let list<scene.SceneHandle> ∪ none hidden_meshes ← store.traverse_visible_mesh(root)
+        let list<scene.SceneHandle> hidden_meshes_value ← hidden_meshes coalesce empty_handles
+        assert hidden not is none
+        assert hidden_value.length() ≡ 0
+        assert hidden_meshes not is none
+        assert hidden_meshes_value.length() ≡ 0
+
+        assert store.set_visible(root, true)
+        assert store.effectively_visible(mesh)
+    }
+
+    test "deletion rejects non-leaves and retires stale generations" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle child ← store.insert(scene.scene_group("child"))
+        assert store.attach(child, root)
+        assert store.remove(root) ≡ false
+        assert store.remove(child)
+        assert store.contains(child) ≡ false
+        assert store.take(child) is none
+        assert store.remove(child) ≡ false
+
+        let scene.SceneHandle stale_generation ← scene.SceneHandle {index = child.index, generation = child.generation + 1}
+        assert store.contains(stale_generation) ≡ false
+        assert store.take(stale_generation) is none
+        assert store.remove(root)
+        assert store.contains(root) ≡ false
+        assert store.traverse(root) is none
+    }
+}
+
+describe "scene parent-chain guards" {
+    test "effective visibility walks a deep chain to the root" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle first ← store.insert(scene.scene_group("first"))
+        let scene.SceneHandle second ← store.insert(scene.scene_group("second"))
+        let scene.SceneHandle third ← store.insert(scene.scene_group("third"))
+        let scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+        assert store.attach(first, root)
+        assert store.attach(second, first)
+        assert store.attach(third, second)
+        assert store.attach(leaf, third)
+
+        assert store.effectively_visible(leaf)
+        assert store.set_visible(first, false)
+        assert store.effectively_visible(leaf) ≡ false
+        assert store.effectively_visible(root)
+        assert store.set_visible(first, true)
+        assert store.set_visible(root, false)
+        assert store.effectively_visible(leaf) ≡ false
+    }
+
+    test "effective visibility fails closed on a corrupted parent cycle" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle left ← store.insert(scene.scene_group("left"))
+        let scene.SceneHandle right ← store.insert(scene.scene_group("right"))
+        let scene.SceneNode ∪ none left_node ← store.take(left)
+        let scene.SceneNode ∪ none right_node ← store.take(right)
+        assert left_node not is none
+        assert right_node not is none
+        assert store.effectively_visible(left)
+        let scene.SceneNode left_value ← left_node
+        let scene.SceneNode right_value ← right_node
+        assert store.replace(left, reparented(left_value, right))
+        assert store.replace(right, reparented(right_value, left))
+
+        assert store.effectively_visible(left) ≡ false
+        assert store.effectively_visible(right) ≡ false
+    }
+
+    test "cycle detection finds ancestors and fails closed on a corrupted chain" {
+        mut scene.SceneStore store ← scene.scene_store()
+        let scene.SceneHandle root ← store.insert(scene.scene_group("root"))
+        let scene.SceneHandle middle ← store.insert(scene.scene_group("middle"))
+        let scene.SceneHandle leaf ← store.insert(scene.scene_group("leaf"))
+        let scene.SceneHandle stray ← store.insert(scene.scene_group("stray"))
+        assert store.attach(middle, root)
+        assert store.attach(leaf, middle)
+
+        assert store.would_cycle(root, leaf)
+        assert store.would_cycle(middle, leaf)
+        assert store.would_cycle(leaf, leaf)
+        assert store.would_cycle(stray, leaf) ≡ false
+        assert store.would_cycle(leaf, stray) ≡ false
+
+        let scene.SceneNode ∪ none root_node ← store.take(root)
+        let scene.SceneNode ∪ none middle_node ← store.take(middle)
+        assert root_node not is none
+        assert middle_node not is none
+        let scene.SceneNode root_value ← root_node
+        let scene.SceneNode middle_value ← middle_node
+        assert store.replace(root, reparented(root_value, middle))
+        assert store.replace(middle, reparented(middle_value, root))
+
+        assert store.would_cycle(stray, leaf)
+        assert store.attach(stray, leaf) ≡ false
+    }
 }

@@ -1,28 +1,28 @@
-+++
++++ toml
 locale = "en"
-+++
 
++++ faber
 # Instructional mirror of host/fixtures/scene.fab value construction:
 # SceneStore (two translated meshes), AmbientLight, DirectionalLight,
 # PhongMaterial, PerspectiveCamera. No @shader stages and no Geometry dump —
 # those stay on the presenter path. Numbers here are scene parameters, not
 # library API.
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:graph/object" graph_object
+import from "triga:graph/object" let graph_object
 
-import from "triga:graph/camera" camera
+import from "triga:graph/camera"
 
-import from "triga:lighting/light" lighting
+import from "triga:lighting/light" let lighting
 
-import from "triga:material/base" material_base
+import from "triga:material/base" let material_base
 
-import from "triga:material/lit" lit
+import from "triga:material/lit"
 
-import from "triga:scene" scene
+import from "triga:scene"
 
-import from "triga:resource" resource
+import from "triga:resource"
 
 fn camera_object() → graph_object.Object {
     return graph_object.Object {position = [0.0, 1.8, 4.2] ↦ vector<f32, size 3>, rotation = math.euler(0.0, 0.0, 0.0), quaternion = math.quaternion(0.0, 0.0, 0.0, 1.0), scale = [1.0, 1.0, 1.0] ↦ vector<f32, size 3>, matrix = math.matrix_identity(), children = empty, visible = true, name = "presenter-camera"}

@@ -1,16 +1,17 @@
-+++
++++ toml
 term = "triga-graphics-pipeline-facts"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Triga-side facts for the locked graphics pipeline contract: shader stages, color target, depth, topology, and vertex inputs."
-+++
+locale = "en"
 
-import from "triga:math" math
++++ faber
+import from "triga:math"
 
-import from "triga:material/base" base
+import from "triga:material/base"
 
-import from "triga:material/basic" basic
+import from "triga:material/basic"
 
 main {
     # Shader stage codes

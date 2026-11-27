@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Shader vocabulary Triga owns and Radix only spells.
 #
 # Public import: import from "triga:shader" shader
@@ -23,4 +27,18 @@ class Sampler {
 @ public
 fn sample(Texture2D texture, Sampler sampler, vector<f32, size 2> uv) → vector<f32, size 4> {
     return [0.0, 0.0, 0.0, 1.0] ↦ vector<f32, size 4>
+}
+
++++ faber test
+# Co-located coverage for the WGSL-bound shader vocabulary.
+# Construction only. Stage-body `sample` lives on the presenter fixture.
+import from "triga:shader"
+
+describe "shader resource types" {
+    test "Texture2D and Sampler are constructible opaque handles" {
+        let shader.Texture2D texture ← shader.Texture2D {}
+        let shader.Sampler sampler ← shader.Sampler {}
+        assert texture is shader.Texture2D
+        assert sampler is shader.Sampler
+    }
 }

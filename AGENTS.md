@@ -35,9 +35,14 @@ surface. The module list is in [`README.md`](README.md).
 
 ## Tests and exempla
 
-- Package tests live beside their module (`name.fab` + `name.proba`).
-  Never import a `.proba` file; shared helpers stay in `.fab` modules.
-- Instructional programs live under `exempla/`.
+- Every `.fab` file uses `+++` sections, in this order: `+++ toml` (with
+  `locale = "en"`), `+++ faber` (the module), then `+++ faber test` (the
+  module's tests), then any `+++ text stdout` (expected output). There are no
+  separate `.proba` or `.expected` files.
+- A test section sees only the module's `@ public` names, either bare or
+  through an import of the module's own path.
+- Instructional programs live under `exempla/`. An exemplum with a
+  `+++ text stdout` section is verified with `faber corpus`.
 - Browser demo scenes live under `corpus/<slug>/`, with shared host assets in
   `corpus/_host/`. Demos use the public `triga:*` surface; a gap they find is
   fixed in the library, not worked around in the demo.
@@ -49,9 +54,11 @@ surface. The module list is in [`README.md`](README.md).
 ./scripta/check
 ```
 
-It runs `faber check` on every `src/` and `exempla/` file, then `faber test`
-on the package. It takes a few seconds. The presenter has its own driver:
-`./scripta/host check` and `./scripta/host serve`.
+It runs `faber check` on the library and on each exemplum, `faber corpus` on
+the exempla that carry expected output, then `faber test` on the package. It
+takes about 15 seconds: about 9 checking exempla one at a time, about 5 in
+`faber test`. The presenter has its own driver: `./scripta/host check` and
+`./scripta/host serve`.
 
 ## Releases
 

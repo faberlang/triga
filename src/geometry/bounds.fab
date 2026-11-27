@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Geometry-side bounding volumes.
 #
 # Public import: import from "triga:geometry/bounds" bounds
@@ -31,4 +35,76 @@ class BoundingSphere {
     mut f32 center_y
     mut f32 center_z
     mut f32 radius
+}
+
++++ faber test
+# Co-located package tests for the geometry BoundingBox and BoundingSphere
+# result records, including invalid and degenerate position payloads.
+import from "triga:geometry/data"
+import from "triga:geometry/attribute"
+import from "triga:geometry/batch"
+import from "triga:geometry/bounds"
+
+fn segment_positions() → attribute.Attribute {
+    return attribute.float32_attribute("position", 0, 3, 3, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0])
+}
+
+describe "geometry bounds" {
+    test "bounding box and sphere publish exact enclosing records" {
+        let attribute.Attribute position ← segment_positions()
+        let data.Geometry geometry ← data.triangle_geometry(3, [position], batch.DrawRange {start = 0, count = 3}, empty)
+        let data.Geometry value ← data.Geometry {topology = geometry.topology, vertex_count = geometry.vertex_count, attributes = geometry.attributes, indexed = geometry.indexed, indices = geometry.indices, draw_range = geometry.draw_range, groups = geometry.groups}
+        let bounds.BoundingBox ∪ none box ← value.bounding_box()
+        let bounds.BoundingSphere ∪ none sphere ← value.bounding_sphere()
+        assert value.valid()
+        assert box not is none
+        assert box!.min_x ≡ (0.0 ∷ f32)
+        assert box!.min_y ≡ (0.0 ∷ f32)
+        assert box!.min_z ≡ (0.0 ∷ f32)
+        assert box!.max_x ≡ (2.0 ∷ f32)
+        assert box!.max_y ≡ (0.0 ∷ f32)
+        assert box!.max_z ≡ (0.0 ∷ f32)
+        assert sphere not is none
+        assert sphere!.center_x ≡ (1.0 ∷ f32)
+        assert sphere!.center_y ≡ (0.0 ∷ f32)
+        assert sphere!.center_z ≡ (0.0 ∷ f32)
+        assert sphere!.radius ≡ (1.0 ∷ f32)
+    }
+
+    test "group bounds select only the group element range" {
+        let attribute.Attribute position ← attribute.float32_attribute("position", 0, 3, 6, [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 10.0, 10.0, 0.0, 12.0, 10.0, 0.0, 10.0, 12.0, 0.0])
+        let data.Geometry geometry ← data.indexed_triangle_geometry(6, [position], [0, 1, 2, 3, 4, 5], batch.DrawRange {start = 0, count = 6}, [batch.GeometryGroup {start = 0, count = 3, material_index = 0}, batch.GeometryGroup {start = 3, count = 3, material_index = 1}])
+        let bounds.BoundingBox ∪ none box ← geometry.group_bounding_box(1)
+        let bounds.BoundingSphere ∪ none sphere ← geometry.group_bounding_sphere(1)
+        assert box not is none
+        assert box!.min_x ≡ (10.0 ∷ f32)
+        assert box!.min_y ≡ (10.0 ∷ f32)
+        assert box!.max_x ≡ (12.0 ∷ f32)
+        assert box!.max_y ≡ (12.0 ∷ f32)
+        assert sphere not is none
+        assert sphere!.center_x ≡ (11.0 ∷ f32)
+        assert sphere!.center_y ≡ (11.0 ∷ f32)
+        assert geometry.group_bounding_box(2) is none
+    }
+
+    test "empty and degenerate buffers do not publish bounds" {
+        let attribute.Attribute empty_position ← attribute.float32_attribute("position", 0, 3, 1, [])
+        let data.Geometry empty_geometry ← data.triangle_geometry(1, [empty_position], batch.DrawRange {start = 0, count = 0}, empty)
+        let bounds.BoundingBox ∪ none empty_box ← empty_geometry.bounding_box()
+        let bounds.BoundingSphere ∪ none empty_sphere ← empty_geometry.bounding_sphere()
+        assert not empty_geometry.valid()
+        assert empty_box is none
+        assert empty_sphere is none
+
+        let attribute.Attribute point_position ← attribute.float32_attribute("position", 0, 3, 3, [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
+        let data.Geometry degenerate ← data.triangle_geometry(3, [point_position], batch.DrawRange {start = 0, count = 3}, empty)
+        let bounds.BoundingBox ∪ none degenerate_box ← degenerate.bounding_box()
+        let bounds.BoundingSphere ∪ none degenerate_sphere ← degenerate.bounding_sphere()
+        assert degenerate.valid()
+        assert degenerate_box not is none
+        assert degenerate_box!.min_x ≡ (2.0 ∷ f32)
+        assert degenerate_box!.max_z ≡ (2.0 ∷ f32)
+        assert degenerate_sphere not is none
+        assert degenerate_sphere!.radius ≡ (0.0 ∷ f32)
+    }
 }

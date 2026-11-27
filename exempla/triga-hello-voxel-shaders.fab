@@ -1,16 +1,17 @@
-+++
++++ toml
 term = "triga-hello-voxel-shaders"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Minimal @vertex/@fragment exemplar: typed cube geometry supplies the vertex layout facts."
-+++
+locale = "en"
 
-import from "triga:geometry/data" data
++++ faber
+import from "triga:geometry/data"
 
-import from "triga:geometry/attribute" attribute
+import from "triga:geometry/attribute"
 
-import from "triga:geometry/batch" batch
+import from "triga:geometry/batch"
 
 @ vertex { }
 fn hello_voxel_vertex() → void {

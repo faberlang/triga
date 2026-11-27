@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # StandardMaterial — PBR standard material contract.
 #
 # Public import: import from "triga:material/standard" standard
@@ -6,9 +10,9 @@
 #
 # Imports: triga:math, triga:material/base.
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:material/base" base
+import from "triga:material/base"
 
 # StandardMaterial is the PBR-shaped material carrier. The fields are
 # source data only; texture sampling, environment lighting, and pipeline
@@ -21,4 +25,61 @@ class StandardMaterial {
     mut f32 metalness = 0.0
     mut math.Color emissive
     mut f32 emissive_intensity = 0.0
+}
+
++++ faber test
+# Co-located package tests for material/standard.fab.
+# StandardMaterial is a PBR-shaped source carrier; these cases verify its
+# fields and the validated base pipeline projection without claiming host PBR.
+import from "triga:material/standard"
+import from "triga:material/base"
+import from "triga:math"
+
+test "standard material preserves PBR carrier fields and pipeline facts" {
+    let base.Material policy ← base.Material {name = "standard", side = 2 ∷ u32, transparent = true, opacity = 0.65, depth_write = true, depth_test = false, alpha_test = 0.3}
+    let math.Color color ← math.Color {r = 0.2, g = 0.3, b = 0.4}
+    let math.Color emissive ← math.Color {r = 0.05, g = 0.1, b = 0.15}
+    let standard.StandardMaterial material ← standard.StandardMaterial {base = policy, color = color, roughness = 0.35, metalness = 0.8, emissive = emissive, emissive_intensity = 1.5}
+    let base.MaterialPipelineFacts ∪ none facts_result ← material.base.pipeline_facts()
+
+    assert material.base.name ≡ "standard"
+    assert material.color.r ≡ (0.2 ∷ f32)
+    assert material.color.g ≡ (0.3 ∷ f32)
+    assert material.color.b ≡ (0.4 ∷ f32)
+    assert material.roughness ≡ (0.35 ∷ f32)
+    assert material.metalness ≡ (0.8 ∷ f32)
+    assert material.emissive.r ≡ (0.05 ∷ f32)
+    assert material.emissive.g ≡ (0.1 ∷ f32)
+    assert material.emissive.b ≡ (0.15 ∷ f32)
+    assert material.emissive_intensity ≡ (1.5 ∷ f32)
+    assert facts_result not is none
+    if facts_result not is none {
+        assert facts_result!.side_code ≡ 2
+        assert facts_result!.depth_test_enabled ≡ false
+        assert facts_result!.depth_write_enabled
+        assert facts_result!.transparent
+        assert facts_result!.alpha ≡ (0.65 ∷ f32)
+        assert facts_result!.alpha_test ≡ (0.3 ∷ f32)
+    }
+}
+
+test "standard defaults remain explicit carrier values" {
+    let standard.StandardMaterial material ← standard.StandardMaterial {base = base.material_from_name("standard-default"), color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+
+    assert material.roughness ≡ (1.0 ∷ f32)
+    assert material.metalness ≡ (0.0 ∷ f32)
+    assert material.emissive_intensity ≡ (0.0 ∷ f32)
+    assert material.base.valid()
+    assert material.base.pipeline_facts() not is none
+}
+
+test "standard carrier exposes invalid base facts as unsupported" {
+    let base.Material invalid_base ← base.Material {name = "invalid-standard", side = 0 ∷ u32, alpha_test = -0.1}
+    let standard.StandardMaterial material ← standard.StandardMaterial {base = invalid_base, color = math.Color {r = 1.0, g = 1.0, b = 1.0}, emissive = math.Color {r = 0.0, g = 0.0, b = 0.0}}
+
+    assert material.base.valid() ≡ false
+    assert material.base.pipeline_facts() is none
+    assert material.roughness ≡ (1.0 ∷ f32)
+    assert material.metalness ≡ (0.0 ∷ f32)
+    assert material.emissive_intensity ≡ (0.0 ∷ f32)
 }

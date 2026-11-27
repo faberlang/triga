@@ -1,10 +1,12 @@
-+++
++++ toml
 term = "shader-contract-source-fragment-emits-wgsl"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "U5 conformance (moved from radix U4): @fragment entry emits WGSL via the generic shader-contract surface."
-+++
+locale = "en"
+
++++ faber
 # Conformance: triga_stage4_source_fragment_emits_wgsl (moved from radix U4).
 #
 # Real triga:* imports + vertex_layout/varying/fragment_output role facts ->
@@ -16,9 +18,9 @@ summary = "U5 conformance (moved from radix U4): @fragment entry emits WGSL via 
 #   * explicit empty-body default output:
 #       out.color = vec4<f32>(0.0, 0.0, 0.0, 1.0);
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:primitives/basic" basic
+import from "triga:primitives/basic"
 
 @ shader_contract "vertex_layout"
 fn vertex_layout_matches(int geo, int index, string source_name, int shader_location, int format_code, int offset_bytes, int stride_bytes, int step_mode_code, int stage_io_role_code) → bool {

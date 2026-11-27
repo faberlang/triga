@@ -144,8 +144,8 @@ scripta/       checks and the presenter driver
 ./scripta/check
 ```
 
-This runs `faber check` on every module and exemplum, then `faber test` on the
-package. It uses `FABER_BIN` if set, otherwise a sibling `../radix` build.
+This runs `faber check` on every module and exemplum, `faber corpus` on the
+exempla that carry expected output, then `faber test` on the package. It uses `FABER_BIN` if set, otherwise a sibling `../radix` build.
 The presenter has its own driver: `./scripta/host check` and
 `./scripta/host serve` (see [`host/README.md`](host/README.md)).
 

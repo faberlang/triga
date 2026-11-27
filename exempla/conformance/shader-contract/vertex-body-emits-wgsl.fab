@@ -1,10 +1,12 @@
-+++
++++ toml
 term = "shader-contract-vertex-body-emits-wgsl"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "U5 conformance (moved from radix U4): authored @vertex body emits WGSL via the generic shader-contract surface."
-+++
+locale = "en"
+
++++ faber
 # Conformance: triga_stage4_vertex_body_emits_wgsl (moved from radix U4).
 #
 # Real triga:* imports (geometry construction) + generic shader-contract
@@ -16,9 +18,9 @@ summary = "U5 conformance (moved from radix U4): authored @vertex body emits WGS
 #   * authored body: out.position = vec4<f32>(input.position.x, input.position.y, input.position.z, ...)
 #   * no transform fallback (`view_proj * model` absent)
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:primitives/basic" basic
+import from "triga:primitives/basic"
 
 # Contract-role adapter declaration (mirrors src/shader_contract.fab). The
 # radix driver registers `@ shader_contract "vertex_layout"` by resolved

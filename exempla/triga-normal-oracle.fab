@@ -1,10 +1,12 @@
-+++
++++ toml
 term = "triga"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Surface-normal oracle for closed caps and sphere poles (winding invariants)."
-+++
+locale = "en"
+
++++ faber
 # exempla/triga-normal-oracle — dot-product + winding-orientation oracle for
 # the closed-solid cap and pole fans (cylinder caps + sphere poles; the
 # 9f34e71 cap-fan winding fix context).
@@ -22,17 +24,16 @@ summary = "Surface-normal oracle for closed caps and sphere poles (winding invar
 #      triangles at the cap boundary (the regression the 9f34e71 pair-order
 #      reversal fixed).
 #
-# Prints true/false per check; the sibling .expected records the observed
-# output (the exempla runtime-probe oracle convention — see the Box3 probe
-# triga-box3-genus-spike).
+# Prints true/false per check; the `+++ text stdout` section records the
+# expected output.
 
-import from "triga:math" math
+import from "triga:math"
 
-import from "triga:geometry/data" data
+import from "triga:geometry/data"
 
-import from "triga:geometry/attribute" attribute
+import from "triga:geometry/attribute"
 
-import from "triga:primitives/basic" basic
+import from "triga:primitives/basic"
 
 # --- oracle helpers ------------------------------------------------------
 
@@ -183,3 +184,14 @@ main {
         print fan_oriented_outward(sphere_opt, sphere_positions, sphere_normals, 120, 8)
     }
 }
+
++++ text stdout
+true
+true
+true
+true
+true
+true
+true
+true
+true

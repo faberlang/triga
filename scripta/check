@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Triga's local check: `faber check` on every library module and exemplum,
-# then `faber test` on the package (the co-located tests). It prints one
-# line per failing file and exits non-zero if anything is red.
+# `faber corpus` on each exemplum with a `+++ text stdout` section, then
+# `faber test` on the package (the inline `+++ faber test` sections). It
+# prints one line per failing file and exits non-zero if anything is red.
 #
 # FABER_BIN picks the compiler; otherwise the sibling radix build is used.
 # FABER_LIBRARY_HOME defaults to this repo's parent directory.
@@ -26,9 +27,19 @@ fi
 
 cd "$ROOT"
 status=0
+
+# The package check covers every module under src/ in one pass; test
+# sections are compiled by `faber test` below.
+if "$FABER_BIN" check . >/dev/null 2>&1; then
+  echo "check: faber check (library): green"
+else
+  echo "check: faber check (library): red; run \`faber check .\` for details"
+  status=1
+fi
+
+# Exempla are standalone programs, so each is checked on its own.
 checked=0
 failed=0
-
 while IFS= read -r file; do
   checked=$((checked + 1))
   if ! "$FABER_BIN" check "$file" >/dev/null 2>&1; then
@@ -36,9 +47,23 @@ while IFS= read -r file; do
     failed=$((failed + 1))
     status=1
   fi
-done < <(find src exempla -name '*.fab' | sort)
+done < <(find exempla -name '*.fab' | sort)
 
-echo "check: faber check: $((checked - failed))/$checked green"
+echo "check: faber check (exempla): $((checked - failed))/$checked green"
+
+goldens=0
+golden_failed=0
+while IFS= read -r file; do
+  goldens=$((goldens + 1))
+  summary="$("$FABER_BIN" corpus "$file" --target clif-jit 2>/dev/null | tail -n 1)"
+  if [[ "$summary" != *'"status":"pass"'* ]]; then
+    echo "check: red output: $file"
+    golden_failed=$((golden_failed + 1))
+    status=1
+  fi
+done < <(grep -rl --include='*.fab' '^+++ text stdout$' exempla | sort)
+
+echo "check: faber corpus (exempla output): $((goldens - golden_failed))/$goldens green"
 
 if "$FABER_BIN" test . ; then
   echo "check: faber test: green"

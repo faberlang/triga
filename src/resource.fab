@@ -1,3 +1,7 @@
++++ toml
+locale = "en"
+
++++ faber
 # Resource handle identity and lifecycle.
 #
 # Public import: import from "triga:resource" resource
@@ -128,7 +132,7 @@ class ResourceHandleTraversal {
 # before facts, counts, or handle projections are derived.
 
 fn transition_index_seen(ref list<ResourceTransition> transitions, int limit, int resource_index) → bool {
-    for range 0‥limit let i {
+    for exclusive limit let i {
         let ResourceTransition transition ← transitions[i]
         if transition.current.index ≡ resource_index then return true
     }
@@ -137,7 +141,7 @@ fn transition_index_seen(ref list<ResourceTransition> transitions, int limit, in
 
 @ public
 fn transitions_valid(ref list<ResourceTransition> transitions) → bool {
-    for range 0‥transitions.length() let i {
+    for exclusive transitions.length() let i {
         let ResourceTransition transition ← transitions[i]
         if not transition.valid() then return false
         if transition_index_seen(transitions, i, transition.current.index) then return false
@@ -234,7 +238,7 @@ fn transition_unchanged_handles(ref list<ResourceTransition> transitions) → li
 # `null` for duplicate or generation-inconsistent input.
 
 fn lifecycle_index_seen(ref list<ResourceLifecycleTransition> transitions, int limit, int logical_index) → bool {
-    for range 0‥limit let i {
+    for exclusive limit let i {
         let ResourceLifecycleTransition transition ← transitions[i]
         if transition.logical_index ≡ logical_index then return true
     }
@@ -243,7 +247,7 @@ fn lifecycle_index_seen(ref list<ResourceLifecycleTransition> transitions, int l
 
 @ public
 fn lifecycles_valid(ref list<ResourceLifecycleTransition> transitions) → bool {
-    for range 0‥transitions.length() let i {
+    for exclusive transitions.length() let i {
         let ResourceLifecycleTransition transition ← transitions[i]
         if not transition.valid() then return false
         if lifecycle_index_seen(transitions, i, transition.logical_index) then return false
@@ -470,4 +474,285 @@ fn lifecycle_current_handles(ref list<ResourceLifecycleTransition> transitions) 
         }
     }
     return handles
+}
+
++++ faber test
+# Co-located package tests for resource identity and lifecycle transitions.
+import from "triga:resource"
+
+describe "resource handle identity" {
+    test "generation is part of identity and replacement advances it" {
+        let resource.ResourceHandle original ← resource.ResourceHandle {index = 7, generation = 2}
+        let resource.ResourceHandle replacement ← original.next()
+        let resource.ResourceHandle same ← resource.ResourceHandle {index = 7, generation = 2}
+        let resource.ResourceHandle other_slot ← resource.ResourceHandle {index = 8, generation = 2}
+
+        assert original.equals(same)
+        assert original.equals(replacement) ≡ false
+        assert original.equals(other_slot) ≡ false
+        assert replacement.index ≡ original.index
+        assert replacement.generation ≡ original.generation + 1
+    }
+
+    test "replacement transitions preserve identity and expose changed facts" {
+        let resource.ResourceHandle stable_handle ← resource.ResourceHandle {index = 2, generation = 4}
+        let resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 9, generation = 1}
+        let resource.ResourceTransition stable ← stable_handle.transition_unchanged()
+        let resource.ResourceTransition replaced ← replaced_handle.transition_replaced()
+        mut list<resource.ResourceTransition> transitions ← empty
+        transitions.append(stable)
+        transitions.append(replaced)
+
+        assert stable.valid()
+        assert replaced.valid()
+        assert stable.changed ≡ false
+        assert replaced.changed
+        assert replaced.previous.generation ≡ 1
+        assert replaced.current.generation ≡ 2
+        assert resource.transitions_valid(transitions)
+        let int ∪ none changed_count ← resource.transition_changed_count(transitions)
+        let int ∪ none unchanged_count ← resource.transition_unchanged_count(transitions)
+        if changed_count is none {
+            assert false
+        }
+        else {
+            assert changed_count ≡ 1
+        }
+        if unchanged_count is none {
+            assert false
+        }
+        else {
+            assert unchanged_count ≡ 1
+        }
+
+        let list<int> ∪ none changed_indices ← resource.transition_changed_indices(transitions)
+        let list<int> ∪ none unchanged_indices ← resource.transition_unchanged_indices(transitions)
+        let list<resource.ResourceHandle> ∪ none current_handles ← resource.transition_current_handles(transitions)
+        if changed_indices is none {
+            assert false
+        }
+        else {
+            assert changed_indices.length() ≡ 1
+            assert changed_indices[0] ≡ 9
+        }
+        if unchanged_indices is none {
+            assert false
+        }
+        else {
+            assert unchanged_indices.length() ≡ 1
+            assert unchanged_indices[0] ≡ 2
+        }
+        if current_handles is none {
+            assert false
+        }
+        else {
+            assert current_handles.length() ≡ 2
+            assert current_handles[0].generation ≡ 4
+            assert current_handles[1].generation ≡ 2
+        }
+    }
+
+    test "invalid replacement transitions remain distinct from genuine absence" {
+        let resource.ResourceHandle original ← resource.ResourceHandle {index = 3, generation = 5}
+        let resource.ResourceTransition wrong_slot ← resource.ResourceTransition {previous = original, current = resource.ResourceHandle {index = 4, generation = 6}, changed = true}
+        let resource.ResourceTransition skipped_generation ← resource.ResourceTransition {previous = original, current = resource.ResourceHandle {index = 3, generation = 7}, changed = true}
+        let resource.ResourceTransition changed_without_generation ← resource.ResourceTransition {previous = original, current = resource.ResourceHandle {index = 3, generation = 5}, changed = true}
+        mut list<resource.ResourceTransition> invalid ← empty
+        invalid.append(wrong_slot)
+
+        assert wrong_slot.valid() ≡ false
+        assert skipped_generation.valid() ≡ false
+        assert changed_without_generation.valid() ≡ false
+        assert resource.transitions_valid(invalid) ≡ false
+        # Invalid input returns absence from the accessor, not a valid zero count.
+        assert resource.transition_changed_count(invalid) is none
+        assert resource.transition_current_handles(invalid) is none
+    }
+}
+
+describe "resource lifecycle facts" {
+    test "creation replacement stability and removal form one checked batch" {
+        let resource.ResourceHandle created_handle ← resource.ResourceHandle {index = 1, generation = 0}
+        let resource.ResourceHandle stable_handle ← resource.ResourceHandle {index = 2, generation = 3}
+        let resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 4, generation = 8}
+        let resource.ResourceHandle removed_handle ← resource.ResourceHandle {index = 6, generation = 2}
+        let resource.ResourceLifecycleTransition created ← created_handle.lifecycle_created()
+        let resource.ResourceLifecycleTransition stable ← stable_handle.lifecycle_unchanged()
+        let resource.ResourceLifecycleTransition replaced ← replaced_handle.lifecycle_replaced()
+        let resource.ResourceLifecycleTransition removed ← removed_handle.lifecycle_removed()
+        mut list<resource.ResourceLifecycleTransition> transitions ← empty
+        transitions.append(created)
+        transitions.append(stable)
+        transitions.append(replaced)
+        transitions.append(removed)
+
+        assert created.valid()
+        assert stable.valid()
+        assert replaced.valid()
+        assert removed.valid()
+        assert resource.lifecycles_valid(transitions)
+        let int ∪ none changed_count ← resource.lifecycle_changed_count(transitions)
+        let int ∪ none unchanged_count ← resource.lifecycle_unchanged_count(transitions)
+        let int ∪ none created_count ← resource.lifecycle_created_count(transitions)
+        let int ∪ none removed_count ← resource.lifecycle_removed_count(transitions)
+        let int ∪ none live_count ← resource.lifecycle_live_count(transitions)
+        if changed_count is none {
+            assert false
+        }
+        else {
+            assert changed_count ≡ 3
+        }
+        if unchanged_count is none {
+            assert false
+        }
+        else {
+            assert unchanged_count ≡ 1
+        }
+        if created_count is none {
+            assert false
+        }
+        else {
+            assert created_count ≡ 1
+        }
+        if removed_count is none {
+            assert false
+        }
+        else {
+            assert removed_count ≡ 1
+        }
+        if live_count is none {
+            assert false
+        }
+        else {
+            assert live_count ≡ 3
+        }
+
+        let resource.ResourceLifecycleBatchFacts ∪ none facts ← resource.lifecycle_batch_facts(transitions)
+        if facts is none {
+            assert false
+        }
+        else {
+            assert facts.transition_count ≡ 4
+            assert facts.changed_count ≡ 3
+            assert facts.unchanged_count ≡ 1
+            assert facts.created_count ≡ 1
+            assert facts.removed_count ≡ 1
+            assert facts.live_count ≡ 3
+        }
+
+        let list<int> ∪ none changed_indices ← resource.lifecycle_changed_indices(transitions)
+        let list<int> ∪ none unchanged_indices ← resource.lifecycle_unchanged_indices(transitions)
+        let list<int> ∪ none removed_indices ← resource.lifecycle_removed_indices(transitions)
+        let list<int> ∪ none live_indices ← resource.lifecycle_live_indices(transitions)
+        let list<int> ∪ none retired_indices ← resource.lifecycle_retired_indices(transitions)
+        if changed_indices is none {
+            assert false
+        }
+        else {
+            assert changed_indices.length() ≡ 3
+        }
+        if unchanged_indices is none {
+            assert false
+        }
+        else {
+            assert unchanged_indices.length() ≡ 1
+            assert unchanged_indices[0] ≡ 2
+        }
+        if removed_indices is none {
+            assert false
+        }
+        else {
+            assert removed_indices.length() ≡ 1
+            assert removed_indices[0] ≡ 6
+        }
+        if live_indices is none {
+            assert false
+        }
+        else {
+            assert live_indices.length() ≡ 3
+        }
+        if retired_indices is none {
+            assert false
+        }
+        else {
+            assert retired_indices.length() ≡ 2
+        }
+    }
+
+    test "lifecycle accessors separate live current handles from retired handles" {
+        let resource.ResourceHandle created_handle ← resource.ResourceHandle {index = 10, generation = 0}
+        let resource.ResourceHandle replaced_handle ← resource.ResourceHandle {index = 11, generation = 2}
+        let resource.ResourceHandle removed_handle ← resource.ResourceHandle {index = 12, generation = 5}
+        mut list<resource.ResourceLifecycleTransition> transitions ← empty
+        transitions.append(created_handle.lifecycle_created())
+        transitions.append(replaced_handle.lifecycle_replaced())
+        transitions.append(removed_handle.lifecycle_removed())
+
+        let list<resource.ResourceHandle> ∪ none changed_handles ← resource.lifecycle_changed_handles(transitions)
+        let list<resource.ResourceHandle> ∪ none unchanged_handles ← resource.lifecycle_unchanged_handles(transitions)
+        let list<resource.ResourceHandle> ∪ none removed_handles ← resource.lifecycle_removed_handles(transitions)
+        let list<resource.ResourceHandle> ∪ none retired_handles ← resource.lifecycle_retired_handles(transitions)
+        let list<resource.ResourceHandle> ∪ none current_handles ← resource.lifecycle_current_handles(transitions)
+        if changed_handles is none {
+            assert false
+        }
+        else {
+            assert changed_handles.length() ≡ 2
+            assert changed_handles[0].index ≡ 10
+            assert changed_handles[1].generation ≡ 3
+        }
+        if unchanged_handles is none {
+            assert false
+        }
+        else {
+            assert unchanged_handles.length() ≡ 0
+        }
+        if removed_handles is none {
+            assert false
+        }
+        else {
+            assert removed_handles.length() ≡ 1
+            assert removed_handles[0].generation ≡ 5
+        }
+        if retired_handles is none {
+            assert false
+        }
+        else {
+            # Retired handles are previous identities of changed rows:
+            # replaced (index 11) and removed (index 12). Created has no
+            # previous, so it is live-current, not retired.
+            assert retired_handles.length() ≡ 2
+            assert retired_handles[0].index ≡ 11
+            assert retired_handles[1].index ≡ 12
+        }
+        if current_handles is none {
+            assert false
+        }
+        else {
+            assert current_handles.length() ≡ 2
+            assert current_handles[0].generation ≡ 0
+            assert current_handles[1].generation ≡ 3
+        }
+    }
+
+    test "invalid lifecycle batches reject duplicates and inconsistent generations" {
+        let resource.ResourceHandle original ← resource.ResourceHandle {index = 13, generation = 4}
+        let resource.ResourceLifecycleTransition duplicate_a ← original.lifecycle_created()
+        let resource.ResourceLifecycleTransition duplicate_b ← original.lifecycle_unchanged()
+        let resource.ResourceLifecycleTransition invalid_none ← resource.ResourceLifecycleTransition {logical_index = 14, changed = false, removed = false}
+        let resource.ResourceLifecycleTransition invalid_removed ← resource.ResourceLifecycleTransition {logical_index = 15, current = original, changed = true, removed = true}
+        mut list<resource.ResourceLifecycleTransition> duplicate_batch ← empty
+        duplicate_batch.append(duplicate_a)
+        duplicate_batch.append(duplicate_b)
+        mut list<resource.ResourceLifecycleTransition> invalid_batch ← empty
+        invalid_batch.append(invalid_none)
+        invalid_batch.append(invalid_removed)
+
+        assert invalid_none.valid() ≡ false
+        assert invalid_removed.valid() ≡ false
+        assert resource.lifecycles_valid(duplicate_batch) ≡ false
+        assert resource.lifecycles_valid(invalid_batch) ≡ false
+        assert resource.lifecycle_batch_facts(duplicate_batch) is none
+        assert resource.lifecycle_live_indices(invalid_batch) is none
+    }
 }

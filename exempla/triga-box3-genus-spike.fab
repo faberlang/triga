@@ -1,17 +1,19 @@
-+++
++++ toml
 term = "triga-box3-genus-spike"
 kind = "concept"
 category = "library"
 canonical = true
 summary = "Box free functions — cross-import construction and overlap probes."
 syntax = "importa ex \"triga:triga\" privata triga"
-+++
+locale = "en"
+
++++ faber
 # exempla/triga-box3-genus-spike — Phase 0 spike for API shape rework.
 #
 # Box operations are free functions over Box<N> (generic receivers do not
 # specialize). The z-separation cases remain the overlap oracle.
 
-import from "triga:math" math
+import from "triga:math"
 
 main {
     let math.Box<3> bounds ← math.Box<3> {minima = [0.0, 0.0, 0.0] ↦ vector<f32, size 3>, maxima = [2.0, 2.0, 2.0] ↦ vector<f32, size 3>}
@@ -42,3 +44,10 @@ main {
     print math.box_intersects(bug_discriminator, bug_low)
     print expanded
 }
+
++++ text stdout
+false
+false
+true
+true
+Box { minima = [-1.0, -1.0, -1.0], maxima = [3.0, 3.0, 3.0] }
