@@ -16,8 +16,6 @@
 # matrix_perspective / matrix_look_at; matrix_column reads one column.
 # Multiply matrices with ·.
 #
-# See docs/module-map.md and docs/factory/faber-native-surface/GOAL.md.
-#
 # SECTION ORDER IS LOAD-BEARING (radix workaround, 2026-11-05): a radix MIR
 # merge bug (PKG001 mir_validation_applied_struct_field_projection_type_
 # argument_count_mismatch on Box<3> field projections) blocks importing proba

@@ -3,9 +3,6 @@
 Instructional demos for `triga:*` modules. Each file is a small, runnable
 Faber program whose imports point directly at the public leaf modules.
 
-These programs belong with the Triga source library, not the keyword language
-dictionary under sibling `examples/corpus/`.
-
 ## Learning path
 
 Read these in order when learning how a Faber source library grows from plain
@@ -85,16 +82,6 @@ import the leaf → construct a typed value → inspect or validate a fact
 and queries return them when input cannot satisfy the contract; the examples
 keep the result visible so failure behavior is easy to study.
 
-## Current state (2026-08-09)
+## Checking
 
-Exempla target `radix check` via `./scripta/check-compile`.
-`triga-hello-voxel-shaders.fab` is a typed-cube vertex-layout demo: it builds a
-cube's positions/colors/indices geometry and declares `@ vertex` / `@ fragment`
-stages. WGSL emit is not currently demonstrated from these exempla — `radix emit
---reflection -t wgsl-text` fails `PARSE030:expected_expression` on the empty fn
-bodies and the struct/list literals (a compiler-side parse gap, not an exempla
-defect).
-
-The `CODEGEN001:mir_wgsl_vertex_source_layout_missing` emit path is no longer
-demonstrable from the stage-annotation exempla: `triga-vertex-fragment-stub.fab`
-trips the same `PARSE030` on its empty bodies before any layout check runs.
+`./scripta/check` runs `faber check` on every exemplum alongside the library.

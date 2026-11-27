@@ -1,8 +1,7 @@
 # Triga — the Faber Graphics and Geometry Library
 
 **Triga** (Latin: "three-horse chariot") is Faber's graphics and geometry
-library — the data contract between compiled Faber output and the GPU runtime
-host.
+library. It is the data contract between compiled Faber output and a GPU host.
 
 > **Experimental.** Like Faber itself, this library is experimental until
 > Faber 2; APIs change without notice.
@@ -12,10 +11,10 @@ types (`vector<f32, size N>`, `matrix<f32, [R, C]>`, `Box<N>`). Industry domain
 nouns stay (`Mesh`, `Ray`, `PerspectiveCamera`). three.js product names
 (`Object3D`, `BufferGeometry`, `MeshBasicMaterial`) do not.
 
-Triga is also meant to be read as a small, real Faber library. The source is
-organized into leaf modules, each file owns one import path, and the exempla
-show the path from typed data to host-facing facts. Start with the short
-examples before opening the larger scene and shader contracts.
+Triga is also meant to be read as a small, real Faber library. Each file owns
+one import path, and the exempla show the path from typed data to host-facing
+facts. Start with the short examples before opening the larger scene and
+shader contracts.
 
 ## Start here
 
@@ -43,75 +42,43 @@ main {
 }
 ```
 
-Then follow the learning path in [`exempla/README.md`](exempla/README.md):
+Then follow the learning path in [`exempla/README.md`](exempla/README.md).
 
-1. [`triga-basics.fab`](exempla/triga-basics.fab) — values, materials, and
-   validation.
-2. [`triga-transforms.fab`](exempla/triga-transforms.fab) — vectors, matrices,
-   quaternions, bounds, and rays.
-3. [`triga-geometry-attributes.fab`](exempla/triga-geometry-attributes.fab) —
-   attributes, layouts, draw ranges, bounds, and primitive generators.
-4. [`triga-scene-store.fab`](exempla/triga-scene-store.fab) — generation-checked
-   handles, hierarchy, visibility, and traversal.
-5. [`triga-hello-voxel-pipeline.fab`](exempla/triga-hello-voxel-pipeline.fab) —
-   the source-side facts that feed shader and host contracts.
+## Modules
 
-The examples are intentionally ordinary Faber programs. They are the best
-place to learn expression shape; the source modules explain why the data is
-split the way it is.
+One `.fab` file is one import path. The package facades (`triga:geometry`,
+`triga:graph`, `triga:material`, …) are orientation maps only; import the leaf
+that owns the type you use.
 
-## Status
-
-| Layer | State |
+| Import | Owns |
 | --- | --- |
-| Math / transforms | Native Faber (`vector<f32, size N>`, `matrix<f32, [R, C]>`, `Box<N>`, quaternions, …) |
-| Scene store | Generation-checked handles, graph edits, world transforms; exempla green |
-| Buffer geometry | SoA attributes, draw batches, vertex-layout reflection |
-| Primitive generators | Deterministic plane/box/sphere/… mesh builders |
-| Browser presenter | Thin WebGPU presenter in [`host/`](host/README.md) draws compiled graphics artifacts; Triga owns source contracts, not a full browser runtime |
+| `triga:math` | `Box<N>`, `Ray`, `Sphere`, `Plane`, `Quaternion`, `Euler`, `Color`, transform payloads, face-code tables, builders over the language's own vectors and matrices |
+| `triga:face` | `FaceQuad` voxel face builders |
+| `triga:geometry/attribute` | `Attribute`, `AttributeData`, `AttributeUsage` |
+| `triga:geometry/layout` | `VertexAttributeLayout`, `VertexFormat`, `VertexStepMode` |
+| `triga:geometry/data` | `Geometry`, `ColoredQuadMesh`, `PrimitiveTopology` |
+| `triga:geometry/batch` | `DrawRange`, `GeometryGroup`, draw-command and draw-batch facts |
+| `triga:geometry/bounds` | `BoundingBox`, `BoundingSphere` |
+| `triga:primitives/basic` | deterministic plane, box, sphere, … generators returning `Geometry` |
+| `triga:graph/object` | `Object`, `Scene` |
+| `triga:graph/camera` | `PerspectiveCamera`, `OrthographicCamera`, projection facts |
+| `triga:lighting/light` | `Light`, `AmbientLight`, `DirectionalLight`, `PointLight` |
+| `triga:material/base` | `Material`, `MaterialPipelineFacts`, `TextureDescriptor` |
+| `triga:material/basic` | `UnlitMaterial` |
+| `triga:material/lit` | `PhongMaterial` |
+| `triga:material/standard` | `StandardMaterial` |
+| `triga:renderable/mesh` | `Mesh` (object + geometry + material) |
+| `triga:scene` | `SceneStore`, `SceneHandle`, generation-checked hierarchy and traversal |
+| `triga:resource` | `ResourceHandle` identity and lifecycle |
+| `triga:shader` | opaque `Texture2D` and `Sampler` |
+| `triga:shader_contract` | Triga's shader-contract roles and pipeline defaults |
 
-CPU workloads typecheck and emit Rust. Generated-Rust scene identity and the
-direct scene-store check for `exempla/triga-scene-store.fab` are green. MIR/GPU
-parity continues to deepen on the compiler and host side; Triga's job is to
-keep the typed contract honest and modular.
+## Using Triga
 
-## Current Types
-
-| Category | Types | Module | Mirror |
-| -------- | ----- | ------ | ------ |
-| **Math** | `vector<f32, size N>`, `matrix<f32, [R, C]>`, `Box<N>`, `Ray`, quaternions, face-code tables | `triga:math` | language carriers + Triga domain genera |
-| **Scene Graph** | `Object`, `Scene`, cameras | `triga:graph/{object,camera}` | industry cameras; no `Object3D` |
-| **Lighting** | `Light` family | `triga:lighting/light` | industry light nouns |
-| **Geometry data** | `Geometry`, `ColoredQuadMesh` | `triga:geometry/data` | SoA mesh contract |
-| **Geometry (GPU layout)** | `Attribute`, vertex layouts, draw batches | `triga:geometry/{attribute,layout,batch}` | buffer / vertex layout |
-| **Primitives** | `plane`, `box`, `sphere`, … | `triga:primitives/basic` | constructors returning `Geometry` |
-| **Materials** | `Material`, `UnlitMaterial`, `PhongMaterial`, `StandardMaterial` | `triga:material/{base,basic,lit,standard}` | lighting-model nouns; no `Mesh*Material` |
-| **Renderable** | `Mesh` | `triga:renderable/mesh` | `Object` + `Geometry` + material |
-| **Scene store** | `SceneStore`, `SceneHandle`, `visibilia` | `triga:scene` | generation-checked identity graph |
-| **Resources** | `ResourceHandle` (transition/lifecycle receiver methods + batch queries) | `triga:resource` | host resource identity |
-
-Full module ownership: [`docs/module-map.md`](docs/module-map.md) (Norma-style multi-module package).
-
-## Import
-
-```fab
-import from "triga:math" math
-import from "triga:graph" graph
-import from "triga:material" material
-import from "triga:geometry" geometry
-import from "triga:primitives" primitives
-import from "triga:scene" scene
-import from "triga:resource" resource
-```
-
-This is an orientation map. In application code, import the leaf that owns the
-genus you use; the facade modules intentionally do not re-export types.
-
-Package installation is not yet available in the public toolchain: `faber`
-never installs packages. Clone this repository and point `faber` at it.
-`faber` resolves `triga:*` from a library home, a directory that holds this
-repo as `triga/` (`--library-home <DIR>`, or `[paths] library_home` in your
-`faber.toml`):
+`faber` never installs packages. Clone this repository and point `faber` at
+it. `faber` resolves `triga:*` from a library home, a directory that holds
+this repo as `triga/` (`--library-home <DIR>`, or `[paths] library_home` in
+your `faber.toml`):
 
 ```text
 <library home>/triga/src/**/*.fab
@@ -126,22 +93,20 @@ faber run --library-home "$PWD/libs" main.fab
 Install `faber` from the
 [release page](https://github.com/faberlang/releases/releases/latest); docs are
 at [faberlang.dev](https://faberlang.dev). Use an absolute library-home path.
-Norma is embedded in the binary and needs no home.
+Norma is built into the binary and needs no home.
 
 ## Design
 
-- **Structure-of-arrays layout**: vertex attributes and matrix storage use flat
-  `list<f32>`, not interleaved arrays. This maps directly to WGSL storage
-  buffers and GPU buffer uploads.
-- **Composition over inheritance**: `PerspectiveCamera.base` contains an
-  `Object` rather than using type inheritance. `StandardMaterial.base`
-  contains a `Material`.
-- **Typed contract, not a vendor mirror**: field names use Faber's snake_case.
+- **Structure-of-arrays layout.** Vertex attributes and matrix storage use flat
+  `list<f32>`, not interleaved arrays. This maps directly to GPU storage
+  buffers and buffer uploads.
+- **Composition over inheritance.** `PerspectiveCamera.base` contains an
+  `Object`; `StandardMaterial.base` contains a `Material`.
+- **Typed contract, not a vendor mirror.** Field names use Faber's snake_case.
   Scene composition is `Object` → `Mesh` → `Scene`; materials compose through
-  `base`. That is Triga's shape, not three.js product taxonomy.
-- **Module seams**: Norma-style flat leaves — `math` / `graph` / `material` /
-  `geometry` / `primitives` / `scene` / `resource` / `renderable`. Nested
-  package dirs only when they hold 2–3+ modules (see `docs/module-map.md`).
+  `base`.
+- **Leaf modules.** Nested package directories exist only when they hold at
+  least two modules.
 
 ## Reading the source
 
@@ -153,58 +118,36 @@ math → geometry/{attribute,layout,data} → primitives/basic
      → shader_contract → presenter host
 ```
 
-`math`, `geometry`, and `scene` own backend-agnostic values and invariants.
-`primitives` assembles those values into useful meshes. `shader_contract`
-names the facts that the compiler can validate and reflect. The browser
-presenter under `host/` is a thin consumer: Triga describes the contract; the
-host owns device setup, resource allocation, and presentation.
-
-This separation is deliberate. When reading a function, ask whether it is
-constructing a value, validating a value, or describing a fact for a later
-stage. That distinction is the central Faber design lesson in this package.
+`math`, `geometry` and `scene` own backend-agnostic values and invariants.
+`primitives` assembles those values into meshes. `shader_contract` names the
+facts the compiler validates and reflects. The browser presenter under
+`host/` is a thin consumer: Triga describes the contract; the host owns device
+setup, resource allocation and presentation.
 
 ## Layout
 
 ```text
-cista.toml     package identity + version (for the separate package-store tool)
-faber.toml     library provider metadata for faber package resolution
-src/           public `triga:*` Faber modules (`name.fab` + co-located `name.proba` tests)
-exempla/       instructional demos for triga types
-scripta/       source-library checks
-docs/          policy + module map + planning history
-proof/         capability / capstone ledgers
+faber.toml     library manifest (provider, targets, WGSL bindings)
+cista.toml     package identity and version for the package-store tool
+src/           public `triga:*` modules
+exempla/       instructional programs
+bindings/      target bindings (WGSL)
+locale/        Latin reader surface for Triga's names
+host/          thin WebGPU presenter
+corpus/        browser demo scenes
+scripta/       checks and the presenter driver
 ```
 
 ## Checks
-
-The canonical local spine is `./scripta/check`. It discovers every live leaf
-and proba by running the existing rungs in order. A red rung is evidence, not
-a skip. Faber-dependent rungs need a `faber` binary: set `FABER_BIN` to one.
-Public CI is `.github/workflows/ci.yml` (no-Faber rungs only). Do not re-list
-the rungs here; `AGENTS.md` names the same spine.
 
 ```bash
 ./scripta/check
 ```
 
-The capability report is an honest campaign baseline: unsupported proofs score
-zero, while browser availability and artifact freshness are reported
-separately. See `docs/factory/triga-threejs-80/PROOF-HARNESS.md`.
-
-The Hello Voxel contract check is a Triga-owned pre-browser gate, not part of
-the spine. Live browser execution uses the Triga-owned presenter in `host/`
-(`./scripta/host check` and `./scripta/host serve`; see
-[`host/README.md`](host/README.md)).
-
-## Next Steps
-
-- Keep scene identity (generated-Rust + direct scene-store check) green.
-- Keep vertex-layout reflection and primitive generators aligned with host
-  buffer upload seams.
-- Grow materials / textures / lighting only after graphics-stage contracts stay
-  green end to end on the host path.
-- Optional further module splits (math vs materials, resource lifecycle) when a
-  second real importer appears — not for aesthetics alone.
+This runs `faber check` on every module and exemplum, then `faber test` on the
+package. It uses `FABER_BIN` if set, otherwise a sibling `../radix` build.
+The presenter has its own driver: `./scripta/host check` and
+`./scripta/host serve` (see [`host/README.md`](host/README.md)).
 
 ## License
 

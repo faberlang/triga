@@ -22,8 +22,7 @@
 # (WebGPU GPUVertexFormat, which inherited the three.js spelling). They are
 # accepted only because component width is a runtime value Faber generics
 # cannot parameterize today — the spellings are not canonical Faber style.
-# When the bounded-buffers value-parameterized family ships
-# (radix/docs/design/fixed-capacity-collections.md), convert this union to
+# When value-parameterized bounded buffers ship, convert this union to
 # proper generics. The integer format codes are frozen ABI and outlive the
 # spelling change.
 @ public

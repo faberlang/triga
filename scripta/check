@@ -1,51 +1,55 @@
 #!/usr/bin/env bash
-# Canonical local spine. Discovers every live leaf and proba by invoking the
-# existing rungs in order and printing a per-tier label. A red rung is
-# evidence, not a skip. check-compile already runs check-transforms and
-# check-exempla-inventory.
+# Triga's local check: `faber check` on every library module and exemplum,
+# then `faber test` on the package (the co-located tests). It prints one
+# line per failing file and exits non-zero if anything is red.
+#
+# FABER_BIN picks the compiler; otherwise the sibling radix build is used.
+# FABER_LIBRARY_HOME defaults to this repo's parent directory.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
 export FABER_LIBRARY_HOME="${FABER_LIBRARY_HOME:-$ROOT/..}"
+
 if [[ -z "${FABER_BIN:-}" ]]; then
-  if [[ -x "$FABER_LIBRARY_HOME/radix/target/release/faber" ]]; then
-    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/release/faber"
-  elif [[ -x "$FABER_LIBRARY_HOME/radix/target/debug/faber" ]]; then
-    FABER_BIN="$FABER_LIBRARY_HOME/radix/target/debug/faber"
-  fi
-  if [[ -n "${FABER_BIN:-}" ]]; then
-    export FABER_BIN
-  fi
+  for candidate in "$FABER_LIBRARY_HOME/radix/target/release/faber" \
+                   "$FABER_LIBRARY_HOME/radix/target/debug/faber"; do
+    if [[ -x "$candidate" ]]; then
+      FABER_BIN="$candidate"
+      break
+    fi
+  done
+fi
+if [[ -z "${FABER_BIN:-}" || ! -x "$FABER_BIN" ]]; then
+  echo "check: no faber binary; set FABER_BIN or build ../radix" >&2
+  exit 2
 fi
 
+cd "$ROOT"
 status=0
+checked=0
+failed=0
 
-run_rung() {
-  local label="$1"
-  local script="$2"
-  local rc=0
-  echo "check: ${label}: ${script}"
-  "$ROOT/scripta/${script}" || rc=$?
-  if [[ "$rc" -eq 0 ]]; then
-    echo "check: ${label}: ${script} green"
-  else
-    echo "check: ${label}: ${script} red (exit ${rc})"
+while IFS= read -r file; do
+  checked=$((checked + 1))
+  if ! "$FABER_BIN" check "$file" >/dev/null 2>&1; then
+    echo "check: red: $file"
+    failed=$((failed + 1))
     status=1
   fi
-}
+done < <(find src exempla -name '*.fab' | sort)
 
-run_rung structural check-source
-run_rung host-admission check-host
-run_rung structural check-compile
-run_rung executed-proba check-proba-coverage
-run_rung coverage-scorecard ../proof/coverage/test-check-scorecard
-run_rung wgsl check-wgsl-shader-contract-conformance
-run_rung public-execution check-capabilities
+echo "check: faber check: $((checked - failed))/$checked green"
+
+if "$FABER_BIN" test . ; then
+  echo "check: faber test: green"
+else
+  echo "check: faber test: red"
+  status=1
+fi
 
 if [[ "$status" -eq 0 ]]; then
-  echo "check: overall green"
+  echo "check: green"
 else
-  echo "check: overall red"
+  echo "check: red"
 fi
 exit "$status"
