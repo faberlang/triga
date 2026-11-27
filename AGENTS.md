@@ -13,8 +13,7 @@ scene graph, materials and GPU-facing type contracts. Container rules:
 - Path-limited commits only (`git add -- <paths>`, then
   `git commit -- <same paths>`).
 - Planning documents, proofs, scorecards and other generated or runtime data
-  stay out of this repo. Old factory material lives in the private archive
-  (`../archivum/triga/`). It is history, not a description of the code.
+  stay out of this repo.
 
 ## Library shape
 
