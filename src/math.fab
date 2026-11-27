@@ -24,8 +24,7 @@ locale = "en"
 # merge bug (PKG001 mir_validation_applied_struct_field_projection_type_
 # argument_count_mismatch on Box<3> field projections) blocks test sections
 # that import this module, depending only on declaration order here. This order
-# keeps them green; re-run `faber test .` after moving or adding declarations
-# (radix#2637).
+# keeps them green; re-run `faber test .` after moving or adding declarations.
 
 # --- TRANSFORM PAYLOAD ---
 # 32-float / 128-byte wire: model then view-projection, column-major.
