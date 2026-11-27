@@ -3,70 +3,61 @@ term = "triga-hello-voxel-pipeline"
 kind = "concept"
 category = "library"
 canonical = true
-summary = "Full graphics pipeline fixture: @vertex/@fragment with varying, fragment output, resource binding, transform, pipeline, and draw facts."
+summary = "A colored cube end to end: indexed geometry, a Vertex and Fragment stage pair run on the host, and the draw command."
 locale = "en"
 
 +++ faber
 import from "triga:geometry/data"
 
-import from "triga:geometry/attribute"
-
 import from "triga:geometry/batch"
 
-import from "triga:math"
+import from "triga:shader"
 
-@ vertex { }
-fn hello_voxel_vertex() → void {
+# The cube's two stages. The vertex stage carries each corner's color to the
+# fragment stage; `@ Position` marks the clip-space output.
+class VoxelVertex {
+    @ Position
+    mut vector<f32, size 4> clip
+    mut vector<f32, size 3> color
 }
 
-@ fragment { }
-fn hello_voxel_fragment() → void {
+@ Vertex
+fn hello_voxel_vertex(vector<f32, size 3> position, vector<f32, size 3> color) → VoxelVertex {
+    let vector<f32, size 4> clip ← [position[0], position[1], position[2], 1.0] ↦ vector<f32, size 4>
+    return VoxelVertex {clip = clip, color = color}
+}
+
+@ Fragment
+fn hello_voxel_fragment(vector<f32, size 3> color) → vector<f32, size 4> {
+    return [color[0], color[1], color[2], 1.0] ↦ vector<f32, size 4>
 }
 
 main {
-    # Geometry: colored indexed cube
+    # Geometry: a colored indexed cube.
     let list<f32> positions ← [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0]
     let list<f32> colors ← [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 0.2]
     let list<u32> indices ← [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 6, 2, 0, 3, 7, 0, 7, 4]
     let data.Geometry ∪ none cube_result ← data.colored_indexed_geometry(8, positions, colors, indices)
-    let _ cube ← data.Geometry {topology = cube_result!.topology, vertex_count = cube_result!.vertex_count, attributes = cube_result!.attributes, indexed = cube_result!.indexed, indices = cube_result!.indices, draw_range = cube_result!.draw_range, groups = cube_result!.groups}
+    assert cube_result not is none panic "the cube geometry must be valid"
+    let data.Geometry cube ← cube_result
 
-    # Varying facts
-    let int varying_color_loc ← 0
-    let int varying_color_fmt ← 3
-    let int varying_color_interp ← 1
-    print varying_color_fmt
+    # Run the two stages on the host for the cube's first corner.
+    let vector<f32, size 3> corner ← [positions[0], positions[1], positions[2]] ↦ vector<f32, size 3>
+    let vector<f32, size 3> corner_color ← [colors[0], colors[1], colors[2]] ↦ vector<f32, size 3>
+    let VoxelVertex vertex ← hello_voxel_vertex(corner, corner_color)
+    print vertex.clip
+    print hello_voxel_fragment(vertex.color)
 
-    # Fragment output facts
-    let int frag_out_color_loc ← 0
-    let int frag_out_color_fmt ← 4
-    print frag_out_color_fmt
-
-    # Resource binding facts
-    let int resource_transform_group ← 0
-    let int resource_transform_binding ← 0
-    let int resource_transform_element_count ← 32
-    let int resource_transform_byte_width ← 128
-    print resource_transform_byte_width
-
-    # Transform payload
-    let _ model ← math.matrix_identity()
-    let _ view_proj ← math.matrix_identity()
-    let math.TransformPayload transform ← math.transform_payload(model, view_proj)
-
-    # Pipeline facts (canonical codes: color target bgra8unorm = 1, depth compare less = 1, topology triangle-list = 1)
-    let int goal_target_format ← 1
-    let int goal_depth_compare ← 1
-    let int goal_topology ← 1
-    let int goal_index_format ← 1
-    let int goal_primitive_count ← 12
-    let int goal_index_count ← 36
-    print goal_target_format
-    print goal_topology
-
-    # Draw command
+    # One indexed draw of the whole cube.
     let batch.GeometryDrawCommand ∪ none draw_result ← cube.draw_command(1)
-    let _ draw ← batch.GeometryDrawCommand {indexed = draw_result!.indexed, element_count = draw_result!.element_count, first_element = draw_result!.first_element, base_vertex = draw_result!.base_vertex, instance_count = draw_result!.instance_count, material_index = draw_result!.material_index}
+    assert draw_result not is none panic "the cube must form a draw command"
+    let batch.GeometryDrawCommand draw ← draw_result
     print draw.indexed
     print draw.instance_count
 }
+
++++ text stdout
+[0.0, 0.0, 0.0, 1.0]
+[1.0, 0.0, 0.0, 1.0]
+true
+1

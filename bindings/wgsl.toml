@@ -1,8 +1,17 @@
 # Triga WGSL binding manifest.
 #
-# Radix emits these spellings; it does not validate them as WGSL library
-# names. Schema is the shared binding manifest: `[functions.<route>]` and
-# `[types.<route>]`, each with `symbol`.
+# The compiler emits these spellings; it does not validate them as WGSL
+# names. Schema: `[functions.<route>]`, `[types.<route>]` and
+# `[annotations.<route>]`, each with `symbol`.
+
+[annotations."triga:shader.Vertex"]
+symbol = "vertex"
+
+[annotations."triga:shader.Fragment"]
+symbol = "fragment"
+
+[annotations."triga:shader.Position"]
+symbol = "builtin(position)"
 
 [types."triga:shader.Texture2D"]
 symbol = "texture_2d<f32>"

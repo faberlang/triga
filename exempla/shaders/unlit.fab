@@ -1,0 +1,44 @@
++++ toml
+locale = "en"
+
++++ faber
+# exempla/shaders/unlit — the smallest vertex and fragment pair.
+#
+# A stage is an ordinary typed function marked with a triga:shader stage
+# contract. The vertex stage takes per-vertex position and color and returns
+# a class whose `@ Position` field is the clip-space position; the fragment
+# stage receives the remaining fields and returns the pixel color.
+#
+# `faber emit -t wgsl-text` turns the two stages into WGSL entry points.
+# `main` runs the same functions on the host.
+
+import from "triga:shader"
+
+class UnlitVertex {
+    @ Position
+    mut vector<f32, size 4> clip
+    mut vector<f32, size 3> color
+}
+
+@ Vertex
+fn unlit_vertex(vector<f32, size 3> position, vector<f32, size 3> color) → UnlitVertex {
+    let vector<f32, size 4> clip ← [position[0], position[1], position[2], 1.0] ↦ vector<f32, size 4>
+    return UnlitVertex {clip = clip, color = color}
+}
+
+@ Fragment
+fn unlit_fragment(vector<f32, size 3> color) → vector<f32, size 4> {
+    return [color[0], color[1], color[2], 1.0] ↦ vector<f32, size 4>
+}
+
+main {
+    let vector<f32, size 3> position ← [0.5, -0.5, 0.0] ↦ vector<f32, size 3>
+    let vector<f32, size 3> red ← [1.0, 0.0, 0.0] ↦ vector<f32, size 3>
+    let UnlitVertex vertex ← unlit_vertex(position, red)
+    print vertex.clip
+    print unlit_fragment(vertex.color)
+}
+
++++ text stdout
+[0.5, -0.5, 0.0, 1.0]
+[1.0, 0.0, 0.0, 1.0]

@@ -1,0 +1,52 @@
++++ toml
+locale = "en"
+
++++ faber
+# exempla/shaders/textured — a fragment stage that samples a texture.
+#
+# The vertex stage passes a texture coordinate through. The fragment stage
+# takes a `Texture2D` and a `Sampler` as parameters and returns
+# `shader.sample(...)`, which the WGSL bindings spell `textureSample`.
+#
+# Texture and sampler parameters become WGSL module bindings. Each one needs
+# exactly one `bound_resource_matches` fact naming its bind group, binding
+# and parameter name; `main` asserts them.
+#
+# `faber emit -t wgsl-text` turns the two stages into WGSL entry points.
+# `main` runs the vertex stage on the host for one corner.
+
+import from "triga:shader"
+
+import from "triga:shader_contract" let contract
+
+class TexturedVertex {
+    @ Position
+    mut vector<f32, size 4> clip
+    mut vector<f32, size 2> uv
+}
+
+@ Vertex
+fn textured_vertex(vector<f32, size 3> position, vector<f32, size 2> uv) → TexturedVertex {
+    let vector<f32, size 4> clip ← [position[0], position[1], position[2], 1.0] ↦ vector<f32, size 4>
+    return TexturedVertex {clip = clip, uv = uv}
+}
+
+@ Fragment
+fn textured_fragment(shader.Texture2D albedo, shader.Sampler albedo_sampler, vector<f32, size 2> uv) → vector<f32, size 4> {
+    return shader.sample(albedo, albedo_sampler, uv)
+}
+
+main {
+    assert contract.bound_resource_matches(0, 0, "albedo") panic "albedo at group 0 binding 0"
+    assert contract.bound_resource_matches(0, 1, "albedo_sampler") panic "albedo_sampler at group 0 binding 1"
+
+    let vector<f32, size 3> corner ← [0.5, -0.5, 0.0] ↦ vector<f32, size 3>
+    let vector<f32, size 2> uv ← [1.0, 0.0] ↦ vector<f32, size 2>
+    let TexturedVertex out ← textured_vertex(corner, uv)
+    print out.clip
+    print out.uv
+}
+
++++ text stdout
+[0.5, -0.5, 0.0, 1.0]
+[1.0, 0.0]
