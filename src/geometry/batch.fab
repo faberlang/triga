@@ -94,70 +94,99 @@ class VisibleFaceMeshFacts {
 @ public
 fn visible_face_vertex_count(int face_count) → int ∪ none {
     if face_count ≤ 0 then return null
+
     return face_count * 4
 }
 
 @ public
 fn visible_face_index_count(int face_count) → int ∪ none {
     if face_count ≤ 0 then return null
+
     return face_count * 6
 }
 
 @ public
 fn visible_face_triangle_count(int face_count) → int ∪ none {
     if face_count ≤ 0 then return null
+
     return face_count * 2
 }
 
 @ public
 fn visible_face_position_payload_byte_count(int face_count) → int ∪ none {
     let int ∪ none vertex_count ← visible_face_vertex_count(face_count)
+
     if vertex_count is none then return null
+
     return vertex_count * 3 * 4
 }
 
 @ public
 fn visible_face_color_payload_byte_count(int face_count) → int ∪ none {
     let int ∪ none vertex_count ← visible_face_vertex_count(face_count)
+
     if vertex_count is none then return null
+
     return vertex_count * 3 * 4
 }
 
 @ public
 fn visible_face_index_payload_byte_count(int face_count) → int ∪ none {
     let int ∪ none index_count ← visible_face_index_count(face_count)
+
     if index_count is none then return null
+
     return index_count * 4
 }
 
 @ public
 fn visible_face_payload_byte_count(int face_count) → int ∪ none {
     let int ∪ none position_bytes ← visible_face_position_payload_byte_count(face_count)
+
     if position_bytes is none then return null
+
     let int ∪ none color_bytes ← visible_face_color_payload_byte_count(face_count)
+
     if color_bytes is none then return null
+
     let int ∪ none index_bytes ← visible_face_index_payload_byte_count(face_count)
+
     if index_bytes is none then return null
+
     return position_bytes + color_bytes + index_bytes
 }
 
 @ public
 fn visible_face_mesh_facts(int face_count) → VisibleFaceMeshFacts ∪ none {
     let int ∪ none vertex_count ← visible_face_vertex_count(face_count)
+
     if vertex_count is none then return null
+
     let int ∪ none index_count ← visible_face_index_count(face_count)
+
     if index_count is none then return null
+
     let int ∪ none triangle_count ← visible_face_triangle_count(face_count)
+
     if triangle_count is none then return null
+
     let int ∪ none position_bytes ← visible_face_position_payload_byte_count(face_count)
+
     if position_bytes is none then return null
+
     let int ∪ none color_bytes ← visible_face_color_payload_byte_count(face_count)
+
     if color_bytes is none then return null
+
     let int ∪ none index_bytes ← visible_face_index_payload_byte_count(face_count)
+
     if index_bytes is none then return null
+
     let int ∪ none total_bytes ← visible_face_payload_byte_count(face_count)
+
     if total_bytes is none then return null
-    return VisibleFaceMeshFacts {face_count = face_count, vertex_count = vertex_count, index_count = index_count, triangle_count = triangle_count, position_payload_byte_count = position_bytes, color_payload_byte_count = color_bytes, index_payload_byte_count = index_bytes, total_payload_byte_count = total_bytes}
+
+    return VisibleFaceMeshFacts { face_count = face_count, vertex_count = vertex_count, index_count = index_count, triangle_count = triangle_count, position_payload_byte_count = position_bytes, color_payload_byte_count = color_bytes, index_payload_byte_count = index_bytes, total_payload_byte_count = total_bytes }
 }
 
 +++ faber test

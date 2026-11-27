@@ -26,14 +26,18 @@ class Material {
 
     fn valid() → bool {
         if self.name ≡ "" then return false
+
         if self.side ≻ 2 then return false
+
         if self.opacity ≺ 0.0 or self.opacity ≻ 1.0 then return false
+
         if self.alpha_test ≺ 0.0 or self.alpha_test ≻ 1.0 then return false
+
         return true
     }
 
     fn double_sided() → Material {
-        return Material {side = 2} from self
+        return Material { side = 2 } from self
     }
 
     fn is_double_sided() → bool {
@@ -42,6 +46,7 @@ class Material {
 
     fn side_code() → int ∪ none {
         if not self.valid() then return null
+
         return self.side
     }
 
@@ -59,7 +64,8 @@ class Material {
 
     fn pipeline_facts() → MaterialPipelineFacts ∪ none {
         if not self.valid() then return null
-        return MaterialPipelineFacts {side_code = self.side, depth_test_enabled = self.depth_test, depth_write_enabled = self.depth_write, transparent = self.transparent, alpha = self.opacity, alpha_test = self.alpha_test}
+
+        return MaterialPipelineFacts { side_code = self.side, depth_test_enabled = self.depth_test, depth_write_enabled = self.depth_write, transparent = self.transparent, alpha = self.opacity, alpha_test = self.alpha_test }
     }
 }
 
@@ -91,7 +97,7 @@ class TextureDescriptor {
 
 @ public
 fn material_from_name(string name) → Material {
-    return Material {name = name, side = 0, transparent = false, opacity = 1.0, depth_write = true, depth_test = true, alpha_test = 0.0}
+    return Material { name = name, side = 0, transparent = false, opacity = 1.0, depth_write = true, depth_test = true, alpha_test = 0.0 }
 }
 
 +++ faber test

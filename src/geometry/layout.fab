@@ -72,31 +72,32 @@ fn vertex_format_from_component_width(int component_width, bool is_float32) → 
     if is_float32 {
         switch component_width {
             case 1 {
-                return Float32()
+                return variant Float32
             }
             case 2 {
-                return Float32x2()
+                return variant Float32x2
             }
             case 3 {
-                return Float32x3()
+                return variant Float32x3
             }
             default {
-                return Float32x4()
+                return variant Float32x4
             }
         }
     }
+
     switch component_width {
         case 1 {
-            return Uint32()
+            return variant Uint32
         }
         case 2 {
-            return Uint32x2()
+            return variant Uint32x2
         }
         case 3 {
-            return Uint32x3()
+            return variant Uint32x3
         }
         default {
-            return Uint32x4()
+            return variant Uint32x4
         }
     }
 }
@@ -105,7 +106,7 @@ fn vertex_format_from_component_width(int component_width, bool is_float32) → 
 # still represented by VertexStepMode for host-facing layouts built elsewhere.
 @ public
 fn vertex_step_mode_vertex_step() → VertexStepMode {
-    return VertexStep()
+    return variant VertexStep
 }
 
 # --- Host-facing compact codes ---
